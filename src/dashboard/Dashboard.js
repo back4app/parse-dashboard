@@ -82,6 +82,7 @@ const PARSE_DOT_COM_SERVER_INFO = {
       addClass: true,
       removeClass: true,
       clearAllDataFromClass: false, //This still goes through ruby
+      importClass: true,
       exportClass: false, //Still goes through ruby
     },
     cloudCode: {

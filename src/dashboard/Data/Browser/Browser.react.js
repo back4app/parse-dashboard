@@ -15,6 +15,7 @@ import { DefaultColumns, SpecialClasses } from 'lib/Constants';
 import DeleteRowsDialog                   from 'dashboard/Data/Browser/DeleteRowsDialog.react';
 import DropClassDialog                    from 'dashboard/Data/Browser/DropClassDialog.react';
 import EmptyState                         from 'components/EmptyState/EmptyState.react';
+import ImportDialog                       from 'dashboard/Data/Browser/ImportDialog.react';
 import ExportDialog                       from 'dashboard/Data/Browser/ExportDialog.react';
 import history                            from 'dashboard/history';
 import { List, Map }                      from 'immutable';
@@ -43,6 +44,7 @@ export default class Browser extends DashboardView {
       showAddColumnDialog: false,
       showRemoveColumnDialog: false,
       showDropClassDialog: false,
+      showImportDialog: false,
       showExportDialog: false,
       rowsToDelete: null,
 
@@ -169,6 +171,10 @@ export default class Browser extends DashboardView {
     this.setState({ showDropClassDialog: true });
   }
 
+  showImport() {
+    this.setState({ showImportDialog: true });
+  }
+
   showExport() {
     this.setState({ showExportDialog: true });
   }
@@ -194,6 +200,12 @@ export default class Browser extends DashboardView {
       }
       this.setState({ lastError: msg });
     });
+  }
+
+  importClass(className) {
+    this.context.currentApp.importClass(className).always(() => {
+      this.setState({ showImportDialog: false });
+  });
   }
 
   exportClass(className) {
@@ -471,6 +483,7 @@ export default class Browser extends DashboardView {
       this.state.showAddColumnDialog ||
       this.state.showRemoveColumnDialog ||
       this.state.showDropClassDialog ||
+      this.state.showImportDialog ||
       this.state.showExportDialog ||
       this.state.rowsToDelete
     );
@@ -564,6 +577,7 @@ export default class Browser extends DashboardView {
             onRemoveColumn={this.showRemoveColumn.bind(this)}
             onDeleteRows={this.showDeleteRows.bind(this)}
             onDropClass={this.showDropClass.bind(this)}
+            onImport={this.showImport.bind(this)}
             onExport={this.showExport.bind(this)}
             onChangeCLP={clp => {
               let p = this.props.schema.dispatch(ActionTypes.SET_CLP, {
@@ -650,6 +664,13 @@ export default class Browser extends DashboardView {
             lastError: null,
           })}
           onConfirm={() => this.dropClass(className)} />
+      );
+    } else if (this.state.showImportDialog) {
+      extras = (
+          <ImportDialog
+              className={className}
+              onCancel={() => this.setState({ showImportDialog: false })}
+              onConfirm={() => this.importClass(className)} />
       );
     } else if (this.state.showExportDialog) {
       extras = (

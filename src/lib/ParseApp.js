@@ -340,6 +340,11 @@ export default class ParseApp {
     return AJAX.put(path);
   }
 
+  importData() {
+    let path = '/apps/' + this.slug + '/import_data';
+    return AJAX.put(path);
+  }
+
   exportData() {
     let path = '/apps/' + this.slug + '/export_data';
     return AJAX.put(path);
@@ -503,6 +508,11 @@ export default class ParseApp {
     }
     let path = '/apps/' + this.slug + '/export_data';
     return AJAX.put(path, { name: className, where: where });
+  }
+
+  getImportProgress() {
+    let path = '/apps/' + this.slug + '/import_progress';
+    return AJAX.get(path);
   }
 
   getExportProgress() {
