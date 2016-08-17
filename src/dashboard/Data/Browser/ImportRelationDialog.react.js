@@ -14,25 +14,25 @@ import TextInput from 'components/TextInput/TextInput.react';
 import FileInput from 'components/FileInput/FileInput.react';
 import Label    from 'components/Label/Label.react';
 
-export default class ImportDialog extends React.Component {
+export default class ImportRelationDialog extends React.Component {
   constructor() {
       super();
       this.state = {
         progress: undefined,
-        className: undefined,
+        relationName: undefined,
         file: undefined
       };
   }
 
   valid() {
-    if (this.state.className != undefined && this.state.className != '' && this.state.file != undefined) {
+    if (this.state.relationName != undefined && this.state.relationName != '' && this.state.file != undefined) {
         return true;
     }
     return false;
   }
 
   componentWillMount() {
-      this.context.currentApp.getImportProgress().then((progress) => {
+      this.context.currentApp.getImportRelationProgress().then((progress) => {
       this.setState({ progress });
     });
   }
@@ -44,7 +44,7 @@ export default class ImportDialog extends React.Component {
     let found = false;
     if (Array.isArray(this.state.progress)) {
       this.state.progress.forEach((obj) => {
-        if (obj.id === this.props.className) {
+        if (obj.id === this.props.relationName) {
           found = true;
         }
       });
@@ -52,8 +52,8 @@ export default class ImportDialog extends React.Component {
     return found;
   }
 
-  importFile(){
-    let className = this.state.className;
+  importRelationFile(){
+    let className = this.state.relationName;
     let file = this.state.file;
     //console.log(this.state.file.name);
     //let body = file;
@@ -74,37 +74,33 @@ export default class ImportDialog extends React.Component {
         type={Modal.Types.INFO}
         icon='down-outline'
         iconSize={40}
-        title='Import a class'
+        title='Import a relation to this class'
         subtitle={`We'll send you an email when your data is ready.`}
         confirmText='Import'
         cancelText='Cancel'
         disabled={!this.valid()}
         buttonsInCenter={true}
         onCancel={this.props.onCancel}
-        onConfirm={() => this.props.onConfirm(this.state.className, this.state.file)}>
+        onConfirm={this.props.onConfirm ? this.importRelationFile() : null}>
         {inProgress ?
-          <div style={{ padding: 20 }}>You are currently importing a class.</div> : null}
+          <div style={{ padding: 20 }}>You are currently importing a relation to this class.</div> : null}
 
 
         <Field
               label={
                   <Label
-                      text='Confirm this action'
-                      description='Enter the class name to continue' />
-                }
+              text='Confirm this action'
+              description='Enter the relation name to continue' />
+            }
               input={
                   <TextInput
-                      placeholder='Class name'
-                      value={this.state.className}
-                      onChange={(className) => this.setState({ className: className })} />
-                } />
+              placeholder='Relation name'
+              value={this.state.relationName}
+              onChange={(relationName) => this.setState({ relationName: relationName })} />
+            } />
         <Field
-            label={
-                <Label
-                    text='Select a class file' />}
-            input={
-                <FileInput
-                    onChange={(file) => {this.setState({ file: file });}} />}
+            label={<Label text='Select a relation file' />}
+            input={<FileInput onChange={(file) => {this.setState({ file: file });}} />}
         />
 
       </Modal>
@@ -112,6 +108,6 @@ export default class ImportDialog extends React.Component {
   }
 }
 
-ImportDialog.contextTypes = {
+ImportRelationDialog.contextTypes = {
   currentApp: React.PropTypes.instanceOf(ParseApp)
 };

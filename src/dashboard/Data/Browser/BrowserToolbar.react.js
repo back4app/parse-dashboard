@@ -32,6 +32,7 @@ let BrowserToolbar = ({
   onAddRow,
   onAddClass,
   onImport,
+  onImportRelation,
   onExport,
   onRemoveColumn,
   onDeleteRows,
@@ -41,7 +42,6 @@ let BrowserToolbar = ({
   hidePerms,
 
   enableDeleteAllRows,
-  enableImportClass,
   enableExportClass,
   enableSecurityDialog,
 }) => {
@@ -92,8 +92,9 @@ let BrowserToolbar = ({
         <MenuItem text='Delete a column' onClick={onRemoveColumn} />
         {enableDeleteAllRows ? <MenuItem text='Delete all rows' onClick={() => onDeleteRows({ '*': true })} /> : <noscript />}
         <MenuItem text='Delete this class' onClick={onDropClass} />
-        {enableImportClass || enableExportClass ? <Separator /> : <noscript />}
-        {true ? <MenuItem text='Import a class' onClick={onImport} /> : <noscript />}
+        <Separator />
+        <MenuItem text='Import a class' onClick={onImport} />
+        <MenuItem text='Import a relation to this class' onClick={onImportRelation} />
         {enableExportClass ? <MenuItem text='Export this data' onClick={onExport} /> : <noscript />}
       </BrowserMenu>
     );
