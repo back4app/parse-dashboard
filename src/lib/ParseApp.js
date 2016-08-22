@@ -340,29 +340,14 @@ export default class ParseApp {
     return AJAX.put(path);
   }
 
-  importData(className, file) {
-
-    //let path = '/apps/' + this.slug + '/import_data';
-    let path = 'localhost:4040'
-    var body;
-    var promise = new Promise((resolve, reject) => {
-      var read = new FileReader();
-      read.onload = function (event) {
-        body = (this.result);
-        resolve(body);
-      };
-      read.readAsText(file);
-    }).then((body) => {
-      // console.log(path + '    ' + body);
-      return AJAX.post(path, body);
-    });
-    return promise;
-
+  importData(className, body) {
+    let path = '/apps/' + this.slug + '/import_data/' + className;
+    return AJAX.post(path, body);
   }
 
-  importRelationData() {
-    let path = '/apps/' + this.slug + '/import_relation_data';
-    return AJAX.put(path);
+  importRelationData(className, relationName,  body) {
+    let path = '/apps/' + this.slug + '/import_relation_data/'+ className + '/' + relationName;
+    return AJAX.post(path, body);
   }
 
   exportData() {
@@ -528,16 +513,6 @@ export default class ParseApp {
     }
     let path = '/apps/' + this.slug + '/export_data';
     return AJAX.put(path, { name: className, where: where });
-  }
-
-  getImportProgress() {
-    let path = '/apps/' + this.slug + '/import_progress';
-    return AJAX.get(path);
-  }
-
-  getImportRelationProgress() {
-    let path = '/apps/' + this.slug + '/import_relation_progress';
-    return AJAX.get(path);
   }
 
   getExportProgress() {

@@ -5,7 +5,6 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import * as AJAX from 'lib/AJAX';
 import React    from 'react';
 import ParseApp from 'lib/ParseApp';
 import Modal    from 'components/Modal/Modal.react';
@@ -18,89 +17,67 @@ export default class ImportRelationDialog extends React.Component {
   constructor() {
       super();
       this.state = {
-        progress: undefined,
-        relationName: undefined,
+        confirmation: '',
+        relationName: '',
         file: undefined
       };
   }
 
   valid() {
-    if (this.state.relationName != undefined && this.state.relationName != '' && this.state.file != undefined) {
+    if (this.state.confirmation === this.props.className && this.state.relationName != '' && this.state.file != undefined) {
         return true;
     }
     return false;
   }
 
-  componentWillMount() {
-      this.context.currentApp.getImportRelationProgress().then((progress) => {
-      this.setState({ progress });
-    });
-  }
-
-  inProgress() {
-    if (this.state.progress === undefined) {
-      return false;
-    }
-    let found = false;
-    if (Array.isArray(this.state.progress)) {
-      this.state.progress.forEach((obj) => {
-        if (obj.id === this.props.relationName) {
-          found = true;
-        }
-      });
-    }
-    return found;
-  }
-
-  importRelationFile(){
-    let className = this.state.relationName;
-    let file = this.state.file;
-    //console.log(this.state.file.name);
-    //let body = file;
-    let path = 'http://www.parseapi.com/import/' + className;
-    let promise = AJAX.post(path, file);
-    promise.then(() => {
-      console.log('success');
-    }).then(() => {
-      console.log('failure');
-    });
-    return promise;
-  }
-
   render() {
-    let inProgress = this.inProgress();
     return (
       <Modal
         type={Modal.Types.INFO}
         icon='down-outline'
         iconSize={40}
-        title='Import a relation to this class'
-        subtitle={`We'll send you an email when your data is ready.`}
+        title='Import a relation'
+        subtitle='Select a JSON file to import to this class.'
         confirmText='Import'
         cancelText='Cancel'
         disabled={!this.valid()}
         buttonsInCenter={true}
         onCancel={this.props.onCancel}
-        onConfirm={this.props.onConfirm ? this.importRelationFile() : null}>
-        {inProgress ?
-          <div style={{ padding: 20 }}>You are currently importing a relation to this class.</div> : null}
-
+        onConfirm={() => {
+            this.props.onConfirm(this.state.confirmation, this.state.relationName, this.state.file);
+            location.reload();
+        }}>
 
         <Field
               label={
                   <Label
-              text='Confirm this action'
-              description='Enter the relation name to continue' />
-            }
+                      text='Confirm this action'
+                      description='Enter the current class name to continue' />
+              }
               input={
                   <TextInput
-              placeholder='Relation name'
-              value={this.state.relationName}
-              onChange={(relationName) => this.setState({ relationName: relationName })} />
-            } />
+                      placeholder='Class name'
+                      value={this.state.confirmation}
+                      onChange={(confirmation) => this.setState({ confirmation: confirmation })} />
+              } />
+          <Field
+              label={
+                  <Label
+                      text='Enter the relation name' />
+              }
+              input={
+                  <TextInput
+                      placeholder='Relation name'
+                      value={this.state.relationName}
+                      onChange={(relationName) => this.setState({ relationName: relationName })} />
+              } />
         <Field
-            label={<Label text='Select a relation file' />}
-            input={<FileInput onChange={(file) => {this.setState({ file: file });}} />}
+            label={
+                <Label
+                    text='Select a relation file' />}
+            input={
+                <FileInput
+                    onChange={(file) => {this.setState({ file: file });}} />}
         />
 
       </Modal>

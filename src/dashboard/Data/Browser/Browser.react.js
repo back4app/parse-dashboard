@@ -209,15 +209,41 @@ export default class Browser extends DashboardView {
   }
 
   importClass(className, file) {
-    this.context.currentApp.importData(className, file).always(() => {
+    var body;
+    var promise = new Promise((resolve, reject) => {
+      var read = new FileReader();
+      read.onload = function (event) {
+        body = (this.result);
+        resolve(body);
+      };
+      read.readAsText(file);
+    }).then((body) => {
+      this.context.currentApp.importData(className, body);
+    }).catch(function (error) {
+      console.log(error);
+    }).then(() => {
       this.setState({ showImportDialog: false });
-  });
+    });
+    return promise;
   }
 
-  importRelation(className) {
-    this.context.currentApp.importRelation(className).always(() => {
+  importRelation(className, relationName, file) {
+    var body;
+    var promise = new Promise((resolve, reject) => {
+      var read = new FileReader();
+      read.onload = function (event) {
+        body = (this.result);
+        resolve(body);
+      };
+      read.readAsText(file);
+    }).then((body) => {
+      this.context.currentApp.importRelation(className, relationName, body);
+    }).catch(function (error) {
+      console.log(error);
+    }).then(() => {
       this.setState({ showImportRelationDialog: false });
-  });
+    });
+    return promise;
   }
 
   exportClass(className) {
@@ -691,7 +717,7 @@ export default class Browser extends DashboardView {
           <ImportRelationDialog
               className={className}
               onCancel={() => this.setState({ showImportRelationDialog: false })}
-              onConfirm={() => this.importRelation(className)} />
+              onConfirm={(className, relationName, file) => this.importRelation(className, relationName, file)} />
       );
     } else if (this.state.showExportDialog) {
       extras = (
