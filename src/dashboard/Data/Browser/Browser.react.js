@@ -237,7 +237,7 @@ export default class Browser extends DashboardView {
       };
       read.readAsText(file);
     }).then((body) => {
-      this.context.currentApp.importRelation(className, relationName, body);
+      this.context.currentApp.importRelationData(className, relationName, body);
     }).catch(function (error) {
       console.log(error);
     }).then(() => {
