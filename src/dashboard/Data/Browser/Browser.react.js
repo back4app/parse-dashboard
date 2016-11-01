@@ -15,6 +15,8 @@ import { DefaultColumns, SpecialClasses } from 'lib/Constants';
 import DeleteRowsDialog                   from 'dashboard/Data/Browser/DeleteRowsDialog.react';
 import DropClassDialog                    from 'dashboard/Data/Browser/DropClassDialog.react';
 import EmptyState                         from 'components/EmptyState/EmptyState.react';
+import ImportDialog                       from 'dashboard/Data/Browser/ImportDialog.react';
+import ImportRelationDialog               from 'dashboard/Data/Browser/ImportRelationDialog.react';
 import ExportDialog                       from 'dashboard/Data/Browser/ExportDialog.react';
 import history                            from 'dashboard/history';
 import { List, Map }                      from 'immutable';
@@ -43,6 +45,8 @@ export default class Browser extends DashboardView {
       showAddColumnDialog: false,
       showRemoveColumnDialog: false,
       showDropClassDialog: false,
+      showImportDialog: false,
+      showImportRelationDialog: false,
       showExportDialog: false,
       rowsToDelete: null,
 
@@ -169,6 +173,14 @@ export default class Browser extends DashboardView {
     this.setState({ showDropClassDialog: true });
   }
 
+  showImport() {
+    this.setState({ showImportDialog: true });
+  }
+
+  showImportRelation() {
+    this.setState({ showImportRelationDialog: true });
+  }
+
   showExport() {
     this.setState({ showExportDialog: true });
   }
@@ -194,6 +206,44 @@ export default class Browser extends DashboardView {
       }
       this.setState({ lastError: msg });
     });
+  }
+
+  importClass(className, file) {
+    var body;
+    var promise = new Promise((resolve, reject) => {
+      var read = new FileReader();
+      read.onload = function (event) {
+        body = (this.result);
+        resolve(body);
+      };
+      read.readAsText(file);
+    }).then((body) => {
+      this.context.currentApp.importData(className, body);
+    }).catch(function (error) {
+      console.log(error);
+    }).then(() => {
+      this.setState({ showImportDialog: false });
+    });
+    return promise;
+  }
+
+  importRelation(className, relationName, file) {
+    var body;
+    var promise = new Promise((resolve, reject) => {
+      var read = new FileReader();
+      read.onload = function (event) {
+        body = (this.result);
+        resolve(body);
+      };
+      read.readAsText(file);
+    }).then((body) => {
+      this.context.currentApp.importRelationData(className, relationName, body);
+    }).catch(function (error) {
+      console.log(error);
+    }).then(() => {
+      this.setState({ showImportRelationDialog: false });
+    });
+    return promise;
   }
 
   exportClass(className) {
@@ -471,6 +521,8 @@ export default class Browser extends DashboardView {
       this.state.showAddColumnDialog ||
       this.state.showRemoveColumnDialog ||
       this.state.showDropClassDialog ||
+      this.state.showImportDialog ||
+      this.state.showImportRelationDialog ||
       this.state.showExportDialog ||
       this.state.rowsToDelete
     );
@@ -564,6 +616,8 @@ export default class Browser extends DashboardView {
             onRemoveColumn={this.showRemoveColumn.bind(this)}
             onDeleteRows={this.showDeleteRows.bind(this)}
             onDropClass={this.showDropClass.bind(this)}
+            onImport={this.showImport.bind(this)}
+            onImportRelation={this.showImportRelation.bind(this)}
             onExport={this.showExport.bind(this)}
             onChangeCLP={clp => {
               let p = this.props.schema.dispatch(ActionTypes.SET_CLP, {
@@ -651,12 +705,26 @@ export default class Browser extends DashboardView {
           })}
           onConfirm={() => this.dropClass(className)} />
       );
+    } else if (this.state.showImportDialog) {
+      extras = (
+          <ImportDialog
+              className={className}
+              onCancel={() => this.setState({ showImportDialog: false })}
+              onConfirm={(className, file) => this.importClass(className, file)} />
+      );
+    } else if (this.state.showImportRelationDialog) {
+      extras = (
+          <ImportRelationDialog
+              className={className}
+              onCancel={() => this.setState({ showImportRelationDialog: false })}
+              onConfirm={(className, relationName, file) => this.importRelation(className, relationName, file)} />
+      );
     } else if (this.state.showExportDialog) {
       extras = (
-        <ExportDialog
-          className={className}
-          onCancel={() => this.setState({ showExportDialog: false })}
-          onConfirm={() => this.exportClass(className)} />
+          <ExportDialog
+              className={className}
+              onCancel={() => this.setState({ showExportDialog: false })}
+             onConfirm={() => this.exportClass(className)} />
       );
     }
     return (

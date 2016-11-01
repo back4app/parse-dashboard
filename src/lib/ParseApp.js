@@ -340,6 +340,16 @@ export default class ParseApp {
     return AJAX.put(path);
   }
 
+  importData(className, body) {
+    let path = '/apps/' + this.slug + '/import_data/' + className;
+    return AJAX.post(path, body);
+  }
+
+  importRelationData(className, relationName,  body) {
+    let path = '/apps/' + this.slug + '/import_relation_data/'+ className + '/' + relationName;
+    return AJAX.post(path, body);
+  }
+
   exportData() {
     let path = '/apps/' + this.slug + '/export_data';
     return AJAX.put(path);
