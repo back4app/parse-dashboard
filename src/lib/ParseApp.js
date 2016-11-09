@@ -256,7 +256,7 @@ export default class ParseApp {
   getAnalyticsTimeSeries(query) {
     let path = '/apps/' + this.slug + '/analytics?' + encodeFormData(null, query);
     let { promise, xhr } = AJAX.abortableGet(path);
-    promise = promise.then(({ requested_data }) => requested_data);
+    promise = promise.then(( requested_data ) => requested_data);
     return { promise, xhr };
   }
 
@@ -322,9 +322,9 @@ export default class ParseApp {
 
   fetchSettingsFields() {
     // Cache it for a minute
-    if (new Date() - this.settings.lastFetched < 60000) {
-      return Parse.Promise.as(this.settings.fields);
-    }
+    // if (new Date() - this.settings.lastFetched < 60000) {
+    //   return Parse.Promise.as(this.settings.fields);
+    // }
     let path = '/apps/' + this.slug + '/dashboard_ajax/settings';
     return AJAX.get(path).then((fields) => {
       for (let f in fields) {
@@ -428,6 +428,7 @@ export default class ParseApp {
   }
 
   removeCollaboratorById(id) {
+    console.log(id);
     let path = '/apps/' + this.slug + '/collaborations/' + id.toString();
     let promise = AJAX.del(path)
     promise.then(() => {
@@ -446,12 +447,16 @@ export default class ParseApp {
       //TODO: this currently works because everything that uses collaborators
       // happens to re-render after this call anyway, but really the collaborators
       // should be updated properly in a store or AppsManager or something
+      this.settings.fields.fields.collaborators = 
+        Array.isArray(this.settings.fields.fields.collaborators) ?
+          this.settings.fields.fields.collaborators : [];
       this.settings.fields.fields.collaborators.unshift(data);
     });
     return promise;
   }
 
   setRequestLimit(limit) {
+    console.log(limit);
     let path = '/plans/' + this.slug + '?new_limit=' + limit.toString();
     let promise = AJAX.put(path);
     promise.then(() => {
