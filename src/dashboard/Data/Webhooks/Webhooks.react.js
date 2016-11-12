@@ -230,7 +230,7 @@ export default class Webhooks extends TableView {
 	}
 
 	renderRow(hook) {
-		if (hook.herokuAppId) {
+		/* if (hook.herokuAppId) {
 			let openHerokuApp = () => {window.open('https://dashboard.heroku.com/apps/' + (hook.herokuAppName || hook.herokuAppId), '_blank')};
 			return <tr
 				onClick={openHerokuApp}
@@ -241,7 +241,7 @@ export default class Webhooks extends TableView {
 				<td style={{ cursor: 'pointer' }} width={'40%'}><Icon name='heroku' fill='#343445' width={20} height={20}/> {hook.herokuAppName || hook.herokuAppId}</td>
 				<td width={'10%'}>{hook.deleted ? <TableWarning text='Deleted' /> : null}</td>
 			</tr>;
-		}
+		} */
 		let showEdit = hook.url ? () => {
 			this.setState({
 				hookType: hook.functionName ? 'function' : hook.triggerName,

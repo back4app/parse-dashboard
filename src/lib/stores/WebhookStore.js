@@ -34,7 +34,7 @@ function WebhookStore(state, action) {
         {},
         { useMasterKey: true }
       );
-      let herokuAppsPromise = get('/apps/' + action.app.slug + '/cloud_code/heroku_link').then(({ herokuApps }) => {
+      /* let herokuAppsPromise = get('/apps/' + action.app.slug + '/cloud_code/heroku_link').then(({ herokuApps }) => {
         herokuApps = herokuApps ? herokuApps : [];
         let appNamePromises = herokuApps.map(herokuApp => {
           return getHerokuAppName('https://api.heroku.com/apps/' + herokuApp.herokuAppId).then(({ name })  => {
@@ -46,13 +46,13 @@ function WebhookStore(state, action) {
           });
         })
         return Parse.Promise.when(appNamePromises).always(() => Parse.Promise.as(herokuApps));
-      });
-      return Parse.Promise.when(functionsPromise, triggersPromise, herokuAppsPromise).then((
-        { results: functions },
-        { results: triggers },
-        herokuApps
+      }); */
+      return Parse.Promise.when(functionsPromise, triggersPromise/* , herokuAppsPromise */).then((
+        functions,
+        triggers/* ,
+        herokuApps */
       ) => {
-        return Map({ lastFetch: new Date(), webhooks: List(functions.concat(triggers).concat(herokuApps))});
+        return Map({ lastFetch: new Date(), webhooks: List(functions.concat(triggers)/* .concat(herokuApps) */)});
       });
     case ActionTypes.CREATE:
       let addHookToStore = hook => state.set('webhooks', state.get('webhooks').push(hook));
