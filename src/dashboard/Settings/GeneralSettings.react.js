@@ -288,6 +288,7 @@ export default class GeneralSettings extends DashboardView {
   }
 
   renderContent() {
+    console.log(this.props)
     if (!this.props.initialFields) {
       return <Toolbar section='Settings' subsection='General' />
     }
