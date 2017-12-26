@@ -7,7 +7,8 @@
  */
 import Parse              from 'parse';
 import ParseApp           from 'lib/ParseApp';
-import { post, del } from 'lib/AJAX';
+import { get, post, del } from 'lib/AJAX';
+import { unescape }       from 'lib/StringEscaping';
 
 let appsStore = [];
 
@@ -111,7 +112,7 @@ const AppsManager = {
     }
 
     let promise = post('/apps/' + slug + '/transfer', payload);
-    promise.then(() => {
+    promise.then((response) => {
       //TODO modify appsStore to reflect transfer
     });
     return promise;

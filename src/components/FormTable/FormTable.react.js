@@ -9,6 +9,8 @@ import PropTypes from 'lib/PropTypes';
 import React from 'react';
 import styles from 'components/FormTable/FormTable.scss';
 
+const MONTH_IN_MS = 1000 * 60 * 60 * 24 * 30;
+
 let Row = ({
   title,
   notes = [],

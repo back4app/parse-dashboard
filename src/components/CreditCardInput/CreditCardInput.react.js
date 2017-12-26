@@ -27,6 +27,7 @@ class CreditCardInput extends React.Component {
   render() {
     let { value, lastFour, onChange } = this.props
     let prefilled = false;
+    let content = '';
     if (value == null && lastFour) {
       prefilled = true;
       value = `\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ${lastFour}`;
@@ -36,7 +37,7 @@ class CreditCardInput extends React.Component {
         type='text'
         className={styles.input}
         value={value}
-        onFocus={ () => {
+        onFocus={e => {
           if (prefilled) {
             onChange('');
           }
@@ -53,7 +54,7 @@ class CreditCardInput extends React.Component {
         }} />
     );
   }
-}
+};
 
 export default CreditCardInput;
 

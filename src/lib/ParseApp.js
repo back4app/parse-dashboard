@@ -39,7 +39,6 @@ export default class ParseApp {
     serverInfo,
     production,
     iconName,
-    supportedPushLocales,
     feedbackEmail
   }) {
     this.name = appName;
@@ -62,7 +61,6 @@ export default class ParseApp {
     this.serverURL = serverURL;
     this.serverInfo = serverInfo;
     this.icon = iconName;
-    this.supportedPushLocales = supportedPushLocales;
 
     this.settings = {
       fields: {},
@@ -310,6 +308,7 @@ export default class ParseApp {
   }
 
   saveSettingsFields(fields) {
+    console.log('saveSettingsFields');
     let path = '/apps/' + this.slug;
     let appFields = {};
     for (let f in fields) {
@@ -331,6 +330,7 @@ export default class ParseApp {
     // }
     let path = '/apps/' + this.slug + '/dashboard_ajax/settings';
     return AJAX.get(path).then((fields) => {
+      console.log('fetchSettingsFields AJAX.get fields', fields);
       for (let f in fields) {
         this.settings.fields[f] = fields[f];
         this.settings.lastFetched = new Date();
@@ -476,6 +476,7 @@ export default class ParseApp {
   }
 
   removeCollaboratorById(id) {
+    console.log(id);
     let path = '/apps/' + this.slug + '/collaborations/' + id.toString();
     let promise = AJAX.del(path)
     promise.then(() => {
@@ -503,6 +504,7 @@ export default class ParseApp {
   }
 
   setRequestLimit(limit) {
+    console.log(limit);
     let path = '/plans/' + this.slug + '?new_limit=' + limit.toString();
     let promise = AJAX.put(path);
     promise.then(() => {
@@ -561,8 +563,8 @@ export default class ParseApp {
   }
 
   getAvailableJobs() {
-    let path = 'cloud_code/jobs';
-    return this.apiRequest('GET', path, {}, {useMasterKey:true});
+    let path = '/apps/' + this.slug + '/cloud_code/jobs/data';
+    return Parse._request('GET', path);
   }
 
   getJobStatus() {

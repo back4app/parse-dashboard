@@ -31,7 +31,7 @@ function checkIfIconsExistForApps(apps, iconsFolder) {
     var iconName = currentApp.iconName;
     var path = iconsFolder + "/" + iconName;
 
-    fs.stat(path, function(err) {
+    fs.stat(path, function(err, stat) {
       if (err) {
           if ('ENOENT' == err.code) {// file does not exist
               console.warn("Icon with file name: " + iconName +" couldn't be found in icons folder!");
@@ -46,8 +46,7 @@ function checkIfIconsExistForApps(apps, iconsFolder) {
   }
 }
 
-module.exports = function(config, options) {
-  options = options || {};
+module.exports = function(config, allowInsecureHTTP) {
   var app = express();
   // Serve public files.
   app.use(express.static(path.join(__dirname,'public')));
@@ -63,7 +62,7 @@ module.exports = function(config, options) {
     const users = config.users;
     const useEncryptedPasswords = config.useEncryptedPasswords ? true : false;
     const authInstance = new Authentication(users, useEncryptedPasswords, mountPath);
-    authInstance.initialize(app, { cookieSessionSecret: options.cookieSessionSecret });
+    authInstance.initialize(app);
 
     // CSRF error handler
     app.use(function (err, req, res, next) {
@@ -76,9 +75,8 @@ module.exports = function(config, options) {
 
     // Serve the configuration.
     app.get('/parse-dashboard-config.json', function(req, res) {
-      let apps = config.apps.map((app) => Object.assign({}, app)); // make a copy
       let response = {
-        apps: apps,
+        apps: config.apps,
         newFeaturesInLatestVersion: newFeaturesInLatestVersion,
       };
 
@@ -88,7 +86,7 @@ module.exports = function(config, options) {
         req.connection.remoteAddress === '127.0.0.1' ||
         req.connection.remoteAddress === '::ffff:127.0.0.1' ||
         req.connection.remoteAddress === '::1';
-      if (!requestIsLocal && !req.secure && !options.allowInsecureHTTP) {
+      if (!requestIsLocal && !req.secure && !allowInsecureHTTP) {
         //Disallow HTTP requests except on localhost, to prevent the master key from being transmitted in cleartext
         return res.send({ success: false, error: 'Parse Dashboard can only be remotely accessed via HTTPS' });
       }
@@ -102,17 +100,6 @@ module.exports = function(config, options) {
 
       const successfulAuth = authentication && authentication.isAuthenticated;
       const appsUserHasAccess = authentication && authentication.appsUserHasAccessTo;
-      const isReadOnly = authentication && authentication.isReadOnly;
-      // User is full read-only, replace the masterKey by the read-only one
-      if (isReadOnly) {
-        response.apps = response.apps.map((app) => {
-          app.masterKey = app.readOnlyMasterKey;
-          if (!app.masterKey) {
-            throw new Error('You need to provide a readOnlyMasterKey to use read-only features.');
-          }
-          return app;
-        });
-      }
 
       if (successfulAuth) {
         if (appsUserHasAccess) {
@@ -120,11 +107,7 @@ module.exports = function(config, options) {
           // If they didn't supply any app id, user will access all apps
           response.apps = response.apps.filter(function (app) {
             return appsUserHasAccess.find(appUserHasAccess => {
-              const isSame = app.appId === appUserHasAccess.appId;
-              if (isSame && appUserHasAccess.readOnly) {
-                app.masterKey = app.readOnlyMasterKey;
-              }
-              return isSame;
+              return app.appId == appUserHasAccess.appId
             })
           });
         }

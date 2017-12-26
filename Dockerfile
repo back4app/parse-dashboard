@@ -1,5 +1,4 @@
-FROM node:argon-slim
-ENV NPM_CONFIG_LOGLEVEL error
+FROM node:4.4.2
 WORKDIR /src
 ADD . /src
 RUN cd /src \

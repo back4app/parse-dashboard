@@ -39,7 +39,7 @@ export default class PushSettings extends DashboardView {
     window.open(`${getSiteDomain()}/apps/` + this.context.currentApp.slug + '/edit#push', '_blank');
   }
 
-  renderForm({fields, setField}) {
+  renderForm({changes, fields, setField, resetFields}) {
     let pushSettingsFields = <Fieldset
       legend='Push Notification Settings'
       description='Secure push notifications for your app.'>
@@ -158,7 +158,7 @@ export default class PushSettings extends DashboardView {
     return <FlowView
       initialFields={initialFields}
       footerContents={({ changes }) => renderFlowFooterChanges(changes, initialFields, pushFieldOptions)}
-      onSubmit={({ changes }) => {
+      onSubmit={({ changes, resetFields }) => {
         let promiseList = [];
         if (changes.enableClientPush !== undefined) {
           promiseList.push(this.context.currentApp.setEnableClientPush(changes.enableClientPush));

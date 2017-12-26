@@ -11,7 +11,7 @@ import React     from 'react';
 import styles    from 'components/CascadingView/CascadingView.scss';
 
 export default class CascadingView extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       expanded: false

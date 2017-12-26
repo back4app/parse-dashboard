@@ -14,6 +14,7 @@ import EmptyState         from 'components/EmptyState/EmptyState.react';
 import history            from 'dashboard/history';
 import LoaderContainer    from 'components/LoaderContainer/LoaderContainer.react';
 import LoaderDots         from 'components/LoaderDots/LoaderDots.react';
+import pluralize          from 'lib/pluralize';
 import React              from 'react';
 import SidebarAction      from 'components/Sidebar/SidebarAction';
 import StatusIndicator    from 'components/StatusIndicator/StatusIndicator.react';
@@ -21,6 +22,7 @@ import styles             from './PushIndex.scss';
 import stylesTable        from 'dashboard/TableView.scss';
 import TableHeader        from 'components/Table/TableHeader.react';
 import Toolbar            from 'components/Toolbar/Toolbar.react';
+import { SpecialPushes }  from 'lib/Constants';
 
 const PUSH_TYPE_ALL = 'all';
 const PUSH_TYPE_CAMPAIGN = 'campaign';
@@ -36,13 +38,11 @@ const PUSH_CATEGORIES = {
   // api: 'sent via API'
 };
 
-/* eslint-disable no-unused-vars */
 const PUSH_TYPES = {
   campaign: PUSH_TYPE_CAMPAIGN,
   experiment: PUSH_TYPE_EXPERIMENT,
   api: PUSH_TYPE_API,
 };
-/* eslint-enable */
 
 const PUSH_STATUS_COLOR = {
   succeeded: 'green',
@@ -83,6 +83,7 @@ let getPushStatusType = (pushData) => {
 
 let isChannelTargeted = (pushData) => {
   let query = pushData[PushConstants.QUERY_FIELD];
+  let channelClause = false;
   if(!query) {
     return false;
   }
@@ -123,6 +124,15 @@ let getPushTarget = (pushData, availableDevices) => {
   return 'Everyone';
 }
 
+
+let whereHash = (pushData) => {
+  let query = pushData[PushConstants.QUERY_FIELD];
+  if(query) {
+    return JSON.parse(query);
+  }
+  return null;
+}
+
 let getPushName = (pushData) => {
   let title = pushData[PushConstants.TITLE_FIELD];
   if(title){
@@ -133,12 +143,10 @@ let getPushName = (pushData) => {
     let payload = pushData[PushConstants.PAYLOAD_FIELD] || '';
     try {
       payload = JSON.parse(payload);
-    } catch(e) {/**/}
+    } catch(e) { }
     if (typeof payload === 'object') {
       if (typeof payload.alert === 'string') {
         return payload.alert;
-			} else if (typeof payload.alert === 'object' && payload.alert.title !== undefined) {
-				return payload.alert.title;
       }
       return payload.alert ? JSON.stringify(payload.alert) : JSON.stringify(payload);
     } else {
@@ -219,7 +227,7 @@ let getPushTime = (pushTime, updatedAt) => {
     result.push(
       <div key='localTime' className={styles.localTimeLabel}>LOCAL TIME</div>
     );
-  }
+  };
   result.push(
      <div key='timeContent'>{timeContent}</div>
   );
@@ -269,7 +277,7 @@ export default class PushIndex extends DashboardView {
       this.setState({
         availableDevices: available_devices
       });
-    }, () => {
+    }, (error) => {
       this.setState({
         availableDevices: PushConstants.DEFAULT_DEVICES
       });
@@ -400,7 +408,7 @@ export default class PushIndex extends DashboardView {
         description={emptyStateContent[type].description}
         icon='push-solid'
         cta={emptyStateContent[type].cta}
-        action={'http://docs.parseplatform.org/ios/guide/#push-notifications'} />
+        action={'https://www.parse.com/docs/push_guide'} />
     );
   }
 

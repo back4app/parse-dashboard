@@ -31,7 +31,7 @@ export default class ExplorerMenuButton extends React.Component {
   }
 
   toggle() {
-    this.setState(() => {
+    this.setState((state) => {
       if (this.state.currentView) {
         return { currentView: null };
       }

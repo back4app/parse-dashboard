@@ -8,6 +8,7 @@
 import CreditCardInput from 'components/CreditCardInput/CreditCardInput.react';
 import React           from 'react';
 import Field           from 'components/Field/Field.react';
+import Fieldset        from 'components/Fieldset/Fieldset.react';
 import Label           from 'components/Label/Label.react';
 
 class Demo extends React.Component {

@@ -50,17 +50,13 @@ export default class StringEditor extends React.Component {
   render() {
     let onChange = this.props.readonly ? () => {} : (e) => this.setState({ value: e.target.value });
     if (this.props.multiline) {
-      var style = { minWidth: this.props.minWidth };
-      if (this.props.resizable) {
-        style.resize = 'both';
-      }
       return (
         <div className={styles.editor}>
           <textarea
             ref='input'
             value={this.state.value}
             onChange={onChange}
-            style={style} />
+            style={{ minWidth: this.props.minWidth }} />
         </div>
       );
     }

@@ -9,6 +9,7 @@ import DashboardView   from 'dashboard/DashboardView.react';
 import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
 import React           from 'react';
 import styles          from 'dashboard/TableView.scss';
+import Toolbar         from 'components/Toolbar/Toolbar.react';
 
 export default class TableView extends DashboardView {
   columnWidths(keys) {
@@ -21,14 +22,9 @@ export default class TableView extends DashboardView {
     return widths;
   }
 
-  renderFooter() {
-    return null;
-  }
-
   renderContent() {
     let toolbar = this.renderToolbar();
     let data = this.tableData();
-    let footer = this.renderFooter();
     let content = null;
     let headers = null;
     if (data !== undefined) {
@@ -45,7 +41,6 @@ export default class TableView extends DashboardView {
                   {data.map((row) => this.renderRow(row))}
                 </tbody>
               </table>
-              {footer}
             </div>
           );
           headers = this.renderHeaders();

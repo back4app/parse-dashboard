@@ -3,6 +3,7 @@ import FormModal from 'components/FormModal/FormModal.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
+import Parse from 'parse';
 
 export default class AttachRowsDialog extends React.Component {
   constructor(props) {
@@ -31,7 +32,8 @@ export default class AttachRowsDialog extends React.Component {
 
   render() {
     const {
-      relation
+      relation,
+      onCancel,
     } = this.props;
     return (
       <FormModal

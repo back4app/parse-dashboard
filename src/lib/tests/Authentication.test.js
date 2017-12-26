@@ -10,11 +10,6 @@ jest.dontMock('bcryptjs');
 
 const Authentication = require('../../../Parse-Dashboard/Authentication');
 const apps = [{appId: 'test123'}, {appId: 'test789'}];
-const readOnlyApps = apps.map((app) => { 
-  app.readOnly = true;
-  return app;
-});
-
 const unencryptedUsers = [
   {
     user: 'parse.dashboard',
@@ -24,16 +19,6 @@ const unencryptedUsers = [
     user: 'parse.apps',
     pass: 'xyz789',
     apps: apps
-  },
-  {
-    user: 'parse.readonly',
-    pass: 'abc123',
-    readOnly: true,
-  },
-  {
-    user: 'parse.readonly.apps',
-    pass: 'abc123',
-    apps: readOnlyApps,
   }
 ];
 const encryptedUsers = [
@@ -48,13 +33,11 @@ const encryptedUsers = [
   }
 ]
 
-function createAuthenticationResult(isAuthenticated, matchingUsername, appsUserHasAccessTo, isReadOnly) {
-  isReadOnly = !!isReadOnly;
+function createAuthenticationResult(isAuthenticated, matchingUsername, appsUserHasAccessTo) {
   return {
     isAuthenticated,
     matchingUsername,
-    appsUserHasAccessTo,
-    isReadOnly
+    appsUserHasAccessTo
   }
 }
 
@@ -123,17 +106,5 @@ describe('Authentication', () => {
     let authentication = new Authentication(encryptedUsers, true);
     expect(authentication.authenticate({name: 'parse.dashboard'}, true))
       .toEqual(createAuthenticationResult(true, 'parse.dashboard', null));
-  });
-
-  it('makes readOnly auth when specified', () => {
-    let authentication = new Authentication(unencryptedUsers, false);
-    expect(authentication.authenticate({name: 'parse.readonly', pass: 'abc123'}))
-      .toEqual(createAuthenticationResult(true, 'parse.readonly', null, true));
-  });
-
-  it('makes readOnly auth when specified in apps', () => {
-    let authentication = new Authentication(unencryptedUsers, false);
-    expect(authentication.authenticate({name: 'parse.readonly.apps', pass: 'abc123'}))
-      .toEqual(createAuthenticationResult(true, 'parse.readonly.apps', readOnlyApps, false));
   });
 });
