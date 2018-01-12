@@ -8,6 +8,7 @@
 import { ActionTypes } from 'lib/stores/JobsStore';
 import history         from 'dashboard/history';
 import JobsForm        from 'dashboard/Data/Jobs/JobsForm.react';
+import Parse           from 'parse';
 import ParseApp        from 'lib/ParseApp';
 import React           from 'react';
 import subscribeTo     from 'lib/subscribeTo';

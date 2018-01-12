@@ -12,10 +12,7 @@ import SidebarAction                      from 'components/Sidebar/SidebarAction
 import subscribeTo                        from 'lib/subscribeTo';
 import Toolbar                            from 'components/Toolbar/Toolbar.react';
 import { ActionTypes }                    from 'lib/stores/SchemaStore';
-import { SpecialClasses }                 from 'lib/Constants';
-import stringCompare                      from 'lib/stringCompare';
-import prettyNumber                       from 'lib/prettyNumber';
-
+import { DefaultColumns, SpecialClasses } from 'lib/Constants';
 
 @subscribeTo('Schema', 'schema')
 export default class Browser extends DashboardView {

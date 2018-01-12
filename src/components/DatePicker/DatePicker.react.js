@@ -10,6 +10,7 @@ import { Directions } from 'lib/Constants';
 import { MONTHS }     from 'lib/DateUtils';
 import Popover        from 'components/Popover/Popover.react';
 import Position       from 'lib/Position';
+import PropTypes      from 'lib/PropTypes';
 import React          from 'react';
 import ReactDOM       from 'react-dom';
 import SliderWrap     from 'components/SliderWrap/SliderWrap.react';
@@ -29,7 +30,7 @@ export default class DatePicker extends React.Component {
   }
 
   toggle() {
-    this.setState(() => {
+    this.setState((state) => {
       if (this.state.open) {
         return { open: false };
       }

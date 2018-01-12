@@ -22,7 +22,7 @@ export default class ChromeDropdown extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextContext) {
     this.keyValueMap = {};
     nextProps.options.forEach((value) => {
       if (value instanceof Object) {

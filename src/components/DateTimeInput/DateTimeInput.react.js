@@ -14,7 +14,7 @@ import ReactDOM                      from 'react-dom';
 import styles                        from 'components/DateTimeInput/DateTimeInput.scss';
 
 export default class DateTimeInput extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
 
     this.state = {
@@ -28,7 +28,7 @@ export default class DateTimeInput extends React.Component {
   }
 
   toggle() {
-    this.setState(() => {
+    this.setState((state) => {
       if (this.state.open) {
         return { open: false };
       }

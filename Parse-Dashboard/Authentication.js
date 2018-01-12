@@ -17,8 +17,7 @@ function Authentication(validUsers, useEncryptedPasswords, mountPath) {
   this.mountPath = mountPath;
 }
 
-function initialize(app, options) {
-  options = options || {};
+function initialize(app) {
   var self = this;
   passport.use('local', new LocalStrategy(
     function(username, password, cb) {
@@ -44,12 +43,11 @@ function initialize(app, options) {
     cb(null, user);
   });
 
-  var cookieSessionSecret = options.cookieSessionSecret || require('crypto').randomBytes(64).toString('hex');
   app.use(require('connect-flash')());
   app.use(require('body-parser').urlencoded({ extended: true }));
   app.use(require('cookie-session')({
     key    : 'parse_dash',
-    secret : cookieSessionSecret,
+    secret : 'magic',
     cookie : {
       maxAge: (2 * 7 * 24 * 60 * 60 * 1000) // 2 weeks
     }
@@ -79,9 +77,8 @@ function initialize(app, options) {
  * @returns {Object} Object with `isAuthenticated` and `appsUserHasAccessTo` properties
  */
 function authenticate(userToTest, usernameOnly) {
-  let appsUserHasAccessTo = null;
-  let matchingUsername = null;
-  let isReadOnly = false;
+  var appsUserHasAccessTo = null;
+  var matchingUsername = null;
 
   //they provided auth
   let isAuthenticated = userToTest &&
@@ -97,7 +94,6 @@ function authenticate(userToTest, usernameOnly) {
         matchingUsername = user.user;
         // User restricted apps
         appsUserHasAccessTo = user.apps || null;
-        isReadOnly = !!user.readOnly; // make it true/false
       }
 
       return isAuthenticated;
@@ -106,8 +102,7 @@ function authenticate(userToTest, usernameOnly) {
   return {
     isAuthenticated,
     matchingUsername,
-    appsUserHasAccessTo,
-    isReadOnly,
+    appsUserHasAccessTo
   };
 }
 

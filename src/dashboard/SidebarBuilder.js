@@ -7,6 +7,7 @@
  */
 import React          from 'react';
 import Sidebar        from 'components/Sidebar/Sidebar.react';
+import SidebarSubItem from 'components/Sidebar/SidebarSubItem.react';
 
 let accountSidebarSections = [
   {

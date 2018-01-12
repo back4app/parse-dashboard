@@ -66,9 +66,7 @@ const FIELD_TYPE = {
   'Request Type'        : 'String',
   'Class'               : 'String',
   'Event Name'          : 'String',
-  /* eslint-disable no-constant-condition */
   'Dimensions'          : false ? 'JSON' : 'String', //In progress features. Change false to true to work on this feature.
-  /* eslint-enable */
   'Installation ID'     : 'String',
   'Parse User ID'       : 'String',
   'Parse SDK'           : 'String',
@@ -107,10 +105,6 @@ let setFocus = (input) => {
     ReactDOM.findDOMNode(input).focus();
   }
 };
-
-function validateNumeric() {
-  return true;
-}
 
 let fieldView = (type, value, onChangeValue) => {
   let fieldStyle = { width: '32%', marginLeft: '1%', display: 'inline-block' };
@@ -187,7 +181,7 @@ export default class ExplorerQueryComposer extends React.Component {
     return options;
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextContext) {
     let initialState = this.getInitialStateFromProps(nextProps);
     this.setState({ ...initialState });
   }

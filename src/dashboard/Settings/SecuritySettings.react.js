@@ -12,6 +12,7 @@ import Fieldset       from 'components/Fieldset/Fieldset.react';
 import FlowView       from 'components/FlowView/FlowView.react';
 import FormButton     from 'components/FormButton/FormButton.react';
 import FormModal      from 'components/FormModal/FormModal.react';
+import FormNote       from 'components/FormNote/FormNote.react';
 import KeyField       from 'components/KeyField/KeyField.react';
 import Label          from 'components/Label/Label.react';
 import Modal          from 'components/Modal/Modal.react';
@@ -36,7 +37,7 @@ export default class SecuritySettings extends DashboardView {
     };
   }
 
-  renderForm({ fields, setField}) {
+  renderForm({ fields, changes, setField, resetFields}) {
     let currentApp = this.context.currentApp;
     let resetDialog = <FormModal
       title='Reset Master Key'

@@ -31,6 +31,8 @@ function renderAdvancedCheckboxes(rowId, perms, advanced, onChange) {
   let update = perms.get('update').get(rowId) || perms.get('update').get('*');
   let del = perms.get('delete').get(rowId) || perms.get('delete').get('*');
 
+  let add = perms.get('addField').get(rowId) || perms.get('addField').get('*');
+
   if (advanced) {
     return [
       <div key='second' className={[styles.check, styles.second].join(' ')}>
@@ -223,6 +225,7 @@ function renderPointerCheckboxes(rowId, publicPerms, pointerPerms, advanced, onC
 
 export default class PermissionsDialog extends React.Component {
   constructor({
+    enablePointerPermissions = false,
     permissions,
     advanced,
   }) {

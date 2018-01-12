@@ -9,7 +9,9 @@ import Calendar       from 'components/Calendar/Calendar.react';
 import { Directions } from 'lib/Constants';
 import Icon           from 'components/Icon/Icon.react';
 import {
-  monthDayStringUTC
+  monthDayStringUTC,
+  monthsFrom,
+  daysFrom
 }                     from 'lib/DateUtils';
 import Popover        from 'components/Popover/Popover.react';
 import Position       from 'lib/Position';
@@ -19,7 +21,7 @@ import ReactDOM       from 'react-dom';
 import styles         from 'components/ChromeDatePicker/ChromeDatePicker.scss';
 
 export default class ChromeDatePicker extends React.Component {
-  constructor() {
+  constructor(props) {
     super();
 
     this.state = {
@@ -33,7 +35,7 @@ export default class ChromeDatePicker extends React.Component {
   }
 
   toggle() {
-    this.setState(() => {
+    this.setState((state) => {
       if (this.state.open) {
         return { open: false };
       }

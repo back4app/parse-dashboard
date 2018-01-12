@@ -39,7 +39,7 @@ export default class DateRange extends React.Component {
   }
 
   toggle() {
-    this.setState(() => {
+    this.setState((state) => {
       if (this.state.open) {
         return { open: false };
       }

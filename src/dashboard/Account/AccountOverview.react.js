@@ -7,6 +7,7 @@
  */
 import AccountLinkField from 'dashboard/Account/AccountLinkField.react.js'
 import AccountManager          from 'lib/AccountManager';
+import CreditCardInput         from 'components/CreditCardInput/CreditCardInput.react';
 import Field                   from 'components/Field/Field.react';
 import Fieldset                from 'components/Fieldset/Fieldset.react';
 import FlowView                from 'components/FlowView/FlowView.react';
@@ -67,7 +68,7 @@ export default class AccountOverview extends React.Component {
     AccountManager.abortFetch(XHR_KEY);
   }
 
-  renderForm({fields}) {
+  renderForm({changes, fields, setField, resetFields}) {
     let accountInfoFields = <Fieldset
       legend='Account Info'
       description='Update the personal information linked to this account.'>
@@ -371,11 +372,9 @@ export default class AccountOverview extends React.Component {
       footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, accountOverviewFooterSettings)}
       onSubmit={() => {
         let promiseList = [];
-        /* eslint-disable */
         if (changes.cc !== undefined) {
           //TODO change credit card number
         }
-        /* eslint-enable */
         return Parse.Promise.when(promiseList);
       }}
       renderForm={this.renderForm.bind(this)} />;

@@ -5,24 +5,28 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import DashboardView          from 'dashboard/DashboardView.react';
-import DateTimeInput          from 'components/DateTimeInput/DateTimeInput.react';
-import Dropdown               from 'components/Dropdown/Dropdown.react';
-import Field                  from 'components/Field/Field.react';
-import Fieldset               from 'components/Fieldset/Fieldset.react';
-import FlowView               from 'components/FlowView/FlowView.react';
-import IntervalInput          from 'components/IntervalInput/IntervalInput.react';
-import JobScheduleReminder    from 'dashboard/Data/Jobs/JobScheduleReminder.react';
-import Label                  from 'components/Label/Label.react';
-import Option                 from 'components/Dropdown/Option.react';
-import pluralize              from 'lib/pluralize';
-import React                  from 'react';
-import ReleaseInfo            from 'components/ReleaseInfo/ReleaseInfo';
-import styles                 from 'dashboard/Data/Jobs/Jobs.scss';
-import TextInput              from 'components/TextInput/TextInput.react';
-import TimeInput              from 'components/TimeInput/TimeInput.react';
-import Toggle                 from 'components/Toggle/Toggle.react';
-import Toolbar                from 'components/Toolbar/Toolbar.react';
+import Button         from 'components/Button/Button.react';
+import DashboardView  from 'dashboard/DashboardView.react';
+import DateTimeInput  from 'components/DateTimeInput/DateTimeInput.react';
+import Dropdown       from 'components/Dropdown/Dropdown.react';
+import Field          from 'components/Field/Field.react';
+import Fieldset       from 'components/Fieldset/Fieldset.react';
+import FlowFooter     from 'components/FlowFooter/FlowFooter.react';
+import FlowView       from 'components/FlowView/FlowView.react';
+import FormNote       from 'components/FormNote/FormNote.react';
+import IntervalInput  from 'components/IntervalInput/IntervalInput.react';
+import Label          from 'components/Label/Label.react';
+import Option         from 'components/Dropdown/Option.react';
+import pluralize      from 'lib/pluralize';
+import React          from 'react';
+import ReleaseInfo    from 'components/ReleaseInfo/ReleaseInfo';
+import SaveButton     from 'components/SaveButton/SaveButton.react';
+import styles         from 'dashboard/Data/Jobs/Jobs.scss';
+import TextInput      from 'components/TextInput/TextInput.react';
+import TimeInput      from 'components/TimeInput/TimeInput.react';
+import Toggle         from 'components/Toggle/Toggle.react';
+import Toolbar        from 'components/Toolbar/Toolbar.react';
+import { Directions } from 'lib/Constants';
 import { hoursFrom, dateStringUTC }  from 'lib/DateUtils';
 
 export default class JobsForm extends DashboardView {
@@ -133,14 +137,13 @@ export default class JobsForm extends DashboardView {
     return rows;
   }
 
-  renderForm({ fields, setField }) {
+  renderForm({ fields, changes, setField, resetFields }) {
     let jobs = this.props.availableJobs || [];
     if (this.props.initialFields.job) {
       jobs = [this.props.initialFields.job].concat(jobs);
     }
     return (
       <div className={styles.jobsFlow}>
-        <JobScheduleReminder />
         <Fieldset
           legend='Pick a Job'
           description='Choose a job from your cloud code, and specify the parameters to run it with'>
@@ -207,7 +210,7 @@ export default class JobsForm extends DashboardView {
       submitText='Schedule'
       onSubmit={({fields}) => this.props.submitForm(fields)}
       inProgressText={'Scheduling\u2026'}
-      validate={({fields}) => {
+      validate={({changes, fields}) => {
         //Don't even display the footer if they haven't selected a name or function.
         if (!fields.job.length && !fields.description.length) {
           return '';
@@ -229,7 +232,7 @@ export default class JobsForm extends DashboardView {
         }
         return errorMessages.join(' ');
       }}
-      footerContents={({fields}) => {
+      footerContents={({fields, changes}) => {
         let pieces = [];
         pieces.push(<strong>{fields.job}</strong>, ' will run ');
         if (fields.immediate) {

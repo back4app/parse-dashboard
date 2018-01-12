@@ -10,6 +10,7 @@ import React       from 'react';
 import AppSelector from 'dashboard/AppSelector.react';
 import AppsManager from 'lib/AppsManager';
 import history     from 'dashboard/history';
+import html        from 'lib/htmlString';
 import ParseApp    from 'lib/ParseApp';
 
 let AppData = React.createClass({
