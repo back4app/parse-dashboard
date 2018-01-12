@@ -1,5 +1,4 @@
 import React from 'react';
-
 import styles from 'components/back4App/HamburgerButton/HamburgerButton.scss';
 
 export default props => (

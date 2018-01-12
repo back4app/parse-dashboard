@@ -226,12 +226,6 @@ export default class DashboardView extends React.Component {
       });
     }
 
-    appSidebarSections.push({
-      name: 'Server Settings',
-      icon: 'server-settings-icon',
-      link: '/server-settings',
-    });
-
     if (settingsSections.length > 0) {
       appSidebarSections.push({
         name: 'App Settings',

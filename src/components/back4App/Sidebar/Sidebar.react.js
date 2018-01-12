@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+
 import Icon  from 'components/Icon/Icon.react';
+
 import Button from 'components/back4App/Button/Button.react';
+
 import styles from 'components/back4App/Sidebar/Sidebar.scss';
+
 import navData from 'components/back4App/Header/headerNavData.js';
 
 const _renderHeaderMenuItems = items => items.map(({label, pathname, url}, index) => (

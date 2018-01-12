@@ -24,7 +24,6 @@ export default class Header extends React.Component {
       But it was actualy not possible to use the subscribeTo decorator in the Header component 
       before the App was injected in the router. This is a simple temporary solution.
     */
-
     fetch('https://dashboard.back4app.com/me', {
       method: 'GET',
       credentials: 'include'
@@ -46,7 +45,7 @@ export default class Header extends React.Component {
     .then(response => response.json())
     .then(apps => {
       let amountAppsWithExpiredPlans = apps.reduce((accumulator, currentValue, currentIndex, array) => {
-        return accumulator + (currentValue.planCloudColor === 'red' || currentValue.status === 'BLOCKED'  ? 1 : 0);
+        return accumulator + ( currentValue.planCloudColor === 'red' ? 1 : 0 );
       }, 0);
       this.setState({
         amountAppsWithExpiredPlans
@@ -67,11 +66,11 @@ export default class Header extends React.Component {
               }} />
             </div>
           </Media>
-          <a className={styles['logo-face']} href="https://dashboard.back4app.com/apps/#!/admin">
+          <a className={styles['logo-face']} href="http://www.back4app.com/">
             <Icon width={46} height={47} name='back4app-logo-face-blue' fill='#208AEC' />
           </a>
           <Media query="(min-width: 680px)">
-            <a className={styles['logo-text']} href="https://dashboard.back4app.com/apps/#!/admin">
+            <a className={styles['logo-text']} href="http://www.back4app.com/">
               <Icon width={134} height={53} name='back4app-logo-text-blue' fill='#208AEC' />
             </a>
           </Media>

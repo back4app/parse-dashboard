@@ -1,6 +1,5 @@
 import React from 'react';
 import Icon  from 'components/Icon/Icon.react';
-
 import styles from 'components/back4App/Logo/Logo.scss';
 
 export default props => (

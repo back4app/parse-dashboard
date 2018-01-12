@@ -2,7 +2,7 @@
 
 .dropdown {
   display: inline-flex;
-z
+
   .menu {
     border: 0;
     border-radius: 0;
@@ -18,17 +18,15 @@ z
       top: -15px;
       left: 28px;
     }
-    
-    .item { 
-      &:hover {
-        background-color: transparent;
-        color: $light-blue; 
-      }
+
+    .icon-caret {
+      
     }
   }
 
-  &:hover .menu {
+  &:hover .dropdown-menu {
     display: block;
     margin-top: 0px;
   }
+
 }

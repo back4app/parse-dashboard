@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styles from 'components/back4App/Button/Button.scss';
 
 let _renderButton = (props, classes) => (
