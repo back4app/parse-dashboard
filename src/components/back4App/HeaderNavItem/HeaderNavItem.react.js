@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-
 import { Link } from 'react-router';
-
 import NotificationBullet from 'components/back4App/NotificationBullet/NotificationBullet.react';
-
 import styles from 'components/back4App/HeaderNavItem/HeaderNavItem.scss';
 
 export default class HeaderNavItem extends Component {

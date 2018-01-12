@@ -1,11 +1,8 @@
 import React from 'react';
-
 import HeaderNavItem from 'components/back4App/HeaderNavItem/HeaderNavItem.react';
-
 import styles from 'components/back4App/HeaderNav/HeaderNav.scss';
 
 class HeaderNav extends React.Component {
-  
   constructor(props) {
     super(props);
   }
@@ -26,7 +23,6 @@ class HeaderNav extends React.Component {
       </nav>
     );
   }
-
 }
 
 export default HeaderNav;

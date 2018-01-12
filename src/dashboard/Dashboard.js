@@ -55,8 +55,6 @@ import Sidebar            from 'components/back4App/Sidebar/Sidebar.react';
 import ServerSettings     from 'dashboard/ServerSettings/ServerSettings.react';
 import 'whatwg-fetch';
 
-import subscribeTo        from 'lib/subscribeTo';
-
 import {
   Router,
   Route,

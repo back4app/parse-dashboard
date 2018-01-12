@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-
 import Button from 'components/back4App/Button/Button.react.js';
-
 import styles from 'components/back4App/Dropdown/Dropdown.scss';
 
 export default class Dropdown extends Component {
-
   _renderDropdownItems(items) {
     return items.map((item, index) => (
       <a key={index} className={`dropdown-item ${styles.item}`} href={item.url}>{item.label}</a>

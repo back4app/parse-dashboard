@@ -24,6 +24,7 @@ export default class Header extends React.Component {
       But it was actualy not possible to use the subscribeTo decorator in the Header component 
       before the App was injected in the router. This is a simple temporary solution.
     */
+
     fetch('https://dashboard.back4app.com/me', {
       method: 'GET',
       credentials: 'include'

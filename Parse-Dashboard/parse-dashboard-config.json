@@ -1,16 +1,18 @@
 {
-  "apps": [{
-    "serverURL": "https://parseapi.back4app.com",
-    "appId": "oBOvlH33SFEGqD9jNfQcskaihVnSIotV6MzWiAm1",
-    "masterKey": "nRuSvC4meuyL8vh57h8PheAlzxFw9Ry2TsqZOQNk",
-    "appName": "Production App",
-    "feedbackEmail": "andre@back4app.com"
-  },
-  {
-    "serverURL": "https://parseapi.back4app.com",
-    "appId": "ZWr8XdIZFdb1B1yJszCGxlAk7EVJc2Smp0s0rpQR",
-    "masterKey": "vqf5QzfbOvKVKBm9XaqsdXtVDRNmqTvQHJpoVo33",
-    "appName": "Homologation App",
-    "feedbackEmail": "andre@back4app.com"
-  }]
+  "apps": [
+    {
+      "serverURL": "https://parseapi.back4app.com",
+      "appId": "oBOvlH33SFEGqD9jNfQcskaihVnSIotV6MzWiAm1",
+      "masterKey": "nRuSvC4meuyL8vh57h8PheAlzxFw9Ry2TsqZOQNk",
+      "appName": "Production App",
+      "feedbackEmail": "andre@back4app.com"
+    },
+    {
+      "serverURL": "https://parseapi.back4app.com",
+      "appId": "ZWr8XdIZFdb1B1yJszCGxlAk7EVJc2Smp0s0rpQR",
+      "masterKey": "vqf5QzfbOvKVKBm9XaqsdXtVDRNmqTvQHJpoVo33",
+      "appName": "Homologation App",
+      "feedbackEmail": "andre@back4app.com"
+    }
+  ]
 }
