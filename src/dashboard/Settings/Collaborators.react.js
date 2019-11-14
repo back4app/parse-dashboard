@@ -43,8 +43,10 @@ export default class Collaborators extends React.Component {
       "jobs" : "Write",
       "webHostLiveQuery" : "Write",
       "verificationEmails" : "Write",
+      "appleOauth" : "Write",
       "oauth" : "Write",
       "twitterOauth" : "Write",
+      "vKontakteOauth" : "Write",
       "pushAndroidSettings" : "Write",
       "pushIOSSettings" : "Write"
     }
@@ -188,8 +190,10 @@ export default class Collaborators extends React.Component {
                 'Background Jobs',
                 'Web Hosting and Live Query',
                 'Verification Emails',
+                'Apple Login',
                 'Facebook Login',
                 'Twitter Login',
+                'vKontakte Login',
                 'Android Push notification',
                 'iOS Push notification'
               ],
@@ -201,8 +205,10 @@ export default class Collaborators extends React.Component {
                 'Schedule and run background jobs',
                 'Host your web-site without all the hassle\nBuild real time apps',
                 'Send automatic emails',
+                'Make your app social using Apple',
                 'Make your app social using Facebook',
                 'Make your app social using Twitter',
+                'Make your app social using vKontakte',
                 'Get your message across with Android push',
                 'Get your message across with iOS push'
               ],
@@ -210,6 +216,8 @@ export default class Collaborators extends React.Component {
                 false,
                 false,
                 false,
+                true,
+                true,
                 true,
                 true,
                 true,
