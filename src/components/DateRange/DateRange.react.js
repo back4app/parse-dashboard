@@ -102,7 +102,7 @@ export default class DateRange extends React.Component {
       popover = (
         <Popover fixed={true} position={this.state.position} onExternalClick={this.close.bind(this)}>
           <div className={classes.join(' ')}>
-            <div className={styles.calendars}>
+            <div className={styles.calendars} onClick={(e) => e.stopPropagation()} >
               <Calendar
                 value={this.state.start}
                 onChange={(start) => this.setStart(start)}
