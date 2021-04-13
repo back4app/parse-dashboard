@@ -23,7 +23,7 @@ const MAX_ROWS = 200; // Number of rows to render at any time
 const ROWS_OFFSET = 160;
 const ROW_HEIGHT = 31;
 
-const READ_ONLY = [ 'objectId', 'createdAt', 'updatedAt', 'sessionToken', 'expiresAt' ];
+const READ_ONLY = [ 'objectId', 'createdAt', 'updatedAt', 'sessionToken'];
 
 export default class BrowserTable extends React.Component {
   constructor() {

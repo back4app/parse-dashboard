@@ -58,6 +58,11 @@ export default class BrowserRow extends Component {
               hidden = true;
             }
           }
+          let readOnly = isUnique || readOnlyFields.indexOf(name) > -1;
+          if(name === 'expiresAt' && className === '_Session'){
+            readOnly = true;
+          }
+
           return (
             <BrowserCell
               key={name}
@@ -69,7 +74,7 @@ export default class BrowserRow extends Component {
               row={row}
               col={j}
               type={type}
-              readonly={isUnique || readOnlyFields.indexOf(name) > -1}
+              readonly={readOnly}
               width={width}
               current={currentCol === j}
               onSelect={setCurrent}
