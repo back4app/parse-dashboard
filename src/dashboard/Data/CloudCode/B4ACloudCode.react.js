@@ -208,7 +208,7 @@ class B4ACloudCode extends CloudCode {
     </div>
 
     let alertWhatIsMessage = <div>
-      <p className={styles.paragraph}>Cloud code functions is a tool that lets you run a NodeJS function in Back4App Cloud. Back4App executes your code only when you call the function via API or via SDK. It is also possible to create functions that are triggered by your app events. When you update your Cloud Code Functions, it becomes available to all mobile/web/IoT environments instantly. You don’t have to wait for a new release of your application. This lets you change app behavior on the fly and add new features faster.</p>
+      <p style="height: 0px">Cloud code functions is a tool that lets you run a NodeJS function in Back4App Cloud. Back4App executes your code only when you call the function via API or via SDK. It is also possible to create functions that are triggered by your app events. When you update your Cloud Code Functions, it becomes available to all mobile/web/IoT environments instantly. You don’t have to wait for a new release of your application. This lets you change app behavior on the fly and add new features faster.</p>
     </div>
 
     // Show loading page before fetch data
