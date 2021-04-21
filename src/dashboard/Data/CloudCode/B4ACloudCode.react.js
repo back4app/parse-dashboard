@@ -200,7 +200,7 @@ class B4ACloudCode extends CloudCode {
     let alertWhatIs = null;
     let alertTips = null;
 
-    let alertTipsMessage = <div className={styles.paragraph}>
+    let alertTipsMessage = <div>
       <p><b>•</b> To deploy your Cloud Code Functions you can use the Dashboard bellow or the <a href="https://www.back4app.com/docs/platform/parse-cli" target="_blank">Back4App CLI.</a></p>
       <p><b>•</b> To upload your code you should first click on ADD button and choose what files you want to upload.</p>
       <p><b>•</b> The first file MUST BE called main.js and any other file or folder MUST BE referenced more in this file.</p>
