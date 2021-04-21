@@ -207,7 +207,7 @@ class B4ACloudCode extends CloudCode {
       <p><b>•</b> After ADD and REMOVE all files you want, click on the DEPLOY button and commit your operation;</p>
     </div>
 
-    let alertWhatIsMessage = <div>
+    let alertWhatIsMessage = <div styles={"height: 0px"}>
       <p>Cloud code functions is a tool that lets you run a NodeJS function in Back4App Cloud. Back4App executes your code only when you call the function via API or via SDK. It is also possible to create functions that are triggered by your app events. When you update your Cloud Code Functions, it becomes available to all mobile/web/IoT environments instantly. You don’t have to wait for a new release of your application. This lets you change app behavior on the fly and add new features faster.</p>
     </div>
 
