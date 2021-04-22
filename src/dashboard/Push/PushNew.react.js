@@ -596,10 +596,11 @@ class PushNew extends DashboardView {
                   key={i} />);
               })}
             </div>
-            { !this.state.loadingLocale && this.state.availableLocales.length === 0 ?
+            { !this.state.loadingLocale && this.state.locales.length === 0 ?
               <a href="javascript:$zopim.livechat.window.show();" style={{ color: '#169CEE'}} >
                 Please contact our support to enable the push locales feature
               </a> :
+                !this.state.loadingLocale && this.state.availableLocales.length === 0 ? null :
               <Button
                 progress={this.state.loadingLocale}
                 disabled={this.state.availableLocales.length === 0}
