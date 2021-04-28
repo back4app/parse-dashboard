@@ -322,7 +322,7 @@ class BrowserCell extends Component {
               this.setState({ showTooltip: false });
             }, 2000);
           }}>
-          {content}
+          {row < 0 ? '(auto)' : content}
         </span>
       </Tooltip> :
         <span
