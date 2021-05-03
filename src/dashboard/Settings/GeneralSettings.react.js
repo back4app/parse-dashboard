@@ -484,18 +484,34 @@ export default class GeneralSettings extends DashboardView {
       textModal={true}>
       <span>We have removed <strong>{joinWithFinal('', this.state.removedCollaborators.map(c => c.userName || c.userEmail), ', ', ' and ')}</strong> from this app. If they had saved the master key, they may still have access via an SDK or the API. To be sure, you can reset your master key in the Keys section of app settings.</span>
     </Modal> : null;
-    let setCollaborators = (setField, unused, allCollabs) => {
+    let setCollaborators = (_, allCollabs) => {
+      let promiseList = [];
+
       let addedCollaborators = setDifference(allCollabs, initialFields.collaborators, compareCollaborators);
+      addedCollaborators.forEach(({ userEmail, featuresPermission, classesPermission }) => {
+        promiseList.push(this.context.currentApp.addCollaborator(userEmail, featuresPermission, classesPermission));
+      });
+      
       let removedCollaborators = setDifference(initialFields.collaborators, allCollabs, compareCollaborators);
-      if (addedCollaborators.length === 0 && removedCollaborators.length === 0) {
-        //If there isn't a added or removed collaborator verify if there is a edited one.
-        let editedCollaborators = verifyEditedCollaborators(allCollabs);
-        if (editedCollaborators.length === 0) {
-          //This is neccessary because the footer computes whether or not show a change by reference equality.
-          allCollabs = initialFields.collaborators;
-        }
-      }
-      setField('collaborators', allCollabs);
+      removedCollaborators.forEach(({ id }) => {
+        promiseList.push(this.context.currentApp.removeCollaboratorById(id));
+      });
+
+      let editedCollaborators = verifyEditedCollaborators(allCollabs);
+      editedCollaborators.forEach(({ id, featuresPermission, classesPermission }) => {
+        promiseList.push(this.context.currentApp.editCollaboratorById(id, featuresPermission, classesPermission));
+      });
+
+      return Promise.all(promiseList)
+        .then(() => {
+          this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
+          this.setState({ removedCollaborators: removedCollaborators || [] });
+        })
+        .catch(errors => {
+          return Promise.reject({
+            error: unique(pluck(errors, "error")).join(" ")
+          });
+        });
     };
 
     return <div>
@@ -512,24 +528,6 @@ export default class GeneralSettings extends DashboardView {
           }
           if (changes.inProduction !== undefined) {
             promiseList.push(this.context.currentApp.setInProduction(changes.inProduction));
-          }
-
-          let removedCollaborators;
-          if (changes.collaborators !== undefined) {
-            let addedCollaborators = setDifference(changes.collaborators, initialFields.collaborators, compareCollaborators);
-            addedCollaborators.forEach(({ userEmail, featuresPermission, classesPermission }) => {
-              promiseList.push(this.context.currentApp.addCollaborator(userEmail, featuresPermission, classesPermission));
-            });
-
-            removedCollaborators = setDifference(initialFields.collaborators, changes.collaborators, compareCollaborators);
-            removedCollaborators.forEach(({ id }) => {
-              promiseList.push(this.context.currentApp.removeCollaboratorById(id));
-            });
-
-            let editedCollaborators = verifyEditedCollaborators(changes.collaborators);
-            editedCollaborators.forEach(({ id, featuresPermission, classesPermission }) => {
-              promiseList.push(this.context.currentApp.editCollaboratorById(id, featuresPermission, classesPermission));
-            });
           }
 
           let urlKeys = {
@@ -576,9 +574,9 @@ export default class GeneralSettings extends DashboardView {
               waiting_collaborators={fields.waiting_collaborators}
               ownerEmail={this.props.initialFields.owner_email}
               viewerEmail={AccountManager.currentUser().email}
-              addCollaborator={setCollaborators.bind(undefined, setField)}
-              removeCollaborator={setCollaborators.bind(undefined, setField)}
-              editCollaborator={setCollaborators.bind(undefined, setField)}/>
+              addCollaborator={setCollaborators.bind(this)}
+              removeCollaborator={setCollaborators.bind(this)}
+              editCollaborator={setCollaborators.bind(this)}/>
             <ManageAppFields
               mongoURL={fields.mongoURL}
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
