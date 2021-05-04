@@ -20,6 +20,7 @@ export default class FlowView extends React.Component {
       saveState: SaveButton.States.WAITING,
       saveError: '',
     };
+    this.handleClickSaveButton = this.handleClickSaveButton.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -58,6 +59,9 @@ export default class FlowView extends React.Component {
         saveError: '',
         changes: newChanges,
       });
+      if(key === 'collaborators'){
+        this.handleClickSaveButton();
+      }
     }
   }
 
@@ -69,6 +73,20 @@ export default class FlowView extends React.Component {
         changes: this.props.initialChanges || {},
       });
     }
+  }
+
+  handleClickSaveButton() {
+    let fields = this.currentFields();
+    this.setState({ saveState: SaveButton.States.SAVING });
+    this.props.onSubmit({ changes: this.state.changes, fields, setField: this.setField, resetFields: this.resetFields }).then(() => {
+      this.setState({ saveState: SaveButton.States.SUCCEEDED });
+      this.props.afterSave({ fields, setField: this.setField, resetFields: this.resetFields });
+    }).catch(({ message, error, notice, errors = [] }) => {
+      this.setState({
+        saveState: SaveButton.States.FAILED,
+        saveError: errors.join(' ') || message || error || notice || 'An error occurred',
+      });
+    });
   }
 
   render() {
@@ -125,18 +143,7 @@ export default class FlowView extends React.Component {
       waitingText={submitText}
       savingText={inProgressText}
       disabled={!!hasFormValidationError}
-      onClick={() => {
-        this.setState({ saveState: SaveButton.States.SAVING });
-        onSubmit({ changes, fields, setField, resetFields }).then(() => {
-          this.setState({ saveState: SaveButton.States.SUCCEEDED });
-          afterSave({ fields, setField, resetFields });
-        }).catch(({ message, error, notice, errors = [] }) => {
-          this.setState({
-            saveState: SaveButton.States.FAILED,
-            saveError: errors.join(' ') || message || error || notice || 'An error occurred',
-          });
-        });
-      }}
+      onClick={this.handleClickSaveButton.bind(this)}
     />;
 
     let footer = shouldShowFooter ? <FlowFooter
@@ -163,4 +170,8 @@ FlowView.propTypes = {
   showFooter: PropTypes.func.describe('Recieves the changes, and returns false if the footer should be hidden. By default the footer shows if there are any changes.'),
   secondaryButton: PropTypes.func.describe('Overrride the cancel button by passing a function that returns your custom node. By default, the cancel button says "Cancel" and calls resetFields().'),
   defaultFooterMessage: PropTypes.node.describe('A message for the footer when the validate message is "use default"'),
+};
+
+FlowView.defaultProps = {
+  afterSave: () => {}
 };
