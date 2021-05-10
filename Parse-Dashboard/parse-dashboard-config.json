@@ -1,16 +1,85 @@
 {
   "apps": [
     {
-      "serverURL": "http://localhost:1338/parse",
-      "appId": "APPLICATION_ID",
-      "masterKey": "MASTER_KEY",
-      "appName": "Countries States and Cities",
-      "iconName": "",
-      "primaryBackgroundColor": "",
-      "secondaryBackgroundColor": "",
+      "serverURL": "https://parseapi-homolog.back4app.com",
+      "appId": "WaVsDEoypTqV8yEB5PZxY6Yxw5oSM6R0UMUV2KeT",
+      "javascriptKey": "JSqQJb7h3UZ4LsbCVaezS2f52rIXTpwQ6sSO5K5q",
+      "masterKey": "WCyo3hDrxRy7GLWGdXvqMfbzJvtVpIRTNZORMrgx",
+      "readOnlyMasterKey": "kXrjTpoYDoHaD3pXtFM4HkhoaoEd78dtp4N8PYdw",
+      "restKey": "3hLLYc4aBmihnGJl9rXO5geEdbCWZ5SLXaqjOigr",
+      "clientKey": "W7VQq9zc0x2YIc2VkHI1sNRIKltpyrhPlvIXsOda",
+      "fileKey": "0a6a3380-e4c7-43b3-a3f3-ec19137c532d",
+      "dotnetKey": "SZDqvZwuWRWNCSnX4mLbNbee3BXkQLKCSRUiIxOw",
+      "webhookKey": "wNfGMB7Td9bQM2fNVYAetjIxmTT8l2OKw5sJKhzx",
+      "appName": "Sample Blog App",
+      "production": true,
+      "appNameForURL": "f171d9cb-2f9a-4ebc-b89e-3044d74c3707",
+      "feedbackEmail": "prerna@back4app.com",
       "custom": {
-        "isOwner": true
-      }
+        "isGDPR": false,
+        "forceShowGDPRFields": false,
+        "showAdminPage": false,
+        "isOwner": true,
+        "isDatabasePublic": false
+      },
+      "supportedPushLocales": ["en", "ru", "fr"],
+      "graphQLServerURL": "https://parseapi.back4app.com/graphql"
+    },
+    {
+      "serverURL": "https://parseapi.back4app.com",
+      "appId": "S69R1PofqW6iAVqAe87WiVjoqhBL8SXjxsou1msk",
+      "javascriptKey": "UM9HCo4lMPqNppGh4NJVtvhbppjinJ0N57kRW2gd",
+      "restKey": "jb71Pdj24njSEvOGzVeqsP1OLkW8YIj1rgraMVOv",
+      "clientKey": "F7YkF3ZwDqvF3EKZhVDmy2YGumMhV2AaymEpenLq",
+      "windowsKey": "mqoxVOPzr83sn4zkYn8gskVcmbGW8dEvPvWC8PAO",
+      "webhookKey": "t49TataWIJjIzUYS2YuBf3TuqHmnC4oo4msbnbRP",
+      "apiKey": "bc13b477-f111-47bd-8e74-c39bc760e9af",
+      "appName": "newApp",
+      "production": true,
+      "appNameForURL": "799ef6f2-edf0-4a69-9fa2-892a0efd407c",
+      "feedbackEmail": "prerna@back4app.com",
+      "custom": {
+        "isGDPR": false,
+        "forceShowGDPRFields": false,
+        "showAdminPage": false,
+        "isOwner": true,
+        "isDatabasePublic": false
+      },
+      "supportedPushLocales": [],
+      "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+      "masterKey": "2o7KkUAjO9NJpsdusWJqgbEOR1uQk9rdLbR7PdJS"
+    },
+    {
+      "apiKey": "a22bb338-39b7-4dc4-a97e-8df45e05bd5b",
+      "appId": "uQzLdvFigCxF5KK2LRunbXavG4iMiiCgQQAYwzvv",
+      "appName": "Sample Blog App2",
+      "appNameForURL": "e9503498-1fb5-40b6-8f42-fb4668aaae37",
+      "clientKey": "CMpeEFHEkHYRSzy7GqFCk51AXggGcenWrSh6hLoT",
+      "custom": {
+        "forceShowGDPRFields": false,
+        "isDatabasePublic": false,
+        "isGDPR": false,
+        "isOwner": true,
+        "showAdminPage": false
+      },
+      "feedbackEmail": "prerna@back4app.com",
+      "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+      "javascriptKey": "Z1LOpIj0HGL7enVJ9xa9wetmYanXLKhu2KQudRKP",
+      "masterKey": "SsSHibxBn6UcHEgNvvCV5lmWZtCWylZy8XmqSCZY",
+      "production": true,
+      "restKey": "3lZfUnT9BHPBfyR6PsTevYlZf8VXVfVOybGlkCcL",
+      "serverURL": "https://parseapi.back4app.com",
+      "supportedPushLocales": [],
+      "webhookKey": "kkq7X3F4gP2mEsJ2ZdjDSYydtcyZPMcGPikIjdaA",
+      "windowsKey": "tfygxupPsLzXgzsllI0v7YnthUzKrmjJQwxmU71e"
     }
-  ]
+  ],
+  "newFeaturesInLatestVersion": [],
+  "user": {
+    "email": "prerna@back4app.com",
+    "has_password": false,
+    "account_keys": [],
+    "name": "prerna@back4app.com",
+    "playDatabaseBrowserTutorial": false
+  }
 }
