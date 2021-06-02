@@ -59,7 +59,7 @@ const postgresqlAlert = {
     "Your App was created over MongoDB, you'll be notified as soon as Postgresql become available. We are just finishing its implementation at Back4App",
   imageUrl: postgresqlImg,
   imageWidth: 200,
-  imageAlt: "Postgresql Image"  
+  imageAlt: "Postgresql Image"
 };
 
 export default
@@ -690,7 +690,7 @@ class Browser extends DashboardView {
       });
     }
   }
-  
+
   addRowWithModal() {
     this.addRow();
     this.selectRow(undefined, true);
@@ -860,7 +860,7 @@ class Browser extends DashboardView {
       // Construct complex pagination query
       let equalityQuery = queryFromFilters(source, this.state.filters);
       let comp = this.state.data[this.state.data.length - 1].get(field);
-      
+
       if (sortDir === '-') {
         query.lessThan(field, comp);
         equalityQuery.lessThan('objectId', this.state.data[this.state.data.length - 1].id);
@@ -1407,7 +1407,7 @@ class Browser extends DashboardView {
       state: { showBackButton: true }
     })
   }
-  
+
   showEditRowDialog(selectRow, objectId) {
     // objectId is optional param which is used for doubleClick event on objectId BrowserCell
     if (selectRow) {

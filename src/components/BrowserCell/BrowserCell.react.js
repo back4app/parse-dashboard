@@ -24,7 +24,9 @@ class BrowserCell extends Component {
     this.cellRef = React.createRef();
     this.copyableValue = undefined;
     this.state = {
-      showTooltip: false
+      showTooltip: false,
+      constent: null,
+      classes: []
     };
   }
 
@@ -57,7 +59,7 @@ class BrowserCell extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextState.showTooltip !== this.state.showTooltip) {
+    if (nextState.showTooltip !== this.state.showTooltip || nextState.content !== this.state.constent ) {
       return true;
     }
     const shallowVerifyProps = [...new Set(Object.keys(this.props).concat(Object.keys(nextProps)))]
@@ -211,10 +213,8 @@ class BrowserCell extends Component {
     })));
   }
 
-  //#endregion
-
-  render() {
-    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, setRelation, onPointerClick, row, col, readonly, field, onEditSelectedRow } = this.props;
+  componentDidMount(){
+    let { type, value, hidden, setRelation, onPointerClick } = this.props;
     let content = value;
     this.copyableValue = content;
     let classes = [styles.cell, unselectable];
@@ -235,18 +235,34 @@ class BrowserCell extends Component {
       content = <span>&nbsp;</span>;
       classes.push(styles.empty);
     } else if (type === 'Pointer') {
+      const query = new Parse.Query(value);
+      query.get(value.id)
+        .then(result => {
+          this.setState({ ...this.state, content: (
+            content = onPointerClick ? (
+              <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
+                <Pill value={ result.get('name') } />
+              </a>
+            ) : (
+                value.id
+              )
+          ), classes })
+        })
+        .catch(err => console.log(err));
+
       if (value && value.__type) {
         const object = new Parse.Object(value.className);
         object.id = value.objectId;
         value = object;
       }
       content = onPointerClick ? (
-        <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
-          <Pill value={value.id} />
-        </a>
+      <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
+        <Pill value={ this.state.placeholder ? this.state.placeholder : value.id } />
+      </a>
       ) : (
-          value.id
-        );
+        value.id
+      );
+
       this.copyableValue = value.id;
     } else if (type === 'Date') {
       if (typeof value === 'object' && value.__type) {
@@ -299,18 +315,116 @@ class BrowserCell extends Component {
       this.copyableValue = undefined;
     }
 
-    // Set read only style
-    if (readonly && content !== '(hidden)' && row > -1)
-      classes.push(styles.readonly)
-    if (current) {
-      classes.push(styles.current);
-    }
-    
+    this.setState({ ...this.state, content, classes })
+  }
+
+  //#endregion
+
+  render() {
+    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, setRelation, onPointerClick, row, col, readonly, field, onEditSelectedRow } = this.props;
+    // let content = value;
+    // this.copyableValue = content;
+    // let classes = [styles.cell, unselectable];
+    // if (hidden) {
+    //   content = '(hidden)';
+    //   classes.push(styles.empty);
+    // } else if (value === undefined) {
+    //   if (type === 'ACL') {
+    //     this.copyableValue = content = 'Public Read + Write';
+    //   } else {
+    //     this.copyableValue = content = '(undefined)';
+    //     classes.push(styles.empty);
+    //   }
+    // } else if (value === null) {
+    //   this.copyableValue = content = '(null)';
+    //   classes.push(styles.empty);
+    // } else if (value === '') {
+    //   content = <span>&nbsp;</span>;
+    //   classes.push(styles.empty);
+    // } else if (type === 'Pointer') {
+    //   const query = new Parse.Query(value);
+    //   query.get(value.id)
+    //     .then(result => {
+    //       console.log(result.get('name'));
+    //     })
+    //     .catch(err => console.log(err));
+
+    //   if (value && value.__type) {
+    //     const object = new Parse.Object(value.className);
+    //     object.id = value.objectId;
+    //     value = object;
+    //   }
+    //   content = onPointerClick ? (
+    //     <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
+    //       <Pill value={ this.state.placeholder } />
+    //     </a>
+    //   ) : (
+    //       value.id
+    //     );
+    //   this.copyableValue = value.id;
+    // } else if (type === 'Date') {
+    //   if (typeof value === 'object' && value.__type) {
+    //     value = new Date(value.iso);
+    //   } else if (typeof value === 'string') {
+    //     value = new Date(value);
+    //   }
+    //   this.copyableValue = content = dateStringUTC(value);
+    // } else if (type === 'Boolean') {
+    //   this.copyableValue = content = value ? 'True' : 'False';
+    // } else if (type === 'Object' || type === 'Bytes' || type === 'Array') {
+    //   this.copyableValue = content = JSON.stringify(value);
+    // } else if (type === 'File') {
+    //   const fileName = value.url() ? getFileName(value) : 'Uploading\u2026';
+    //   content = <Pill value={fileName} />;
+    //   this.copyableValue = fileName;
+    // } else if (type === 'ACL') {
+    //   let pieces = [];
+    //   let json = value.toJSON();
+    //   if (Object.prototype.hasOwnProperty.call(json, '*')) {
+    //     if (json['*'].read && json['*'].write) {
+    //       pieces.push('Public Read + Write');
+    //     } else if (json['*'].read) {
+    //       pieces.push('Public Read');
+    //     } else if (json['*'].write) {
+    //       pieces.push('Public Write');
+    //     }
+    //   }
+    //   for (let role in json) {
+    //     if (role !== '*') {
+    //       pieces.push(role);
+    //     }
+    //   }
+    //   if (pieces.length === 0) {
+    //     pieces.push('Master Key Only');
+    //   }
+    //   this.copyableValue = content = pieces.join(', ');
+    // } else if (type === 'GeoPoint') {
+    //   this.copyableValue = content = `(${value.latitude}, ${value.longitude})`;
+    // } else if (type === 'Polygon') {
+    //   this.copyableValue = content = value.coordinates.map(coord => `(${coord})`)
+    // } else if (type === 'Relation') {
+    //   content = setRelation ? (
+    //     <div style={{ textAlign: 'center', cursor: 'pointer' }}>
+    //       <Pill onClick={() => setRelation(value)} value='View relation' />
+    //     </div>
+    //   ) : (
+    //       'Relation'
+    //     );
+    //   this.copyableValue = undefined;
+    // }
+
+    // // Set read only style
+    // if (readonly && content !== '(hidden)' && row > -1)
+    //   classes.push(styles.readonly)
+    // if (current) {
+    //   classes.push(styles.current);
+    // }
+
     return readonly ? (
       <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip}>
         <span
           ref={this.cellRef}
-          className={classes.join(' ')}
+          className={this.state.classes.join(' ')}
           style={{ width }}
           onClick={() => {
             onSelect({ row, col });
@@ -337,13 +451,13 @@ class BrowserCell extends Component {
             }
           }}
         >
-          {row < 0 ? '(auto)' : content}
+          {row < 0 ? '(auto)' : this.state.content}
         </span>
       </Tooltip>
     ) : (
       <span
         ref={this.cellRef}
-        className={classes.join(' ')}
+        className={this.state.classes.join(' ')}
         style={{ width }}
         onClick={() => {
           onSelect({ row, col });
@@ -364,7 +478,7 @@ class BrowserCell extends Component {
               e.preventDefault();
             }
           }}}>
-          {content}
+          {this.state.content}
         </span>
     );
   }
