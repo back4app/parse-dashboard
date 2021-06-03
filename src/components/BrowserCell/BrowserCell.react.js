@@ -16,6 +16,7 @@ import styles                    from 'components/BrowserCell/BrowserCell.scss';
 import Tooltip                   from 'components/Tooltip/PopperTooltip.react';
 import PropTypes                 from "lib/PropTypes";
 import { unselectable }          from 'stylesheets/base.scss';
+import moment from 'moment';
 
 class BrowserCell extends Component {
   constructor() {
@@ -213,8 +214,9 @@ class BrowserCell extends Component {
     })));
   }
 
-  componentDidMount(){
-    let { type, value, hidden, setRelation, onPointerClick } = this.props;
+  async componentDidMount(){
+    console.log(this.props);
+    let { type, value, hidden, setRelation, onPointerClick, className } = this.props;
     let content = value;
     this.copyableValue = content;
     let classes = [styles.cell, unselectable];
@@ -235,21 +237,47 @@ class BrowserCell extends Component {
       content = <span>&nbsp;</span>;
       classes.push(styles.empty);
     } else if (type === 'Pointer') {
-      const query = new Parse.Query(value);
-      query.get(value.id)
-        .then(result => {
-          this.setState({ ...this.state, content: (
-            content = onPointerClick ? (
-              <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
-                <Pill value={ result.get('name') } />
-              </a>
-            ) : (
-                value.id
-              )
-          ), classes })
-        })
-        .catch(err => console.log(err));
+      const defaultPointerKey = await localStorage.getItem(value.className) || 'objectId';
+      if ( defaultPointerKey !== 'objectId' ) {
+        const query = new Parse.Query(value);
+        query.get(value.id)
+          .then(result => {
+            let data = result.get(defaultPointerKey);
+            if ( data && typeof data === 'object' ){
+              if ( data instanceof Date ) {
+                data = moment(data).toLocaleString();
+              }
+              else {
+                data = '[Invalid value]';
+              }
+            }
+            if ( !data ) {
+              data = '[Invalid value]';
+            }
 
+            this.setState({ ...this.state, content: (
+              content = onPointerClick ? (
+                <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
+                  <Pill value={ data } />
+                </a>
+              ) : (
+                data
+                )
+            ), classes });
+          })
+          .catch(err => console.log(err));
+      }
+      else {
+        this.setState({ ...this.state, content: (
+          content = onPointerClick ? (
+            <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
+              <Pill value={ value.id } />
+            </a>
+          ) : (
+            data
+            )
+        ), classes });
+      }
       if (value && value.__type) {
         const object = new Parse.Object(value.className);
         object.id = value.objectId;

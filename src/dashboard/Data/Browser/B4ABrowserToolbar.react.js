@@ -70,6 +70,7 @@ let B4ABrowserToolbar = ({
     enableClassManipulation,
     applicationId,
     onClickIndexManager,
+    onChangeDefaultKey,
     columns
   }) => {
   let selectionLength = Object.keys(selection).length;
@@ -122,6 +123,7 @@ let B4ABrowserToolbar = ({
         {enableColumnManipulation ? <MenuItem text='Add a column' onClick={onAddColumn} /> : <noscript />}
         {enableClassManipulation ? <MenuItem text='Add a class' onClick={onAddClass} /> : <noscript />}
         <Separator />
+        <MenuItem text='Change pointer key (current: objectId)' onClick={onChangeDefaultKey} />
         <MenuItem
           disabled={!selectionLength}
           text={`Attach ${selectionLength <= 1 ? 'this row' : 'these rows'} to relation`}

@@ -161,6 +161,7 @@ class Browser extends DashboardView {
     this.addEditCloneRows = this.addEditCloneRows.bind(this);
     this.abortEditCloneRows = this.abortEditCloneRows.bind(this);
     this.preventScrollOnTour = this.preventScrollOnTour.bind(this);
+    this.onChangeDefaultKey = this.onChangeDefaultKey.bind(this);
   }
 
   getFooterMenuButtons() {
@@ -1436,6 +1437,33 @@ class Browser extends DashboardView {
     this.setState({showPermissionsDialog: opened});
   }
 
+  async onChangeDefaultKey () {
+    const className = this.props.params.className;
+    const classes = this.props.schema.data.get('classes');
+
+    const cols = {};
+
+    classes.get(className).forEach(({ type, targetClass, required }, name) => {
+        if ( name !== 'ACL' ) {
+          cols[name] = name;
+        }
+    });
+
+    const defaultValue = await localStorage.getItem(className) || 'objectId';
+
+    const { value } = await MySwal.fire({
+      title: 'Cange Pointer Key',
+      input: 'select',
+      inputValue: defaultValue,
+      inputOptions: cols,
+      showCancelButton: true,
+    })
+
+    if ( value ) {
+      await localStorage.setItem(className, value);
+    }
+  }
+
   renderContent() {
     let browser = null;
     let className = this.props.params.className;
@@ -1513,6 +1541,7 @@ class Browser extends DashboardView {
             onAttachSelectedRows={this.showAttachSelectedRowsDialog}
             onCloneSelectedRows={this.showCloneSelectedRowsDialog}
             onImport={this.showImport}
+            onChangeDefaultKey={this.onChangeDefaultKey}
             onEditSelectedRow={this.showEditRowDialog}
             onEditPermissions={this.onDialogToggle}
             columns={columns}
