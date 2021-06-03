@@ -71,6 +71,7 @@ let B4ABrowserToolbar = ({
     applicationId,
     onClickIndexManager,
     onChangeDefaultKey,
+    onClickSecurity,
     columns
   }) => {
   let selectionLength = Object.keys(selection).length;
@@ -119,6 +120,8 @@ let B4ABrowserToolbar = ({
   } else {
     menu = (
       <BrowserMenu title='Edit' icon='edit-solid'>
+        <MenuItem text='Security' onClick={onClickSecurity} />
+        <Separator />
         <MenuItem text='Add a row' onClick={onAddRow} />
         {enableColumnManipulation ? <MenuItem text='Add a column' onClick={onAddColumn} /> : <noscript />}
         {enableClassManipulation ? <MenuItem text='Add a class' onClick={onAddClass} /> : <noscript />}
@@ -147,6 +150,8 @@ let B4ABrowserToolbar = ({
         {enableImport ? <MenuItem text='Import data' onClick={onImport} /> : <noscript />}
         {enableImport ? <MenuItem text='Import relation data' onClick={onImportRelation} /> : <noscript />}
         {enableExportClass ? <MenuItem text='Export this data' onClick={onExport} /> : <noscript />}
+        <Separator />
+        <MenuItem text='Index Manager' onClick={onClickIndexManager} />
       </BrowserMenu>
     );
   }
@@ -218,42 +223,18 @@ let B4ABrowserToolbar = ({
       subsection={subsection}
       details={relation ? details.join(' \u2022 ') : ''}
       helpsection={helpsection}>
-      <a className={styles.toolbarButton} onClick={onClick} title='Add a row' style={{ padding: '4px 4px 6px 4px' }}>
-        <Icon name='add-row' width={32} height={26} />
-      </a>
-      <a className={styles.toolbarButton} onClick={onAddColumn} title='Add a column' style={{ padding: '4px 4px 6px 4px' }}>
-        <Icon name='add-column' width={32} height={26} />
-      </a>
-      {enableImport && (
-        <a className={styles.toolbarButton} onClick={onImport} title='Import a file' style={{ padding: '4px 4px 6px 4px' }}>
-          <Icon name='import-file' width={32} height={26} />
-        </a>
-      )}
-      <ColumnsConfiguration
-        handleColumnsOrder={handleColumnsOrder}
-        handleColumnDragDrop={handleColumnDragDrop}
-        order={order} />
       <a className={styles.toolbarButton} onClick={onRefresh} title='Refresh'>
         <Icon name='refresh' width={30} height={26} />
-      </a>
-      <a className={styles.toolbarButton} onClick={onClickIndexManager} title='Index Manager'>
-        <Icon name='index-manager' width={30} height={26} />
       </a>
       <BrowserFilter
         setCurrent={setCurrent}
         schema={schemaSimplifiedData}
         filters={filters}
         onChange={onFilterChange} />
-      {enableSecurityDialog ? <SecurityDialog
-        setCurrent={setCurrent}
-        disabled={!!relation || !!isUnique}
-        perms={perms}
-        className={classNameForEditors}
-        onChangeCLP={onChangeCLP}
-        onEditPermissions={onEditPermissions}
-        columns={columns}
-        userPointers={userPointers} /> : <noscript />}
-      {enableSecurityDialog ? null : <noscript/>}
+      <ColumnsConfiguration
+        handleColumnsOrder={handleColumnsOrder}
+        handleColumnDragDrop={handleColumnDragDrop}
+        order={order} />
       {menu}
     </Toolbar>
   );

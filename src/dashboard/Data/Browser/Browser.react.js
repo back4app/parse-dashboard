@@ -48,7 +48,9 @@ import ParseApp                           from 'lib/ParseApp';
 import Cookies                            from 'js-cookie';
 import Swal                               from 'sweetalert2';
 import withReactContent                   from 'sweetalert2-react-content';
-import postgresqlImg                      from './postgresql.png'
+import postgresqlImg                      from './postgresql.png';
+import PermissionsDialog                  from 'components/PermissionsDialog/PermissionsDialog.react';
+import validateEntry                      from 'lib/validateCLPEntry.js';
 
 // The initial and max amount of rows fetched by lazy loading
 const MAX_ROWS_FETCHED = 200;
@@ -56,7 +58,7 @@ const MAX_ROWS_FETCHED = 200;
 const MySwal = withReactContent(Swal);
 const postgresqlAlert = {
   text:
-    "Your App was created over MongoDB, you'll be notified as soon as Postgresql become available. We are just finishing its implementation at Back4App",
+    "Thank you for your interest in using Back4App with PostgreSQL. We are working hard to make this database available and will notify you once we release it. In the meantime, we’ve just created your App using MongoDB 3.6, so you can use Back4App.",
   imageUrl: postgresqlImg,
   imageWidth: 200,
   imageAlt: "Postgresql Image"
@@ -108,7 +110,8 @@ class Browser extends DashboardView {
       uniqueField: null,
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
-      showPostgresqlModal: !!Cookies.get('isPostgresql')
+      showPostgresqlModal: !!Cookies.get('isPostgresql'),
+      openSecurityDialog: false
     };
 
     this.prefetchData = this.prefetchData.bind(this);
@@ -162,6 +165,7 @@ class Browser extends DashboardView {
     this.abortEditCloneRows = this.abortEditCloneRows.bind(this);
     this.preventScrollOnTour = this.preventScrollOnTour.bind(this);
     this.onChangeDefaultKey = this.onChangeDefaultKey.bind(this);
+    this.onClickSecurity = this.onClickSecurity.bind(this);
   }
 
   getFooterMenuButtons() {
@@ -1409,6 +1413,12 @@ class Browser extends DashboardView {
     })
   }
 
+  onClickSecurity() {
+    this.setState({
+      openSecurityDialog: !this.state.openSecurityDialog
+    });
+  }
+
   showEditRowDialog(selectRow, objectId) {
     // objectId is optional param which is used for doubleClick event on objectId BrowserCell
     if (selectRow) {
@@ -1567,7 +1577,8 @@ class Browser extends DashboardView {
             onAbortEditCloneRows={this.abortEditCloneRows}
             err={this.state.err}
             showNote={this.showNote}
-            onClickIndexManager={this.onClickIndexManager} />
+            onClickIndexManager={this.onClickIndexManager}
+            onClickSecurity={this.onClickSecurity} />
         );
       }
     }
@@ -1733,6 +1744,67 @@ class Browser extends DashboardView {
           schema={this.props.schema}
         />
       )
+    } else if (this.state.openSecurityDialog) {
+      let parseServerSupportsPointerPermissions = this.context.currentApp
+        .serverInfo.features.schemas.editClassLevelPermissions;
+      let currentColumns = this.getClassColumns(className).map(
+        column => column.name
+      );
+      const userPointers = [];
+      const schemaSimplifiedData = {};
+      const classSchema = this.props.schema.data
+        .get("classes")
+        .get(this.props.params.className);
+      if (classSchema) {
+        classSchema.forEach(({ type, targetClass }, col) => {
+          schemaSimplifiedData[col] = {
+            type,
+            targetClass
+          };
+          if (col === "objectId" || (this.state.isUnique && col !== this.state.uniqueField)) {
+            return;
+          }
+          if (
+            (type === "Pointer" && targetClass === "_User") ||
+            type === "Array"
+          ) {
+            userPointers.push(col);
+          }
+        });
+      }
+      let perms = this.state.clp[className];
+      extras = (
+        <PermissionsDialog
+          title="Edit Class Level Permissions"
+          enablePointerPermissions={parseServerSupportsPointerPermissions}
+          advanced={true}
+          confirmText="Save CLP"
+          columns={currentColumns}
+          details={
+            <a
+              target="_blank"
+              href="http://docs.parseplatform.org/ios/guide/#security"
+            >
+              Learn more about CLPs and app security
+            </a>
+          }
+          permissions={perms}
+          userPointers={userPointers}
+          validateEntry={entry =>
+            validateEntry(
+              userPointers,
+              entry,
+              parseServerSupportsPointerPermissions
+            )
+          }
+          onCancel={() => this.setState({ openSecurityDialog: false })}
+          parseVersion={this.context.currentApp.serverInfo}
+          onConfirm={perms =>
+            this.handleCLPChange(perms)
+              .then(() => this.setState({ openSecurityDialog: false }))
+          }
+        />
+      );
     }
 
     let notification = null;

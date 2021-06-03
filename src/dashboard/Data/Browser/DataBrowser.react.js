@@ -327,6 +327,7 @@ export default class DataBrowser extends React.Component {
           enableClassManipulation={!preventSchemaEdits}
           applicationId={applicationId}
           onClickIndexManager={this.props.onClickIndexManager}
+          onClickSecurity={this.props.onClickSecurity}
           handleColumnDragDrop={this.handleHeaderDragDrop}
           handleColumnsOrder={this.handleColumnsOrder}
           order={this.state.order}
