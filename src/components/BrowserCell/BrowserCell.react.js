@@ -211,7 +211,6 @@ class BrowserCell extends Component {
     })));
   }
 
-  //#endregion
 
   render() {
     let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, setRelation, onPointerClick, row, col, readonly, field, onEditSelectedRow } = this.props;
@@ -305,14 +304,14 @@ class BrowserCell extends Component {
     if (current) {
       classes.push(styles.current);
     }
-    
+
     return readonly ? (
-      <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip}>
+      <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip} >
         <span
           ref={this.cellRef}
           className={classes.join(' ')}
           style={{ width }}
-          onClick={() => {
+          onClick={async () => {
             onSelect({ row, col });
             setCopyableValue(hidden ? undefined : this.copyableValue);
           }}
@@ -345,7 +344,7 @@ class BrowserCell extends Component {
         ref={this.cellRef}
         className={classes.join(' ')}
         style={{ width }}
-        onClick={() => {
+        onClick={async () => {
           onSelect({ row, col });
           setCopyableValue(hidden ? undefined : this.copyableValue);
         }}
