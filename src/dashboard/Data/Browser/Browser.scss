@@ -97,7 +97,7 @@ body:global(.expanded) {
   @include MonospaceFont;
   font-size: 12px;
   white-space: nowrap;
-  height: 31px;
+  height: auto;
   border-bottom: 1px solid #e3e3ea;
 
   &:nth-child(odd) {

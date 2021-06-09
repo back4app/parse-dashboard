@@ -248,7 +248,28 @@ class BrowserCell extends Component {
           value.id
         );
       this.copyableValue = value.id;
-    } else if (type === 'Date') {
+    }
+    else if (type === 'Array') {
+      if ( typeof value[0] === 'object' && value[0].__type === 'Pointer' ) {
+        const array = [];
+        value.map( (v, i) => {
+          if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
+            throw new Error('Invalid type found in pointer array');
+          }
+          array.push(
+            <a key={i} href='javascript:;' onClick={onPointerClick.bind(undefined, v)}>
+              <Pill value={v.objectId} />
+            </a>);
+        });
+        this.copyableValue = content = <ul>
+          { array.map( a => <li>{a}</li>) }
+        </ul>
+      }
+      else {
+        this.copyableValue = content = JSON.stringify(value);
+      }
+    }
+    else if (type === 'Date') {
       if (typeof value === 'object' && value.__type) {
         value = new Date(value.iso);
       } else if (typeof value === 'string') {
@@ -257,7 +278,7 @@ class BrowserCell extends Component {
       this.copyableValue = content = dateStringUTC(value);
     } else if (type === 'Boolean') {
       this.copyableValue = content = value ? 'True' : 'False';
-    } else if (type === 'Object' || type === 'Bytes' || type === 'Array') {
+    } else if (type === 'Object' || type === 'Bytes') {
       this.copyableValue = content = JSON.stringify(value);
     } else if (type === 'File') {
       const fileName = value.url() ? getFileName(value) : 'Uploading\u2026';
@@ -305,7 +326,7 @@ class BrowserCell extends Component {
     if (current) {
       classes.push(styles.current);
     }
-    
+
     return readonly ? (
       <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip}>
         <span
@@ -344,7 +365,7 @@ class BrowserCell extends Component {
       <span
         ref={this.cellRef}
         className={classes.join(' ')}
-        style={{ width }}
+        style={{ width, height: 'auto' }}
         onClick={() => {
           onSelect({ row, col });
           setCopyableValue(hidden ? undefined : this.copyableValue);
