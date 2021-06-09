@@ -311,7 +311,7 @@ class BrowserCell extends Component {
           ref={this.cellRef}
           className={classes.join(' ')}
           style={{ width }}
-          onClick={async () => {
+          onClick={() => {
             onSelect({ row, col });
             setCopyableValue(hidden ? undefined : this.copyableValue);
           }}
