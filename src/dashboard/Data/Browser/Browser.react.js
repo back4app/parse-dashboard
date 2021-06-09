@@ -694,7 +694,7 @@ class Browser extends DashboardView {
       });
     }
   }
-  
+
   addRowWithModal() {
     this.addRow();
     this.selectRow(undefined, true);
@@ -864,7 +864,7 @@ class Browser extends DashboardView {
       // Construct complex pagination query
       let equalityQuery = queryFromFilters(source, this.state.filters);
       let comp = this.state.data[this.state.data.length - 1].get(field);
-      
+
       if (sortDir === '-') {
         query.lessThan(field, comp);
         equalityQuery.lessThan('objectId', this.state.data[this.state.data.length - 1].id);
@@ -1411,7 +1411,7 @@ class Browser extends DashboardView {
       state: { showBackButton: true }
     })
   }
-  
+
   onClickSecurity() {
     this.setState({
       openSecurityDialog: !this.state.openSecurityDialog

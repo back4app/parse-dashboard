@@ -174,13 +174,6 @@ export default class DataBrowser extends React.Component {
           });
           e.preventDefault();
           break;
-        // TODO Complete ctrl + v functionality.
-        case 17:
-        case 91:
-        case 86:
-          console.log('ctrl + v');
-          e.preventDefault();
-          break;
         default:
           return;
       }
