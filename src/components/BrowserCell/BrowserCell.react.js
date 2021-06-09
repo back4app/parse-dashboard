@@ -211,6 +211,7 @@ class BrowserCell extends Component {
     })));
   }
 
+  //#endregion
 
   render() {
     let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, setRelation, onPointerClick, row, col, readonly, field, onEditSelectedRow } = this.props;
