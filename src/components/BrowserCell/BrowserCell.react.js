@@ -306,7 +306,7 @@ class BrowserCell extends Component {
     }
 
     return readonly ? (
-      <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip} >
+      <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip}>
         <span
           ref={this.cellRef}
           className={classes.join(' ')}
@@ -344,7 +344,7 @@ class BrowserCell extends Component {
         ref={this.cellRef}
         className={classes.join(' ')}
         style={{ width }}
-        onClick={async () => {
+        onClick={() => {
           onSelect({ row, col });
           setCopyableValue(hidden ? undefined : this.copyableValue);
         }}
