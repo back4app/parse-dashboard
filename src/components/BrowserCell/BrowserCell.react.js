@@ -256,8 +256,10 @@ class BrowserCell extends Component {
           if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
             throw new Error('Invalid type found in pointer array');
           }
+          const object = new Parse.Object(v.className);
+          object.id = v.objectId;
           array.push(
-            <a key={i} href='javascript:;' onClick={onPointerClick.bind(undefined, v)}>
+            <a key={i} href='javascript:;' onClick={onPointerClick.bind(undefined, object)}>
               <Pill value={v.objectId} />
             </a>);
         });
@@ -365,7 +367,7 @@ class BrowserCell extends Component {
       <span
         ref={this.cellRef}
         className={classes.join(' ')}
-        style={{ width, height: 'auto' }}
+        style={{ width, height: 'auto', maxHeight: '50px', overflowY: 'scroll' }}
         onClick={() => {
           onSelect({ row, col });
           setCopyableValue(hidden ? undefined : this.copyableValue);
