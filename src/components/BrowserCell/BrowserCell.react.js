@@ -266,6 +266,9 @@ class BrowserCell extends Component {
         this.copyableValue = content = <ul>
           { array.map( a => <li>{a}</li>) }
         </ul>
+        if ( array.length > 1 ) {
+          classes.push(styles.hasMore);
+        }
       }
       else {
         this.copyableValue = content = JSON.stringify(value);
@@ -367,7 +370,7 @@ class BrowserCell extends Component {
       <span
         ref={this.cellRef}
         className={classes.join(' ')}
-        style={{ width, height: 'auto', maxHeight: '50px', overflowY: 'scroll' }}
+        style={{ width }}
         onClick={() => {
           onSelect({ row, col });
           setCopyableValue(hidden ? undefined : this.copyableValue);
