@@ -7,8 +7,10 @@
       "appName": "Countries States and Cities",
       "iconName": "",
       "primaryBackgroundColor": "",
-      "secondaryBackgroundColor": ""
+      "secondaryBackgroundColor": "",
+      "custom": {
+        "isOwner": true
+      }
     }
-  ],
-  "iconsFolder": "icons"
+  ]
 }
