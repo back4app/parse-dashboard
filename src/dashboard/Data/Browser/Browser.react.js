@@ -108,6 +108,7 @@ class Browser extends DashboardView {
 
       isUnique: false,
       uniqueField: null,
+      keepAddingCols: false,
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
       showPostgresqlModal: !!Cookies.get('isPostgresql'),
@@ -152,6 +153,7 @@ class Browser extends DashboardView {
     this.showCreateClass = this.showCreateClass.bind(this);
     this.createClass = this.createClass.bind(this);
     this.addColumn = this.addColumn.bind(this);
+    this.addColumnAndContinue = this.addColumnAndContinue.bind(this);
     this.removeColumn = this.removeColumn.bind(this);
     this.showNote = this.showNote.bind(this);
     this.getFooterMenuButtons = this.getFooterMenuButtons.bind(this);
@@ -642,6 +644,12 @@ class Browser extends DashboardView {
     });
   }
 
+  newColumn(payload) {
+    return this.props.schema.dispatch(ActionTypes.ADD_COLUMN, payload).catch((err) => {
+      this.showNote(err.message, true);
+    });
+  }
+
   addColumn({ type, name, target, required, defaultValue }) {
     let payload = {
       className: this.props.params.className,
@@ -651,15 +659,21 @@ class Browser extends DashboardView {
       required,
       defaultValue
     };
-    this.props.schema.dispatch(ActionTypes.ADD_COLUMN, payload).catch(error => {
-      let errorDeletingNote = 'Internal server error'
-      if (error.code === 403) errorDeletingNote = error.message;
-
-      this.showNote(errorDeletingNote, true);
-      this.setState({ showAddColumnDialog: false });
-    }).finally(() => {
-      this.setState({ showAddColumnDialog: false });
+    this.newColumn(payload).finally(() => {
+      this.setState({ showAddColumnDialog: false, keepAddingCols: false });
     });
+  }
+
+  addColumnAndContinue({ type, name, target, required, defaultValue }) {
+    let payload = {
+      className: this.props.params.className,
+      columnType: type,
+      name: name,
+      targetClass: target,
+      required,
+      defaultValue
+    };
+    this.newColumn(payload);
   }
 
   addRow() {
@@ -694,7 +708,7 @@ class Browser extends DashboardView {
       });
     }
   }
-  
+
   addRowWithModal() {
     this.addRow();
     this.selectRow(undefined, true);
@@ -864,7 +878,7 @@ class Browser extends DashboardView {
       // Construct complex pagination query
       let equalityQuery = queryFromFilters(source, this.state.filters);
       let comp = this.state.data[this.state.data.length - 1].get(field);
-      
+
       if (sortDir === '-') {
         query.lessThan(field, comp);
         equalityQuery.lessThan('objectId', this.state.data[this.state.data.length - 1].id);
@@ -1411,7 +1425,7 @@ class Browser extends DashboardView {
       state: { showBackButton: true }
     })
   }
-  
+
   onClickSecurity() {
     this.setState({
       openSecurityDialog: !this.state.openSecurityDialog
@@ -1557,6 +1571,8 @@ class Browser extends DashboardView {
     if (this.state.showCreateClassDialog) {
       extras = (
         <CreateClassDialog
+          currentAppSlug={this.context.currentApp.slug}
+          onAddColumn={this.showAddColumn}
           currentClasses={this.props.schema.data.get('classes').keySeq().toArray()}
           onCancel={() => this.setState({ showCreateClassDialog: false })}
           onConfirm={this.createClass} />
@@ -1569,11 +1585,13 @@ class Browser extends DashboardView {
       });
       extras = (
         <AddColumnDialog
+          onAddColumn={this.showAddColumn}
           app={this.context.currentApp}
           currentColumns={currentColumns}
           classes={this.props.schema.data.get('classes').keySeq().toArray()}
           onCancel={() => this.setState({ showAddColumnDialog: false })}
           onConfirm={this.addColumn}
+          onContinue={this.addColumnAndContinue}
           parseServerVersion={currentApp.serverInfo && currentApp.serverInfo.parseServerVersion}
           showNote={this.showNote} />
       );
