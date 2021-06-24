@@ -38,6 +38,7 @@
     "@babel/runtime": "7.13.10",
     "@back4app/back4app-settings": "latest",
     "axios": "^0.18.0",
+    "base64-async": "^2.1.3",
     "bcryptjs": "2.3.0",
     "body-parser": "1.19.0",
     "codemirror-graphql": "github:timsuchanek/codemirror-graphql#details-fix",
