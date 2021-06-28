@@ -19,7 +19,7 @@ const getCloudFolderPlaceholder = (appId, restKey) => "// The first deployed fil
   "/* Parse Server 2.x"+
   "\n* Parse.Cloud.define(\"hello\", function(request, response){\n" +
   "* \tresponse.success(\"Hello world!\");\n" +
-  "* });\n*/\n\n" + 
+  "* });\n*/\n\n" +
   "// To see it working, you only need to call it through SDK or REST API.\n" +
   "// Here is how you have to call it via REST API:\n" +
   "\n/*\n* curl -X POST \\\n" +
@@ -92,7 +92,7 @@ export default class B4ACodeTree extends React.Component {
     }
   }
 
-  selectNode(data) {
+  async selectNode(data) {
     let selected = ''
     let source = ''
     let selectedFile = ''
@@ -104,10 +104,23 @@ export default class B4ACodeTree extends React.Component {
       // if is code
       if (selected.data && selected.data.code && selected.type != 'folder') {
         isImage = this.getFileType(selected.data.code)
-        source = isImage ? selected.data.code : B4ATreeActions.decodeFile(selected.data.code)
-        selectedFile = selected.text
-        nodeId = selected.id
-        extension = B4ATreeActions.getExtension(selectedFile)
+        if ( isImage === false ) {
+          B4ATreeActions.decodeFile(selected.data.code)
+            .then( decodedCode => {
+                const decodedCodeString = new TextDecoder().decode(decodedCode);
+                // console.log(decodedCodeString);
+                source = decodedCodeString;
+                selectedFile = selected.text
+                nodeId = selected.id
+                extension = B4ATreeActions.getExtension(selectedFile)
+                this.setState({ source, selectedFile, nodeId, extension, isImage })
+            });
+        } else {
+          source = selected.data.code;
+          selectedFile = selected.text
+          nodeId = selected.id
+          extension = B4ATreeActions.getExtension(selectedFile)
+        }
       } else {
         if (selected.text === 'cloud') source = cloudFolderPlaceholder
         else if (selected.text === 'public') source = publicFolderPlaceholder
@@ -118,7 +131,7 @@ export default class B4ACodeTree extends React.Component {
 
   // method to identify the selected tree node
   watchSelectedNode() {
-    $('#tree').on('select_node.jstree', (e, data) => this.selectNode(data))
+    $('#tree').on('select_node.jstree', async (e, data) => this.selectNode(data))
     $('#tree').on('changed.jstree', (e, data) => this.selectNode(data))
   }
 

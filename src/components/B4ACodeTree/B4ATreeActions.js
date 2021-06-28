@@ -4,6 +4,7 @@ import jstree           from 'jstree';
 import Swal             from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Base64 }       from 'js-base64'
+import * as base64 from 'base64-async';
 
 // Alert parameters
 const MySwal = withReactContent(Swal)
@@ -52,18 +53,9 @@ const remove = (data) => {
 }
 
 // Decode base64 file content.
-const decodeFile = code => {
-  try {
-    if (code) {
-      // Expected format data:[<mediatype>][;base64],<data>
-      let encodedCode = code.split(',')[1]
-      let decodedCode = Base64.decode(encodedCode)
-      code = decodedCode
-    }
-  } catch (err) {
-    console.error(err)
-  }
-  return code
+const decodeFile = async (code) => {
+  let encodedCode = code.split(',')[1];
+  return base64.decode(encodedCode);
 }
 
 const readFile = (file, newTreeNodes) => {
