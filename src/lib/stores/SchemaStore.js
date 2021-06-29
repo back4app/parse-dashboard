@@ -8,6 +8,12 @@
 import keyMirror         from 'lib/keyMirror';
 import { Map }           from 'immutable';
 import { registerStore } from 'lib/stores/StoreManager';
+import PromiseThrottle   from 'promise-throttle';
+
+var promiseThrottle = new PromiseThrottle({
+  requestsPerSecond: 1,           // up to 1 request per second
+  promiseImplementation: Promise  // the Promise library you are using
+});
 
 export const ActionTypes = keyMirror([
   'FETCH',
@@ -17,6 +23,15 @@ export const ActionTypes = keyMirror([
   'DROP_COLUMN',
   'SET_CLP',
 ]);
+
+var throttledGetSchema = function(action) {
+  return action.app.apiRequest(
+    'GET',
+    'schemas',
+    {},
+    { useMasterKey: true }
+  );
+}
 
 // Schema state should be an Immutable Map with the following fields:
 //   - lastFetch: the last time all data was fetched from the server
@@ -29,11 +44,8 @@ function SchemaStore(state, action) {
       if (state && new Date() - state.get('lastFetch') < 60000) {
         return Promise.resolve(state);
       }
-      return action.app.apiRequest(
-        'GET',
-        'schemas',
-        {},
-        { useMasterKey: true }
+      return promiseThrottle.add(
+        throttledGetSchema.bind(this, action)
       ).then(({ results }) => {
         let classes = {};
         let CLPs = {};
