@@ -1,4 +1,5 @@
 import axios from "axios";
+import rateLimit from 'axios-rate-limit';
 import * as AJAX  from './AJAX';
 
 const baseURL = process.env.BACKEND_URL;
@@ -27,4 +28,7 @@ instance.interceptors.response.use(async (response) => {
   }
 )
 
-export default instance
+const http = rateLimit(instance, { maxRequests: 2, perMilliseconds: 1000, maxRPS: 2 })
+
+
+export default http;
