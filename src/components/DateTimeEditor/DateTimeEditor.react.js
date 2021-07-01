@@ -33,12 +33,26 @@ export default class DateTimeEditor extends React.Component {
     document.body.addEventListener('click', this.checkExternalClick);
     this.refs.input.addEventListener('keypress', this.handleKey);
     this.props.setFocus && this.toggle();
+
+    // document.addEventListener('paste', this.onPaste);
   }
 
   componentWillUnmount() {
     document.body.removeEventListener('click', this.checkExternalClick);
     this.refs.input.removeEventListener('keypress', this.handleKey);
+
+    // document.removeEventListener('paste', this.onPaste);
   }
+
+  // async onPaste(e) {
+  //   // console.log('clipboard ', e.target.value);
+  //   try {
+  //     const value = await navigator.clipboard.readText();
+
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
   checkExternalClick(e) {
     if (!hasAncestor(e.target, this.refs.editor)) {

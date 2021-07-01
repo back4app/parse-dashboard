@@ -275,12 +275,14 @@ class BrowserCell extends Component {
       }
     }
     else if (type === 'Date') {
+      console.log(value);
       if (typeof value === 'object' && value.__type) {
         value = new Date(value.iso);
       } else if (typeof value === 'string') {
         value = new Date(value);
       }
-      this.copyableValue = content = dateStringUTC(value);
+      content = dateStringUTC(value);
+      this.copyableValue = value;
     } else if (type === 'Boolean') {
       this.copyableValue = content = value ? 'True' : 'False';
     } else if (type === 'Object' || type === 'Bytes') {
