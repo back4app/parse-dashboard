@@ -16,7 +16,6 @@ import styles                    from 'components/BrowserCell/BrowserCell.scss';
 import Tooltip                   from 'components/Tooltip/PopperTooltip.react';
 import PropTypes                 from "lib/PropTypes";
 import { unselectable }          from 'stylesheets/base.scss';
-import { assertLeafType } from 'graphql';
 
 class BrowserCell extends Component {
   constructor() {
