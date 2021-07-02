@@ -251,17 +251,11 @@ class BrowserCell extends Component {
       this.copyableValue = value.id;
     }
     else if (type === 'Array') {
-      if ( value[0] && (typeof value[0] === 'object' && value[0].__type === 'Pointer') ) {
+      if ( value[0] && typeof value[0] === 'object' && value[0].__type === 'Pointer' ) {
         const array = [];
         let mapError = false;
         value.map( (v, i) => {
-          if ( !v || v === null || v === undefined ) {
-            console.error('Invalid type found in pointer array');
-            mapError = true;
-            return;
-          }
-          if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
-            console.error('Invalid type found in pointer array');
+          if ( !v || typeof v !== 'object' || v.__type !== 'Pointer' ) {
             mapError = true;
             return;
           }
