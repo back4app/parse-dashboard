@@ -255,9 +255,15 @@ class BrowserCell extends Component {
         const array = [];
         let mapError = false;
         value.map( (v, i) => {
-          if ( !v || ( typeof v !== 'object' || v.__type !== 'Pointer') ) {
+          if ( !v || v === null || v === undefined ) {
             console.error('Invalid type found in pointer array');
             mapError = true;
+            return;
+          }
+          if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
+            console.error('Invalid type found in pointer array');
+            mapError = true;
+            return;
           }
           const object = new Parse.Object(v.className);
           object.id = v.objectId;
