@@ -16,6 +16,7 @@ import styles                    from 'components/BrowserCell/BrowserCell.scss';
 import Tooltip                   from 'components/Tooltip/PopperTooltip.react';
 import PropTypes                 from "lib/PropTypes";
 import { unselectable }          from 'stylesheets/base.scss';
+import { assertLeafType } from 'graphql';
 
 class BrowserCell extends Component {
   constructor() {
@@ -250,11 +251,13 @@ class BrowserCell extends Component {
       this.copyableValue = value.id;
     }
     else if (type === 'Array') {
-      if ( typeof value[0] === 'object' && value[0].__type === 'Pointer' ) {
+      if ( value[0] && (typeof value[0] === 'object' && value[0].__type === 'Pointer') ) {
         const array = [];
+        let mapError = false;
         value.map( (v, i) => {
-          if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
-            throw new Error('Invalid type found in pointer array');
+          if ( !v || ( typeof v !== 'object' || v.__type !== 'Pointer') ) {
+            console.error('Invalid type found in pointer array');
+            mapError = true;
           }
           const object = new Parse.Object(v.className);
           object.id = v.objectId;
@@ -263,11 +266,16 @@ class BrowserCell extends Component {
               <Pill value={v.objectId} />
             </a>);
         });
-        this.copyableValue = content = <ul>
-          { array.map( a => <li>{a}</li>) }
-        </ul>
-        if ( array.length > 1 ) {
-          classes.push(styles.hasMore);
+        if ( mapError === false ) {
+          this.copyableValue = content = <ul>
+            { array.map( a => <li>{a}</li>) }
+          </ul>
+          if ( array.length > 1 ) {
+            classes.push(styles.hasMore);
+          }
+        }
+        else {
+          this.copyableValue = content = JSON.stringify(value);
         }
       }
       else {
