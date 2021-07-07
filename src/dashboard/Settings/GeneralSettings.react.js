@@ -32,12 +32,12 @@ import renderFlowFooterChanges           from 'lib/renderFlowFooterChanges';
 import setDifference                     from 'lib/setDifference';
 import styles                            from 'dashboard/Settings/Settings.scss';
 import TextInput                         from 'components/TextInput/TextInput.react';
-import Toggle                            from 'components/Toggle/Toggle.react';
+import NumericInput                      from 'components/NumericInput/NumericInput.react';
 import Toolbar                           from 'components/Toolbar/Toolbar.react';
 import unique                            from 'lib/unique';
 import validateAndSubmitConnectionString from 'lib/validateAndSubmitConnectionString';
 import { cost, features }                from 'dashboard/Settings/GeneralSettings.scss';
-import { Link }                          from 'react-router-dom';
+import Toggle                            from 'components/Toggle/Toggle.react';
 
 const DEFAULT_SETTINGS_LABEL_WIDTH = 55;
 
@@ -157,6 +157,10 @@ let ManageAppFields = ({
   transferApp,
   transferAppMessage,
   deleteApp,
+  setAccountLockout,
+  accountLockout,
+  setPasswordPolicy,
+  passwordPolicy,
 }) => {
   let migrateAppField = null;
   if (!mongoURL && !hasInProgressMigration) {
@@ -219,6 +223,273 @@ let ManageAppFields = ({
     <Fieldset
       legend='App Management'
       description='These options will affect your entire app.' >
+      <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        label={<Label text='Account lockout' />}
+        input={
+          <div>
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Reset Token Validity Duration'
+              description='The duration for which the reset token is valid'
+            />}
+            input={
+              <NumericInput
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).resetTokenValidityDuration : '' }
+                onChange={resetTokenValidityDuration => {
+                  try {
+                    const resetTokenValidityDurationNum = parseFloat(resetTokenValidityDuration);
+                    if ( resetTokenValidityDurationNum <= 0 || resetTokenValidityDurationNum > 1000 ) {
+                      return;
+                    }
+                  }
+                  catch(e) {
+                    console.error(e);
+                    return;
+                  }
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'resetTokenValidityDuration' in json ) {
+                      delete json['resetTokenValidityDuration'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, resetTokenValidityDuration }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Reset Token Reuse If Valid'
+              description='Reuse old reset token if the token is valid'
+            />}
+            input={
+              <Toggle
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).resetTokenReuseIfValid : false }
+                onChange={resetTokenReuseIfValid => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'resetTokenReuseIfValid' in json ) {
+                      delete json['resetTokenReuseIfValid'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, resetTokenReuseIfValid }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Validator Callback'
+              description='Callback for the validator'
+            />}
+            input={
+              <TextInput
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).validatorCallback : '' }
+                onChange={validatorCallback => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'validatorCallback' in json ) {
+                      delete json['validatorCallback'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, validatorCallback }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Validator Pattern'
+              description='The validator pattern'
+            />}
+            input={
+              <TextInput
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).validatorPattern : '' }
+                onChange={validatorPattern => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'validatorPattern' in json ) {
+                      delete json['validatorPattern'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, validatorPattern }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Validation Error'
+              description='The validation error'
+            />}
+            input={
+              <TextInput
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).validationError : '' }
+                onChange={validationError => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'validationError' in json ) {
+                      delete json['validationError'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, validationError }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Do Not Allow Username'
+              description='Do not allow username'
+            />}
+            input={
+              <Toggle
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).doNotAllowUsername : false }
+                onChange={doNotAllowUsername => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'doNotAllowUsername' in json ) {
+                      delete json['doNotAllowUsername'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, doNotAllowUsername }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Max Password Age'
+              description='The maximum password age'
+            />}
+            input={
+              <NumericInput
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).maxPasswordAge : false }
+                onChange={maxPasswordAge => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'maxPasswordAge' in json ) {
+                      delete json['maxPasswordAge'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, maxPasswordAge }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Max Password History'
+              description='The maximum password history'
+            />}
+            input={
+              <NumericInput
+                value={ accountLockout && accountLockout.length > 0 ? JSON.parse(accountLockout).maxPasswordHistory : false }
+                onChange={maxPasswordHistory => {
+                  let accountLockoutJson = {};
+                  if ( accountLockout ) {
+                    let json = JSON.parse(accountLockout);
+                    if ( 'maxPasswordHistory' in json ) {
+                      delete json['maxPasswordHistory'];
+                    }
+                    accountLockoutJson = json;
+                  }
+                  setAccountLockout(JSON.stringify({ ...accountLockoutJson, maxPasswordHistory }));
+                }} />
+            }
+          />
+          </div>
+        } />
+
+      <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        label={<Label
+            text='Password policy'
+            description={<span>Manage password policies for this</span>}
+          />}
+        input={
+          <div>
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Duration'
+              description='Account lockout duration'
+            />}
+            input={
+              <NumericInput
+                value={ passwordPolicy && passwordPolicy.length > 0 ? JSON.parse(passwordPolicy).duration : '' }
+                onChange={duration => {
+                  try {
+                    const durationNum = parseInt(duration);
+                    if ( durationNum <= 0 || durationNum > 99999 ) {
+                      return;
+                    }
+                  }
+                  catch(e) {
+                    console.error(e);
+                    return;
+                  }
+                  let passWordPolicyJson = {};
+                  if ( passwordPolicy ) {
+                    let json = JSON.parse(passwordPolicy);
+                    if ( 'threshold' in json ) {
+                      passWordPolicyJson = { threshold: json.threshold }
+                    }
+                  }
+                  setPasswordPolicy(JSON.stringify({ ...passWordPolicyJson, duration }));
+                }} />
+            }
+          />
+          <Field
+            labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+            label={<Label
+              text='Threshold'
+              description='Failed login attempts threshold'
+            />}
+            input={
+              <NumericInput
+                value={ passwordPolicy && passwordPolicy.length > 0 ? JSON.parse(passwordPolicy).threshold : '' }
+                onChange={threshold => {
+                  try {
+                    const thresholdNum = parseInt(threshold);
+                    if ( thresholdNum <= 0 || thresholdNum > 1000 ) {
+                      return;
+                    }
+                  }
+                  catch(e) {
+                    console.error(e);
+                    return;
+                  }
+                  let passWordPolicyJson = {};
+                  if ( passwordPolicy ) {
+                    let json = JSON.parse(passwordPolicy);
+                    if ( 'duration' in json ) {
+                      passWordPolicyJson = { duration: json.duration }
+                    }
+                  }
+                  setPasswordPolicy(JSON.stringify({ ...passWordPolicyJson, threshold }));
+                }} />
+            }
+          />
+          </div>
+        }
+      />
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
@@ -471,6 +742,8 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
+      accountLockout: this.context.currentApp.accountLockout,
+      passwordPolicy: this.context.currentApp.passwordPolicy
     };
 
     let collaboratorRemovedWarningModal = this.state.removedCollaborators.length > 0 ? <Modal
@@ -507,13 +780,12 @@ export default class GeneralSettings extends DashboardView {
           if (changes.requestLimit !== undefined) {
             promiseList.push(this.context.currentApp.setRequestLimit(changes.requestLimit));
           }
-          if (changes.appName !== undefined) {
-            promiseList.push(this.context.currentApp.setAppName(changes.appName));
+          if (changes.appName !== undefined || changes.accountLockout !== undefined || changes.passwordPolicy !== undefined) {
+            promiseList.push(this.context.currentApp.setAppConfig(changes.appName, changes.accountLockout, changes.passwordPolicy));
           }
           if (changes.inProduction !== undefined) {
             promiseList.push(this.context.currentApp.setInProduction(changes.inProduction));
           }
-          
           let removedCollaborators;
           if (changes.collaborators !== undefined) {
             let addedCollaborators = setDifference(changes.collaborators, initialFields.collaborators, compareCollaborators);
@@ -584,6 +856,10 @@ export default class GeneralSettings extends DashboardView {
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
               hasCollaborators={fields.collaborators.length > 0}
               appSlug={this.context.currentApp.slug}
+              accountLockout={fields.accountLockout}
+              setAccountLockout={setField.bind(this, 'accountLockout')}
+              passwordPolicy={fields.passwordPolicy}
+              setPasswordPolicy={setField.bind(this, 'passwordPolicy')}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
@@ -659,6 +935,14 @@ let generalFieldsOptions = {
   },
   appName: {
     friendlyName: 'app name',
+    showTo: true,
+  },
+  accountLockout: {
+    friendlyName: 'Account Lockout',
+    showTo: true,
+  },
+  passwordPolicy: {
+    friendlyName: 'Password Policy',
     showTo: true,
   },
   //TODO: This will display 'enabled production' or 'disabled production' which is sub-optimal. Try to make it better.
