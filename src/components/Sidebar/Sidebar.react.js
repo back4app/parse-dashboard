@@ -72,7 +72,7 @@ class Sidebar extends React.Component {
         fixed: true
       });
     }
-    
+
     if (this.props.showTour && !nextProps.showTour && isMobile()) {
       // Tour is over and on mobile device
       this.setState({
@@ -80,7 +80,7 @@ class Sidebar extends React.Component {
         collapsed: true,
         fixed: false
       });
-    }    
+    }
   }
 
   windowResizeHandler() {

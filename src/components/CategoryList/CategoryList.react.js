@@ -10,6 +10,7 @@ import React     from 'react';
 import ReactDOM  from 'react-dom';
 import styles    from 'components/CategoryList/CategoryList.scss';
 import { Link }  from 'react-router-dom';
+import style from 'react-syntax-highlighter/dist/esm/styles/hljs/a11y-dark';
 
 export default class CategoryList extends React.Component {
   componentDidMount() {
@@ -82,6 +83,7 @@ export default class CategoryList extends React.Component {
               <span>{count}</span>
               <span>{c.name}</span>
               {c.subCategories}
+              <div className={styles.seperatorLg}></div>
             </Link>
           );
         })}

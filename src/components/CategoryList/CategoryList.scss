@@ -10,15 +10,20 @@
 .class_list {
   position: relative;
   margin-bottom: 5px;
-
+  background-color: white;
+  padding-bottom: 5px;
+  padding-top: 5px;
   a {
     display: block;
-    padding-left: 12px;
-    height: 20px;
-    line-height: 20px;
+    // padding-left: 12px;
+    height: 45px;
+    line-height: 30px;
     border-left: 1px solid #3e87b2;
     color: #8fb9cf;
     font-size: 12px;
+    background-color: rgb(55, 55, 55);
+    margin: 5px 0px;
+    // padding-right: 5px;
 
     &.active {
       color: white;
@@ -30,7 +35,6 @@
 
     span {
       display: block;
-
       &:first-of-type {
         @include DosisFont;
         float: right;
@@ -62,7 +66,7 @@
     & a {
       border-left: none;
       color: white;
-    }    
+    }
   }
 
   & > div:last-of-type {
@@ -110,7 +114,8 @@
 .highlight {
   position: absolute;
   width: 1px;
-  height: 20px;
+  height: 45px;
+  margin: 35px 0px;
   background: white;
   transition: top 0.2s cubic-bezier(1, 0, 0, 1);
 }
@@ -131,4 +136,9 @@
   &:hover {
     background: #094162;
   }
+}
+
+.seperatorLg {
+  background-color: grey;
+  height: 15px;
 }
