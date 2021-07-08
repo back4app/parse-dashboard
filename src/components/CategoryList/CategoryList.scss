@@ -5,140 +5,130 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-@import 'stylesheets/globals.scss';
+ @import 'stylesheets/globals.scss';
 
-.class_list {
-  position: relative;
-  margin-bottom: 5px;
-  background-color: white;
-  padding-bottom: 5px;
-  padding-top: 5px;
-  a {
-    display: block;
-    // padding-left: 12px;
-    height: 45px;
-    line-height: 30px;
-    border-left: 1px solid #3e87b2;
-    color: #8fb9cf;
-    font-size: 12px;
-    background-color: #363346;
-    margin: 5px 0px;
-    // padding-right: 5px;
+ .class_list {
+   position: relative;
+   margin-bottom: 5px;
 
-    &.active {
-      color: white;
-    }
+   a {
+     display: block;
+     padding-left: 12px;
+     height: 20px;
+     line-height: 20px;
+     border-left: 1px solid #3e87b2;
+     color: #8fb9cf;
+     font-size: 12px;
 
-    &:hover{
-      color: white;
-    }
+     &.active {
+       color: white;
+     }
 
-    span {
-      display: block;
-      &:first-of-type {
-        @include DosisFont;
-        float: right;
-        width: 50px;
-        text-align: right;
-      }
+     &:hover{
+       color: white;
+     }
 
-      &:last-of-type {
-        margin-right: 50px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-  }
-}
+     span {
+       display: block;
 
-.sub_class_list {
-  position: relative;
-  padding-left: 12px;
-  border-left: 1px solid #3e87b2;
-  font-size: 12px;
-  line-height: 20px;
+       &:first-of-type {
+         @include DosisFont;
+         float: right;
+         width: 50px;
+         text-align: right;
+       }
 
-  & .action_div {
-    position: relative;
-    font-weight: 600;
-    letter-spacing: .01rem;
-    & a {
-      border-left: none;
-      color: white;
-    }
-  }
+       &:last-of-type {
+         margin-right: 50px;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+       }
+     }
+   }
+ }
 
-  & > div:last-of-type {
-    margin-bottom: 0;
-  }
+ .sub_class_list {
+   position: relative;
+   padding-left: 12px;
+   border-left: 1px solid #3e87b2;
+   font-size: 12px;
+   line-height: 20px;
 
-  a {
-    display: block;
-    padding-left: 12px;
-    height: 20px;
-    line-height: 20px;
-    border-left: 1px solid #3e87b2;
-    color: #8fb9cf;
-    font-size: 12px;
+   & .action_div {
+     position: relative;
+     font-weight: 600;
+     letter-spacing: .01rem;
+     & a {
+       border-left: none;
+       color: white;
+     }
+   }
 
-    &.active {
-      color: white;
-    }
+   & > div:last-of-type {
+     margin-bottom: 0;
+   }
 
-    &:hover{
-      color: white;
-    }
+   a {
+     display: block;
+     padding-left: 12px;
+     height: 20px;
+     line-height: 20px;
+     border-left: 1px solid #3e87b2;
+     color: #8fb9cf;
+     font-size: 12px;
 
-    span {
-      display: block;
+     &.active {
+       color: white;
+     }
 
-      &:first-of-type {
-        @include DosisFont;
-        float: right;
-        width: 50px;
-        text-align: right;
-      }
+     &:hover{
+       color: white;
+     }
 
-      &:last-of-type {
-        margin-right: 50px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 10px;
-      }
-    }
-  }
-}
+     span {
+       display: block;
 
-.highlight {
-  position: absolute;
-  width: 1px;
-  height: 45px;
-  margin: 35px 0px;
-  background: white;
-  transition: top 0.2s cubic-bezier(1, 0, 0, 1);
-}
+       &:first-of-type {
+         @include DosisFont;
+         float: right;
+         width: 50px;
+         text-align: right;
+       }
 
-.category-action {
-  @include DosisFont;
-  position: absolute;
-  font-size: 12px;
-  font-weight: 400;
-  padding: 0 8px;
-  line-height: 20px;
-  top: 0px;
-  right: 0px;
-  background: #0c5987;
-  color: white;
-  border-radius: 3px;
+       &:last-of-type {
+         margin-right: 50px;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+         font-size: 10px;
+       }
+     }
+   }
+ }
 
-  &:hover {
-    background: #094162;
-  }
-}
+ .highlight {
+   position: absolute;
+   width: 1px;
+   height: 20px;
+   background: white;
+   transition: top 0.2s cubic-bezier(1, 0, 0, 1);
+ }
 
-.seperatorLg {
-  background-color: #736F86;
-  height: 15px;
-}
+ .category-action {
+   @include DosisFont;
+   position: absolute;
+   font-size: 12px;
+   font-weight: 400;
+   padding: 0 8px;
+   line-height: 20px;
+   top: 0px;
+   right: 0px;
+   background: #0c5987;
+   color: white;
+   border-radius: 3px;
+
+   &:hover {
+     background: #094162;
+   }
+ }

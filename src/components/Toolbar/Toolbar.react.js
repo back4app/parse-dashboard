@@ -14,6 +14,7 @@ import history   from 'dashboard/history';
 const goBack = () => history.goBack();
 
 let Toolbar = (props) => {
+  console.log(props.details);
   let backButton;
   if (props.relation || (props.filters && props.filters.size)) {
     backButton = (
@@ -42,10 +43,16 @@ let Toolbar = (props) => {
             <span className={styles.subsection}>
               {props.subsection}
             </span>
-            <span className={styles.details}>
+            {/* <span className={styles.details}>
               {props.details}
-            </span>
+            </span> */}
+            <div className={styles.seperatorVertical}></div>
             {props.helpsection}
+            {/* TODO Public read and write access */}
+            <div className={styles.publicAccess}>
+              <img className={styles.publicAccessIcon} src={props.lockIcon} />
+              <a href="javascript::void(0)"><small>{props.details[0]}</small></a>
+            </div>
           </div>
         </div>
       </div>

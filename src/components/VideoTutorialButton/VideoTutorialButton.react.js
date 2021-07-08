@@ -83,7 +83,8 @@ export default class VideoTutorialButton extends Component {
         className={classes.join(' ')}
         style={this.props.additionalStyles}
         onClick={() => this.openVideoTutorialModal()}>
-        <span>Video Tutorial</span>
+        <img className={styles.tutorialButtonIcon} src="/play-circle-outline.svg" />
+        <span>Tutorial</span>
         {this.state.videoTutorialModal}
       </a>
     );

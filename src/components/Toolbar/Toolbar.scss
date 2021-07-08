@@ -12,7 +12,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  left: 300px;
+  left: 350px;
   background: #353446;
   height: 48px;
   color: white;
@@ -44,9 +44,10 @@ body:global(.expanded) {
 }
 
 .title {
-  position: absolute;
-  left: 14px;
-  bottom: 3px;
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+  height: 100%;
 }
 
 .nav {
@@ -61,7 +62,15 @@ body:global(.expanded) {
 }
 
 .titleText {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+}
+
+.seperatorVertical {
+  display: inline;
+  height: 10px;
+  border-right: 0.25px solid #53515f;
+  margin: 0px 5px;
 }
 
 .section {
@@ -90,4 +99,22 @@ body:global(.expanded) {
   display: flex;
   align-items: center;
   top: 0;
+}
+
+.publicAccess {
+  display: inline-flex;
+  margin-left: 15px;
+  align-items: center;
+  .publicAccessIcon {
+    height: 15px;
+    width: 15px;
+    margin-right: 5px;
+  }
+  a {
+    cursor: default;
+    height: auto;
+    border-left: none;
+    text-decoration: underline;
+    color: white;
+  }
 }

@@ -74,14 +74,14 @@ let B4ABrowserToolbar = ({
     columns
   }) => {
   let selectionLength = Object.keys(selection).length;
-  let details = [];
-  if (count !== undefined) {
-    if (count === 1) {
-      details.push('1 object');
-    } else {
-      details.push(prettyNumber(count) + ' objects');
-    }
-  }
+  let details = [], lockIcon = '/lock-open-variant.svg';
+  // if (count !== undefined) {
+  //   if (count === 1) {
+  //     details.push('1 object');
+  //   } else {
+  //     details.push(prettyNumber(count) + ' objects');
+  //   }
+  // }
 
   if (!relation && !isUnique) {
     if (perms && !hidePerms) {
@@ -93,6 +93,8 @@ let B4ABrowserToolbar = ({
         details.push('Public Read enabled');
       } else if (write) {
         details.push('Public Write enabled');
+      } else if ( !read && !write ) {
+        lockIcon = '/lock-outline.svg'
       }
     }
   }
@@ -208,7 +210,7 @@ let B4ABrowserToolbar = ({
   const videoTutorialUrl = 'https://youtu.be/0Ym9-BHI8Fg';
   const helpsection = (
     <span className="toolbar-help-section">
-      {apiDocsButton}
+      {/* {apiDocsButton} */}
       <VideoTutorialButton url={videoTutorialUrl} additionalStyles={ { marginLeft: '8px', marginBottom: '4px' } } />
     </span>
   );
@@ -217,9 +219,11 @@ let B4ABrowserToolbar = ({
     <Toolbar
       relation={relation}
       filters={filters}
-      section={relation ? `Relation <${relation.targetClassName}>` : `Class | ${details.join(' \u2022 ')}`}
+      details={details}
+      lockIcon={lockIcon}
+      // section={relation ? `Relation <${relation.targetClassName}>` : `Class | ${details.join(' \u2022 ')}`}
       subsection={subsection}
-      details={relation ? details.join(' \u2022 ') : ''}
+      // details={relation ? details.join(' \u2022 ') : ''}
       helpsection={helpsection}>
       <a className={styles.toolbarButton} onClick={onRefresh} title='Refresh'>
         <Icon name='refresh' width={30} height={26} />
