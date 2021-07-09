@@ -221,6 +221,7 @@ let B4ABrowserToolbar = ({
       filters={filters}
       details={details}
       lockIcon={lockIcon}
+      onClickSecurity={onClickSecurity}
       // section={relation ? `Relation <${relation.targetClassName}>` : `Class | ${details.join(' \u2022 ')}`}
       subsection={subsection}
       // details={relation ? details.join(' \u2022 ') : ''}
