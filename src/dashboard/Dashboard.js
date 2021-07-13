@@ -221,7 +221,7 @@ export default class Dashboard extends React.Component {
           });
         }
       });
-      return Promise.all(appInfoPromises);
+      return Promise.all(appInfoPromises.map(p => p.catch(err => null)));
     }).then(function(resolvedApps) {
       if(resolvedApps && Array.isArray(resolvedApps)) {
         resolvedApps.forEach(app => {
