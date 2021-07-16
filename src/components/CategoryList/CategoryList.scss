@@ -5,130 +5,131 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
- @import 'stylesheets/globals.scss';
+@import 'stylesheets/globals.scss';
 
- .class_list {
-   position: relative;
-   margin-bottom: 5px;
+.class_list {
+  position: relative;
+  margin-bottom: 5px;
 
-   a {
-     display: block;
-     padding-left: 12px;
-     height: 20px;
-     line-height: 20px;
-     border-left: 1px solid #3e87b2;
-     color: #8fb9cf;
-     font-size: 12px;
+  a {
+    display: block;
+    padding-left: 12px;
+    height: 20px;
+    line-height: 20px;
+    border-left: 1px solid #3e87b2;
+    color: #8fb9cf;
+    font-size: 12px;
 
-     &.active {
-       color: white;
-     }
+    &.active {
+      color: white;
+    }
 
-     &:hover{
-       color: white;
-     }
+    &:hover {
+      color: white;
+    }
 
-     span {
-       display: block;
+    span {
+      display: block;
 
-       &:first-of-type {
-         @include DosisFont;
-         float: right;
-         width: 50px;
-         text-align: right;
-       }
+      &:first-of-type {
+        @include DosisFont;
+        float: right;
+        width: 50px;
+        text-align: right;
+      }
 
-       &:last-of-type {
-         margin-right: 50px;
-         overflow: hidden;
-         text-overflow: ellipsis;
-         white-space: nowrap;
-       }
-     }
-   }
- }
+      &:last-of-type {
+        margin-right: 50px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}
 
- .sub_class_list {
-   position: relative;
-   padding-left: 12px;
-   border-left: 1px solid #3e87b2;
-   font-size: 12px;
-   line-height: 20px;
+.sub_class_list {
+  position: relative;
+  padding-left: 12px;
+  border-left: 1px solid #3e87b2;
+  font-size: 12px;
+  line-height: 20px;
 
-   & .action_div {
-     position: relative;
-     font-weight: 600;
-     letter-spacing: .01rem;
-     & a {
-       border-left: none;
-       color: white;
-     }
-   }
+  & .action_div {
+    position: relative;
+    font-weight: 600;
+    letter-spacing: .01rem;
 
-   & > div:last-of-type {
-     margin-bottom: 0;
-   }
+    & a {
+      border-left: none;
+      color: white;
+    }
+  }
 
-   a {
-     display: block;
-     padding-left: 12px;
-     height: 20px;
-     line-height: 20px;
-     border-left: 1px solid #3e87b2;
-     color: #8fb9cf;
-     font-size: 12px;
+  &>div:last-of-type {
+    margin-bottom: 0;
+  }
 
-     &.active {
-       color: white;
-     }
+  a {
+    display: block;
+    padding-left: 12px;
+    height: 20px;
+    line-height: 20px;
+    border-left: 1px solid #3e87b2;
+    color: #8fb9cf;
+    font-size: 12px;
 
-     &:hover{
-       color: white;
-     }
+    &.active {
+      color: white;
+    }
 
-     span {
-       display: block;
+    &:hover {
+      color: white;
+    }
 
-       &:first-of-type {
-         @include DosisFont;
-         float: right;
-         width: 50px;
-         text-align: right;
-       }
+    span {
+      display: block;
 
-       &:last-of-type {
-         margin-right: 50px;
-         overflow: hidden;
-         text-overflow: ellipsis;
-         white-space: nowrap;
-         font-size: 10px;
-       }
-     }
-   }
- }
+      &:first-of-type {
+        @include DosisFont;
+        float: right;
+        width: 50px;
+        text-align: right;
+      }
 
- .highlight {
-   position: absolute;
-   width: 1px;
-   height: 20px;
-   background: white;
-   transition: top 0.2s cubic-bezier(1, 0, 0, 1);
- }
+      &:last-of-type {
+        margin-right: 50px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 10px;
+      }
+    }
+  }
+}
 
- .category-action {
-   @include DosisFont;
-   position: absolute;
-   font-size: 12px;
-   font-weight: 400;
-   padding: 0 8px;
-   line-height: 20px;
-   top: 0px;
-   right: 0px;
-   background: #0c5987;
-   color: white;
-   border-radius: 3px;
+.highlight {
+  position: absolute;
+  width: 1px;
+  height: 20px;
+  background: white;
+  transition: top 0.2s cubic-bezier(1, 0, 0, 1);
+}
 
-   &:hover {
-     background: #094162;
-   }
- }
+.category-action {
+  @include DosisFont;
+  position: absolute;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 0 8px;
+  line-height: 20px;
+  top: 0px;
+  right: 0px;
+  background: #0c5987;
+  color: white;
+  border-radius: 3px;
+
+  &:hover {
+    background: #094162;
+  }
+}
