@@ -194,8 +194,9 @@ class IndexForm extends Component {
       text: 'This process will run in background and could take minutes, depending on your class size.',
       type: 'warning',
       confirmButtonText: 'Confirm',
+      showLoaderOnConfirm: true,
       preConfirm: () => {
-        this.props.onConfirm(indexConfiguration)
+        return this.props.onConfirm(indexConfiguration)
       },
       showCancelButton: true
     }])
