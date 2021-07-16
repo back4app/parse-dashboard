@@ -149,6 +149,9 @@ export default class Dashboard extends React.Component {
         if(hourDiff === 0){
           return;
         }
+        if (userDetail.disableSolucxForm) {
+          return;
+        }
         // Flow1 are users who signed up less than 30 days ago (720 hours)
         const isFlow1 = hourDiff <= 720 ? true : false;
         let transactionId = userDetail.id;
