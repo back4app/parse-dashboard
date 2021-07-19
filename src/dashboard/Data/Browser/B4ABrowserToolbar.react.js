@@ -75,13 +75,13 @@ let B4ABrowserToolbar = ({
   }) => {
   let selectionLength = Object.keys(selection).length;
   let details = [], lockIcon = '/lock-open-variant.svg';
-  if (count !== undefined) {
-    if (count === 1) {
-      details.push('1 object');
-    } else {
-      details.push(prettyNumber(count) + ' objects');
-    }
-  }
+  // if (count !== undefined) {
+  //   if (count === 1) {
+  //     details.push('1 object');
+  //   } else {
+  //     details.push(prettyNumber(count) + ' objects');
+  //   }
+  // }
 
   let readWritePermissions = '';
   if (!relation && !isUnique) {
