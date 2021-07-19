@@ -589,9 +589,6 @@ class Browser extends DashboardView {
       history.push(this.context.generatePath('browser'));
     }, (error) => {
       let msg = typeof error === 'string' ? error : error.message;
-      if (msg) {
-        msg = msg[0].toUpperCase() + msg.substr(1);
-      }
 
       if (error.code === 403) msg = error.message;
       this.setState({showDropClassDialog: false });
@@ -1017,9 +1014,6 @@ class Browser extends DashboardView {
             });
           }, (error) => {
             let msg = typeof error === 'string' ? error : error.message;
-            if (msg) {
-              msg = msg[0].toUpperCase() + msg.substr(1);
-            }
             obj.set(attr, prev);
             this.setState({ data: this.state.data });
             this.showNote(msg, true);
@@ -1046,9 +1040,6 @@ class Browser extends DashboardView {
       this.setState(state);
     }, (error) => {
       let msg = typeof error === 'string' ? error : error.message;
-      if (msg) {
-        msg = msg[0].toUpperCase() + msg.substr(1);
-      }
       if (!isNewObject && !isEditCloneObj) {
         obj.set(attr, prev);
         this.setState({ data: this.state.data });
