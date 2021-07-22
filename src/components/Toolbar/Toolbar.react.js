@@ -37,7 +37,7 @@ let Toolbar = (props) => {
           {backButton}
         </div>
         <div className={styles.titleText}>
-          <div className={styles.section}>{props.section}</div>
+          {/* <div className={styles.section}>{props.section}</div> */}
           <div>
             <span className={styles.subsection}>
               {props.subsection}
@@ -46,7 +46,11 @@ let Toolbar = (props) => {
             {props.helpsection}
             {/* Public read and write access */}
             <div className={styles.publicAccess} onClick={() => props.onClickSecurity(true)}>
-              <img className={styles.publicAccessIcon} src={props.lockIcon} />
+              {props.lockIcon === true ?
+                <Icon name='lock-outline' fill='#FFFFFF' width={17} height={17}></Icon> :
+                <Icon name='lock-open-variant' fill='#FFFFFF' width={17} height={17}></Icon>
+              }
+              <span className={styles.mr5}></span>
               <a href="javascript:void(0)" className={styles.publicAccessLink}><small>{props.readWritePermissions}</small></a>
             </div>
           </div>

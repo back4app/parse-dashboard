@@ -74,14 +74,14 @@ let B4ABrowserToolbar = ({
     columns
   }) => {
   let selectionLength = Object.keys(selection).length;
-  let details = [], lockIcon = '/lock-open-variant.svg';
-  // if (count !== undefined) {
-  //   if (count === 1) {
-  //     details.push('1 object');
-  //   } else {
-  //     details.push(prettyNumber(count) + ' objects');
-  //   }
-  // }
+  let details = [], lockIcon = false;
+  if (count !== undefined) {
+    if (count === 1) {
+      details.push('1 object');
+    } else {
+      details.push(prettyNumber(count) + ' objects');
+    }
+  }
 
   let readWritePermissions = '';
   if (!relation && !isUnique) {
@@ -98,7 +98,8 @@ let B4ABrowserToolbar = ({
         // details.push('Public Write enabled');
         readWritePermissions = 'Public Write enabled';
       } else if ( !read && !write ) {
-        lockIcon = '/lock-outline.svg'
+        readWritePermissions = 'Public Read and Write disabled';
+        lockIcon = true;
       }
     }
   }
