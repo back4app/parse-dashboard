@@ -86,6 +86,14 @@ const AccountSettingsPage = () => (
     </AccountView>
   );
 
+async function fetchHubUser() {
+  try {
+    return (await axios.get(`${b4aSettings.BACK4APP_API_PATH}/me/hub`, { withCredentials: true })).data;
+  } catch (err) {
+    throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+  }
+}
+
 const PARSE_DOT_COM_SERVER_INFO = {
   features: {
     schemas: {
@@ -135,6 +143,40 @@ export default class Dashboard extends React.Component {
 
   componentDidMount() {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
+      fetchHubUser().then(userDetail => {
+        const now = moment();
+        const hourDiff = now.diff(userDetail.createdAt, 'hours');
+        if(hourDiff === 0){
+          return;
+        }
+        if (userDetail.disableSolucxForm) {
+          return;
+        }
+        // Flow1 are users who signed up less than 30 days ago (720 hours)
+        const isFlow1 = hourDiff <= 720 ? true : false;
+        let transactionId = userDetail.id;
+        if(!isFlow1){
+          transactionId += `${now.year()}${now.month()+1}`;
+        }
+        const options = {
+          transaction_id: transactionId,
+          store_id: isFlow1 ? '1001' : '1002',
+          name: userDetail.username,
+          email: userDetail.username,
+          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',          
+        };
+        options.param_requestdata = encodeURIComponent(JSON.stringify({
+          userDetail,
+          options,
+          localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
+        }));
+        createSoluCXWidget(
+          process.env.SOLUCX_API_KEY,
+          'bottomBoxLeft',
+          options,
+          { collectInterval: 30, retryAttempts: 1, retryInterval: 5 }
+        );
+      });
 
       AccountManager.setCurrentUser({ user });
       this.setState({ newFeaturesInLatestVersion });
