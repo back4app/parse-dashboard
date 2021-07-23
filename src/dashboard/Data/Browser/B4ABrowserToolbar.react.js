@@ -98,7 +98,7 @@ let B4ABrowserToolbar = ({
         // details.push('Public Write enabled');
         readWritePermissions = 'Public Write enabled';
       } else if ( !read && !write ) {
-        readWritePermissions = 'Public Read and Write disabled';
+        readWritePermissions = 'Protected';
         lockIcon = true;
       }
     }
