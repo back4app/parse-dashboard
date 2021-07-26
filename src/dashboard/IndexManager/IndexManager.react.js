@@ -13,6 +13,7 @@ import stringCompare from 'lib/stringCompare'
 import styles from './IndexManager.scss'
 import subscribeTo from 'lib/subscribeTo'
 import Swal from 'sweetalert2'
+import AccountManager from 'lib/AccountManager';
 
 @subscribeTo('Schema', 'schema')
 class IndexManager extends DashboardView {
@@ -27,7 +28,8 @@ class IndexManager extends DashboardView {
       selected: {},
       data: null,
       showIndexManager: false,
-      isReadOnly: !this.context.currentApp.custom.isOwner
+      canCreate: this.context.currentApp.custom.isOwner,
+      canDelete: this.context.currentApp.custom.isOwner
     }
 
     this.refresh = this.refresh.bind(this)
@@ -36,6 +38,7 @@ class IndexManager extends DashboardView {
     this.closeIndexForm = this.closeIndexForm.bind(this)
     this.createIndexes = this.createIndexes.bind(this)
     this.dropIndexes = this.dropIndexes.bind(this)
+    this.allowCollaboratorToCreate = this.allowCollaboratorToCreate.bind(this)
   }
 
   componentWillMount() {
@@ -52,6 +55,27 @@ class IndexManager extends DashboardView {
           loading: false
         })
       })
+    }
+    // if not owner then check for collaborator
+    if (!this.context.currentApp.custom.isOwner) {
+      let currentEmail = AccountManager.currentUser().email;
+
+      if (Object.keys(this.context.currentApp.settings.fields).length !== 0) { // if collaborators field is already loaded
+        this.allowCollaboratorToCreate(this.context.currentApp.settings.fields.fields.collaborators, currentEmail);
+      } else {
+        this.context.currentApp.fetchSettingsFields().then(({ fields }) => {
+          this.allowCollaboratorToCreate(fields.collaborators, currentEmail)
+        });
+      }
+    }
+  }
+
+  allowCollaboratorToCreate (collaborators, currentEmail) {
+    let isCollab = collaborators.findIndex(collab => collab.userEmail === currentEmail);
+    if (isCollab !== -1) {
+      this.setState({
+        canCreate: true
+      });
     }
   }
 
@@ -196,7 +220,7 @@ class IndexManager extends DashboardView {
       })
     } else {
       const { className } = this.props.params
-      this.context.currentApp.createIndex(className, indexConfiguration)
+      return this.context.currentApp.createIndex(className, indexConfiguration)
         .then(() => {
           this.closeIndexForm()
         }).catch(e => {
@@ -332,13 +356,13 @@ class IndexManager extends DashboardView {
           </div>
 
           <section className={styles.toolbar}>
-            {!this.state.isReadOnly && <a className={styles.toolbarButton} onClick={this.showIndexForm} title='Add an index'>
+            {this.state.canCreate && <a className={styles.toolbarButton} onClick={this.showIndexForm} title='Add an index'>
               <Icon name='add-row' width={32} height={26} />
             </a>}
             <a className={styles.toolbarButton} onClick={this.refresh} title='Refresh'>
               <Icon name='refresh' width={30} height={26} />
             </a>
-            {!this.state.isReadOnly && <a className={styles.toolbarButton} onClick={this.dropIndexes} title='Drop index'>
+            {this.state.canDelete && <a className={styles.toolbarButton} onClick={this.dropIndexes} title='Drop index'>
               <Icon name='trash-solid' width={30} height={26} />
             </a>}
           </section>

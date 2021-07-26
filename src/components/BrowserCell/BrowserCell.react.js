@@ -250,11 +250,13 @@ class BrowserCell extends Component {
       this.copyableValue = value.id;
     }
     else if (type === 'Array') {
-      if ( typeof value[0] === 'object' && value[0].__type === 'Pointer' ) {
+      if ( value[0] && typeof value[0] === 'object' && value[0].__type === 'Pointer' ) {
         const array = [];
+        let mapError = false;
         value.map( (v, i) => {
-          if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
-            throw new Error('Invalid type found in pointer array');
+          if ( !v || typeof v !== 'object' || v.__type !== 'Pointer' ) {
+            mapError = true;
+            return;
           }
           const object = new Parse.Object(v.className);
           object.id = v.objectId;
@@ -263,11 +265,16 @@ class BrowserCell extends Component {
               <Pill value={v.objectId} />
             </a>);
         });
-        this.copyableValue = content = <ul>
-          { array.map( a => <li>{a}</li>) }
-        </ul>
-        if ( array.length > 1 ) {
-          classes.push(styles.hasMore);
+        if ( mapError === false ) {
+          this.copyableValue = content = <ul>
+            { array.map( a => <li>{a}</li>) }
+          </ul>
+          if ( array.length > 1 ) {
+            classes.push(styles.hasMore);
+          }
+        }
+        else {
+          this.copyableValue = content = JSON.stringify(value);
         }
       }
       else {
@@ -280,7 +287,8 @@ class BrowserCell extends Component {
       } else if (typeof value === 'string') {
         value = new Date(value);
       }
-      this.copyableValue = content = dateStringUTC(value);
+      content = dateStringUTC(value);
+      this.copyableValue = value.toISOString();
     } else if (type === 'Boolean') {
       this.copyableValue = content = value ? 'True' : 'False';
     } else if (type === 'Object' || type === 'Bytes') {

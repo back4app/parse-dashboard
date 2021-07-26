@@ -155,9 +155,11 @@ class SlowQueries extends TableView {
   handleDownload() {
     const csvDeclaration = 'data:text/csv;charset=utf-8,';
     let csvRows = [SLOW_QUERIES_HEADERS];
+    csvRows[0][0] = 'Sno.'; // replace # 
     csvRows = csvRows.concat(this.state.slowQueries);
+    let csvContent = csvRows.map(row => row.join(',')).join('\n');
 
-    window.open(encodeURI(csvDeclaration + csvRows.join('\n')));
+    window.open(encodeURI(csvDeclaration + csvContent));
   }
 
   renderToolbar() {

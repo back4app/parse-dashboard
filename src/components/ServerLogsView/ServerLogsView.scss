@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/back4app.scss';
+@import 'stylesheets/globals.scss';
+
+.content {
+  padding: 96px 30px 0px 20px;
+  background: $logViewBackgroundColor;
+  min-height: $content-max-height;
+}
+
+.title {
+    font-weight: 600;
+    line-height: 20px;
+    color: #224969;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.prettyprint {
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    color: #333;
+    word-break: break-all;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow-x:auto;
+    overflow-y:auto;
+    max-height: 500px;
+    overflow-wrap: normal;
+    font-family: 'Roboto Mono', monospace;
+}

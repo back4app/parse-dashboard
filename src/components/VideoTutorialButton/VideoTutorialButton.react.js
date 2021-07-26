@@ -4,6 +4,7 @@ import styles from 'components/VideoTutorialButton/VideoTutorialButton.scss';
 import Position from 'lib/Position';
 import Popover from 'components/Popover/Popover.react';
 import ReactPlayer from 'react-player';
+import Icon      from 'components/Icon/Icon.react';
 
 export default class VideoTutorialButton extends Component {
 
@@ -83,7 +84,10 @@ export default class VideoTutorialButton extends Component {
         className={classes.join(' ')}
         style={this.props.additionalStyles}
         onClick={() => this.openVideoTutorialModal()}>
-        <span>Video Tutorial</span>
+        {/* <img className={styles.tutorialButtonIcon} src="/play-circle-outline.svg" /> */}
+        <Icon name="play-circle-outline" fill='#FFFFFF' height={17} width={17}></Icon>
+        <span className={styles.mr5}></span>
+        <span>Tutorial</span>
         {this.state.videoTutorialModal}
       </a>
     );

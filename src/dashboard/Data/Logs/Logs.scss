@@ -14,7 +14,43 @@
 }
 
 .content {
-  padding: 106px 10px 10px 10px;
+  padding: 75px 20px 0px 20px;
   background: $logViewBackgroundColor;
   min-height: $content-max-height;
+}
+
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 38px;
+  width: 38px;
+  margin: 0 6px;
+  padding: 4px;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  svg {
+    vertical-align: middle;
+    fill: white;
+  }
+
+  span {
+    vertical-align: middle;
+    height: 14px;
+    line-height: 14px;
+  }
+}
+
+.toolbarButtonDisabled {
+  cursor: not-allowed;
+  color: #66637A;
+
+  &:hover svg {
+    fill: #9a99a5;
+  }
 }

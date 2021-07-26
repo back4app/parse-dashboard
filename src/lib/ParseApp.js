@@ -1200,4 +1200,17 @@ export default class ParseApp {
 
     this.custom.isDatabasePublic = false;
   }
+
+  async fetchServerLogs() {
+    try {
+      return (
+        await axios.get(
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/logs`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
 }

@@ -24,7 +24,7 @@
       color: white;
     }
 
-    &:hover{
+    &:hover {
       color: white;
     }
 
@@ -59,13 +59,14 @@
     position: relative;
     font-weight: 600;
     letter-spacing: .01rem;
+
     & a {
       border-left: none;
       color: white;
-    }    
+    }
   }
 
-  & > div:last-of-type {
+  &>div:last-of-type {
     margin-bottom: 0;
   }
 
@@ -79,10 +80,10 @@
     font-size: 12px;
 
     &.active {
-      color: white;
+      color: rgb(102, 91, 91);
     }
 
-    &:hover{
+    &:hover {
       color: white;
     }
 

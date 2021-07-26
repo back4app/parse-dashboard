@@ -2,18 +2,27 @@
 
 .button {
   @include DosisFont;
-  display: inline-block;
-  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  height: 25px;
   border: 1px solid;
   line-height: 20px;
   border-radius: 5px;
-  min-width: 90px;
+  min-width: 40px;
   padding: 0 16px;
   font-size: 12px;
   font-weight: bold;
   color: $white;
   background-color: #4caf50;
   border-color: #4caf50!important;
+  padding: 0px 5px!important;
+
+  .tutorialButtonIcon {
+    height: 15px;
+    width: 15px;
+    color: white;
+    margin-right: 2px;
+  }
 
   &:hover, &:focus {
     color: $white;
@@ -30,6 +39,10 @@
   width: 75%;
   height: 75%;
   background: black;
+}
+
+.mr5 {
+  margin-right: 5px;
 }
 
 @include modalKeyframes();

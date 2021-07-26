@@ -30,6 +30,10 @@ import Jobs               from './Data/Jobs/Jobs.react';
 import JobsData           from 'dashboard/Data/Jobs/JobsData.react';
 import Loader             from 'components/Loader/Loader.react';
 import Logs               from './Data/Logs/Logs.react';
+import InfoLogs           from './Data/Logs/InfoLogs.react';
+import ErrorLogs          from './Data/Logs/ErrorLogs.react';
+import AccessLogs         from './Data/Logs/AccessLogs.react';
+import SystemLogs         from './Data/Logs/SystemLogs.react';
 import Migration          from './Data/Migration/Migration.react';
 import ParseApp           from 'lib/ParseApp';
 import Performance        from './Analytics/Performance/Performance.react';
@@ -82,6 +86,14 @@ const AccountSettingsPage = () => (
     </AccountView>
   );
 
+async function fetchHubUser() {
+  try {
+    return (await axios.get(`${b4aSettings.BACK4APP_API_PATH}/me/hub`, { withCredentials: true })).data;
+  } catch (err) {
+    throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+  }
+}
+
 const PARSE_DOT_COM_SERVER_INFO = {
   features: {
     schemas: {
@@ -118,6 +130,13 @@ const PARSE_DOT_COM_SERVER_INFO = {
   parseServerVersion: 'Parse.com',
 }
 
+const monthQuarter = {
+  '0': 'Q1',
+  '1': 'Q2',
+  '2': 'Q3',
+  '3': 'Q4'
+};
+
 export default class Dashboard extends React.Component {
   constructor(props) {
     super();
@@ -131,6 +150,43 @@ export default class Dashboard extends React.Component {
 
   componentDidMount() {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
+      fetchHubUser().then(userDetail => {
+        const now = moment();
+        const hourDiff = now.diff(userDetail.createdAt, 'hours');
+        if(hourDiff === 0){
+          return;
+        }
+        if (userDetail.disableSolucxForm) {
+          return;
+        }
+        // Flow1 are users who signed up less than 30 days ago (720 hours)
+        const isFlow1 = hourDiff <= 720 ? true : false;
+        let transactionId = userDetail.id;
+        if(!isFlow1){
+          const quarter = monthQuarter[parseInt(now.month()/3)];
+          transactionId += `${now.year()}${quarter}`;
+        }
+        const options = {
+          transaction_id: transactionId,
+          store_id: isFlow1 ? '1001' : '1002',
+          name: userDetail.username,
+          email: userDetail.username,
+          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',          
+        };
+        let retryInterval = isFlow1 ? 5 : 45;
+        let collectInterval = isFlow1 ? 30 : 90;
+        options.param_requestdata = encodeURIComponent(JSON.stringify({
+          userDetail,
+          options,
+          localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
+        }));
+        createSoluCXWidget(
+          process.env.SOLUCX_API_KEY,
+          'bottomBoxLeft',
+          options,
+          { collectInterval, retryAttempts: 1, retryInterval }
+        );
+      });
 
       AccountManager.setCurrentUser({ user });
       this.setState({ newFeaturesInLatestVersion });
@@ -272,6 +328,16 @@ export default class Dashboard extends React.Component {
       </Switch>
     );
 
+    const logsRoute = ({ match }) => (
+      <Switch>
+        <Route path={ match.path + '/info' } component={InfoLogs} />
+        <Route path={ match.path + '/error' } component={ErrorLogs} />
+        <Redirect exact from={ match.path } to='/apps/:appId/logs/system' />
+        <Route path={ match.path + '/system' } component={SystemLogs} />
+        <Route path={ match.path + '/access' } component={AccessLogs} /> 
+      </Switch>
+    );
+
     const BrowserRoute = (props) => {
       if (ShowSchemaOverview) {
         return <SchemaOverview {...props} params={props.match.params} />
@@ -315,10 +381,7 @@ export default class Dashboard extends React.Component {
 
           <Route path={ match.path + '/jobs' } component={JobsRoute}/>
 
-          <Route path={ match.path + '/logs/:type' } render={(props) => (
-            <Logs {...props} params={props.match.params} />
-          )} />
-          <Redirect from={ match.path + '/logs' } to='/apps/:appId/logs/info' />
+          <Route path={ match.path + '/logs' } component={logsRoute}/>
 
           <Route path={ match.path + '/config' } component={Config} />
           <Route path={ match.path + '/api_console' } component={ApiConsoleRoute} />

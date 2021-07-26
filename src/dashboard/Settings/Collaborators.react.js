@@ -120,7 +120,7 @@ export default class Collaborators extends React.Component {
     );
   }
 
-  sendInvite(featuresPermission, classesPermission, owner) {    
+  sendInvite(featuresPermission, classesPermission, owner) {
     return this.context.currentApp.sendEmailToInviteCollaborator(this.state.currentEmail, featuresPermission, classesPermission, owner).then((response) => {
       if (response.status === 200) {
         this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false, waiting_collaborators: response.data.response });
@@ -133,20 +133,20 @@ export default class Collaborators extends React.Component {
           inviteCollab: false
         });
       }
-    }).catch(error => {     
+    }).catch(error => {
       this.setState({showDialog: false, lastError: error.response.data.error || error.message || error.error, inviteCollab: false });
     });
   }
 
-  editInvite(featuresPermission, classesPermission) { 
+  editInvite(featuresPermission, classesPermission) {
     return this.context.currentApp.editInvitePermissionCollaborator(this.state.currentEmailInput, featuresPermission, classesPermission).then((response) => {
       if (response.status === 200) {
-        this.setState({ 
-          lastError: '', 
-          inviteCollab: false, 
-          showDialog: false, 
+        this.setState({
+          lastError: '',
+          inviteCollab: false,
+          showDialog: false,
           lastSuccess: `The permission to ${this.state.currentEmailInput} has been updated!`,
-          currentEmailInput: '', 
+          currentEmailInput: '',
           waiting_collaborators: response.data.response });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
@@ -157,11 +157,11 @@ export default class Collaborators extends React.Component {
           inviteCollab: false
         });
       }
-    }).catch(error => {     
+    }).catch(error => {
       this.setState({showDialog: false, lastError: error.response.data.error || error.message || error.error, inviteCollab: false });
     });
-  }  
-  
+  }
+
   handleRemoveInvite(collaborator) {
     return this.context.currentApp.removeInviteCollaborator(collaborator.userEmail).then((response) => {
       this.setState({
@@ -171,13 +171,13 @@ export default class Collaborators extends React.Component {
   }
   handleEditInvitePermission(collaborator){
     this.setState({
-      showDialog: true, 
+      showDialog: true,
       editInvitePermission: true,
       currentFeaturesPermissions: collaborator.featuresPermission,
       currentClassesPermissions: collaborator.classesPermission || this.getDefaultClasses(),
       currentEmailInput: collaborator.userEmail,
       currentCollab: collaborator
-    }) 
+    })
   }
 
   handleDelete(collaborator) {
@@ -210,7 +210,7 @@ export default class Collaborators extends React.Component {
       }
     )
   }
-  
+
   validateEmail(email) {
     // We allow mixed-case emails for Parse accounts
     let collabs = this.props.collaborators;
@@ -220,7 +220,7 @@ export default class Collaborators extends React.Component {
     let isExistingCollaborator = !!allEmails.find(collab => email.toLowerCase() === collab.userEmail.toLowerCase());
     return validateEmailFormat(email) &&
       !isExistingCollaborator &&
-      AccountManager.currentUser().email.toLowerCase() !== email.toLowerCase();    
+      AccountManager.currentUser().email.toLowerCase() !== email.toLowerCase();
   }
 
   setCollabPermissions() {
@@ -320,7 +320,7 @@ export default class Collaborators extends React.Component {
                 currentCollab: {}
               }
             );
-          } 
+          }
           else if (this.state.inviteCollab){
             this.sendInvite(featuresPermission, classesPermission, this.props.owner_email);
           }
@@ -329,9 +329,9 @@ export default class Collaborators extends React.Component {
           }
         }} />
     )
-  }  
+  }
 
-  addCollaboratorField() {    
+  addCollaboratorField() {
     return (
       <Field
         labelWidth={55}
@@ -349,7 +349,12 @@ export default class Collaborators extends React.Component {
             />
           }}
           showButton={this.state.showBtnCollaborator}
-          validate={(email) => this.validateEmail(email)}
+          validate={(email) => {
+            if ( this.state.showBtnCollaborator === true ) {
+              return true;
+            }
+            return this.validateEmail(email);
+          }}
           onSubmit={this.handleAdd.bind(this)}
           submitButtonText='ADD' />} />
     )

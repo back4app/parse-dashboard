@@ -15,6 +15,7 @@ import ParseApp               from 'lib/ParseApp';
 import React                  from 'react';
 import PropTypes              from 'lib/PropTypes';
 import { SpecialClasses }     from 'lib/Constants';
+import Button                       from 'components/Button/Button.react';
 
 /**
  * DataBrowser renders the browser toolbar and data table
@@ -86,7 +87,7 @@ export default class DataBrowser extends React.Component {
       this.setState({ numberOfColumns: Object.keys(this.props.columns).length })
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     document.body.addEventListener('keydown', this.handleKey);
   }
 
@@ -165,7 +166,6 @@ export default class DataBrowser extends React.Component {
       }
       return;
     }
-
     if (this.state.editing) {
       switch (e.keyCode) {
         case 27: // ESC

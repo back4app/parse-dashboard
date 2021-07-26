@@ -193,9 +193,10 @@ class IndexForm extends Component {
       title: 'Are you sure you want to create the indexes?',
       text: 'This process will run in background and could take minutes, depending on your class size.',
       type: 'warning',
+      showLoaderOnConfirm: true,
       confirmButtonText: 'Confirm',
       preConfirm: () => {
-        this.props.onConfirm(indexConfiguration)
+        return this.props.onConfirm(indexConfiguration)
       },
       showCancelButton: true
     }])

@@ -74,7 +74,7 @@ let B4ABrowserToolbar = ({
     columns
   }) => {
   let selectionLength = Object.keys(selection).length;
-  let details = [];
+  let details = [], lockIcon = false;
   if (count !== undefined) {
     if (count === 1) {
       details.push('1 object');
@@ -83,16 +83,23 @@ let B4ABrowserToolbar = ({
     }
   }
 
+  let readWritePermissions = '';
   if (!relation && !isUnique) {
     if (perms && !hidePerms) {
       let read = perms.get && perms.find && perms.get['*'] && perms.find['*'];
       let write = perms.create && perms.update && perms.delete && perms.create['*'] && perms.update['*'] && perms.delete['*'];
       if (read && write) {
-        details.push('Public Read and Write enabled');
+        // details.push('Public Read and Write enabled');
+        readWritePermissions = 'Public Read and Write enabled';
       } else if (read) {
-        details.push('Public Read enabled');
+        // details.push('Public Read enabled');
+        readWritePermissions = 'Public Read enabled';
       } else if (write) {
-        details.push('Public Write enabled');
+        // details.push('Public Write enabled');
+        readWritePermissions = 'Public Write enabled';
+      } else if ( !read && !write ) {
+        readWritePermissions = 'Public Read and Write disabled';
+        lockIcon = true;
       }
     }
   }
@@ -208,7 +215,7 @@ let B4ABrowserToolbar = ({
   const videoTutorialUrl = 'https://youtu.be/0Ym9-BHI8Fg';
   const helpsection = (
     <span className="toolbar-help-section">
-      {apiDocsButton}
+      {/* {apiDocsButton} */}
       <VideoTutorialButton url={videoTutorialUrl} additionalStyles={ { marginLeft: '8px', marginBottom: '4px' } } />
     </span>
   );
@@ -217,9 +224,12 @@ let B4ABrowserToolbar = ({
     <Toolbar
       relation={relation}
       filters={filters}
+      readWritePermissions={readWritePermissions}
+      lockIcon={lockIcon}
+      onClickSecurity={onClickSecurity}
       section={relation ? `Relation <${relation.targetClassName}>` : `Class | ${details.join(' \u2022 ')}`}
       subsection={subsection}
-      details={relation ? details.join(' \u2022 ') : ''}
+      details={relation ? details.join(' \u2022 ') : details.join(' \u2022 ')}
       helpsection={helpsection}>
       <a className={styles.toolbarButton} onClick={onRefresh} title='Refresh'>
         <Icon name='refresh' width={30} height={26} />

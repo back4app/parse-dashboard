@@ -18,7 +18,7 @@ export default class DateTimeEditor extends React.Component {
       open: false,
       position: null,
       value: props.value,
-      text: props.value.toISOString()
+      text: props.value && props.value.toISOString()
     };
 
     this.checkExternalClick = this.checkExternalClick.bind(this);
@@ -26,6 +26,9 @@ export default class DateTimeEditor extends React.Component {
   }
 
   componentWillReceiveProps(props) {
+    if (this.state.text !== this.props.value.toISOString()) {
+      return;
+    }
     this.setState({ value: props.value, text: props.value.toISOString() });
   }
 
@@ -33,11 +36,13 @@ export default class DateTimeEditor extends React.Component {
     document.body.addEventListener('click', this.checkExternalClick);
     this.refs.input.addEventListener('keypress', this.handleKey);
     this.props.setFocus && this.toggle();
+
   }
 
   componentWillUnmount() {
     document.body.removeEventListener('click', this.checkExternalClick);
     this.refs.input.removeEventListener('keypress', this.handleKey);
+
   }
 
   checkExternalClick(e) {
