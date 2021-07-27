@@ -253,6 +253,25 @@ export default class DataBrowser extends React.Component {
           e.preventDefault()
         }
         break;
+      case 86:
+        if ( e.ctrlKey || e.metaKey ) {
+          colName = this.state.order[this.state.current.col].name;
+          col = this.props.columns[colName];
+          if (col.type === 'Date') {
+            navigator.clipboard.readText()
+              .then( text => {
+                if ( text ) {
+                  this.props.updateRow(
+                    this.state.current.row,
+                    colName,
+                    new Date(text.replace('at',''))
+                  );
+                }
+              });
+          }
+        }
+        e.preventDefault()
+        break;
       case 13: // Enter
         if (!this.state.current.readonly) {
           this.setState({ editing: true });
