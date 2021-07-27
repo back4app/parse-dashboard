@@ -1040,6 +1040,17 @@ export default class ParseApp {
 
   /**
    * @param {String!} className
+   */
+  getPendingIndexes(className) {
+    return axios.get(`/parse-app/${this.slug}/index/${className}/pending`).then(res => {
+      return Object.values(Object.values(res.data[className]))
+    }).catch(err => {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    })
+  }
+
+  /**
+   * @param {String!} className
    * @param {Object!} indexConfiguration.index
    * @param {Object!} indexConfiguration.indexOptions
    */

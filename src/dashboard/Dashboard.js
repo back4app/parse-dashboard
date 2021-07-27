@@ -130,6 +130,13 @@ const PARSE_DOT_COM_SERVER_INFO = {
   parseServerVersion: 'Parse.com',
 }
 
+const monthQuarter = {
+  '0': 'Q1',
+  '1': 'Q2',
+  '2': 'Q3',
+  '3': 'Q4'
+};
+
 export default class Dashboard extends React.Component {
   constructor(props) {
     super();
@@ -156,7 +163,8 @@ export default class Dashboard extends React.Component {
         const isFlow1 = hourDiff <= 720 ? true : false;
         let transactionId = userDetail.id;
         if(!isFlow1){
-          transactionId += `${now.year()}${now.month()+1}`;
+          const quarter = monthQuarter[parseInt(now.month()/3)];
+          transactionId += `${now.year()}${quarter}`;
         }
         const options = {
           transaction_id: transactionId,
@@ -165,6 +173,8 @@ export default class Dashboard extends React.Component {
           email: userDetail.username,
           journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',          
         };
+        let retryInterval = isFlow1 ? 5 : 45;
+        let collectInterval = isFlow1 ? 30 : 90;
         options.param_requestdata = encodeURIComponent(JSON.stringify({
           userDetail,
           options,
@@ -174,7 +184,7 @@ export default class Dashboard extends React.Component {
           process.env.SOLUCX_API_KEY,
           'bottomBoxLeft',
           options,
-          { collectInterval: 30, retryAttempts: 1, retryInterval: 5 }
+          { collectInterval, retryAttempts: 1, retryInterval }
         );
       });
 

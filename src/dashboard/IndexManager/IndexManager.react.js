@@ -212,7 +212,7 @@ class IndexManager extends DashboardView {
       errorMessages.push('Only one text index is allowed per class')
     }
     if (errorMessages.length) {
-      Swal.fire({
+      Swal.insertQueueStep({
         title: 'We found some errors',
         html: `<p style="text-align: center">${errorMessages.join('</p><p style="text-align: center">')}</p>`,
         type: 'error',
@@ -220,17 +220,29 @@ class IndexManager extends DashboardView {
       })
     } else {
       const { className } = this.props.params
-      this.context.currentApp.createIndex(className, indexConfiguration)
+      return this.context.currentApp.createIndex(className, indexConfiguration)
         .then(() => {
-          this.closeIndexForm()
+          // add new index row with status PENDING
+          // TODO: & start listening to its status
+          let data = this.state.data;
+          data.push({
+            creationType: 'Manual',
+            index: JSON.stringify(indexConfiguration.index),
+            ...indexOptions,
+            status: 'PENDING',
+            updatedAt: '-',
+          });
+          this.setState({ data });
         }).catch(e => {
-          Swal.fire({
+          Swal.insertQueueStep({
             title: 'Index creation failure',
             text: 'Error while creating the indexes. Please try again later.',
             type: 'error'
-          })
-          console.trace(e)
-        })
+          });
+          console.trace(e);
+        }).finally(() => {
+          this.closeIndexForm();
+        });
     }
   }
 
