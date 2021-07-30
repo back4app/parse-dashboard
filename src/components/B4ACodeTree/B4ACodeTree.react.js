@@ -117,7 +117,6 @@ export default class B4ACodeTree extends React.Component {
         if ( isImage === false ) {
 
           fr.onload = () => {
-            console.log(fr.result);
             source = fr.result;
             selectedFile = selected.text
             nodeId = selected.id
