@@ -68,13 +68,13 @@ export default class B4ACodeTree extends React.Component {
     return false
   }
 
-  async handleFiles(files) {
+  handleFiles(files) {
     this.setState({ newFile: files })
     this.loadFile()
   }
 
   // load file and add on tree
-  async loadFile() {
+  loadFile() {
     let file = this.state.newFile
     if (file) {
       let currentTree = '#'
