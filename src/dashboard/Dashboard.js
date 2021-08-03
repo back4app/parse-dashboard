@@ -71,6 +71,7 @@ import Playground from './Data/Playground/Playground.react';
 import axios from "lib/axios";
 import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
+import EmptyState from 'components/EmptyState/EmptyState.react';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -128,6 +129,7 @@ const PARSE_DOT_COM_SERVER_INFO = {
     }
   },
   parseServerVersion: 'Parse.com',
+  status: 'SUCCESS'
 }
 
 const monthQuarter = {
@@ -144,7 +146,9 @@ export default class Dashboard extends React.Component {
       configLoadingError: '',
       configLoadingState: AsyncStatus.PROGRESS,
       newFeaturesInLatestVersion: [],
+      apps: []
     };
+    this.updateApp = this.updateApp.bind(this);
     setBasePath(props.path);
   }
 
@@ -189,68 +193,71 @@ export default class Dashboard extends React.Component {
       });
 
       AccountManager.setCurrentUser({ user });
-      this.setState({ newFeaturesInLatestVersion });
-      let appInfoPromises = apps.map(app => {
+      const stateApps = [];
+      apps.forEach(app => {
+        app.serverInfo = { status: 'LOADING' };
+        AppsManager.addApp(app);
+        stateApps.push(new ParseApp(app));
+      })
+      this.setState({ newFeaturesInLatestVersion, apps: stateApps, configLoadingState: AsyncStatus.SUCCESS });
+      
+      apps.forEach(async (app) => {
         // Set master key as a default string to avoid undefined value access issues
         if (!app.masterKey) app.masterKey = "******"
         if (app.serverURL.startsWith('https://api.parse.com/1')) {
           //api.parse.com doesn't have feature availability endpoint, fortunately we know which features
           //it supports and can hard code them
           app.serverInfo = PARSE_DOT_COM_SERVER_INFO;
-          return Promise.resolve(app);
+          AppsManager.updateApp(app);
         } else {
-          app.serverInfo = {}
-          return new ParseApp(app).apiRequest(
-            'GET',
-            'serverInfo',
-            {},
-            { useMasterKey: true }
-          ).then(serverInfo => {
-            app.serverInfo = serverInfo;
-            return app;
-          }, error => {
+          try {
+            const serverInfo = await (new ParseApp(app).apiRequest('GET', 'serverInfo', {}, { useMasterKey: true }));
+            app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
+            AppsManager.updateApp(app);
+            this.updateApp(app);
+          } catch (error) {
             if (error.code === 100) {
               app.serverInfo = {
                 error: 'unable to connect to server',
                 enabledFeatures: {},
-                parseServerVersion: 'unknown'
+                parseServerVersion: 'unknown',
+                status: 'ERROR'
               }
-              return Promise.resolve(app);
             } else if (error.code === 107) {
               app.serverInfo = {
                 error: 'server version too low',
                 enabledFeatures: {},
-                parseServerVersion: 'unknown'
+                parseServerVersion: 'unknown',
+                status: 'ERROR'
               }
-              return Promise.resolve(app);
             } else {
               app.serverInfo = {
                 error: error.message || 'unknown error',
                 enabledFeatures: {},
-                parseServerVersion: 'unknown'
+                parseServerVersion: 'unknown',
+                status: 'ERROR'
               }
-              return Promise.resolve(app);
             }
-          });
+            AppsManager.updateApp(app);
+            this.updateApp(app);
+          }
         }
       });
-      return Promise.all(appInfoPromises);
-    }).then(function(resolvedApps) {
-      if(resolvedApps && Array.isArray(resolvedApps)) {
-        resolvedApps.forEach(app => {
-          AppsManager.addApp(app);
-        });
-      } else {
-        Array.prototype.slice.call(arguments).forEach(app => {
-          AppsManager.addApp(app);
-        });
-      }
-      this.setState({ configLoadingState: AsyncStatus.SUCCESS });
-    }.bind(this)).catch(({ error }) => {
+    }).catch(({ error }) => {
       this.setState({
         configLoadingError: error,
         configLoadingState: AsyncStatus.FAILED
       });
+    });
+  }
+
+  updateApp(app) {
+    const updatedApps = [...this.state.apps];
+    const appIdx = updatedApps.findIndex(ap => ap.applicationId === app.appId);
+    if (appIdx === -1) return;
+    updatedApps[appIdx] = new ParseApp(app);
+    this.setState({
+      apps: updatedApps
     });
   }
 
@@ -273,7 +280,7 @@ export default class Dashboard extends React.Component {
 
     const AppsIndexPage = () => (
       <AccountView section='Your Apps' style={{top: '0px'}}>
-        <AppsIndex newFeaturesInLatestVersion={this.state.newFeaturesInLatestVersion}/>
+        <AppsIndex apps={this.state.apps} newFeaturesInLatestVersion={this.state.newFeaturesInLatestVersion}/>
       </AccountView>
     );
 
@@ -366,7 +373,35 @@ export default class Dashboard extends React.Component {
       </Switch>
     )
 
-    const AppRoute = ({ match }) => (
+    const AppRoute = ({ match }) => {
+      const appId = match.params.appId;
+      let currentApp = this.state.apps.find(ap => ap.slug === appId);
+      if (!currentApp) return <div />;
+      if (currentApp.serverInfo.status === 'LOADING') {
+        return (
+          <div className={center}>
+            <Loader />
+          </div>
+        );
+      }
+      if (currentApp.serverInfo.error) {
+        return (
+          <div className={center}>
+            <div style={{ height: "800px", position: "relative" }}>
+              <EmptyState
+                icon={"cloud-surprise"}
+                title={"Couldn't load this app"}
+                description={
+                  "Something went wrong while loading this app, could you please try opening another app."
+                }
+                cta={"Go to apps"}
+                action={() => (window.location = "/apps")}
+              ></EmptyState>
+            </div>
+          </div>
+        );
+      }
+      return (
       <AppData params={ match.params }>
         <Switch>
           <Route path={ match.path + '/getting_started' } component={Empty} />
@@ -417,7 +452,8 @@ export default class Dashboard extends React.Component {
           <Route path={ match.path + '/settings' } component={SettingsRoute}/>
         </Switch>
       </AppData>
-    )
+      )
+    }
 
     const Index = () => (
       <div>

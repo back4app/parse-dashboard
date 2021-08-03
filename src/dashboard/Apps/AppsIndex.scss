@@ -135,7 +135,15 @@
   width: 100%;
   display: inline-block;
   font-size: 22px;
-  color: white;
+  color: white !important;
+  &.disabled {
+    color: #788c97 !important;
+  }
+
+  & > img, svg {
+    vertical-align: middle;
+    margin-left: 4px;
+  }
 }
 
 .details {
@@ -205,5 +213,21 @@
 
   &:hover {
     background: $blue;
+  }
+}
+
+.loadingIcon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  @include animation('spin .75s linear infinite');
+}
+
+@include keyframes(spin) {
+  0% {
+    @include transform(rotate(0deg));
+  }
+  100% {
+    @include transform(rotate(360deg));
   }
 }

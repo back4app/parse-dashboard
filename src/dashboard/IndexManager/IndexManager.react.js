@@ -304,7 +304,7 @@ class IndexManager extends DashboardView {
       return (
         <tr key={name}>
           {!this.state.isReadOnly && <td className={styles.selectedContainer}>
-            {status === 'SUCCESS' && <input type='checkbox' value={!!this.state.selected[name]} onChange={() => this.toggleRow(name)} />}
+            {(status === 'SUCCESS' || status === 'ERROR') && <input type='checkbox' value={!!this.state.selected[name]} onChange={() => this.toggleRow(name)} />}
           </td>}
           <td className={this.state.isReadOnly ? styles.readOnly : ''}>{name}</td>
           <td>{creationType}</td>

@@ -114,7 +114,36 @@ class B4ACloudCode extends CloudCode {
   async uploadCode() {
     let tree = [];
     // Get current files on tree
-    let currentCode = getFiles()
+    let currentCode = getFiles();
+    debugger;
+    const missingFileModal = (
+      <Modal
+        type={Modal.Types.DANGER}
+        icon='warn-triangle-solid'
+        title='Missing required file'
+        children='The cloud folder must contain either main.js or app.js file, and must be placed on the root of the folder.'
+        showCancel={false}
+        textModal={true}
+        confirmText='Ok, got it'
+        buttonsInCenter={true}
+        onConfirm={() => {
+          this.setState({ modal: null });
+        }} />
+    );
+
+    // get files in cloud folder
+    let cloudCode = currentCode.find(code => code.text === 'cloud');
+    if (!cloudCode) {
+      // show modal for missing main.js or app.js
+      return this.setState({ modal: missingFileModal });      
+    }
+    // check main.js or app.js file on cloud folder
+    let fileIdx = cloudCode.children.findIndex(file => file.text === 'main.js' || file.text === 'app.js');
+    if (fileIdx === -1) {
+      // show modal for missing main.js or app.js
+      return this.setState({ modal: missingFileModal });
+    }
+    
     this.formatFiles(currentCode, tree);
     const loadingModal = <Modal
       type={Modal.Types.INFO}

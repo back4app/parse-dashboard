@@ -155,7 +155,7 @@ export default class InfoLogs extends DashboardView {
     content = (
       <LoaderContainer loading={this.state.loading} solid={false}>
         <div className={styles.content}>
-          {!this.state.loading && this.state.logs.length === 0 && (
+          {!this.state.loading && (!Array.isArray(this.state.logs) || this.state.logs.length === 0) && (
             <EmptyState
               icon="files-outline"
               title="No Error logs in the last 30 days"
@@ -164,7 +164,7 @@ export default class InfoLogs extends DashboardView {
               action={"https://www.back4app.com/docs/platform/parse-server-logs"}
             />
           )}
-          {!this.state.loading && this.state.logs.length !== 0 && (
+          {!this.state.loading && Array.isArray(this.state.logs) && this.state.logs.length !== 0 && (
             <div>
               {alertWhatIs}
               <LogView>

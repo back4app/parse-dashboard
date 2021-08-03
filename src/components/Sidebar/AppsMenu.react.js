@@ -12,6 +12,8 @@ import { Link }         from 'react-router-dom';
 import React            from 'react';
 import styles           from 'components/Sidebar/Sidebar.scss';
 import { unselectable } from 'stylesheets/base.scss';
+import Icon             from 'components/Icon/Icon.react';
+import loadingImg       from '../../dashboard/Apps/loadingIcon.png'
 
 let AppsMenu = ({ apps, current, height, onSelect, pin }) => (
   <div style={{ height }} className={[styles.appsMenu, unselectable].join(' ')}>
@@ -22,10 +24,17 @@ let AppsMenu = ({ apps, current, height, onSelect, pin }) => (
         if (app.slug === current.slug) {
           return null;
         }
+        const isDisabled = app.serverInfo.error || app.serverInfo.status === 'LOADING';
+        let classes = [styles.menuRow];
+        if (isDisabled) {
+          classes.push(styles.disabledLink);
+        }
         return (
-          <Link to={{ pathname: html`/apps/${app.slug}/browser` }} key={app.slug} className={styles.menuRow} onClick={onSelect.bind(null, current.slug)}>
+          <Link to={{ pathname: html`/apps/${app.slug}/browser` }} key={app.slug} className={classes.join(' ')} onClick={onSelect.bind(null, current.slug)}>
             <span>{app.name}</span>
             <AppBadge production={app.production} />
+            {app.serverInfo.error && <span className={styles.appStatus}><Icon name='warn-triangle-outline' width={18} height={18} fill='#F2C94C' /></span>}
+            {app.serverInfo.status === 'LOADING' && <span className={styles.appStatus}><img src={loadingImg} alt="loading..." /></span>}
           </Link>
         );
       })}
