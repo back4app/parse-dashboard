@@ -152,7 +152,7 @@ class BrowserCell extends Component {
         this.copyableValue = content = this.props.value.coordinates.map(coord => `(${coord})`)
       } else if (this.props.type === 'Relation') {
         content = this.props.setRelation ? (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', cursor: 'pointer' }}>
             <Pill onClick={() => this.props.setRelation(this.props.value)} value='View relation' followClick={true} />
           </div>
         ) : (
