@@ -115,16 +115,26 @@ export default class B4ACodeTree extends React.Component {
         isImage = this.getFileType(selected.data.code)
 
         if ( isImage === false ) {
+          if ( selectedFile instanceof Blob ) {
+            fr.onload = () => {
+              source = fr.result;
+              selectedFile = selected.text
+              nodeId = selected.id
+              extension = B4ATreeActions.getExtension(selectedFile)
+              this.setState({ source, selectedFile, nodeId, extension, isImage })
+            }
 
-          fr.onload = () => {
-            source = fr.result;
+            fr.readAsText(selectedFile);
+          }
+          else {
+            const decodedCode = await B4ATreeActions.decodeFile(selected.data.code);
+            const decodedCodeString = new TextDecoder().decode(decodedCode);
+            source = decodedCodeString;
             selectedFile = selected.text
             nodeId = selected.id
             extension = B4ATreeActions.getExtension(selectedFile)
-            this.setState({ source, selectedFile, nodeId, extension, isImage })
+            // this.setState({ source, selectedFile, nodeId, extension, isImage })
           }
-
-          fr.readAsText(selectedFile);
         } else {
           source = selected.data.code;
           selectedFile = selected.text
