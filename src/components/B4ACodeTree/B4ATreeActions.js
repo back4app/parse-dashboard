@@ -6,6 +6,12 @@ import withReactContent from 'sweetalert2-react-content'
 import { Base64 }       from 'js-base64'
 import * as base64 from 'base64-async';
 
+import emptyFolderIcon from './icons/folder-empty.png';
+import folderIcon from './icons/folder.png';
+import file from './icons/file.png';
+import fileCheck from './icons/file-check.png';
+import undeployedFolder from './icons/folder-notdeployed.png';
+
 // Alert parameters
 const MySwal = withReactContent(Swal)
 const overwriteFileModal = {
@@ -162,24 +168,25 @@ const getConfig = (files) => {
     contextmenu: {items: customMenu},
     types: {
       '#': {
-        max_children: 2
+        max_children: 2,
+        icon: fileCheck,
       },
       default: {
-        icon: 'zmdi zmdi-file',
+        icon: fileCheck,
         max_children: 0
       },
       folder: {
-        icon: 'zmdi zmdi-folder',
+        icon: folderIcon,
         max_depth: 10,
-        max_children: 200
+        max_children: 200,
       },
       "new-folder": {
-        icon: 'zmdi zmdi-folder new',
+        icon: undeployedFolder,
         max_depth: 10,
         max_children: 200
       },
       "new-file": {
-        icon: 'zmdi zmdi-file new',
+        icon: file,
         max_children: 0
       }
     }

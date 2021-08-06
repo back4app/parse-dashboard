@@ -160,8 +160,8 @@ export default class B4ACodeTree extends React.Component {
   }
 
   componentDidMount() {
-    let config = B4ATreeActions.getConfig(this.state.files)
-    $('#tree').jstree(config)
+    let config = B4ATreeActions.getConfig(this.state.files);
+    $('#tree').jstree(config);
     this.watchSelectedNode();
   }
 

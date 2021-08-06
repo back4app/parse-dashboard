@@ -204,7 +204,9 @@ class B4ACloudCode extends CloudCode {
   // method used to fetch the cloud code from app
   async fetchSource() {
     try {
-      let response = await axios.get(this.getPath(), { withCredentials: true })
+      // let response = await axios.get(this.getPath(), { withCredentials: true })
+      let response = {};
+      response.data = {"tree":[{"text":"cloud","state":{"opened":true},"type":"folder","children":[]},{"text":"public","state":{"opened":true},"type":"folder","children":[{"text":"index.html","data":{"code":"data:plain/text;base64,aW5kZXgK"}},{"text":"package.json","data":{"code":"data:plain/text;base64,cGFja2FnZQo="}}]}]};
       if (response.data && response.data.tree)
         this.setState({ files: response.data.tree, loading: false })
     } catch(err) {
@@ -274,17 +276,27 @@ class B4ACloudCode extends CloudCode {
       />
 
       footer = <div className={styles.footer}>
-        <Button
-          value='Logs'
-          primary={true}
-          onClick={this.onLogClick}
-        />
-        <Button
-          value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
-          primary={true}
-          color='b4a-green'
-          onClick={this.uploadCode.bind(this)}
-        />
+        <div className={styles.footerContainer}>
+          <div className={styles.ccStatusIcon}>
+            <span className={styles.deployedCircle}></span> <small>Deployed</small>
+          </div>
+          <div className={styles.ccStatusIcon}>
+            <span className={styles.undeployedCircle}></span> <small>Deploy pending</small>
+          </div>
+        </div>
+        <div className={styles.footerContainer}>
+          <Button
+            value='Logs'
+            primary={true}
+            onClick={this.onLogClick}
+          />
+          <Button
+            value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
+            primary={true}
+            color='b4a-green'
+            onClick={this.uploadCode.bind(this)}
+          />
+        </div>
       </div>
     }
 
