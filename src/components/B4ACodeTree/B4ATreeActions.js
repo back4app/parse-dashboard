@@ -198,6 +198,23 @@ export const getFiles = (reference = '#') => {
   return $("#tree").jstree(true).get_json(reference)
 }
 
+// empty folder icons.
+export const refreshEmptyFolderIcons = () => {
+  const leaves = $('.jstree-leaf');
+
+  for( let i = 0; i < leaves.length; i++ ){
+    // folder or undeployed folder.
+    if (
+      leaves[i].querySelector('.jstree-themeicon').style['background-image'] === "url(\""+require('./icons/folder.png').default+"\")"
+    ) {
+      leaves[i].querySelector('.jstree-themeicon').style = "background-image: url(\""+require('./icons/folder-empty.png').default+"\"); background-position: center center; background-size: auto;";
+    }
+    else if ( leaves[i].querySelector('.jstree-themeicon').style['background-image'] === "url(\""+require('./icons/folder-notdeployed.png').default+"\")" ) {
+      leaves[i].querySelector('.jstree-themeicon').style = "background-image: url(\""+require('./icons/folder-empty-undeployed.png').default+"\"); background-position: center center; background-size: auto;";
+    }
+  }
+}
+
 export default {
   getConfig,
   remove,
@@ -206,5 +223,6 @@ export default {
   getFiles,
   decodeFile,
   updateTreeContent,
-  getExtension
+  getExtension,
+  refreshEmptyFolderIcons
 }
