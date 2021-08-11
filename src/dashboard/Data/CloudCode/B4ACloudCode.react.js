@@ -203,7 +203,9 @@ class B4ACloudCode extends CloudCode {
   // method used to fetch the cloud code from app
   async fetchSource() {
     try {
-      let response = await axios.get(this.getPath(), { withCredentials: true })
+      // let response = await axios.get(this.getPath(), { withCredentials: true })
+      let response = {};
+      response.data = {"tree":[{"text":"cloud","state":{"opened":true},"type":"folder","children":[]},{"text":"public","state":{"opened":true},"type":"folder","children":[]}]};
       if (response.data && response.data.tree)
         this.setState({ files: response.data.tree, loading: false })
     } catch(err) {
@@ -228,15 +230,18 @@ class B4ACloudCode extends CloudCode {
     let alertWhatIs = null;
     let alertTips = null;
 
-    let alertTipsMessage = <div>
-      <p style={{height:"auto"}}><b>•</b> To deploy your Cloud Code Functions you can use the Dashboard bellow or the <a href="https://www.back4app.com/docs/platform/parse-cli" target="_blank">Back4App CLI.</a></p>
-      <p style={{height:"auto"}}><b>•</b> To upload your code you should first click on ADD button and choose what files you want to upload.</p>
-      <p style={{height:"auto"}}><b>•</b> The first file MUST BE called main.js and any other file or folder MUST BE referenced more in this file.</p>
-      <p style={{height:"auto"}}><b>•</b> After ADD and REMOVE all files you want, click on the DEPLOY button and commit your operation;</p>
-    </div>
+    // let alertTipsMessage = <div>
+    //   <p style={{height:"auto"}}><b>•</b> To deploy your Cloud Code Functions you can use the Dashboard bellow or the <a href="https://www.back4app.com/docs/platform/parse-cli" target="_blank">Back4App CLI.</a></p>
+    //   <p style={{height:"auto"}}><b>•</b> To upload your code you should first click on ADD button and choose what files you want to upload.</p>
+    //   <p style={{height:"auto"}}><b>•</b> The first file MUST BE called main.js and any other file or folder MUST BE referenced more in this file.</p>
+    //   <p style={{height:"auto"}}><b>•</b> After ADD and REMOVE all files you want, click on the DEPLOY button and commit your operation;</p>
+    // </div>
 
     let alertWhatIsMessage = <div>
-      <p style={{height:"auto"}}>Cloud code functions is a tool that lets you run a NodeJS function in Back4App Cloud. Back4App executes your code only when you call the function via API or via SDK. It is also possible to create functions that are triggered by your app events. When you update your Cloud Code Functions, it becomes available to all mobile/web/IoT environments instantly. You don’t have to wait for a new release of your application. This lets you change app behavior on the fly and add new features faster.</p>
+      <p style={{height:"auto"}}>
+        Upload(by clicking on ADD button) and Deploy your main.js file(containing your functions inside) to start running javascript functions on Back4App Servers.
+        Find a sample code on the section below to use as a reference. For more details, check our Cloud Code guide <a href="https://www.back4app.com/docs/get-started/cloud-functions">https://www.back4app.com/docs/get-started/cloud-functions</a>.
+      </p>
     </div>
 
     // Show loading page before fetch data
@@ -255,16 +260,10 @@ class B4ACloudCode extends CloudCode {
       </div>
 
       alertWhatIs = <B4AAlert
-        show={this.state.showWhatIs}
+        show={true}
         handlerCloseEvent={this.handlerCloseAlert.bind(this)}
         title="What is Cloud Code Functions"
         description={alertWhatIsMessage} />
-
-      alertTips = <B4AAlert
-        show={this.state.showTips}
-        handlerCloseEvent={this.handlerCloseAlert.bind(this)}
-        title="Back4App Tips"
-        description={alertTipsMessage} />
 
       content = <B4ACodeTree
         files={this.state.files}
@@ -291,7 +290,6 @@ class B4ACloudCode extends CloudCode {
       <div className={`${styles.source} ${styles['b4a-source']}`} >
         {title}
         {alertWhatIs}
-        {alertTips}
         {content}
         {footer}
         {this.state.modal}
