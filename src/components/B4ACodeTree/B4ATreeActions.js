@@ -6,6 +6,12 @@ import withReactContent from 'sweetalert2-react-content'
 import { Base64 }       from 'js-base64'
 import * as base64 from 'base64-async';
 
+import emptyFolderIcon from './icons/folder-empty.png';
+import folderIcon from './icons/folder.png';
+import file from './icons/file.png';
+import fileCheck from './icons/file-check.png';
+import undeployedFolder from './icons/folder-notdeployed.png';
+
 // Alert parameters
 const MySwal = withReactContent(Swal)
 const overwriteFileModal = {
@@ -159,24 +165,25 @@ const getConfig = (files) => {
     contextmenu: {items: customMenu},
     types: {
       '#': {
-        max_children: 2
+        max_children: 2,
+        icon: fileCheck,
       },
       default: {
-        icon: 'zmdi zmdi-file',
+        icon: fileCheck,
         max_children: 0
       },
       folder: {
-        icon: 'zmdi zmdi-folder',
+        icon: folderIcon,
         max_depth: 10,
-        max_children: 200
+        max_children: 200,
       },
       "new-folder": {
-        icon: 'zmdi zmdi-folder new',
+        icon: undeployedFolder,
         max_depth: 10,
         max_children: 200
       },
       "new-file": {
-        icon: 'zmdi zmdi-file new',
+        icon: file,
         max_children: 0
       }
     }
@@ -188,6 +195,23 @@ export const getFiles = (reference = '#') => {
   return $("#tree").jstree(true).get_json(reference)
 }
 
+// empty folder icons.
+export const refreshEmptyFolderIcons = () => {
+  const leaves = $('.jstree-leaf');
+
+  for( let i = 0; i < leaves.length; i++ ){
+    // folder or undeployed folder.
+    if (
+      leaves[i].querySelector('.jstree-themeicon').style['background-image'] === "url(\""+require('./icons/folder.png').default+"\")"
+    ) {
+      leaves[i].querySelector('.jstree-themeicon').style = "background-image: url(\""+require('./icons/folder-empty.png').default+"\"); background-position: center center; background-size: auto;";
+    }
+    else if ( leaves[i].querySelector('.jstree-themeicon').style['background-image'] === "url(\""+require('./icons/folder-notdeployed.png').default+"\")" ) {
+      leaves[i].querySelector('.jstree-themeicon').style = "background-image: url(\""+require('./icons/folder-empty-undeployed.png').default+"\"); background-position: center center; background-size: auto;";
+    }
+  }
+}
+
 export default {
   getConfig,
   remove,
@@ -196,5 +220,6 @@ export default {
   getFiles,
   decodeFile,
   updateTreeContent,
-  getExtension
+  getExtension,
+  refreshEmptyFolderIcons
 }

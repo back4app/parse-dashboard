@@ -27,3 +27,7 @@
 .new {
   color: #4caf50;
 }
+
+.jstree-themeicon-custom {
+  background-size: contain!important;
+}

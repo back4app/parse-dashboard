@@ -51,7 +51,7 @@ export default class ColumnsConfiguration extends React.Component {
     const { handleColumnDragDrop, handleColumnsOrder, order } = this.props;
     const [ title, entry ] = [styles.title, `${styles.entry} ${styles.toolbarButton}`].map(className => (
       <div className={className} onClick={this.toggle.bind(this)} >
-        <Icon name='visibility' width={32} height={26} />
+        <Icon name='visibility-icon' width={32} height={26} />
       </div>
     ));
 

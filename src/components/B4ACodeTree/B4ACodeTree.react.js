@@ -69,18 +69,24 @@ export default class B4ACodeTree extends React.Component {
     return false
   }
 
-  async handleFiles(files) {
-    await this.setState({ newFile: files })
-    await this.loadFile()
+  handleFiles(files) {
+    // handle empty files
+    let fileObj = files.fileList['0'];
+    if (fileObj && fileObj.size === 0) {
+      let fileType = fileObj.type || 'plain/text';
+      files.base64[0] = `data:${fileType};base64,`;
+    }
+    this.setState({ newFile: files })
+    this.loadFile()
   }
 
   // load file and add on tree
-  async loadFile() {
+  loadFile() {
     let file = this.state.newFile
     if (file) {
       let currentTree = '#'
-      B4ATreeActions.addFilesOnTree(file, currentTree, this.state.selectedFolder)
-      await this.setState({ newFile: '' })
+      B4ATreeActions.addFilesOnTree(file, currentTree)
+      this.setState({ newFile: '', filesOnTree: file });
       this.handleTreeChanges()
     }
   }
@@ -103,21 +109,41 @@ export default class B4ACodeTree extends React.Component {
     let selectedFolder = 0;
 
     if (data.selected && data.selected.length === 1) {
-      selected = data.instance.get_node(data.selected[0])
+      selected = data.instance.get_node(data.selected[0]);
       // if is code
       if (selected.data && selected.data.code && selected.type != 'folder') {
+        // index of file on tree.
+        const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
+        let selectedFile;
+        fileList.map( (file ) => {
+          if ( file.name === selected.text ) {
+            selectedFile = file;
+          }
+        });
+        const fr = new FileReader();
         isImage = this.getFileType(selected.data.code)
+
         if ( isImage === false ) {
-          B4ATreeActions.decodeFile(selected.data.code)
-            .then( decodedCode => {
-                const decodedCodeString = new TextDecoder().decode(decodedCode);
-                // console.log(decodedCodeString);
-                source = decodedCodeString;
-                selectedFile = selected.text
-                nodeId = selected.id
-                extension = B4ATreeActions.getExtension(selectedFile)
-                this.setState({ source, selectedFile, nodeId, extension, isImage })
-            });
+          if ( selectedFile instanceof Blob ) {
+            fr.onload = () => {
+              source = fr.result;
+              selectedFile = selected.text
+              nodeId = selected.id
+              extension = B4ATreeActions.getExtension(selectedFile)
+              this.setState({ source, selectedFile, nodeId, extension, isImage })
+            }
+
+            fr.readAsText(selectedFile);
+          }
+          else {
+            const decodedCode = await B4ATreeActions.decodeFile(selected.data.code);
+            const decodedCodeString = new TextDecoder().decode(decodedCode);
+            source = decodedCodeString;
+            selectedFile = selected.text
+            nodeId = selected.id
+            extension = B4ATreeActions.getExtension(selectedFile)
+            // this.setState({ source, selectedFile, nodeId, extension, isImage })
+          }
         } else {
           source = selected.data.code;
           selectedFile = selected.text
@@ -149,9 +175,15 @@ export default class B4ACodeTree extends React.Component {
   }
 
   componentDidMount() {
-    let config = B4ATreeActions.getConfig(this.state.files)
-    $('#tree').jstree(config)
-    this.watchSelectedNode()
+    let config = B4ATreeActions.getConfig(this.state.files);
+    $('#tree').jstree(config);
+    this.watchSelectedNode();
+    $('#tree').on('changed.jstree', function (){
+      B4ATreeActions.refreshEmptyFolderIcons();
+    });
+    $('#tree').on('create_node.jstree', function (){
+      B4ATreeActions.refreshEmptyFolderIcons();
+    });
   }
 
   render(){
@@ -218,8 +250,8 @@ export default class B4ACodeTree extends React.Component {
                 this.state.isImage ?
                   <img src={this.state.source} /> :
                   <B4ACloudCodeView
-                  source={this.state.source || "Select a file to view your Cloud Code"}
-                  extension={this.state.extension} />
+                    source={this.state.source || "Select a file to view your Cloud Code"}
+                    extension={this.state.extension} />
               }
             </Resizable>
           </div>

@@ -74,6 +74,70 @@ body:global(.expanded) {
   }
 }
 
+.addBtn {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  gap: 5px;
+  color: white;
+  background: #66637A;
+  margin: 0 4px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  svg {
+    vertical-align: middle;
+    fill: white;
+  }
+
+  span {
+    vertical-align: middle;
+    height: 14px;
+    line-height: 14px;
+  }
+}
+
+.deleteBtn {
+  cursor: auto;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid #66637A;
+  font-size: 14px;
+  padding: 2px;
+  margin: 0 4px;
+
+  svg {
+    vertical-align: middle;
+    fill: #66637A;
+  }
+
+  &.active {
+    cursor: pointer;
+    background: #169CEE;
+    border: 1px solid #169CEE;
+    svg {
+      fill: #fff;
+    }
+  }
+}
+
+.verticalSeparator {
+  height: 26px;
+  border: 1px solid #66637A;
+  border-radius: 2px;
+  margin: 0 4px;
+}
+
 .toolbarButtonDisabled {
   cursor: not-allowed;
   color: #66637A;

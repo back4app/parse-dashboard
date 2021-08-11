@@ -128,6 +128,9 @@
   margin-right: 15px;
   border-radius: 10px;
   overflow: hidden;
+  &.disabled {
+    cursor: auto;
+  }
 }
 
 .appname {
@@ -135,9 +138,10 @@
   width: 100%;
   display: inline-block;
   font-size: 22px;
-  color: white !important;
+  color: white;
   &.disabled {
     color: #788c97 !important;
+    cursor: auto;
   }
 
   & > img, svg {

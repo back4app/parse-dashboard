@@ -206,7 +206,7 @@ class IndexManager extends DashboardView {
       errorMessages.push('Index name must be unique')
     }
     if (!isIndexFieldsValid) {
-      errorMessages.push('Index fields order must be unique')
+      errorMessages.push('It is not possible to have Indexes with same fields in same order')
     }
     if (!isTextIndexValid) {
       errorMessages.push('Only one text index is allowed per class')

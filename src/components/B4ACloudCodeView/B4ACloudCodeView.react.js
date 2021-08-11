@@ -44,7 +44,6 @@ export default class B4ACloudCodeView extends React.Component {
       let newState = this.state.codePenConfig;
       newState[key] = this.props.source;
       this.setState(newState);
-      console.log(newState);
     }
   }
 

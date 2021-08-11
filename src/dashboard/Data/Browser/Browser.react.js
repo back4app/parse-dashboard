@@ -1732,9 +1732,7 @@ class Browser extends DashboardView {
     } else if (this.state.openSecurityDialog) {
       let parseServerSupportsPointerPermissions = this.context.currentApp
         .serverInfo.features.schemas.editClassLevelPermissions;
-      let currentColumns = this.getClassColumns(className).map(
-        column => column.name
-      );
+      let currentColumns = this.getClassColumns(className);
       const userPointers = [];
       const schemaSimplifiedData = {};
       const classSchema = this.props.schema.data
