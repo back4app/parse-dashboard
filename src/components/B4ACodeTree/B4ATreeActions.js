@@ -80,14 +80,16 @@ const verifyFileNames = async (data, newNode) => {
   let currentCode = getFiles(data)
   currentCode = currentCode && currentCode.children
 
-  for (let i = 0; i < currentCode.length; i++) {
-    if (newNode.text && currentCode[i].text === newNode.text.name) {
-      overwriteFileModal.text = currentCode[i].text + ' file already exists. Do you want to overwrite?'
-      let currentId = currentCode[i].id
-      // Show alert and wait for the user response
-      let alertResponse = await MySwal.fire(overwriteFileModal)
-      if (alertResponse.value) {
-        await remove(`#${currentId}`)
+  if ( currentCode ) {
+    for (let i = 0; i < currentCode.length; i++) {
+      if (newNode.text && currentCode[i].text === newNode.text.name) {
+        overwriteFileModal.text = currentCode[i].text + ' file already exists. Do you want to overwrite?'
+        let currentId = currentCode[i].id
+        // Show alert and wait for the user response
+        let alertResponse = await MySwal.fire(overwriteFileModal)
+        if (alertResponse.value) {
+          await remove(`#${currentId}`)
+        }
       }
     }
   }
