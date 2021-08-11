@@ -203,9 +203,7 @@ class B4ACloudCode extends CloudCode {
   // method used to fetch the cloud code from app
   async fetchSource() {
     try {
-      // let response = await axios.get(this.getPath(), { withCredentials: true })
-      let response = {};
-      response.data = {"tree":[{"text":"cloud","state":{"opened":true},"type":"folder","children":[]},{"text":"public","state":{"opened":true},"type":"folder","children":[]}]};
+      let response = await axios.get(this.getPath(), { withCredentials: true })
       if (response.data && response.data.tree)
         this.setState({ files: response.data.tree, loading: false })
     } catch(err) {
