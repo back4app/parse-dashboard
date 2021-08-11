@@ -85,7 +85,7 @@ export default class B4ACodeTree extends React.Component {
     let file = this.state.newFile
     if (file) {
       let currentTree = '#'
-      B4ATreeActions.addFilesOnTree(file, currentTree)
+      B4ATreeActions.addFilesOnTree(file, currentTree, this.state.selectedFolder)
       this.setState({ newFile: '', filesOnTree: file });
       this.handleTreeChanges()
     }
