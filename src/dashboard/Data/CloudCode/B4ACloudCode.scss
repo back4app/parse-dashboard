@@ -31,6 +31,16 @@
     padding-right: 20px;
   }
 
+  small {
+    font-family: Noto Sans;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #224969;
+  }
+
   a {
     margin-top: 7px;
   }
@@ -50,8 +60,36 @@
 
 .footer {
   margin: 28px 0 20px 0;
-  float: right;
   display: flex;
+  justify-content: space-between;
+
+  .footerContainer {
+    display: flex;
+  }
+
+  .ccStatusIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Noto Sans;
+    margin-left: 10px;
+  }
+
+  .deployedCircle {
+    height: 10px;
+    width: 10px;
+    background-color: #208AEC;
+    border-radius: 50%;
+    margin: 0px 5px;
+  }
+
+  .undeployedCircle {
+    height: 10px;
+    width: 10px;
+    background-color: #f2994a;
+    border-radius: 50%;
+    margin: 0px 5px;
+  }
 
   .b4a-cc-deploy-btn {
     display: flex;

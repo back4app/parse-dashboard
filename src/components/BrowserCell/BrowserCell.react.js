@@ -499,8 +499,6 @@ class BrowserCell extends Component {
       classes.push(styles.current);
     }
 
-    // console.log(value, this.state.value);
-
     return readonly ? (
       <Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip}>
         <span

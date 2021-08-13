@@ -128,6 +128,9 @@
   margin-right: 15px;
   border-radius: 10px;
   overflow: hidden;
+  &.disabled {
+    cursor: not-allowed;
+  }
 }
 
 .appname {
@@ -135,9 +138,13 @@
   width: 100%;
   display: inline-block;
   font-size: 22px;
-  color: white !important;
+  color: white;
+  &.loading {
+    color: #788c97 !important;
+  }
   &.disabled {
     color: #788c97 !important;
+    cursor: not-allowed;
   }
 
   & > img, svg {

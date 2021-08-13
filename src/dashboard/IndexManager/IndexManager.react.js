@@ -206,7 +206,7 @@ class IndexManager extends DashboardView {
       errorMessages.push('Index name must be unique')
     }
     if (!isIndexFieldsValid) {
-      errorMessages.push('Index fields order must be unique')
+      errorMessages.push('It is not possible to have Indexes with same fields in same order')
     }
     if (!isTextIndexValid) {
       errorMessages.push('Only one text index is allowed per class')
@@ -301,10 +301,17 @@ class IndexManager extends DashboardView {
       return null
     }
     return this.state.data.map(({ name, index, creationType, status, unique = false, sparse = false, expireAfterSeconds, weights, size }) => {
+      let isAutomaticIndex = name === '_id_';
+      if (this.props.params.className === '_User' && (name === 'username_1' || name === 'email_1')) {
+        isAutomaticIndex = true;
+      }
+      if (this.props.params.className === '_Role' && name === 'name_1') {
+        isAutomaticIndex = true;
+      }
       return (
         <tr key={name}>
           {!this.state.isReadOnly && <td className={styles.selectedContainer}>
-            {(status === 'SUCCESS' || status === 'ERROR') && <input type='checkbox' value={!!this.state.selected[name]} onChange={() => this.toggleRow(name)} />}
+            {(status === 'SUCCESS' || status === 'ERROR') && <input type='checkbox' disabled={isAutomaticIndex} value={!!this.state.selected[name]} onChange={() => this.toggleRow(name)} />}
           </td>}
           <td className={this.state.isReadOnly ? styles.readOnly : ''}>{name}</td>
           <td>{creationType}</td>

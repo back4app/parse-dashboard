@@ -148,8 +148,8 @@ export default class Dashboard extends React.Component {
       newFeaturesInLatestVersion: [],
       apps: []
     };
-    this.updateApp = this.updateApp.bind(this);
     setBasePath(props.path);
+    this.updateApp = this.updateApp.bind(this);
   }
 
   componentDidMount() {
@@ -192,15 +192,17 @@ export default class Dashboard extends React.Component {
         );
       });
 
-      AccountManager.setCurrentUser({ user });
       const stateApps = [];
       apps.forEach(app => {
         app.serverInfo = { status: 'LOADING' };
         AppsManager.addApp(app);
         stateApps.push(new ParseApp(app));
-      })
+      });
+
+      AccountManager.setCurrentUser({ user });
       this.setState({ newFeaturesInLatestVersion, apps: stateApps, configLoadingState: AsyncStatus.SUCCESS });
-      
+
+      // fetch serverInfo request for each app
       apps.forEach(async (app) => {
         // Set master key as a default string to avoid undefined value access issues
         if (!app.masterKey) app.masterKey = "******"
@@ -210,11 +212,12 @@ export default class Dashboard extends React.Component {
           app.serverInfo = PARSE_DOT_COM_SERVER_INFO;
           AppsManager.updateApp(app);
         } else {
+          let updatedApp;
           try {
             const serverInfo = await (new ParseApp(app).apiRequest('GET', 'serverInfo', {}, { useMasterKey: true }));
             app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
-            AppsManager.updateApp(app);
-            this.updateApp(app);
+            updatedApp = AppsManager.updateApp(app);
+            this.updateApp(updatedApp);
           } catch (error) {
             if (error.code === 100) {
               app.serverInfo = {
@@ -238,11 +241,11 @@ export default class Dashboard extends React.Component {
                 status: 'ERROR'
               }
             }
-            AppsManager.updateApp(app);
-            this.updateApp(app);
+            updatedApp = AppsManager.updateApp(app);
+            this.updateApp(updatedApp);
           }
         }
-      });
+      });     
     }).catch(({ error }) => {
       this.setState({
         configLoadingError: error,
@@ -251,11 +254,11 @@ export default class Dashboard extends React.Component {
     });
   }
 
-  updateApp(app) {
+   updateApp(app) {
     const updatedApps = [...this.state.apps];
-    const appIdx = updatedApps.findIndex(ap => ap.applicationId === app.appId);
+    const appIdx = updatedApps.findIndex(ap => ap.applicationId === app.applicationId);
     if (appIdx === -1) return;
-    updatedApps[appIdx] = new ParseApp(app);
+    updatedApps[appIdx] = app;
     this.setState({
       apps: updatedApps
     });
@@ -280,12 +283,12 @@ export default class Dashboard extends React.Component {
 
     const AppsIndexPage = () => (
       <AccountView section='Your Apps' style={{top: '0px'}}>
-        <AppsIndex apps={this.state.apps} newFeaturesInLatestVersion={this.state.newFeaturesInLatestVersion}/>
+        <AppsIndex apps={this.state.apps} updateApp={this.updateApp} newFeaturesInLatestVersion={this.state.newFeaturesInLatestVersion}/>
       </AccountView>
     );
 
     const SettingsRoute = ({ match }) => (
-      <SettingsData params={ match.params }>
+      <SettingsData params={ match.params } apps={this.state.apps}>
         {settingsDataProps => (
           <>
             <Route path={ match.url + '/general' } render={props => (
@@ -314,7 +317,7 @@ export default class Dashboard extends React.Component {
         )} />
         <Route path={ props.match.path + '/:section' } render={(props) => (
           <JobsData {...props} params={props.match.params}>
-            <Jobs {...props} params={props.match.params}/>
+            <Jobs {...props} params={props.match.params} apps={this.state.apps} />
           </JobsData>
         )} />
         <Redirect from={ props.match.path } to='/apps/:appId/jobs/all' />
@@ -326,22 +329,22 @@ export default class Dashboard extends React.Component {
         <Route path={ match.path + '/overview' } component={AnalyticsOverview} />
         <Redirect exact from={ match.path + '/explorer' } to='/apps/:appId/analytics/explorer/chart' />
         <Route path={ match.path + '/explorer/:displayType' } render={props => (
-          <Explorer {...props} params={props.match.params} />
+          <Explorer {...props} params={props.match.params} apps={this.state.apps} />
         )} />
-        <Route path={ match.path + '/retention' } component={Retention} />
-        <Route path={ match.path + '/performance' } component={Performance} />
-        <Route path={ match.path + '/slow_queries' } component={SlowQueries} />
-        <Route path={ match.path + '/slow_requests' } component={SlowQueries} />
+        <Route path={ match.path + '/retention' } render={props => <Retention {...props} apps={this.state.apps} />} />
+        <Route path={ match.path + '/performance' } render={props => <Performance {...props} apps={this.state.apps} />} />
+        <Route path={ match.path + '/slow_queries' } render={props => <SlowQueries {...props} apps={this.state.apps} />} />
+        <Route path={ match.path + '/slow_requests' } render={props => <SlowQueries {...props} apps={this.state.apps} />} />
       </Switch>
     );
 
-    const logsRoute = ({ match }) => (
+    const logsRoute = (props) => (
       <Switch>
-        <Route path={ match.path + '/info' } component={InfoLogs} />
-        <Route path={ match.path + '/error' } component={ErrorLogs} />
-        <Redirect exact from={ match.path } to='/apps/:appId/logs/system' />
-        <Route path={ match.path + '/system' } component={SystemLogs} />
-        <Route path={ match.path + '/access' } component={AccessLogs} /> 
+        <Route path={ props.match.path + '/info' } render={(props) => <InfoLogs {...props} apps={this.state.apps} />} />
+        <Route path={ props.match.path + '/error' } render={(props) => <ErrorLogs {...props} apps={this.state.apps} />} />
+        <Redirect exact from={ props.match.path } to='/apps/:appId/logs/system' />
+        <Route path={ props.match.path + '/system' } render={(props) => <SystemLogs {...props} apps={this.state.apps} />} />
+        <Route path={ props.match.path + '/access' } render={(props) => <AccessLogs {...props} apps={this.state.apps} /> } />
       </Switch>
     );
 
@@ -349,7 +352,7 @@ export default class Dashboard extends React.Component {
       if (ShowSchemaOverview) {
         return <SchemaOverview {...props} params={props.match.params} />
       }
-      return <Browser {...props} params={ props.match.params } />
+      return <Browser {...props} params={ props.match.params } apps={this.state.apps} />
     }
 
     const ApiConsoleRoute = (props) => (
@@ -375,8 +378,13 @@ export default class Dashboard extends React.Component {
 
     const AppRoute = ({ match }) => {
       const appId = match.params.appId;
+      const user = AccountManager.currentUser();
+      
       let currentApp = this.state.apps.find(ap => ap.slug === appId);
-      if (!currentApp) return <div />;
+      if (!currentApp) {
+        history.replace('/apps');
+        return <div />
+      };
       if (currentApp.serverInfo.status === 'LOADING') {
         return (
           <div className={center}>
@@ -402,56 +410,63 @@ export default class Dashboard extends React.Component {
         );
       }
       return (
-      <AppData params={ match.params }>
-        <Switch>
-          <Route path={ match.path + '/getting_started' } component={Empty} />
-          <Route path={ match.path + '/browser/:className/:entityId/:relationName' } component={BrowserRoute} />
-          <Route path={ match.path + '/browser/:className' } component={BrowserRoute} />
-          <Route path={ match.path + '/browser' } component={BrowserRoute} />
-          <Route path={ match.path + '/cloud_code' } render={(props) => (
-            <CloudCode {...props} params={match.params} />
-          )} />
-          <Redirect from={ match.path + '/cloud_code/*' } to='/apps/:appId/cloud_code' />
-          <Route path={ match.path + '/webhooks' } component={Webhooks} />
+        <AppData params={ match.params } apps={this.state.apps} >
+          <Switch>
+            <Route path={ match.path + '/getting_started' } component={Empty} />
+            <Route path={ match.path + '/browser/:className/:entityId/:relationName' } component={BrowserRoute} />
+            <Route path={ match.path + '/browser/:className' } render={BrowserRoute} />
+            <Route path={ match.path + '/browser' } render={BrowserRoute} />
+            <Route path={ match.path + '/cloud_code' } render={(props) => (
+              <CloudCode {...props} params={match.params} apps={this.state.apps} />
+            )} />
+            <Redirect from={ match.path + '/cloud_code/*' } to='/apps/:appId/cloud_code' />
+            <Route path={ match.path + '/webhooks' } render={() => <Webhooks params={match.params} apps={this.state.apps} />} />
 
-          <Route path={ match.path + '/jobs' } component={JobsRoute}/>
+            <Route path={ match.path + '/jobs' } render={JobsRoute}/>
 
-          <Route path={ match.path + '/logs' } component={logsRoute}/>
+            <Route path={ match.path + '/logs' } render={logsRoute}/>
 
-          <Route path={ match.path + '/config' } component={Config} />
-          <Route path={ match.path + '/api_console' } component={ApiConsoleRoute} />
-          <Route path={ match.path + '/migration' } component={Migration} />
+            <Route path={ match.path + '/config' } render={(props) => <Config {...props} apps={this.state.apps} />} />
+            <Route path={ match.path + '/api_console' } render={ApiConsoleRoute} />
+            <Route path={ match.path + '/migration' } component={Migration} />
 
 
-          <Redirect exact from={ match.path + '/push' } to='/apps/:appId/push/new' />
-          <Redirect exact from={ match.path + '/push/activity' } to='/apps/:appId/push/activity/all'  />
+            <Redirect exact from={ match.path + '/push' } to='/apps/:appId/push/new' />
+            <Redirect exact from={ match.path + '/push/activity' } to='/apps/:appId/push/activity/all'  />
 
-          <Route path={ match.path + '/push/activity/:category' } render={(props) => (
-            <PushIndex {...props} params={props.match.params} />
-          )} />
-          <Route path={ match.path + '/push/audiences' } component={PushAudiencesIndex} />
-          <Route path={ match.path + '/push/new' } component={PushNew} />
-          <Route path={ match.path + '/push/:pushId' } render={(props) => (
-            <PushDetails {...props} params={props.match.params} />
-          )} />
-          <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />
-          <Route path={ match.path + '/connect' } component={B4aConnectPage} />
-          <Route path={ match.path + '/admin' } component={B4aAdminPage} />
-          <Route path={ match.path + '/app-templates' } component={B4aAppTemplates} />
-          <Route path={ match.path + '/server-settings/:targetPage?' } render={(props) => (
-            <ServerSettings params={props.match.params} />
-          )} />
-          <Route exact path={ match.path + '/connections' } component={HubConnections} />
-          <Route exact path={ match.path + '/index' } render={props => <IndexManager {...props} params={props.match.params} />} />
-          <Route path={ match.path + '/index/:className'} render={props => <IndexManager {...props} params={props.match.params} />} />
+            <Route path={ match.path + '/push/activity/:category' } render={(props) => (
+              <PushIndex {...props} params={props.match.params} />
+            )} />
+            <Route path={ match.path + '/push/audiences' } component={PushAudiencesIndex} />
+            <Route path={ match.path + '/push/new' } component={PushNew} />
+            <Route path={ match.path + '/push/:pushId' } render={(props) => (
+              <PushDetails {...props} params={props.match.params} />
+            )} />
+            
+            <Route path={ match.path + '/connect' } component={B4aConnectPage} />
+            <Route path={ match.path + '/admin' } component={B4aAdminPage} />
+            <Route path={ match.path + '/app-templates' } component={B4aAppTemplates} />
+            <Route path={ match.path + '/server-settings/:targetPage?' } render={(props) => (
+              <ServerSettings params={props.match.params} />
+            )} />
+            
+            {user.allowHubPublish && (
+              <>
+                <Route exact path={ match.path + '/connections' } component={HubConnections} />
+                <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />
+              </>
+            )}
+            
+            <Route exact path={ match.path + '/index' } render={props => <IndexManager {...props} params={props.match.params} />} />
+            <Route path={ match.path + '/index/:className'} render={props => <IndexManager {...props} params={props.match.params} />} />
 
-          {/* Unused routes... */}
-          <Redirect exact from={ match.path + '/analytics' } to='/apps/:appId/analytics/performance' />
-          <Route path={ match.path + '/analytics' } component={AnalyticsRoute}/>
-          <Redirect exact from={ match.path + '/settings' } to='/apps/:appId/settings/general' />
-          <Route path={ match.path + '/settings' } component={SettingsRoute}/>
-        </Switch>
-      </AppData>
+            {/* Unused routes... */}
+            <Redirect exact from={ match.path + '/analytics' } to='/apps/:appId/analytics/performance' />
+            <Route path={ match.path + '/analytics' } render={AnalyticsRoute}/>
+            <Redirect exact from={ match.path + '/settings' } to='/apps/:appId/settings/general' />
+            <Route path={ match.path + '/settings' } render={SettingsRoute}/>
+          </Switch>
+        </AppData>
       )
     }
 
@@ -459,8 +474,8 @@ export default class Dashboard extends React.Component {
       <div>
         <Switch>
           <Redirect exact from='/apps/:appId' to='/apps/:appId/browser' />
-          <Route exact path='/apps' component={AppsIndexPage} />
-          <Route path='/apps/:appId' component={AppRoute} />
+          <Route exact path='/apps' render={AppsIndexPage} />
+          <Route path='/apps/:appId' render={AppRoute} />
         </Switch>
       </div>
     )
@@ -471,7 +486,7 @@ export default class Dashboard extends React.Component {
             <title>Parse Dashboard</title>
           </Helmet>
           <Switch>
-            <Route path='/apps' component={Index} />
+            <Route path='/apps' render={Index} />
             <Route path='/account/overview' component={AccountSettingsPage} />
             <Redirect from='/account' to='/account/overview' />
             <Redirect from='/' to='/apps' />

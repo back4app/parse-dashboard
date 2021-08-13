@@ -36,7 +36,7 @@ let Toolbar = (props) => {
         <div className={styles.nav}>
           {backButton}
         </div>
-        <div className={styles.titleText}>          
+        <div className={styles.titleText}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div className={styles.subsection} >
               <span className={styles.subsectionName}>
@@ -48,7 +48,7 @@ let Toolbar = (props) => {
               </span>
             </div>
             { props.readWritePermissions && <div>  <div className={styles.seperatorVertical}></div>
-            {props.helpsection}
+            {/* {props.helpsection} */}
             {/* Public read and write access */}
              <div className={styles.publicAccess} onClick={() => props.onClickSecurity(true)}>
               { props.lockIcon === true ?

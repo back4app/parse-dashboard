@@ -225,6 +225,23 @@ class Browser extends DashboardView {
         this.setState({ counts: {} });
         Parse.Object._clearAllState();
       }
+      
+      // check if the changes are in currentApp serverInfo status
+      // if not return without making any request
+      if (this.props.apps !== nextProps.apps) {
+        let updatedCurrentApp = nextProps.apps.find(
+          (ap) => ap.slug === this.props.params.appId
+        );
+        let prevCurrentApp = this.props.apps.find(
+          (ap) => ap.slug === this.props.params.appId
+        );
+        const shouldUpdate =
+          updatedCurrentApp.serverInfo.status !==
+          prevCurrentApp.serverInfo.status;
+        
+        if (!shouldUpdate) return;
+      }
+
       this.prefetchData(nextProps, nextContext);
       nextProps.schema.dispatch(ActionTypes.FETCH)
       .then(() => this.handleFetchedSchema());
@@ -1776,9 +1793,7 @@ class Browser extends DashboardView {
     } else if (this.state.openSecurityDialog) {
       let parseServerSupportsPointerPermissions = this.context.currentApp
         .serverInfo.features.schemas.editClassLevelPermissions;
-      let currentColumns = this.getClassColumns(className).map(
-        column => column.name
-      );
+      let currentColumns = this.getClassColumns(className);
       const userPointers = [];
       const schemaSimplifiedData = {};
       const classSchema = this.props.schema.data

@@ -115,7 +115,6 @@ class B4ACloudCode extends CloudCode {
     let tree = [];
     // Get current files on tree
     let currentCode = getFiles();
-    debugger;
     const missingFileModal = (
       <Modal
         type={Modal.Types.DANGER}
@@ -135,7 +134,7 @@ class B4ACloudCode extends CloudCode {
     let cloudCode = currentCode.find(code => code.text === 'cloud');
     if (!cloudCode) {
       // show modal for missing main.js or app.js
-      return this.setState({ modal: missingFileModal });      
+      return this.setState({ modal: missingFileModal });
     }
     // check main.js or app.js file on cloud folder
     let fileIdx = cloudCode.children.findIndex(file => file.text === 'main.js' || file.text === 'app.js');
@@ -143,7 +142,7 @@ class B4ACloudCode extends CloudCode {
       // show modal for missing main.js or app.js
       return this.setState({ modal: missingFileModal });
     }
-    
+
     this.formatFiles(currentCode, tree);
     const loadingModal = <Modal
       type={Modal.Types.INFO}
@@ -227,17 +226,12 @@ class B4ACloudCode extends CloudCode {
     let title = null;
     let footer = null;
     let alertWhatIs = null;
-    let alertTips = null;
-
-    let alertTipsMessage = <div>
-      <p style={{height:"auto"}}><b>•</b> To deploy your Cloud Code Functions you can use the Dashboard bellow or the <a href="https://www.back4app.com/docs/platform/parse-cli" target="_blank">Back4App CLI.</a></p>
-      <p style={{height:"auto"}}><b>•</b> To upload your code you should first click on ADD button and choose what files you want to upload.</p>
-      <p style={{height:"auto"}}><b>•</b> The first file MUST BE called main.js and any other file or folder MUST BE referenced more in this file.</p>
-      <p style={{height:"auto"}}><b>•</b> After ADD and REMOVE all files you want, click on the DEPLOY button and commit your operation;</p>
-    </div>
 
     let alertWhatIsMessage = <div>
-      <p style={{height:"auto"}}>Cloud code functions is a tool that lets you run a NodeJS function in Back4App Cloud. Back4App executes your code only when you call the function via API or via SDK. It is also possible to create functions that are triggered by your app events. When you update your Cloud Code Functions, it becomes available to all mobile/web/IoT environments instantly. You don’t have to wait for a new release of your application. This lets you change app behavior on the fly and add new features faster.</p>
+      <p style={{height:"auto"}}>
+        Upload(by clicking on ADD button) and Deploy your main.js file(containing your functions inside) to start running javascript functions on Back4App Servers.
+        Find a sample code on the section below to use as a reference. For more details, check our Cloud Code guide <a href="https://www.back4app.com/docs/get-started/cloud-functions">https://www.back4app.com/docs/get-started/cloud-functions</a>.
+      </p>
     </div>
 
     // Show loading page before fetch data
@@ -256,16 +250,10 @@ class B4ACloudCode extends CloudCode {
       </div>
 
       alertWhatIs = <B4AAlert
-        show={this.state.showWhatIs}
+        show={true}
         handlerCloseEvent={this.handlerCloseAlert.bind(this)}
         title="What is Cloud Code Functions"
         description={alertWhatIsMessage} />
-
-      alertTips = <B4AAlert
-        show={this.state.showTips}
-        handlerCloseEvent={this.handlerCloseAlert.bind(this)}
-        title="Back4App Tips"
-        description={alertTipsMessage} />
 
       content = <B4ACodeTree
         files={this.state.files}
@@ -274,17 +262,27 @@ class B4ACloudCode extends CloudCode {
       />
 
       footer = <div className={styles.footer}>
-        <Button
-          value='Logs'
-          primary={true}
-          onClick={this.onLogClick}
-        />
-        <Button
-          value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
-          primary={true}
-          color='b4a-green'
-          onClick={this.uploadCode.bind(this)}
-        />
+        <div className={styles.footerContainer}>
+          <div className={styles.ccStatusIcon}>
+            <span className={styles.deployedCircle}></span> <small>Deployed</small>
+          </div>
+          <div className={styles.ccStatusIcon}>
+            <span className={styles.undeployedCircle}></span> <small>Deploy pending</small>
+          </div>
+        </div>
+        <div className={styles.footerContainer}>
+          <Button
+            value='Logs'
+            primary={true}
+            onClick={this.onLogClick}
+          />
+          <Button
+            value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
+            primary={true}
+            color='b4a-green'
+            onClick={this.uploadCode.bind(this)}
+          />
+        </div>
       </div>
     }
 
@@ -292,7 +290,6 @@ class B4ACloudCode extends CloudCode {
       <div className={`${styles.source} ${styles['b4a-source']}`} >
         {title}
         {alertWhatIs}
-        {alertTips}
         {content}
         {footer}
         {this.state.modal}

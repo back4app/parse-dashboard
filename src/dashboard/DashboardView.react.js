@@ -72,7 +72,8 @@ export default class DashboardView extends React.Component {
 
     let features = this.context.currentApp.serverInfo.features;
 
-    const { showAdminPage } = this.context.currentApp.custom
+    const { showAdminPage } = this.context.currentApp.custom;
+    const user = AccountManager.currentUser();
 
     let databaseSubsections = [];
     if (features.schemas &&
@@ -172,10 +173,12 @@ export default class DashboardView extends React.Component {
       link: '/analytics'
     })
 
-    moreSubSection.push({
-      name: 'Database HUB',
-      link: '/connections'
-    })
+    if (user.allowHubPublish) {
+      moreSubSection.push({
+        name: 'Database HUB',
+        link: '/connections'
+      })
+    }
 
     moreSubSection.push({
       name: 'Admin App',

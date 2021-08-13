@@ -22,7 +22,7 @@ let AppData = createClass({
   getChildContext() {
     return {
       generatePath: this.generatePath,
-      currentApp: AppsManager.findAppBySlugOrName(this.props.params.appId)
+      currentApp: this.props.apps.find(ap => ap.slug === this.props.params.appId)
     };
   },
 
@@ -35,7 +35,7 @@ let AppData = createClass({
       return <AppSelector />;
     }
     //Find by name to catch edge cases around escaping apostrophes in URLs
-    let current = AppsManager.findAppBySlugOrName(this.props.params.appId);
+    let current = this.props.apps.find(ap => ap.slug === this.props.params.appId);
     if (current) {
       current.setParseKeys();
     } else {

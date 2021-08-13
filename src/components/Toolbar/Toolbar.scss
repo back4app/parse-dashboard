@@ -111,11 +111,15 @@ body:global(.expanded) {
   display: flex;
   align-items: center;
   top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .publicAccess {
   display: inline-flex;
-  margin-left: 15px;
+  // margin-left: 5px;
   align-items: center;
   cursor: pointer;
   .publicAccessIcon {
@@ -137,4 +141,14 @@ body:global(.expanded) {
 
 .mr5 {
   margin-right: 5px;
+}
+
+@media (max-width: 774px) {
+  .seperatorVertical {
+    display: none;
+  }
+
+  .publicAccess {
+    display: none;
+  }
 }

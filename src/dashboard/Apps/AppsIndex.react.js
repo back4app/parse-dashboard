@@ -66,32 +66,35 @@ let AppCard = ({
   app,
   icon,
 }) => {
-  let canBrowse = app.serverInfo.error || app.serverInfo.status === 'LOADING' ? null : () => history.push(html`/apps/${app.slug}/browser`);
+  let canBrowse = app.serverInfo.error ? null : () => history.push(html`/apps/${app.slug}/browser`);
   let versionMessage = app.serverInfo.error ?
     <div className={styles.serverVersion}>Server not reachable: <span className={styles.ago}>{app.serverInfo.error.toString()}</span></div>:
     <div className={styles.serverVersion}>
     Server URL: <span className={styles.ago}>{app.serverURL || 'unknown'}</span>
     Server version: <span className={styles.ago}>{app.serverInfo.parseServerVersion || 'unknown'}</span>
     </div>;
+
   let appStatusIcon;
   let appNameStyles = [styles.appname];
+  let appIconStyle = [styles.icon];
 
   if (app.serverInfo.status === 'LOADING') {
     appStatusIcon = <img src={loadingImg} alt="loading..." className={styles.loadingIcon} />
-    appNameStyles.push(styles.disabled);
+    appNameStyles.push(styles.loading);
   }
 
   if (app.serverInfo.status === 'ERROR') {
     appStatusIcon = <Icon name='warn-triangle-outline' fill='#F2C94C' width={18} height={18} />
     appNameStyles.push(styles.disabled);
+    appIconStyle.push(styles.disabled);
   }
 
-  return <li onClick={canBrowse} style={{ background: app.primaryBackgroundColor }}>
-    <a className={styles.icon}>
+  return <li onClick={canBrowse} style={{ background: app.primaryBackgroundColor, cursor: app.serverInfo.status === 'ERROR' ? 'not-allowed': 'pointer' }}>
+    <span className={appIconStyle.join(' ')}>
       {icon ? <img src={'appicons/' + icon} width={56} height={56}/> : <Icon width={56} height={56} name='blank-app-outline' fill='#1E384D' />}
-    </a>
+    </span>
     <div className={styles.details}>
-      <a className={appNameStyles.join(' ')}>{app.name} {appStatusIcon}</a>
+      <span className={appNameStyles.join(' ')}>{app.name} {appStatusIcon}</span>
       {versionMessage}
     </div>
     <CountsSection className={styles.glance} title='At a glance'>
@@ -107,22 +110,49 @@ export default class AppsIndex extends React.Component {
     super();
     this.state = { search: '' };
     this.focusField = this.focusField.bind(this);
+    this.getAppsIndexStats = this.getAppsIndexStats.bind(this);
   }
 
   componentWillMount() {
-    if (AppsManager.apps().length === 1) {
-      const [app] = AppsManager.apps();
+    document.body.addEventListener('keydown', this.focusField);
+    // AppsManager.getAllAppsIndexStats().then(() => {
+    //   this.forceUpdate();
+    // });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // If single app, then redirect to browser
+    if (nextProps.apps.length === 1 && nextProps.apps[0].serverInfo === 'SUCCESS') {
+      const [app] = nextProps.apps;
       history.push(`/apps/${app.slug}/browser`);
       return;
     }
-    document.body.addEventListener('keydown', this.focusField);
-    AppsManager.getAllAppsIndexStats().then(() => {
-      this.forceUpdate();
-    });
+    // compare nextProps with prevProps to know for which app's serverInfo changed
+    // to SUCCESS then, make _User & _Installation class count request
+    // and update that app
+    for (let idx = 0; idx < nextProps.apps.length; idx++) {
+      const nextApp = nextProps.apps[idx];
+      const prevApp = this.props.apps.find(ap => ap.applicationId === nextApp.applicationId);
+
+      if (nextApp.serverInfo.status !== prevApp.serverInfo.status && nextApp.serverInfo.status === 'SUCCESS') {
+        // app's status changed
+        this.getAppsIndexStats(nextApp);
+      }      
+    }
+    
   }
 
   componentWillUnmount() {
     document.body.removeEventListener('keydown', this.focusField);
+  }
+
+  // Fetch the latest usage and request info for the apps index
+  async getAppsIndexStats(app) {
+    let installationCount = await app.getClassCount('_Installation');
+    let userCount = await app.getClassCount('_User');
+    app.installations = installationCount;
+    app.users = userCount;
+    this.props.updateApp(app);
   }
 
   updateSearch(e) {
@@ -138,6 +168,10 @@ export default class AppsIndex extends React.Component {
   render() {
     let search = this.state.search.toLowerCase();
     let apps = this.props.apps;
+    let sortedApps = apps.sort(function (app1, app2) {
+      return app1.name.localeCompare(app2.name);
+    });
+
     if (apps.length === 0) {
       return (
         <div className={styles.empty}>
@@ -176,12 +210,10 @@ export default class AppsIndex extends React.Component {
             filter&hellip;' />
         </div>
         <ul className={styles.apps}>
-          {apps.map(app => {
-            return (
+          {sortedApps.map(app =>
             app.name.toLowerCase().indexOf(search) > -1 ?
               <AppCard key={app.slug} app={app} icon={app.icon ? app.icon : null}/> :
-              null)
-            }
+              null
           )}
         </ul>
         {upgradePrompt}
