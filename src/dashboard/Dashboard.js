@@ -175,7 +175,7 @@ export default class Dashboard extends React.Component {
           store_id: isFlow1 ? '1001' : '1002',
           name: userDetail.username,
           email: userDetail.username,
-          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',          
+          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',
         };
         let retryInterval = isFlow1 ? 5 : 45;
         let collectInterval = isFlow1 ? 30 : 90;
@@ -184,6 +184,7 @@ export default class Dashboard extends React.Component {
           options,
           localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
         }));
+        // eslint-disable-next-line no-undef
         createSoluCXWidget(
           process.env.SOLUCX_API_KEY,
           'bottomBoxLeft',
@@ -245,7 +246,7 @@ export default class Dashboard extends React.Component {
             this.updateApp(updatedApp);
           }
         }
-      });     
+      });
     }).catch(({ error }) => {
       this.setState({
         configLoadingError: error,
@@ -379,7 +380,7 @@ export default class Dashboard extends React.Component {
     const AppRoute = ({ match }) => {
       const appId = match.params.appId;
       const user = AccountManager.currentUser();
-      
+
       let currentApp = this.state.apps.find(ap => ap.slug === appId);
       if (!currentApp) {
         history.replace('/apps');
@@ -442,21 +443,21 @@ export default class Dashboard extends React.Component {
             <Route path={ match.path + '/push/:pushId' } render={(props) => (
               <PushDetails {...props} params={props.match.params} />
             )} />
-            
+
             <Route path={ match.path + '/connect' } component={B4aConnectPage} />
             <Route path={ match.path + '/admin' } component={B4aAdminPage} />
             <Route path={ match.path + '/app-templates' } component={B4aAppTemplates} />
             <Route path={ match.path + '/server-settings/:targetPage?' } render={(props) => (
               <ServerSettings params={props.match.params} />
             )} />
-            
+
             {user.allowHubPublish && (
               <>
                 <Route exact path={ match.path + '/connections' } component={HubConnections} />
                 <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />
               </>
             )}
-            
+
             <Route exact path={ match.path + '/index' } render={props => <IndexManager {...props} params={props.match.params} />} />
             <Route path={ match.path + '/index/:className'} render={props => <IndexManager {...props} params={props.match.params} />} />
 
