@@ -213,7 +213,7 @@ class B4ACloudCode extends CloudCode {
   }
 
   onLogClick() {
-    window.open(`/apps/${this.context.currentApp.slug}/server-settings/logs`, '_blank');
+    window.open(`/apps/${this.context.currentApp.slug}/logs/system`, '_blank');
   }
 
   // override renderSidebar from cloud code to don't show the files name on sidebar
