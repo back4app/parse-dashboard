@@ -175,7 +175,7 @@ export default class Dashboard extends React.Component {
           store_id: isFlow1 ? '1001' : '1002',
           name: userDetail.username,
           email: userDetail.username,
-          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',          
+          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',
         };
         let retryInterval = isFlow1 ? 5 : 45;
         let collectInterval = isFlow1 ? 30 : 90;
@@ -184,6 +184,7 @@ export default class Dashboard extends React.Component {
           options,
           localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
         }));
+        // eslint-disable-next-line no-undef
         createSoluCXWidget(
           process.env.SOLUCX_API_KEY,
           'bottomBoxLeft',
@@ -245,7 +246,7 @@ export default class Dashboard extends React.Component {
             this.updateApp(updatedApp);
           }
         }
-      });     
+      });
     }).catch(({ error }) => {
       this.setState({
         configLoadingError: error,
@@ -288,7 +289,7 @@ export default class Dashboard extends React.Component {
     );
 
     const SettingsRoute = ({ match }) => (
-      <SettingsData params={ match.params }>
+      <SettingsData params={ match.params } apps={this.state.apps}>
         {settingsDataProps => (
           <>
             <Route path={ match.url + '/general' } render={props => (
@@ -317,7 +318,7 @@ export default class Dashboard extends React.Component {
         )} />
         <Route path={ props.match.path + '/:section' } render={(props) => (
           <JobsData {...props} params={props.match.params}>
-            <Jobs {...props} params={props.match.params}/>
+            <Jobs {...props} params={props.match.params} apps={this.state.apps} />
           </JobsData>
         )} />
         <Redirect from={ props.match.path } to='/apps/:appId/jobs/all' />
@@ -329,22 +330,22 @@ export default class Dashboard extends React.Component {
         <Route path={ match.path + '/overview' } component={AnalyticsOverview} />
         <Redirect exact from={ match.path + '/explorer' } to='/apps/:appId/analytics/explorer/chart' />
         <Route path={ match.path + '/explorer/:displayType' } render={props => (
-          <Explorer {...props} params={props.match.params} />
+          <Explorer {...props} params={props.match.params} apps={this.state.apps} />
         )} />
-        <Route path={ match.path + '/retention' } component={Retention} />
-        <Route path={ match.path + '/performance' } component={Performance} />
-        <Route path={ match.path + '/slow_queries' } component={SlowQueries} />
-        <Route path={ match.path + '/slow_requests' } component={SlowQueries} />
+        <Route path={ match.path + '/retention' } render={props => <Retention {...props} apps={this.state.apps} />} />
+        <Route path={ match.path + '/performance' } render={props => <Performance {...props} apps={this.state.apps} />} />
+        <Route path={ match.path + '/slow_queries' } render={props => <SlowQueries {...props} apps={this.state.apps} />} />
+        <Route path={ match.path + '/slow_requests' } render={props => <SlowQueries {...props} apps={this.state.apps} />} />
       </Switch>
     );
 
-    const logsRoute = ({ match }) => (
+    const logsRoute = (props) => (
       <Switch>
-        <Route path={ match.path + '/info' } component={InfoLogs} />
-        <Route path={ match.path + '/error' } component={ErrorLogs} />
-        <Redirect exact from={ match.path } to='/apps/:appId/logs/system' />
-        <Route path={ match.path + '/system' } component={SystemLogs} />
-        <Route path={ match.path + '/access' } component={AccessLogs} /> 
+        <Route path={ props.match.path + '/info' } render={(props) => <InfoLogs {...props} apps={this.state.apps} />} />
+        <Route path={ props.match.path + '/error' } render={(props) => <ErrorLogs {...props} apps={this.state.apps} />} />
+        <Redirect exact from={ props.match.path } to='/apps/:appId/logs/system' />
+        <Route path={ props.match.path + '/system' } render={(props) => <SystemLogs {...props} apps={this.state.apps} />} />
+        <Route path={ props.match.path + '/access' } render={(props) => <AccessLogs {...props} apps={this.state.apps} /> } />
       </Switch>
     );
 
@@ -352,7 +353,7 @@ export default class Dashboard extends React.Component {
       if (ShowSchemaOverview) {
         return <SchemaOverview {...props} params={props.match.params} />
       }
-      return <Browser {...props} params={ props.match.params } />
+      return <Browser {...props} params={ props.match.params } apps={this.state.apps} />
     }
 
     const ApiConsoleRoute = (props) => (
@@ -378,8 +379,13 @@ export default class Dashboard extends React.Component {
 
     const AppRoute = ({ match }) => {
       const appId = match.params.appId;
+      const user = AccountManager.currentUser();
+
       let currentApp = this.state.apps.find(ap => ap.slug === appId);
-      if (!currentApp) return <div />;
+      if (!currentApp) {
+        history.replace('/apps');
+        return <div />
+      };
       if (currentApp.serverInfo.status === 'LOADING') {
         return (
           <div className={center}>
@@ -408,21 +414,21 @@ export default class Dashboard extends React.Component {
         <AppData params={ match.params } apps={this.state.apps} >
           <Switch>
             <Route path={ match.path + '/getting_started' } component={Empty} />
-            <Route path={ match.path + '/browser/:className/:entityId/:relationName' } component={BrowserRoute} />
+            <Route path={ match.path + '/browser/:className/:entityId/:relationName' } render={BrowserRoute} />
             <Route path={ match.path + '/browser/:className' } render={BrowserRoute} />
             <Route path={ match.path + '/browser' } render={BrowserRoute} />
             <Route path={ match.path + '/cloud_code' } render={(props) => (
-              <CloudCode {...props} params={match.params} />
+              <CloudCode {...props} params={match.params} apps={this.state.apps} />
             )} />
             <Redirect from={ match.path + '/cloud_code/*' } to='/apps/:appId/cloud_code' />
-            <Route path={ match.path + '/webhooks' } component={Webhooks} />
+            <Route path={ match.path + '/webhooks' } render={() => <Webhooks params={match.params} apps={this.state.apps} />} />
 
-            <Route path={ match.path + '/jobs' } component={JobsRoute}/>
+            <Route path={ match.path + '/jobs' } render={JobsRoute}/>
 
-            <Route path={ match.path + '/logs' } component={logsRoute}/>
+            <Route path={ match.path + '/logs' } render={logsRoute}/>
 
-            <Route path={ match.path + '/config' } component={Config} />
-            <Route path={ match.path + '/api_console' } component={ApiConsoleRoute} />
+            <Route path={ match.path + '/config' } render={(props) => <Config {...props} apps={this.state.apps} />} />
+            <Route path={ match.path + '/api_console' } render={ApiConsoleRoute} />
             <Route path={ match.path + '/migration' } component={Migration} />
 
 
@@ -437,22 +443,29 @@ export default class Dashboard extends React.Component {
             <Route path={ match.path + '/push/:pushId' } render={(props) => (
               <PushDetails {...props} params={props.match.params} />
             )} />
-            <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />
+
             <Route path={ match.path + '/connect' } component={B4aConnectPage} />
             <Route path={ match.path + '/admin' } component={B4aAdminPage} />
             <Route path={ match.path + '/app-templates' } component={B4aAppTemplates} />
             <Route path={ match.path + '/server-settings/:targetPage?' } render={(props) => (
               <ServerSettings params={props.match.params} />
             )} />
-            <Route exact path={ match.path + '/connections' } component={HubConnections} />
+
+            {user.allowHubPublish && (
+              <>
+                <Route exact path={ match.path + '/connections' } component={HubConnections} />
+                <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />
+              </>
+            )}
+
             <Route exact path={ match.path + '/index' } render={props => <IndexManager {...props} params={props.match.params} />} />
             <Route path={ match.path + '/index/:className'} render={props => <IndexManager {...props} params={props.match.params} />} />
 
             {/* Unused routes... */}
             <Redirect exact from={ match.path + '/analytics' } to='/apps/:appId/analytics/performance' />
-            <Route path={ match.path + '/analytics' } component={AnalyticsRoute}/>
+            <Route path={ match.path + '/analytics' } render={AnalyticsRoute}/>
             <Redirect exact from={ match.path + '/settings' } to='/apps/:appId/settings/general' />
-            <Route path={ match.path + '/settings' } component={SettingsRoute}/>
+            <Route path={ match.path + '/settings' } render={SettingsRoute}/>
           </Switch>
         </AppData>
       )

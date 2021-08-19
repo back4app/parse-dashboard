@@ -6,6 +6,12 @@ import withReactContent from 'sweetalert2-react-content'
 import { Base64 }       from 'js-base64'
 import * as base64 from 'base64-async';
 
+import emptyFolderIcon from './icons/folder-empty.png';
+import folderIcon from './icons/folder.png';
+import file from './icons/file.png';
+import fileCheck from './icons/file-check.png';
+import undeployedFolder from './icons/folder-notdeployed.png';
+
 // Alert parameters
 const MySwal = withReactContent(Swal)
 const overwriteFileModal = {
@@ -74,14 +80,16 @@ const verifyFileNames = async (data, newNode) => {
   let currentCode = getFiles(data)
   currentCode = currentCode && currentCode.children
 
-  for (let i = 0; i < currentCode.length; i++) {
-    if (newNode.text && currentCode[i].text === newNode.text.name) {
-      overwriteFileModal.text = currentCode[i].text + ' file already exists. Do you want to overwrite?'
-      let currentId = currentCode[i].id
-      // Show alert and wait for the user response
-      let alertResponse = await MySwal.fire(overwriteFileModal)
-      if (alertResponse.value) {
-        await remove(`#${currentId}`)
+  if ( currentCode ) {
+    for (let i = 0; i < currentCode.length; i++) {
+      if (newNode.text && currentCode[i].text === newNode.text.name) {
+        overwriteFileModal.text = currentCode[i].text + ' file already exists. Do you want to overwrite?'
+        let currentId = currentCode[i].id
+        // Show alert and wait for the user response
+        let alertResponse = await MySwal.fire(overwriteFileModal)
+        if (alertResponse.value) {
+          await remove(`#${currentId}`)
+        }
       }
     }
   }
@@ -93,28 +101,25 @@ const getExtension = (fileName) => {
 }
 
 // Function used to add files on tree.
-const addFilesOnTree = async (files, currentCode) => {
+const addFilesOnTree = async (files, currentCode, selectedFolder) => {
   let newTreeNodes = [];
   let folder
   for (let i = 0; i < files.fileList.length; i++) {
     newTreeNodes = readFile({ name: files.fileList[i], code: files.base64[i] }, newTreeNodes);
   }
 
-  let extension
-
   for (let j = 0; j < newTreeNodes.length; j++ ) {
-    extension = getExtension(newTreeNodes[j].text.name);
     if (currentCode === '#') {
+      let extension = getExtension(newTreeNodes[j].text.name);
       let inst = $.jstree.reference(currentCode)
       let obj = inst.get_node(currentCode);
 
       // Select the folder to insert based on file extension. If is a js file,
       // insert on "cloud" folder, else insert on "public" folder. This logic is
       // a legacy from the old Cloud Code page
-      if (extension === 'js' || extension === 'json') {
+      folder = obj.children[selectedFolder]
+      if ( extension === 'json') {
         folder = obj.children[0]
-      } else {
-        folder = obj.children[1]
       }
     }
     await verifyFileNames(folder, newTreeNodes[j]);
@@ -162,24 +167,25 @@ const getConfig = (files) => {
     contextmenu: {items: customMenu},
     types: {
       '#': {
-        max_children: 2
+        max_children: 2,
+        icon: fileCheck,
       },
       default: {
-        icon: 'zmdi zmdi-file',
+        icon: fileCheck,
         max_children: 0
       },
       folder: {
-        icon: 'zmdi zmdi-folder',
+        icon: folderIcon,
         max_depth: 10,
-        max_children: 200
+        max_children: 200,
       },
       "new-folder": {
-        icon: 'zmdi zmdi-folder new',
+        icon: undeployedFolder,
         max_depth: 10,
         max_children: 200
       },
       "new-file": {
-        icon: 'zmdi zmdi-file new',
+        icon: file,
         max_children: 0
       }
     }
@@ -191,6 +197,23 @@ export const getFiles = (reference = '#') => {
   return $("#tree").jstree(true).get_json(reference)
 }
 
+// empty folder icons.
+export const refreshEmptyFolderIcons = () => {
+  const leaves = $('.jstree-leaf');
+
+  for( let i = 0; i < leaves.length; i++ ){
+    // folder or undeployed folder.
+    if (
+      leaves[i].querySelector('.jstree-themeicon').style['background-image'] === "url(\""+require('./icons/folder.png').default+"\")"
+    ) {
+      leaves[i].querySelector('.jstree-themeicon').style = "background-image: url(\""+require('./icons/folder-empty.png').default+"\"); background-position: center center; background-size: auto;";
+    }
+    else if ( leaves[i].querySelector('.jstree-themeicon').style['background-image'] === "url(\""+require('./icons/folder-notdeployed.png').default+"\")" ) {
+      leaves[i].querySelector('.jstree-themeicon').style = "background-image: url(\""+require('./icons/folder-empty-undeployed.png').default+"\"); background-position: center center; background-size: auto;";
+    }
+  }
+}
+
 export default {
   getConfig,
   remove,
@@ -199,5 +222,6 @@ export default {
   getFiles,
   decodeFile,
   updateTreeContent,
-  getExtension
+  getExtension,
+  refreshEmptyFolderIcons
 }

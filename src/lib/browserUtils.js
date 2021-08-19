@@ -15,5 +15,5 @@ export function isChrome() {
 }
 
 export function isMobile() {
-  return window.innerWidth <= 980;
+  return window.innerWidth <= 1015;
 }

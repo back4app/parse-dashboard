@@ -80,8 +80,7 @@ let AppCard = ({
 
   if (app.serverInfo.status === 'LOADING') {
     appStatusIcon = <img src={loadingImg} alt="loading..." className={styles.loadingIcon} />
-    appNameStyles.push(styles.disabled);
-    appIconStyle.push(styles.disabled);
+    appNameStyles.push(styles.loading);
   }
 
   if (app.serverInfo.status === 'ERROR') {
@@ -90,7 +89,7 @@ let AppCard = ({
     appIconStyle.push(styles.disabled);
   }
 
-  return <li onClick={canBrowse} style={{ background: app.primaryBackgroundColor, cursor: app.serverInfo.status === 'SUCCESS' ? 'pointer': 'auto' }}>
+  return <li onClick={canBrowse} style={{ background: app.primaryBackgroundColor, cursor: app.serverInfo.status === 'ERROR' ? 'not-allowed': 'pointer' }}>
     <span className={appIconStyle.join(' ')}>
       {icon ? <img src={'appicons/' + icon} width={56} height={56}/> : <Icon width={56} height={56} name='blank-app-outline' fill='#1E384D' />}
     </span>

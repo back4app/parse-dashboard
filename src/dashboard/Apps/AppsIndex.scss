@@ -129,7 +129,7 @@
   border-radius: 10px;
   overflow: hidden;
   &.disabled {
-    cursor: auto;
+    cursor: not-allowed;
   }
 }
 
@@ -139,9 +139,12 @@
   display: inline-block;
   font-size: 22px;
   color: white;
+  &.loading {
+    color: #788c97 !important;
+  }
   &.disabled {
     color: #788c97 !important;
-    cursor: auto;
+    cursor: not-allowed;
   }
 
   & > img, svg {

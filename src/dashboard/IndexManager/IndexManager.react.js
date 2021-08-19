@@ -301,10 +301,17 @@ class IndexManager extends DashboardView {
       return null
     }
     return this.state.data.map(({ name, index, creationType, status, unique = false, sparse = false, expireAfterSeconds, weights, size }) => {
+      let isAutomaticIndex = name === '_id_';
+      if (this.props.params.className === '_User' && (name === 'username_1' || name === 'email_1')) {
+        isAutomaticIndex = true;
+      }
+      if (this.props.params.className === '_Role' && name === 'name_1') {
+        isAutomaticIndex = true;
+      }
       return (
         <tr key={name}>
           {!this.state.isReadOnly && <td className={styles.selectedContainer}>
-            {(status === 'SUCCESS' || status === 'ERROR') && <input type='checkbox' value={!!this.state.selected[name]} onChange={() => this.toggleRow(name)} />}
+            {(status === 'SUCCESS' || status === 'ERROR') && <input type='checkbox' disabled={isAutomaticIndex} value={!!this.state.selected[name]} onChange={() => this.toggleRow(name)} />}
           </td>}
           <td className={this.state.isReadOnly ? styles.readOnly : ''}>{name}</td>
           <td>{creationType}</td>
@@ -349,7 +356,9 @@ class IndexManager extends DashboardView {
     if (className && className.startsWith('_')) {
       className = className.substr(1, className.length - 1)
     }
-    const { showBackButton } = this.props.location.state || {}
+    const { showBackButton } = this.props.location.state || {};
+    let selectionLength = Object.entries(this.state.selected).filter(([, isSelected]) => isSelected).length;
+
     return (
       <div className={styles.indexManager}>
         <div className={styles.headerContainer}>
@@ -368,15 +377,23 @@ class IndexManager extends DashboardView {
           </div>
 
           <section className={styles.toolbar}>
-            {this.state.canCreate && <a className={styles.toolbarButton} onClick={this.showIndexForm} title='Add an index'>
-              <Icon name='add-row' width={32} height={26} />
-            </a>}
+            {this.state.canCreate && (
+              <a className={styles.addBtn} onClick={this.showIndexForm} title="Add an Index">
+                <Icon name='add-outline' width={14} height={14} />
+                <span>Index</span>
+              </a>
+            )}
             <a className={styles.toolbarButton} onClick={this.refresh} title='Refresh'>
-              <Icon name='refresh' width={30} height={26} />
+              <Icon name='refresh-icon' width={30} height={26} />
             </a>
-            {this.state.canDelete && <a className={styles.toolbarButton} onClick={this.dropIndexes} title='Drop index'>
-              <Icon name='trash-solid' width={30} height={26} />
-            </a>}
+            {this.state.canDelete && (
+              <a 
+                className={styles.deleteBtn + ` ${(selectionLength > 0) && styles.active}`} 
+                onClick={selectionLength === 0 ? null : this.dropIndexes}
+              >
+                <Icon name='delete-icon' width={24} height={20} />
+              </a>
+            )}
           </section>
         </div>
         {this.state.data && this.state.data.length === 0

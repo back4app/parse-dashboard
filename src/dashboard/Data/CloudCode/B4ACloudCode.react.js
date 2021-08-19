@@ -213,7 +213,7 @@ class B4ACloudCode extends CloudCode {
   }
 
   onLogClick() {
-    window.open(`/apps/${this.context.currentApp.slug}/server-settings/logs`, '_blank');
+    window.open(`/apps/${this.context.currentApp.slug}/logs/system`, '_blank');
   }
 
   // override renderSidebar from cloud code to don't show the files name on sidebar
@@ -263,17 +263,27 @@ class B4ACloudCode extends CloudCode {
       />
 
       footer = <div className={styles.footer}>
-        <Button
-          value='Logs'
-          primary={true}
-          onClick={this.onLogClick}
-        />
-        <Button
-          value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
-          primary={true}
-          color='b4a-green'
-          onClick={this.uploadCode.bind(this)}
-        />
+        <div className={styles.footerContainer}>
+          <div className={styles.ccStatusIcon}>
+            <span className={styles.deployedCircle}></span> <small>Deployed</small>
+          </div>
+          <div className={styles.ccStatusIcon}>
+            <span className={styles.undeployedCircle}></span> <small>Deploy pending</small>
+          </div>
+        </div>
+        <div className={styles.footerContainer}>
+          <Button
+            value='Logs'
+            primary={true}
+            onClick={this.onLogClick}
+          />
+          <Button
+            value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
+            primary={true}
+            color='b4a-green'
+            onClick={this.uploadCode.bind(this)}
+          />
+        </div>
       </div>
     }
 

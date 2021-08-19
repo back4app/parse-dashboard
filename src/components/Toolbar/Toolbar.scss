@@ -142,3 +142,13 @@ body:global(.expanded) {
 .mr5 {
   margin-right: 5px;
 }
+
+@media (max-width: 774px) {
+  .seperatorVertical {
+    display: none;
+  }
+
+  .publicAccess {
+    display: none;
+  }
+}

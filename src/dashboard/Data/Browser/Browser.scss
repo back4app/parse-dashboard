@@ -161,7 +161,7 @@ body:global(.expanded) {
   @include MonospaceFont;
   font-size: 12px;
   white-space: nowrap;
-  height: auto;
+  height: 30px;
   border-bottom: 1px solid #e3e3ea;
 
   &:nth-child(odd) {
@@ -251,6 +251,20 @@ body:global(.expanded) {
   display: flex !important;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-width: 550px) {
+  .addBtn {
+    display: none;
+  }
+
+  .deleteBtn {
+    display: none;
+  }
+
+  .verticalSeparator {
+    display: none;
+  }
 }
 
 @include keyframes(spinner-border) {

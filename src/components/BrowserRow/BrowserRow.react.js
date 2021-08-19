@@ -25,6 +25,7 @@ export default class BrowserRow extends Component {
       <div className={styles.tableRow} style={{ minWidth: rowWidth }}>
         <span className={styles.checkCell}>
           <input
+            disabled={row < 0}
             type='checkbox'
             checked={selection['*'] || selection[obj.id]}
             onChange={e => selectRow(obj.id, e.target.checked)} />
