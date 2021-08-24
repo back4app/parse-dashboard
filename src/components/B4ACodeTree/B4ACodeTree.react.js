@@ -224,7 +224,7 @@ export default class B4ACodeTree extends React.Component {
         <div className={styles.filePreview}>
           <div className={`${styles['files-box']}`}>
             <div className={styles['files-header']} >
-              <p>{this.state.selectedFile}</p>
+              <p>{typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
               <Button
                 value={<div><i className="zmdi zmdi-minus"></i> REMOVE</div>}
                 primary={true}
