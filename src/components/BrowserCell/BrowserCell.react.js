@@ -148,6 +148,16 @@ class BrowserCell extends Component {
       },
     });
 
+    if ( this.props.type === 'Pointer' ) {
+      onEditSelectedRow && contextMenuOptions.push({
+        text: 'Open pointer in new tab',
+        callback: () => {
+          let { value, onPointerCmdClick } = this.props;
+          onPointerCmdClick(value);
+        }
+      });
+    }
+
     return contextMenuOptions;
   }
 
@@ -245,7 +255,7 @@ class BrowserCell extends Component {
   //#endregion
 
   render() {
-    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, setRelation, onPointerClick, row, col, readonly, field, onEditSelectedRow } = this.props;
+    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, setRelation, onPointerClick, onPointerCmdClick, row, col, readonly, field, onEditSelectedRow } = this.props;
     let content = value;
     this.copyableValue = content;
     let classes = [styles.cell, unselectable];
@@ -272,7 +282,7 @@ class BrowserCell extends Component {
         value = object;
       }
       content = onPointerClick ? (
-        <a href='javascript:;' onClick={onPointerClick.bind(undefined, value)}>
+        <a href='javascript:;' onClick={e => !e.metaKey && onPointerClick(value)}>
           <Pill value={value.id} />
         </a>
       ) : (
@@ -377,9 +387,13 @@ class BrowserCell extends Component {
           ref={this.cellRef}
           className={classes.join(' ')}
           style={{ width }}
-          onClick={() => {
-            onSelect({ row, col });
-            setCopyableValue(hidden ? undefined : this.copyableValue);
+          onClick={(e) => {
+            if ( e.metaKey === true && type === 'Pointer') {
+              onPointerCmdClick(value);
+            } else {
+              onSelect({ row, col });
+              setCopyableValue(hidden ? undefined : this.copyableValue);
+            }
           }}
           onMouseEnter={() => {
             if (field === "objectId") {
@@ -411,9 +425,13 @@ class BrowserCell extends Component {
         ref={this.cellRef}
         className={classes.join(' ')}
         style={{ width }}
-        onClick={() => {
-          onSelect({ row, col });
-          setCopyableValue(hidden ? undefined : this.copyableValue);
+        onClick={(e) => {
+          if ( e.metaKey === true && type === 'Pointer') {
+            onPointerCmdClick(value);
+          } else {
+            onSelect({ row, col });
+            setCopyableValue(hidden ? undefined : this.copyableValue);
+          }
         }}
         onDoubleClick={() => {
           // Since objectId can't be edited, double click event opens edit row dialog

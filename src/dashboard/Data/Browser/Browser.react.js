@@ -146,6 +146,7 @@ class Browser extends DashboardView {
     this.updateRow = this.updateRow.bind(this);
     this.updateOrdering = this.updateOrdering.bind(this);
     this.handlePointerClick = this.handlePointerClick.bind(this);
+    this.handlePointerCmdClick = this.handlePointerCmdClick.bind(this);
     this.handleCLPChange = this.handleCLPChange.bind(this);
     this.setRelation = this.setRelation.bind(this);
     this.showAddColumn = this.showAddColumn.bind(this);
@@ -223,7 +224,7 @@ class Browser extends DashboardView {
         this.setState({ counts: {} });
         Parse.Object._clearAllState();
       }
-      
+
       // check if the changes are in currentApp serverInfo status
       // if not return without making any request
       if (this.props.apps !== nextProps.apps) {
@@ -236,7 +237,7 @@ class Browser extends DashboardView {
         const shouldUpdate =
           updatedCurrentApp.serverInfo.status !==
           prevCurrentApp.serverInfo.status;
-        
+
         if (!shouldUpdate) return;
       }
 
@@ -745,9 +746,9 @@ class Browser extends DashboardView {
       if (error.code === 403) errorDeletingNote = error.message;
 
       this.showNote(errorDeletingNote, true);
-      if (selectedColumn) 
+      if (selectedColumn)
         this.setState({ columnToDelete: null });
-      else 
+      else
         this.setState({ showRemoveColumnDialog: false });
 
     }).finally(() => {
@@ -986,6 +987,15 @@ class Browser extends DashboardView {
       const url = `${this.getRelationURL()}${filterQueryString ? `?filters=${filterQueryString}` : ''}`;
       history.push(url);
     });
+  }
+
+  handlePointerCmdClick({ className, id, field = 'objectId' }) {
+    let filters = JSON.stringify([{
+      field,
+      constraint: 'eq',
+      compareTo: id
+    }]);
+    window.open(this.context.generatePath(`browser/${className}?filters=${encodeURIComponent(filters)}`),'_blank');
   }
 
   handlePointerClick({ className, id, field = 'objectId' }) {
@@ -1577,6 +1587,7 @@ class Browser extends DashboardView {
             updateRow={this.updateRow}
             updateOrdering={this.updateOrdering}
             onPointerClick={this.handlePointerClick}
+            onPointerCmdClick={this.handlePointerCmdClick}
             setRelation={this.setRelation}
             onAddColumn={this.showAddColumn}
             onAddRow={this.addRow}
@@ -1819,7 +1830,7 @@ class Browser extends DashboardView {
       );
     } else if (this.state.columnToDelete) {
       extras = (
-        <ConfirmDeleteColumnDialog 
+        <ConfirmDeleteColumnDialog
           field={this.state.columnToDelete}
           onCancel={() => this.setState({ columnToDelete: null })}
           onConfirm={() => this.removeColumn(this.state.columnToDelete, true)}
