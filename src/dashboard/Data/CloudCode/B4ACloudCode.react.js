@@ -253,7 +253,7 @@ class B4ACloudCode extends CloudCode {
       alertWhatIs = <B4AAlert
         show={true}
         handlerCloseEvent={this.handlerCloseAlert.bind(this)}
-        title="How to deploy your functions?"
+        title="How to deploy your functions"
         description={alertWhatIsMessage} />
 
       content = <B4ACodeTree
