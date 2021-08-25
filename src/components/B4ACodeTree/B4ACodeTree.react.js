@@ -151,15 +151,12 @@ export default class B4ACodeTree extends React.Component {
           extension = B4ATreeActions.getExtension(selectedFile)
         }
       } else {
-        // console.log(selected.id);
         selectedFolder = selected.id;
         if (selected.text === 'cloud') {
           source = cloudFolderPlaceholder
-          // selectedFolder = 0;
         }
         else if (selected.text === 'public') {
           source = publicFolderPlaceholder
-          // selectedFolder = 1;
         }
       }
     }
