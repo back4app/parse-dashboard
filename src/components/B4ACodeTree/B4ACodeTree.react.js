@@ -142,7 +142,6 @@ export default class B4ACodeTree extends React.Component {
             selectedFile = selected.text
             nodeId = selected.id
             extension = B4ATreeActions.getExtension(selectedFile)
-            // this.setState({ source, selectedFile, nodeId, extension, isImage })
           }
         } else {
           source = selected.data.code;
@@ -151,13 +150,12 @@ export default class B4ACodeTree extends React.Component {
           extension = B4ATreeActions.getExtension(selectedFile)
         }
       } else {
+        selectedFolder = selected.id;
         if (selected.text === 'cloud') {
           source = cloudFolderPlaceholder
-          selectedFolder = 0;
         }
         else if (selected.text === 'public') {
           source = publicFolderPlaceholder
-          selectedFolder = 1;
         }
       }
     }
@@ -224,7 +222,7 @@ export default class B4ACodeTree extends React.Component {
         <div className={styles.filePreview}>
           <div className={`${styles['files-box']}`}>
             <div className={styles['files-header']} >
-              <p>{this.state.selectedFile}</p>
+              <p>{typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
               <Button
                 value={<div><i className="zmdi zmdi-minus"></i> REMOVE</div>}
                 primary={true}
