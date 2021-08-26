@@ -87,7 +87,7 @@ export default class DataBrowser extends React.Component {
       this.setState({ numberOfColumns: Object.keys(this.props.columns).length })
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     document.body.addEventListener('keydown', this.handleKey);
   }
 
