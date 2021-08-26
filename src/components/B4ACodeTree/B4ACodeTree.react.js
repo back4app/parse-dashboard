@@ -7,6 +7,7 @@ import styles                       from 'components/B4ACodeTree/B4ACodeTree.scs
 import Button                       from 'components/Button/Button.react';
 import B4ACloudCodeView             from 'components/B4ACloudCodeView/B4ACloudCodeView.react';
 import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions';
+import Swal                         from 'sweetalert2';
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
 
@@ -56,7 +57,8 @@ export default class B4ACodeTree extends React.Component {
       nodeId: '',
       files: this.props.files,
       isImage: false,
-      selectedFolder: 0
+      selectedFolder: 0,
+      isFolderSelected: true,
     }
   }
 
@@ -159,7 +161,7 @@ export default class B4ACodeTree extends React.Component {
         }
       }
     }
-    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder })
+    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' })
   }
 
   // method to identify the selected tree node
@@ -197,11 +199,42 @@ export default class B4ACodeTree extends React.Component {
                 multipleFiles={true}
                 handleFiles={this.handleFiles.bind(this)} >
                 <Button
-                  value={<div><i className="zmdi zmdi-plus"></i> ADD</div>}
+                  value={<div style={{ fontSize: '10px' }}><i className="zmdi zmdi-plus"></i> ADD</div>}
                   primary={true}
-                  width='68'
+                  width='20'
+                  additionalStyles={{ minWidth: '55px' }}
                 />
               </ReactFileReader>
+              {
+                this.state.isFolderSelected === true &&
+                <Button
+                  onClick={() => {
+                    Swal.fire({
+                      title: 'Create a new empty file',
+                      text: 'Name your file',
+                      input: 'text',
+                      inputAttributes: {
+                        autocapitalize: 'off'
+                      },
+                      showCancelButton: true,
+                      confirmButtonText: 'Create file',
+                      allowOutsideClick: () => !Swal.isLoading()
+                    }).then(({value}) => {
+                      if (value) {
+                        const parent = $('#tree').jstree('get_selected');
+                        $('#tree').jstree("create_node", parent, { data: '', type: 'new-file', text: value }, 'inside', false, false);
+                      }
+                    })
+                    // const parent = $('#tree').jstree('get_selected');
+                    // $('#tree').jstree("create_node", parent, { data: '', type: 'new-file', text: 'file' }, 'inside', false, false);
+                  }}
+                  disabled={false}
+                  value={<div style={{ fontSize: '10px' }}><i className="zmdi zmdi-plus"></i> CREATE</div>}
+                  primary={true}
+                  width='20'
+                  additionalStyles={{ minWidth: '70px' }}
+                />}
+
             </div>
             <Resizable className={styles['files-tree']}
               defaultSize={{ height: '367px', width: '100%' }}
