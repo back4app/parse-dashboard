@@ -22,7 +22,6 @@ export default class CodeEditor extends React.Component {
   }
 
   componentWillReceiveProps(props){
-    // console.log(props.code);
     if (this.state.code !== props.code) {
       this.setState({ code: props.code });
     }
