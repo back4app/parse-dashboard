@@ -143,8 +143,6 @@ export default class B4ACodeTree extends React.Component {
             selectedFile = selected.text
             nodeId = selected.id
             extension = B4ATreeActions.getExtension(selectedFile)
-
-            // this.setState({ source, selectedFile, nodeId, extension, isImage })
           }
         } else {
           source = selected.data.code;
@@ -195,10 +193,6 @@ export default class B4ACodeTree extends React.Component {
     let updatedFiles = this.getUpdatedFiles(this.state.files, ecodedValue);
     this.setState({ files: updatedFiles, source: value });
     this.props.setCurrentCode(updatedFiles);
-    // let config = B4ATreeActions.getConfig(updatedFiles);
-    // console.log(config);
-    // $('#tree').jstree(true).settings.core.data = updatedFiles;
-    // $('#tree').jstree(true).refresh(true);
   }
 
   componentDidMount() {
