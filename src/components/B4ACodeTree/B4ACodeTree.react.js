@@ -225,8 +225,6 @@ export default class B4ACodeTree extends React.Component {
                         $('#tree').jstree("create_node", parent, { data: '', type: 'new-file', text: value }, 'inside', false, false);
                       }
                     })
-                    // const parent = $('#tree').jstree('get_selected');
-                    // $('#tree').jstree("create_node", parent, { data: '', type: 'new-file', text: 'file' }, 'inside', false, false);
                   }}
                   disabled={false}
                   value={<div style={{ fontSize: '10px' }}><i className="zmdi zmdi-plus"></i> CREATE</div>}
