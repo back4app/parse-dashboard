@@ -116,7 +116,6 @@ export default class B4ACodeTree extends React.Component {
       if (selected.data && selected.data.code && selected.type != 'folder') {
         // index of file on tree.
         const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
-        // let selectedFile;
         fileList.map( (file ) => {
           if ( file.name === selected.text ) {
             selectedFile = file;
