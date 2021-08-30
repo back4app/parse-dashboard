@@ -201,7 +201,14 @@ export default class B4ACodeTree extends React.Component {
     let updatedFiles = this.getUpdatedFiles(this.state.files, ecodedValue);
     this.setState({ updatedFiles: [...this.state.updatedFiles.filter( f => f.file !== this.state.selectedFile ), updatedData], files: updatedFiles, source: value });
     this.props.setCurrentCode(updatedFiles);
+    this.props.setCodeUpdated(true);
     this.state.selectedNodeData?.instance.set_icon(this.state.selectedNodeData.node, require('./icons/file.png').default);
+  }
+
+  updateCodeOnNewFile(type){
+    if ( type === 'new-file' ) {
+      this.props.setCodeUpdated(true);
+    }
   }
 
   componentDidMount() {
@@ -214,6 +221,10 @@ export default class B4ACodeTree extends React.Component {
     $('#tree').on('create_node.jstree', function (){
       B4ATreeActions.refreshEmptyFolderIcons();
     });
+
+    $('#tree').on('create_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
+    $('#tree').on('rename_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
+    $('#tree').on('delete_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
 
     // current code.
     this.props.setCurrentCode(this.state.files);
