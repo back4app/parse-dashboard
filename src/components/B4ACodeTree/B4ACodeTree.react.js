@@ -115,7 +115,6 @@ export default class B4ACodeTree extends React.Component {
       if (selected.data && selected.data.code && selected.type != 'folder') {
         // index of file on tree.
         const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
-        // let selectedFile;
         fileList.map( (file ) => {
           if ( file.name === selected.text ) {
             selectedFile = file;
@@ -191,10 +190,6 @@ export default class B4ACodeTree extends React.Component {
     let updatedFiles = this.getUpdatedFiles(this.state.files, ecodedValue);
     this.setState({ files: updatedFiles, source: value });
     this.props.setCurrentCode(updatedFiles);
-    // let config = B4ATreeActions.getConfig(updatedFiles);
-    // console.log(config);
-    // $('#tree').jstree(true).settings.core.data = updatedFiles;
-    // $('#tree').jstree(true).refresh(true);
   }
 
   componentDidMount() {
