@@ -16,6 +16,7 @@ import styles                    from 'components/BrowserCell/BrowserCell.scss';
 import Tooltip                   from 'components/Tooltip/PopperTooltip.react';
 import PropTypes                 from "lib/PropTypes";
 import { unselectable }          from 'stylesheets/base.scss';
+import { DefaultColumns }        from 'lib/Constants';
 
 class BrowserCell extends Component {
   constructor() {
@@ -239,7 +240,7 @@ class BrowserCell extends Component {
   }
 
   getContextMenuOptions(constraints) {
-    let { onEditSelectedRow } = this.props;
+    let { onEditSelectedRow, onAddRow, onAddColumn, onDeleteRows, onDeleteSelectedColumn, field, className } = this.props;
     const contextMenuOptions = [];
 
     const setFilterContextMenuOption = this.getSetFilterContextMenuOption(constraints);
@@ -258,6 +259,46 @@ class BrowserCell extends Component {
         onEditSelectedRow(true, objectId);
       }
     });
+
+    onAddRow && contextMenuOptions.push({
+      text: 'Add Row',
+      callback: onAddRow
+    });
+
+    onAddColumn && contextMenuOptions.push({
+      text: 'Add Column',
+      callback: onAddColumn
+    });
+
+    onDeleteRows && contextMenuOptions.push({
+      text: 'Delete this row',
+      callback: () => {
+        let { objectId } = this.props;
+        onDeleteRows({ [objectId]: true });
+      }
+    });
+
+    let isTouchableColumn = true;
+    isTouchableColumn = !(DefaultColumns.All.includes(field));
+    if (className[0] === '_' && DefaultColumns[className].includes(field)) {
+      isTouchableColumn = false;
+    }
+    isTouchableColumn && onDeleteSelectedColumn && contextMenuOptions.push({
+      text: 'Delete this column',
+      callback: () => {
+        onDeleteSelectedColumn(field);
+      },
+    });
+
+    if ( this.props.type === 'Pointer' ) {
+      onEditSelectedRow && contextMenuOptions.push({
+        text: 'Open pointer in new tab',
+        callback: () => {
+          let { value, onPointerCmdClick } = this.props;
+          onPointerCmdClick(value);
+        }
+      });
+    }
 
     return contextMenuOptions;
   }
@@ -360,13 +401,15 @@ class BrowserCell extends Component {
   //#endregion
 
   render() {
-    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, row, col, readonly, field, onEditSelectedRow } = this.props;
-    let isNewRow = row < 0;
-
+    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, isNewRow, markRequiredFieldRow, isRequired, onPointerCmdClick, row, col, readonly, field, onEditSelectedRow } = this.props;
     let classes = [...this.state.classes];
 
     if ( current ) {
       classes.push(styles.current);
+    }
+
+    if (markRequiredFieldRow === row && isRequired && !value) {
+      classes.push(styles.required);
     }
 
     return readonly ? (
@@ -375,9 +418,13 @@ class BrowserCell extends Component {
           ref={this.cellRef}
           className={classes.join(' ')}
           style={{ width }}
-          onClick={() => {
-            onSelect({ row, col });
-            setCopyableValue(hidden ? undefined : this.copyableValue);
+          onClick={(e) => {
+            if ( e.metaKey === true && type === 'Pointer') {
+              onPointerCmdClick(value);
+            } else {
+              onSelect({ row, col });
+              setCopyableValue(hidden ? undefined : this.copyableValue);
+            }
           }}
           onDoubleClick={() => {
             if (field === 'objectId' && onEditSelectedRow) {
@@ -389,6 +436,7 @@ class BrowserCell extends Component {
               }, 2000);
             }
           }}
+          onContextMenu={this.onContextMenu.bind(this)}
         >
           {row < 0 || isNewRow ? '(auto)' : this.state.content}
         </span>
@@ -398,9 +446,13 @@ class BrowserCell extends Component {
         ref={this.cellRef}
         className={classes.join(' ')}
         style={{ width }}
-        onClick={() => {
-          onSelect({ row, col });
-          setCopyableValue(hidden ? undefined : this.copyableValue);
+        onClick={(e) => {
+          if ( e.metaKey === true && type === 'Pointer') {
+            onPointerCmdClick(value);
+          } else {
+            onSelect({ row, col });
+            setCopyableValue(hidden ? undefined : this.copyableValue);
+          }
         }}
         onDoubleClick={() => {
           // Since objectId can't be edited, double click event opens edit row dialog

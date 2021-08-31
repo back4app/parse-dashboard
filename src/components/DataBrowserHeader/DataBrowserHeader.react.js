@@ -85,13 +85,13 @@ class DataBrowserHeader extends React.Component {
       <div 
         className={classes.join(' ')} 
         style={style} 
-        onMouseEnter={() => this.setState({ showTooltip: true })}
-        onMouseLeave={() => this.setState({ showTooltip: false })}
+        // onMouseEnter={() => this.setState({ showTooltip: true })}
+        // onMouseLeave={() => this.setState({ showTooltip: false })}
       >
-        <PopoverTooltip tooltip={tooltipContent} visible={this.state.showTooltip}>
+        {/* <PopoverTooltip tooltip={tooltipContent} visible={this.state.showTooltip}> */}
           <div className={styles.name}>{name}</div>
-          <div className={styles.type}>{required && <span>*</span>}</div>
-        </PopoverTooltip>
+          <div className={styles.type}>{targetClass ? `${type} <${targetClass}>` : type} {required && <span>*</span>}</div>
+        {/* </PopoverTooltip> */}
       </div>
     ));
   }
