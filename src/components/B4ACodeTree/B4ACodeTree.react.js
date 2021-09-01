@@ -1,5 +1,5 @@
 import React                        from 'react';
-import $                            from 'jquery'
+import $                            from 'jquery';
 import Resizable                    from 're-resizable';
 import jstree                       from 'jstree';
 import ReactFileReader              from 'react-file-reader';
@@ -117,7 +117,6 @@ export default class B4ACodeTree extends React.Component {
       if (selected.data && selected.data.code && selected.type != 'folder') {
         // index of file on tree.
         const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
-        // let selectedFile;
         fileList.map( (file ) => {
           if ( file.name === selected.text ) {
             selectedFile = file;

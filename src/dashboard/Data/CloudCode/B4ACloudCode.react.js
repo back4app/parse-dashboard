@@ -8,6 +8,7 @@
 import React           from 'react';
 import { withRouter }  from 'react-router';
 import history         from 'dashboard/history';
+import $               from 'jquery';
 import axios           from 'axios'
 import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
 import Button          from 'components/Button/Button.react';
@@ -195,7 +196,8 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
         />;
-      this.setState({ unsavedChanges: false, modal: successModal })
+      this.setState({ unsavedChanges: false, modal: successModal });
+      $('#tree').jstree(true).refresh();
     } catch (err) {
       const errorModal = <Modal
         type={Modal.Types.DANGER}
