@@ -64,6 +64,10 @@ const decodeFile = async (code) => {
   return base64.decode(encodedCode);
 }
 
+const encodeFile = async (code, extension) => {
+  return extension + ',' + Base64.encode(code);
+}
+
 const readFile = (file, newTreeNodes) => {
   newTreeNodes.push({
     text: file.name,
@@ -219,6 +223,7 @@ export default {
   readFile,
   getFiles,
   decodeFile,
+  encodeFile,
   updateTreeContent,
   getExtension,
   refreshEmptyFolderIcons

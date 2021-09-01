@@ -21,6 +21,12 @@ export default class CodeEditor extends React.Component {
     this.state = { code: '' };
   }
 
+  componentWillReceiveProps(props){
+    if (this.state.code !== props.code) {
+      this.setState({ code: props.code });
+    }
+  }
+
   get value() {
     return this.state.code || this.props.placeHolder;
   }
@@ -37,7 +43,13 @@ export default class CodeEditor extends React.Component {
       <Editor
         mode="javascript"
         theme="solarized_dark"
-        onChange={value => this.setState({ code: value })}
+        onChange={value => {
+          this.setState({ code: value });
+          if ( this.props.onCodeChange ){
+            this.props.onCodeChange(value);
+          }
+        }}
+        height={'100%'}
         fontSize={fontSize}
         showPrintMargin={true}
         showGutter={true}
