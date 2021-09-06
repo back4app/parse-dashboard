@@ -8,6 +8,7 @@
 import React           from 'react';
 import { withRouter }  from 'react-router';
 import history         from 'dashboard/history';
+import $               from 'jquery';
 import axios           from 'axios'
 import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
 import Button          from 'components/Button/Button.react';
@@ -42,6 +43,9 @@ class B4ACloudCode extends CloudCode {
       unsavedChanges: false,
       modal: null,
       codeUpdated: false,
+
+      // updated cloudcode files.
+      currentCode: [],
 
       // Parameters used to on/off alerts
       showTips: localStorage.getItem(this.alertTips) !== 'false',
@@ -127,10 +131,22 @@ class B4ACloudCode extends CloudCode {
     })
   }
 
+  syncCurCode( nodesOnTree, currentCode ){
+    return nodesOnTree.map( (node, idx) => {
+      if (  node.data?.code !== currentCode[idx].data?.code  ) {
+        node.data.code = currentCode[idx].data?.code;
+      }
+      if ( node.children.length > 0 ) {
+        node.children = this.syncCurCode(node.children, currentCode[idx].children);
+      }
+      return node;
+    });
+  }
+
   async uploadCode() {
     let tree = [];
     // Get current files on tree
-    let currentCode = getFiles();
+    let currentCode = this.syncCurCode(getFiles(), this.state.currentCode);
     const missingFileModal = (
       <Modal
         type={Modal.Types.DANGER}
@@ -196,7 +212,8 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
         />;
-      this.setState({ unsavedChanges: false, modal: successModal })
+      this.setState({ unsavedChanges: false, modal: successModal });
+      $('#tree').jstree(true).refresh();
     } catch (err) {
       const errorModal = <Modal
         type={Modal.Types.DANGER}

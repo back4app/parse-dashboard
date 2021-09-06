@@ -139,6 +139,16 @@ const monthQuarter = {
   '3': 'Q4'
 };
 
+const waitForScriptToLoad = async conditionFn => {
+  for (let i = 1; i <= 20; i++) {
+    if (conditionFn()) {
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, i * 50));
+  }
+  throw new Error('Script not loaded yet!');
+};
+
 export default class Dashboard extends React.Component {
   constructor(props) {
     super();
@@ -185,12 +195,14 @@ export default class Dashboard extends React.Component {
           localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
         }));
         // eslint-disable-next-line no-undef
-        createSoluCXWidget(
-          process.env.SOLUCX_API_KEY,
-          'bottomBoxLeft',
-          options,
-          { collectInterval, retryAttempts: 1, retryInterval }
-        );
+        waitForScriptToLoad(() => typeof createSoluCXWidget === 'function').then(() => {
+          createSoluCXWidget(
+            process.env.SOLUCX_API_KEY,
+            'bottomBoxLeft',
+            options,
+            { collectInterval, retryAttempts: 1, retryInterval }
+          );
+        }).catch(err => console.log(err));
       });
 
       const stateApps = [];

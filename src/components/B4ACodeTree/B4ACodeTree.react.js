@@ -1,5 +1,5 @@
 import React                        from 'react';
-import $                            from 'jquery'
+import $                            from 'jquery';
 import Resizable                    from 're-resizable';
 import jstree                       from 'jstree';
 import ReactFileReader              from 'react-file-reader';
@@ -9,6 +9,7 @@ import B4ACloudCodeView             from 'components/B4ACloudCodeView/B4ACloudCo
 import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions';
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
+import { concatAST } from 'graphql';
 
 const getCloudFolderPlaceholder = (appId, restKey) => "// The first deployed file must be named main.js and must be placed on the root of the cloud folder.\n" +
   "// The example below shows you how a cloud code function looks like.\n\n" +
@@ -199,6 +200,7 @@ export default class B4ACodeTree extends React.Component {
     let updatedFiles = this.getUpdatedFiles(this.state.files, ecodedValue);
     this.setState({ updatedFiles: [...this.state.updatedFiles.filter( f => f.file !== this.state.selectedFile ), updatedData], files: updatedFiles, source: value });
     this.props.setCurrentCode(updatedFiles);
+
     this.props.setCodeUpdated(true);
     this.state.selectedNodeData?.instance.set_icon(this.state.selectedNodeData.node, require('./icons/file.png').default);
   }

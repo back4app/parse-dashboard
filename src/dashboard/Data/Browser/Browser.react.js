@@ -51,7 +51,8 @@ import withReactContent                   from 'sweetalert2-react-content';
 import postgresqlImg                      from './postgresql.png';
 import PermissionsDialog                  from 'components/PermissionsDialog/PermissionsDialog.react';
 import validateEntry                      from 'lib/validateCLPEntry.js';
-import ConfirmDeleteColumnDialog from './ConfirmDeleteColumnDialog.react';
+import PointerKeyDialog                   from 'dashboard/Data/Browser/PointerKeyDialog.react';
+import ConfirmDeleteColumnDialog          from './ConfirmDeleteColumnDialog.react';
 
 // The initial and max amount of rows fetched by lazy loading
 const MAX_ROWS_FETCHED = 200;
@@ -114,7 +115,9 @@ class Browser extends DashboardView {
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
       showPostgresqlModal: !!Cookies.get('isPostgresql'),
-      openSecurityDialog: false
+      openSecurityDialog: false,
+
+      showPointerKeyDialog: false,
     };
 
     this.prefetchData = this.prefetchData.bind(this);
@@ -169,6 +172,8 @@ class Browser extends DashboardView {
     this.addEditCloneRows = this.addEditCloneRows.bind(this);
     this.abortEditCloneRows = this.abortEditCloneRows.bind(this);
     this.onClickSecurity = this.onClickSecurity.bind(this);
+    this.showPointerKeyDialog = this.showPointerKeyDialog.bind(this);
+    this.onChangeDefaultKey = this.onChangeDefaultKey.bind(this);
     this.showColumnDelete = this.showColumnDelete.bind(this);
   }
 
@@ -809,7 +814,24 @@ class Browser extends DashboardView {
       }
     }
 
+    const classes = await Parse.Schema.all();
+    const schema = classes.find( c => c.className === this.props.params.className);
+
+    const fieldKeys = Object.keys(schema.fields)
+    for ( let i = 0; i < fieldKeys.length; i++ ) {
+      const schemaKey = fieldKeys[i];
+      const schVal = schema.fields[schemaKey];
+      if ( schVal.type === 'Pointer' ) {
+        const defaultPointerKey = await localStorage.getItem(schVal.targetClass) || 'objectId';
+        if ( defaultPointerKey !== 'objectId' ) {
+          query.include(schemaKey);
+          query.select(schemaKey + '.' + defaultPointerKey);
+        }
+      }
+    }
+
     query.limit(MAX_ROWS_FETCHED);
+    this.excludeFields(query, source);
 
     let promise = query.find({ useMasterKey: true });
     let isUnique = false;
@@ -826,6 +848,17 @@ class Browser extends DashboardView {
 
     const data = await promise;
     return data;
+  }
+
+  excludeFields(query, className) {
+    let columns = ColumnPreferences.getPreferences(this.context.currentApp.applicationId, className)
+    if (columns) {
+      columns = columns.filter(clmn => !clmn.visible).map(clmn => clmn.name)
+      for (let columnsKey in columns) {
+        query.exclude(columns[columnsKey])
+      }
+      ColumnPreferences.updateCachedColumns(this.context.currentApp.applicationId, className);
+    }
   }
 
   async fetchParseDataCount(source, filters) {
@@ -929,6 +962,7 @@ class Browser extends DashboardView {
       }
     }
     query.limit(MAX_ROWS_FETCHED);
+    this.excludeFields(query, source);
 
     query.find({ useMasterKey: true }).then((nextPage) => {
       if (className === this.props.params.className) {
@@ -1488,6 +1522,18 @@ class Browser extends DashboardView {
     this.refs.dataBrowser.setCurrent({ row, col });
   }
 
+  showPointerKeyDialog() {
+    this.setState({ showPointerKeyDialog: true });
+  }
+
+  async onChangeDefaultKey (name) {
+    const className = this.props.params.className;
+    if ( name ) {
+      await localStorage.setItem(className, name);
+    }
+    this.setState({ showPointerKeyDialog: false });
+  }
+
   // skips key controls handling when dialog is opened
   onDialogToggle(opened){
     this.setState({showPermissionsDialog: opened});
@@ -1573,6 +1619,7 @@ class Browser extends DashboardView {
             onImport={this.showImport}
             onEditSelectedRow={this.showEditRowDialog}
             onEditPermissions={this.onDialogToggle}
+            onShowPointerKey={this.showPointerKeyDialog}
             columns={columns}
             className={className}
             fetchNextPage={this.fetchNextPage}
@@ -1604,6 +1651,16 @@ class Browser extends DashboardView {
       }
     }
     let extras = null;
+    if(this.state.showPointerKeyDialog){
+      let currentColumns = this.getClassColumns(className).map(column => column.name);
+      extras = (
+        <PointerKeyDialog
+          className={className}
+          currentColumns={currentColumns}
+          onCancel={() => this.setState({ showPointerKeyDialog: false })}
+          onConfirm={this.onChangeDefaultKey} />
+      );
+    }
     if (this.state.showCreateClassDialog) {
       extras = (
         <CreateClassDialog
