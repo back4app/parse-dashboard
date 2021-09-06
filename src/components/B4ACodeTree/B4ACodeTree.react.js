@@ -230,6 +230,11 @@ export default class B4ACodeTree extends React.Component {
     this.props.setCurrentCode(this.state.files);
   }
 
+  componentDidUpdate(){
+    if ( this.state.selectedFolder === 0 )
+      console.log(this.state.selectedFolder);
+  }
+
   render(){
     return (
       <div className={styles.codeContainer}>
@@ -242,11 +247,13 @@ export default class B4ACodeTree extends React.Component {
                 base64={true}
                 multipleFiles={true}
                 handleFiles={this.handleFiles.bind(this)} >
-                <Button
+                {
+                  this.state.selectedFolder !== 0 &&
+                  <Button
                   value={<div><i className="zmdi zmdi-plus"></i> ADD</div>}
                   primary={true}
                   width='68'
-                />
+                />}
               </ReactFileReader>
             </div>
             <Resizable className={styles['files-tree']}
