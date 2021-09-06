@@ -108,8 +108,10 @@ export default class DateTimeEditor extends React.Component {
     return (
       <div ref='editor' style={{ width: this.props.width }} className={styles.editor}>
         <input
+          autoFocus
           type='text'
           ref='input'
+          onFocus={e => e.target.select()}
           value={this.state.text}
           onClick={this.toggle.bind(this)}
           onChange={this.inputDate.bind(this)}
