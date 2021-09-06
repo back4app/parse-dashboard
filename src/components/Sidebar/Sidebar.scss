@@ -17,6 +17,7 @@
   background: #0c5582;
   color: #fff;
   transition: left 0.5s ease-in;
+  z-index: 0;
 
   &.collapsed {
     left: 0;

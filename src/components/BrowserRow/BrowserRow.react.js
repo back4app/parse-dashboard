@@ -19,7 +19,7 @@ export default class BrowserRow extends Component {
   }
 
   render() {
-    const { className, columns, currentCol, isUnique, obj, onPointerClick, order, readOnlyFields, row, rowWidth, selection, selectRow, setCopyableValue, setCurrent, setEditing, setRelation, onEditSelectedRow, setContextMenu, onFilterChange } = this.props;
+    const { className, columns, currentCol, isUnique, obj, onPointerClick, onPointerCmdClick, order, readOnlyFields, row, rowWidth, selection, selectRow, setCopyableValue, setCurrent, setEditing, setRelation, onEditSelectedRow, setContextMenu, onFilterChange, onAddRow, onAddColumn, onDeleteRows, onDeleteSelectedColumn } = this.props;
     let attributes = obj.attributes;
     return (
       <div className={styles.tableRow} style={{ minWidth: rowWidth }}>
@@ -86,6 +86,7 @@ export default class BrowserRow extends Component {
               onSelect={setCurrent}
               onEditChange={setEditing}
               onPointerClick={onPointerClick}
+              onPointerCmdClick={onPointerCmdClick}
               onFilterChange={onFilterChange}
               setRelation={setRelation}
               objectId={obj.id}
@@ -93,7 +94,12 @@ export default class BrowserRow extends Component {
               hidden={hidden}
               setCopyableValue={setCopyableValue}
               setContextMenu={setContextMenu}
-              onEditSelectedRow={onEditSelectedRow} />
+              onEditSelectedRow={onEditSelectedRow}
+              onAddRow={onAddRow}
+              onAddColumn={onAddColumn}
+              onDeleteRows={onDeleteRows}
+              onDeleteSelectedColumn={onDeleteSelectedColumn}
+              className={className} />
           );
         })}
       </div>

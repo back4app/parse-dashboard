@@ -36,6 +36,21 @@ export default class CloudCode extends DashboardView {
 
   componentWillReceiveProps(nextProps, nextContext) {
     if (this.context !== nextContext) {
+      // check if the changes are in currentApp serverInfo status
+      // if not return without making any request
+      if (this.props.apps !== nextProps.apps) {
+        let updatedCurrentApp = nextProps.apps.find(
+          (ap) => ap.slug === this.props.params.appId
+        );
+        let prevCurrentApp = this.props.apps.find(
+          (ap) => ap.slug === this.props.params.appId
+        );
+        const shouldUpdate =
+          updatedCurrentApp.serverInfo.status !==
+          prevCurrentApp.serverInfo.status;
+        
+        if (!shouldUpdate) return;
+      }
       this.fetchSource(nextContext.currentApp, getPath(nextProps.params));
     }
   }

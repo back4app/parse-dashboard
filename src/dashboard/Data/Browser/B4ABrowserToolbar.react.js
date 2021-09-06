@@ -73,6 +73,7 @@ let B4ABrowserToolbar = ({
     onClickIndexManager,
     onClickSecurity,
     columns,
+    onShowPointerKey,
     newObject
   }) => {
   let selectionLength = Object.keys(selection).length;
@@ -134,6 +135,7 @@ let B4ABrowserToolbar = ({
         {enableColumnManipulation ? <MenuItem text='Add a column' onClick={onAddColumn} /> : <noscript />}
         {enableClassManipulation ? <MenuItem text='Add a class' onClick={onAddClass} /> : <noscript />}
         <Separator />
+        <MenuItem text='Change pointer key' onClick={onShowPointerKey} />
         <MenuItem
           disabled={!selectionLength}
           text={`Attach ${selectionLength <= 1 ? 'this row' : 'these rows'} to relation`}
@@ -266,7 +268,8 @@ let B4ABrowserToolbar = ({
       <ColumnsConfiguration
         handleColumnsOrder={handleColumnsOrder}
         handleColumnDragDrop={handleColumnDragDrop}
-        order={order} />
+        order={order}
+        className={classNameForEditors} />
       {menu}
     </Toolbar>
   );

@@ -114,7 +114,6 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
 
   for (let j = 0; j < newTreeNodes.length; j++ ) {
     if (currentCode === '#') {
-      let extension = getExtension(newTreeNodes[j].text.name);
       let inst = $.jstree.reference(currentCode)
       let obj = inst.get_node(currentCode);
 
@@ -122,12 +121,11 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
       // insert on "cloud" folder, else insert on "public" folder. This logic is
       // a legacy from the old Cloud Code page
       folder = obj.children[selectedFolder]
-      if ( extension === 'json') {
-        folder = obj.children[0]
-      }
     }
     await verifyFileNames(folder, newTreeNodes[j]);
-    create(`#${folder}`, newTreeNodes[j])
+    const position = 'inside';
+    const parent = $('#tree').jstree('get_selected');
+    $('#tree').jstree("create_node", parent, { data: newTreeNodes[j].data, type: 'new-file', text: newTreeNodes[j].text.name }, position, false, false);
   }
   return currentCode;
 }

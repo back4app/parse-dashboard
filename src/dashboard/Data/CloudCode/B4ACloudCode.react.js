@@ -8,6 +8,7 @@
 import React           from 'react';
 import { withRouter }  from 'react-router';
 import history         from 'dashboard/history';
+import $               from 'jquery';
 import axios           from 'axios'
 import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
 import Button          from 'components/Button/Button.react';
@@ -195,7 +196,8 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
         />;
-      this.setState({ unsavedChanges: false, modal: successModal })
+      this.setState({ unsavedChanges: false, modal: successModal });
+      $('#tree').jstree(true).refresh();
     } catch (err) {
       const errorModal = <Modal
         type={Modal.Types.DANGER}
@@ -228,7 +230,7 @@ class B4ACloudCode extends CloudCode {
   }
 
   onLogClick() {
-    window.open(`/apps/${this.context.currentApp.slug}/server-settings/logs`, '_blank');
+    window.open(`/apps/${this.context.currentApp.slug}/logs/system`, '_blank');
   }
 
   // override renderSidebar from cloud code to don't show the files name on sidebar
@@ -244,8 +246,9 @@ class B4ACloudCode extends CloudCode {
 
     let alertWhatIsMessage = <div>
       <p style={{height:"auto"}}>
-        Upload(by clicking on ADD button) and Deploy your main.js file(containing your functions inside) to start running javascript functions on Back4App Servers.
-        Find a sample code on the section below to use as a reference. For more details, check our Cloud Code guide <a href="https://www.back4app.com/docs/get-started/cloud-functions">https://www.back4app.com/docs/get-started/cloud-functions</a>.
+        First, you must create a file called main.js with all your javascript-based functions inside.
+        After that, upload it by clicking on the ADD button and then click on the DEPLOY button.
+        For more details, check our Cloud Code guide <a href="https://www.back4app.com/docs/get-started/cloud-functions">https://www.back4app.com/docs/get-started/cloud-functions</a>.
       </p>
     </div>
 
@@ -267,7 +270,7 @@ class B4ACloudCode extends CloudCode {
       alertWhatIs = <B4AAlert
         show={true}
         handlerCloseEvent={this.handlerCloseAlert.bind(this)}
-        title="What is Cloud Code Functions"
+        title="How to deploy your functions"
         description={alertWhatIsMessage} />
 
       content = <B4ACodeTree

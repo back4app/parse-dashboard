@@ -22,6 +22,13 @@ export default class Position {
     return pos;
   }
 
+  static topTooltip(node, tooltipHeight) {
+    let pos = Position.inWindow(node);
+    pos.x += window.pageXOffset;
+    pos.y += window.pageYOffset - tooltipHeight;
+    return pos;
+  }
+
   static inWindow(node) {
     let rect = node.getBoundingClientRect();
     return new Position(rect.left, rect.top);

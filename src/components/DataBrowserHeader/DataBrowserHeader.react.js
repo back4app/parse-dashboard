@@ -11,6 +11,8 @@ import styles                     from 'components/DataBrowserHeader/DataBrowser
 import { unselectable }           from 'stylesheets/base.scss';
 import { DragSource, DropTarget } from 'react-dnd';
 import Tooltip                    from 'components/Tooltip/PopperTooltip.react';
+import PopoverTooltip             from '../PopoverTooltip/PopoverTooltip.react';
+
 
 const Types = {
   DATA_BROWSER_HEADER: 'dataBrowserHeader'
@@ -75,21 +77,21 @@ class DataBrowserHeader extends React.Component {
       classes.push(styles.dragging);
     }
     const tooltipContent = (
-      <span style={{ fontSize: "12px" }} >
-        Format: <span style={{ color: "#169CEE"}} >{targetClass ? `${type} <${targetClass}>` : type}</span>
+      <span style={{ fontSize: "12px", letterSpacing: '.07em' }} >
+        Format: <span style={{ color: "#169CEE", letterSpacing: '1px'}} >{targetClass ? `${type} <${targetClass}>` : type}</span>
       </span>
     );
     return connectDragSource(connectDropTarget(
       <div 
         className={classes.join(' ')} 
         style={style} 
-        onMouseEnter={() => this.setState({ showTooltip: true })}
-        onMouseLeave={() => this.setState({ showTooltip: false })}
+        // onMouseEnter={() => this.setState({ showTooltip: true })}
+        // onMouseLeave={() => this.setState({ showTooltip: false })}
       >
-        <Tooltip placement="top" tooltip={tooltipContent} visible={this.state.showTooltip}>
+        {/* <PopoverTooltip tooltip={tooltipContent} visible={this.state.showTooltip}> */}
           <div className={styles.name}>{name}</div>
-          <div className={styles.type}>{required && <span>*</span>}</div>
-        </Tooltip>
+          <div className={styles.type}>{targetClass ? `${type} <${targetClass}>` : type} {required && <span>*</span>}</div>
+        {/* </PopoverTooltip> */}
       </div>
     ));
   }

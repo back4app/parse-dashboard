@@ -26,6 +26,7 @@ function setEnablePushSource(setting, enable) {
 export default class ParseApp {
   constructor({
     appName,
+    parseOptions,
     created_at,
     clientKey,
     appId,
@@ -51,6 +52,7 @@ export default class ParseApp {
     columnPreference
   }) {
     this.name = appName;
+    this.parseOptions = parseOptions;
     this.feedbackEmail = feedbackEmail;
     this.createdAt = created_at ? new Date(created_at) : new Date();
     this.applicationId = appId;
@@ -393,7 +395,7 @@ export default class ParseApp {
 
     if (className) {
       const schema = await (new Parse.Schema(className)).get();
-      
+
       const customParser = {};
       Object.keys(schema.fields).forEach(fieldName => {
         customParser[fieldName] = function (item) {
@@ -412,7 +414,7 @@ export default class ParseApp {
           return item;
         };
       });
-      
+
       jsonArray = await csv({
         delimiter: "auto",
         ignoreEmpty: true,
@@ -682,11 +684,17 @@ export default class ParseApp {
     return promise;
   }
 
-  setAppName(name) {
+  setAppConfig(name, parseOptions) {
+    let config = {};
+    if ( name ) config['appName'] = name;
+    if ( parseOptions ) config['parseOptions'] = parseOptions;
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}`;
-    let promise = axios.patch(path, {'appName': name}, { withCredentials: true });
+    let promise = axios.patch(path, config, { withCredentials: true });
     promise.then(() => {
-      this.name = name;
+      if (name)
+        this.name = name;
+      if(parseOptions)
+        this.parseOptions = parseOptions;
     });
     return promise;
   }
@@ -1191,7 +1199,7 @@ export default class ParseApp {
         'X-Parse-Client-Key': this.serverURL === 'https://parseapi-homolog.back4app.com' ? 'vNlgQDBx2NNo9VMp2XLMHHjPwITqALprXbjZMdDU' : 'k3xdRL0jnNB4qnfjsiYC3qLtKYdLEAvWA96ysIU4',
       }
     }
-  
+
     let unpublishResult
     try {
       unpublishResult = await axios.post(`${hubEndpoint}/functions/unpublish`, { appEntityId: this.slug }, axiosConfig)
@@ -1199,7 +1207,7 @@ export default class ParseApp {
       console.error(err.response && err.response.data && err.response.data.error ? err.response.data.error : err)
       throw new Error('Something wrong happened in our side. Please try again later.')
     }
-  
+
     if (unpublishResult.status !== 200) {
       if (unpublishResult.data && unpublishResult.data.code && unpublishResult.message) {
         throw unpublishResult.data

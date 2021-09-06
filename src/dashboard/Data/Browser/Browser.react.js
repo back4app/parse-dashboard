@@ -51,6 +51,8 @@ import withReactContent                   from 'sweetalert2-react-content';
 import postgresqlImg                      from './postgresql.png';
 import PermissionsDialog                  from 'components/PermissionsDialog/PermissionsDialog.react';
 import validateEntry                      from 'lib/validateCLPEntry.js';
+import PointerKeyDialog                   from 'dashboard/Data/Browser/PointerKeyDialog.react';
+import ConfirmDeleteColumnDialog          from './ConfirmDeleteColumnDialog.react';
 
 // The initial and max amount of rows fetched by lazy loading
 const MAX_ROWS_FETCHED = 200;
@@ -86,6 +88,7 @@ class Browser extends DashboardView {
       showAttachRowsDialog: false,
       showEditRowDialog: false,
       rowsToDelete: null,
+      columnToDelete: null,
 
       relation: null,
       counts: {},
@@ -112,7 +115,9 @@ class Browser extends DashboardView {
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
       showPostgresqlModal: !!Cookies.get('isPostgresql'),
-      openSecurityDialog: false
+      openSecurityDialog: false,
+
+      showPointerKeyDialog: false,
     };
 
     this.prefetchData = this.prefetchData.bind(this);
@@ -144,6 +149,7 @@ class Browser extends DashboardView {
     this.updateRow = this.updateRow.bind(this);
     this.updateOrdering = this.updateOrdering.bind(this);
     this.handlePointerClick = this.handlePointerClick.bind(this);
+    this.handlePointerCmdClick = this.handlePointerCmdClick.bind(this);
     this.handleCLPChange = this.handleCLPChange.bind(this);
     this.setRelation = this.setRelation.bind(this);
     this.showAddColumn = this.showAddColumn.bind(this);
@@ -166,6 +172,9 @@ class Browser extends DashboardView {
     this.addEditCloneRows = this.addEditCloneRows.bind(this);
     this.abortEditCloneRows = this.abortEditCloneRows.bind(this);
     this.onClickSecurity = this.onClickSecurity.bind(this);
+    this.showPointerKeyDialog = this.showPointerKeyDialog.bind(this);
+    this.onChangeDefaultKey = this.onChangeDefaultKey.bind(this);
+    this.showColumnDelete = this.showColumnDelete.bind(this);
   }
 
   getFooterMenuButtons() {
@@ -220,6 +229,23 @@ class Browser extends DashboardView {
         this.setState({ counts: {} });
         Parse.Object._clearAllState();
       }
+
+      // check if the changes are in currentApp serverInfo status
+      // if not return without making any request
+      if (this.props.apps !== nextProps.apps) {
+        let updatedCurrentApp = nextProps.apps.find(
+          (ap) => ap.slug === this.props.params.appId
+        );
+        let prevCurrentApp = this.props.apps.find(
+          (ap) => ap.slug === this.props.params.appId
+        );
+        const shouldUpdate =
+          updatedCurrentApp.serverInfo.status !==
+          prevCurrentApp.serverInfo.status;
+
+        if (!shouldUpdate) return;
+      }
+
       this.prefetchData(nextProps, nextContext);
       nextProps.schema.dispatch(ActionTypes.FETCH)
       .then(() => this.handleFetchedSchema());
@@ -545,6 +571,10 @@ class Browser extends DashboardView {
     this.setState({ rowsToDelete: rows });
   }
 
+  showColumnDelete(name) {
+    this.setState({ columnToDelete: name });
+  }
+
   showDropClass() {
     this.setState({ showDropClassDialog: true });
   }
@@ -711,7 +741,7 @@ class Browser extends DashboardView {
     this.showEditRowDialog();
   }
 
-  removeColumn(name) {
+  removeColumn(name, selectedColumn = false) {
     let payload = {
       className: this.props.params.className,
       name: name
@@ -721,10 +751,13 @@ class Browser extends DashboardView {
       if (error.code === 403) errorDeletingNote = error.message;
 
       this.showNote(errorDeletingNote, true);
-      this.setState({ showRemoveColumnDialog: false });
+      if (selectedColumn)
+        this.setState({ columnToDelete: null });
+      else
+        this.setState({ showRemoveColumnDialog: false });
 
     }).finally(() => {
-      let state = { showRemoveColumnDialog: false };
+      let state = selectedColumn ? { columnToDelete : null } : {showRemoveColumnDialog: false };
       if (this.state.ordering === name || this.state.ordering === '-' + name) {
         state.ordering = '-createdAt';
       }
@@ -781,7 +814,24 @@ class Browser extends DashboardView {
       }
     }
 
+    const classes = await Parse.Schema.all();
+    const schema = classes.find( c => c.className === this.props.params.className);
+
+    const fieldKeys = Object.keys(schema.fields)
+    for ( let i = 0; i < fieldKeys.length; i++ ) {
+      const schemaKey = fieldKeys[i];
+      const schVal = schema.fields[schemaKey];
+      if ( schVal.type === 'Pointer' ) {
+        const defaultPointerKey = await localStorage.getItem(schVal.targetClass) || 'objectId';
+        if ( defaultPointerKey !== 'objectId' ) {
+          query.include(schemaKey);
+          query.select(schemaKey + '.' + defaultPointerKey);
+        }
+      }
+    }
+
     query.limit(MAX_ROWS_FETCHED);
+    this.excludeFields(query, source);
 
     let promise = query.find({ useMasterKey: true });
     let isUnique = false;
@@ -798,6 +848,17 @@ class Browser extends DashboardView {
 
     const data = await promise;
     return data;
+  }
+
+  excludeFields(query, className) {
+    let columns = ColumnPreferences.getPreferences(this.context.currentApp.applicationId, className)
+    if (columns) {
+      columns = columns.filter(clmn => !clmn.visible).map(clmn => clmn.name)
+      for (let columnsKey in columns) {
+        query.exclude(columns[columnsKey])
+      }
+      ColumnPreferences.updateCachedColumns(this.context.currentApp.applicationId, className);
+    }
   }
 
   async fetchParseDataCount(source, filters) {
@@ -901,6 +962,7 @@ class Browser extends DashboardView {
       }
     }
     query.limit(MAX_ROWS_FETCHED);
+    this.excludeFields(query, source);
 
     query.find({ useMasterKey: true }).then((nextPage) => {
       if (className === this.props.params.className) {
@@ -959,6 +1021,15 @@ class Browser extends DashboardView {
       const url = `${this.getRelationURL()}${filterQueryString ? `?filters=${filterQueryString}` : ''}`;
       history.push(url);
     });
+  }
+
+  handlePointerCmdClick({ className, id, field = 'objectId' }) {
+    let filters = JSON.stringify([{
+      field,
+      constraint: 'eq',
+      compareTo: id
+    }]);
+    window.open(this.context.generatePath(`browser/${className}?filters=${encodeURIComponent(filters)}`),'_blank');
   }
 
   handlePointerClick({ className, id, field = 'objectId' }) {
@@ -1451,6 +1522,18 @@ class Browser extends DashboardView {
     this.refs.dataBrowser.setCurrent({ row, col });
   }
 
+  showPointerKeyDialog() {
+    this.setState({ showPointerKeyDialog: true });
+  }
+
+  async onChangeDefaultKey (name) {
+    const className = this.props.params.className;
+    if ( name ) {
+      await localStorage.setItem(className, name);
+    }
+    this.setState({ showPointerKeyDialog: false });
+  }
+
   // skips key controls handling when dialog is opened
   onDialogToggle(opened){
     this.setState({showPermissionsDialog: opened});
@@ -1512,7 +1595,7 @@ class Browser extends DashboardView {
         }
         browser = (
           <DataBrowser
-            ref='dataBrowser'
+            ref="dataBrowser"
             isUnique={this.state.isUnique}
             uniqueField={this.state.uniqueField}
             count={count}
@@ -1522,6 +1605,7 @@ class Browser extends DashboardView {
             filters={this.state.filters}
             onFilterChange={this.updateFilters}
             onRemoveColumn={this.showRemoveColumn}
+            onDeleteSelectedColumn={this.showColumnDelete}
             onDeleteRows={this.showDeleteRows}
             onDropClass={this.showDropClass}
             onExport={this.showExport}
@@ -1535,6 +1619,7 @@ class Browser extends DashboardView {
             onImport={this.showImport}
             onEditSelectedRow={this.showEditRowDialog}
             onEditPermissions={this.onDialogToggle}
+            onShowPointerKey={this.showPointerKeyDialog}
             columns={columns}
             className={className}
             fetchNextPage={this.fetchNextPage}
@@ -1549,6 +1634,7 @@ class Browser extends DashboardView {
             updateRow={this.updateRow}
             updateOrdering={this.updateOrdering}
             onPointerClick={this.handlePointerClick}
+            onPointerCmdClick={this.handlePointerCmdClick}
             setRelation={this.setRelation}
             onAddColumn={this.showAddColumn}
             onAddRow={this.addRow}
@@ -1559,11 +1645,22 @@ class Browser extends DashboardView {
             err={this.state.err}
             showNote={this.showNote}
             onClickIndexManager={this.onClickIndexManager}
-            onClickSecurity={this.onClickSecurity} />
+            onClickSecurity={this.onClickSecurity}
+          />
         );
       }
     }
     let extras = null;
+    if(this.state.showPointerKeyDialog){
+      let currentColumns = this.getClassColumns(className).map(column => column.name);
+      extras = (
+        <PointerKeyDialog
+          className={className}
+          currentColumns={currentColumns}
+          onCancel={() => this.setState({ showPointerKeyDialog: false })}
+          onConfirm={this.onChangeDefaultKey} />
+      );
+    }
     if (this.state.showCreateClassDialog) {
       extras = (
         <CreateClassDialog
@@ -1788,6 +1885,14 @@ class Browser extends DashboardView {
           }
         />
       );
+    } else if (this.state.columnToDelete) {
+      extras = (
+        <ConfirmDeleteColumnDialog
+          field={this.state.columnToDelete}
+          onCancel={() => this.setState({ columnToDelete: null })}
+          onConfirm={() => this.removeColumn(this.state.columnToDelete, true)}
+        />
+      )
     }
 
     let notification = null;
