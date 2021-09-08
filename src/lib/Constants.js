@@ -78,3 +78,25 @@ export const DataTypes = [
   'Pointer',
   'Relation',
 ];
+
+export const defaultCLPS = {
+  find: { "*": true },
+  count: { "*": true },
+  get: { "*": true },
+  create: { "*": true },
+  update: { "*": true },
+  delete: { "*": true },
+  addField: { "*": true },
+  protectedFields: { "*": [] },
+};
+
+export const protectedCLPs = {
+  find: {},
+  count: {},
+  get: {},
+  create: {},
+  update: {},
+  delete: {},
+  addField: {},
+  protectedFields: { "*": [] },
+};

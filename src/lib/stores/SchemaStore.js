@@ -53,12 +53,12 @@ function SchemaStore(state, action) {
       return action.app.apiRequest(
         'POST',
         'schemas/' + action.className,
-        { className: action.className, fields: action.fields },
+        { className: action.className, fields: action.fields, classLevelPermissions: action.clp },
         { useMasterKey: true }
-      ).then(({ fields }) => {
+      ).then(({ fields, classLevelPermissions }) => {
         return state
         .setIn(['classes', action.className], Map(fields))
-        .setIn(['CLPs', action.className], Map({}));
+        .setIn(['CLPs', action.className], Map(classLevelPermissions));
       });
     case ActionTypes.DROP_CLASS:
       return action.app.apiRequest(

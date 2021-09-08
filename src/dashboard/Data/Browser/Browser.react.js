@@ -53,6 +53,7 @@ import PermissionsDialog                  from 'components/PermissionsDialog/Per
 import validateEntry                      from 'lib/validateCLPEntry.js';
 import PointerKeyDialog                   from 'dashboard/Data/Browser/PointerKeyDialog.react';
 import ConfirmDeleteColumnDialog          from './ConfirmDeleteColumnDialog.react';
+import { defaultCLPS, protectedCLPs } from '../../../lib/Constants';
 
 // The initial and max amount of rows fetched by lazy loading
 const MAX_ROWS_FETCHED = 200;
@@ -591,8 +592,9 @@ class Browser extends DashboardView {
     this.setState({ showExportDialog: true });
   }
 
-  createClass(className) {
-    this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className }).then(() => {
+  createClass(className, isProtected) {
+    let clp = isProtected ? protectedCLPs : defaultCLPS;
+    this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className, clp }).then(() => {
       this.state.counts[className] = 0;
       history.push(this.context.generatePath('browser/' + className));
     }).then(() => {

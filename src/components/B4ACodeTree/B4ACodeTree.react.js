@@ -202,7 +202,15 @@ export default class B4ACodeTree extends React.Component {
     let updatedFiles = this.getUpdatedFiles(this.state.files, ecodedValue);
     this.setState({ updatedFiles: [...this.state.updatedFiles.filter( f => f.file !== this.state.selectedFile ), updatedData], files: updatedFiles, source: value });
     this.props.setCurrentCode(updatedFiles);
+
+    this.props.setCodeUpdated(true);
     this.state.selectedNodeData?.instance.set_icon(this.state.selectedNodeData.node, require('./icons/file.png').default);
+  }
+
+  updateCodeOnNewFile(type){
+    if ( type === 'new-file' ) {
+      this.props.setCodeUpdated(true);
+    }
   }
 
   componentDidMount() {
@@ -216,8 +224,17 @@ export default class B4ACodeTree extends React.Component {
       B4ATreeActions.refreshEmptyFolderIcons();
     });
 
+    $('#tree').on('create_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
+    $('#tree').on('rename_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
+    $('#tree').on('delete_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
+
     // current code.
     this.props.setCurrentCode(this.state.files);
+  }
+
+  componentDidUpdate(){
+    if ( this.state.selectedFolder === 0 )
+      console.log(this.state.selectedFolder);
   }
 
   render(){
@@ -232,12 +249,14 @@ export default class B4ACodeTree extends React.Component {
                 base64={true}
                 multipleFiles={true}
                 handleFiles={this.handleFiles.bind(this)} >
-                <Button
+                {
+                  this.state.isFolderSelected === true &&
+                  <Button
                   value={<div style={{ fontSize: '10px' }}><i className="zmdi zmdi-plus"></i> ADD</div>}
                   primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '55px' }}
-                />
+                />}
               </ReactFileReader>
               {
                 this.state.isFolderSelected === true &&

@@ -12,6 +12,7 @@ import Modal              from 'components/Modal/Modal.react';
 import Option             from 'components/Dropdown/Option.react';
 import React              from 'react';
 import { SpecialClasses } from 'lib/Constants';
+import styles             from './Browser.scss';
 import TextInput          from 'components/TextInput/TextInput.react';
 import history            from 'dashboard/history';
 
@@ -24,7 +25,8 @@ export default class CreateClassDialog extends React.Component {
     super();
     this.state = {
       type: 'Custom',
-      name: ''
+      name: '',
+      isProtected: true
     };
   }
 
@@ -54,6 +56,7 @@ export default class CreateClassDialog extends React.Component {
 
     let typeDropdown = (
       <Dropdown
+        currentStyleClassName={styles.dropDown}
         value={this.state.type}
         onChange={(type) => this.setState({ type: type, name: '' })}>
         {availableClasses.map((t) => <Option key={t} value={t}>{t}</Option>)}
@@ -82,8 +85,20 @@ export default class CreateClassDialog extends React.Component {
         onConfirm={() => {
           let type = this.state.type;
           let className = type === 'Custom' ? this.state.name : '_' + type;
-          this.props.onConfirm(className);
+          this.props.onConfirm(className, this.state.isProtected);
         }}>
+
+        {this.state.type === 'Custom' && (
+          <Field
+            label={<Label text='What should we call it?' description={'Don\u2019t use any special characters, and start your name with a letter.'} />}
+            input={
+              <div className={styles.textInputWrapper}>
+                <TextInput className={styles.textInput} placeholder='Give it a good name...' value={this.state.name} onChange={(name) => this.setState({ name })} />
+              </div>
+            }
+          />
+        )}  
+        
         {availableClasses.length > 1 ?
           <Field
           label={
@@ -93,14 +108,43 @@ export default class CreateClassDialog extends React.Component {
           input={typeDropdown} /> : null
         }
         {this.state.type === 'Custom' ?
-          <Field
-            label={<Label text='What should we call it?' description={'Don\u2019t use any special characters, and start your name with a letter.'} />}
-            input={<TextInput placeholder='Give it a good name...' value={this.state.name} onChange={(name) => this.setState({ name })} />}/> : null
+          (<>
+            <Field
+              label={<Label text='Add in Protected mode' description={'Your class data is private by default. Client read/write access will only be granted as specified by your CLPs/ACLs security rules.'} />}
+              input={
+                <div className={styles.radiobuttonWrapper} >
+                  <input 
+                    id="CLP_Protected" 
+                    name="CLP"
+                    type="radio"
+                    onChange={() => this.setState({ isProtected: !this.state.isProtected })}
+                    defaultChecked={this.state.isProtected}
+                  /> Protected
+                </div>
+              }
+            />
+            <Field
+              label={<Label text='Add in Public mode' description={'Your class data is open by default. However, you must update your security rules to enable long-term client read/write access.'} />}
+              input={
+                <div className={styles.radiobuttonWrapper}>
+                  <input 
+                    id="CLP_Public" 
+                    name="CLP" 
+                    type="radio"
+                    onChange={() => this.setState({ isProtected: !this.state.isProtected })}
+                    defaultChecked={!this.state.isProtected}
+                  /> Public read and write Enabled
+                </div>
+              }
+            /> 
+            </>
+          )
+            : null
         }
-        <div style={{ display: "flex", flexDirection: "column", textAlign: "center", borderBottom: "1px solid #e3e3e3" }}>
-          <span style={{ margin: '1rem' }}>or</span>
-          <a style={{ color: "#169cee" }} href={b4aSettings.HUB_URL} target="_blank">Find a public dataset to connect</a>
-          <span style={{ margin: '1rem' }}>e.g. jobs, countries, industries, colors, zip codes and more...</span>
+        <div style={{ display: "flex", flexDirection: "column", padding: '1em', gap: '10px', borderBottom: "1px solid #e3e3e3" }}>
+          <div style={{ fontWeight: '600', color: '000000de' }} >Or find a public dataset to connect</div >
+          <span style={{ fontSize: '14px' }} >e.g. jobs, countries, industries, colors, zip codes and more...</span>
+          <a style={{ color: "#169cee", fontSize: '14px', textDecoration: 'underline' }} href={b4aSettings.HUB_URL} target="_blank">back4app.com/database</a>
         </div>
       </Modal>
     );

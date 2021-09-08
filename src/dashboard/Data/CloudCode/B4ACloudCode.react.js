@@ -42,6 +42,7 @@ class B4ACloudCode extends CloudCode {
       loading: true,
       unsavedChanges: false,
       modal: null,
+      codeUpdated: false,
 
       // updated cloudcode files.
       currentCode: [],
@@ -93,6 +94,21 @@ class B4ACloudCode extends CloudCode {
         unbindHook();
       }
     });
+  }
+
+  componentDidUpdate() {
+    if ( this.state.codeUpdated === true ) {
+      console.log('code updated');
+      this.onBeforeUnloadSaveCode = window.onbeforeunload = function() {
+        return '';
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.onBeforeUnloadSaveCode) {
+      window.removeEventListener(this.onBeforeUnloadSaveCode);
+    }
   }
 
   // Format object to expected backend pattern
@@ -275,6 +291,7 @@ class B4ACloudCode extends CloudCode {
 
       content = <B4ACodeTree
         setCurrentCode={(newCode) => this.setState({ currentCode: newCode })}
+        setCodeUpdated={() => this.setState({ codeUpdated: true })}
         files={this.state.files}
         parentState={this.setState.bind(this)}
         currentApp={this.context.currentApp}
