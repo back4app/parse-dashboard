@@ -237,6 +237,9 @@ let ManageAppFields = ({
         ...parseOptions[0]
       };
     }
+    else if ( parseOptions instanceof Object ) {
+      parseOptionsJson = parseOptions;
+    }
   }
 
   return (
@@ -744,9 +747,7 @@ export default class GeneralSettings extends DashboardView {
             promiseList.push(this.context.currentApp.setRequestLimit(changes.requestLimit));
           }
           if (changes.appName !== undefined || changes.parseOptions !== undefined ) {
-            const parseOptions = [
-              {...typeof changes.parseOptions == 'string' ? JSON.parse(changes.parseOptions) : {} }
-            ];
+            const parseOptions = {...typeof changes.parseOptions == 'string' ? JSON.parse(changes.parseOptions) : {} };
             promiseList.push(this.context.currentApp.setAppConfig(changes.appName, parseOptions));
           }
           if (changes.inProduction !== undefined) {

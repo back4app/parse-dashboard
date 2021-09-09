@@ -1,16 +1,128 @@
 {
-  "apps": [
-    {
-      "serverURL": "http://localhost:1338/parse",
-      "appId": "APPLICATION_ID",
-      "masterKey": "MASTER_KEY",
-      "appName": "Countries States and Cities",
-      "iconName": "",
-      "primaryBackgroundColor": "",
-      "secondaryBackgroundColor": "",
-      "custom": {
-        "isOwner": true
+  "apps": [{
+    "masterKey": "ZbCi0aQfB67CxhNPUOGWllgBnQ9VfTolq31iw2RG",
+    "serverURL": "https://parseapi-homolog.back4app.com",
+    "appId": "c9ANHYXt3VufbV5pzk3KAQpjdQNtvXPYpXJMH51m",
+    "javascriptKey": "6TcSPIUFmSzdvSpw50OXPXgXjQciaOiDDrOVr4ZS",
+    "restKey": "4FqdZEAFjSzDuTo3lxXLTqFCBFk7N6ReKhI3KuOv",
+    "clientKey": "eZ2CMEiDOshUorhIEofSyVKwWKN8RCIAKZyTo6oi",
+    "windowsKey": "vY95FQTTulNPu9zHEfk5mUmUvtmB2sE0KkGXdaF1",
+    "webhookKey": "ailwgXfGSfl0JsUh4VTlvdwoFZenuAvoQgzqfWvs",
+    "apiKey": "92f17831-504b-4475-bc75-f0502a837700",
+    "appName": "Sample Blog App",
+    "production": true,
+    "appNameForURL": "9f232970-c706-4ec7-88f5-1bb19b8428b2",
+    "feedbackEmail": "faisal@back4app.com",
+    "custom": {
+      "isGDPR": false,
+      "forceShowGDPRFields": false,
+      "showAdminPage": false,
+      "isOwner": true,
+      "isDatabasePublic": false
+    },
+    "supportedPushLocales": [],
+    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+    "parseOptions": {}
+  }, {
+    "masterKey": "baLOEk3afwuqoK7N2tlV6218hppHIdUfb97WzJPM",
+    "serverURL": "https://parseapi-homolog.back4app.com",
+    "appId": "TEpJbfgK039iZymfgyriPmO8sMBfXQVBQzi4BWeE",
+    "javascriptKey": "4Bgq5Jgu4o5ZCQAvWep8WDpezpSbhZlSPqycIESr",
+    "restKey": "RFYugyCctPQZBOBu6wkAyrXcre05vUXaa5BlPNAp",
+    "clientKey": "74q6nyzeVzGBUCKqJ2c5PitsCwnvAKqKuGWjUPpA",
+    "windowsKey": "uwUY8LhaQaIWPWBHCE9f3JIlEliPNLaD6hsxnequ",
+    "webhookKey": "ZFK4qNmXEVnEY1f9EIilUHZZbftqwGxBeTWb9803",
+    "apiKey": "685f594c-78d5-4993-bab1-2ecff82f0c96",
+    "appName": "FirstApp4",
+    "production": true,
+    "appNameForURL": "14663ac5-fba2-4135-aa20-958ac1e04c58",
+    "feedbackEmail": "faisal@back4app.com",
+    "custom": {
+      "isGDPR": false,
+      "forceShowGDPRFields": false,
+      "showAdminPage": false,
+      "isOwner": true,
+      "isDatabasePublic": false
+    },
+    "supportedPushLocales": [],
+    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+    "parseOptions": "{\"resetTokenValidityDuration\":\"1\"}"
+  }, {
+    "masterKey": "HnaT88S3pAJQ1LGd8DbePOnruKYUavjPNuG4eWLO",
+    "serverURL": "https://parseapi-homolog.back4app.com",
+    "appId": "zVZRmc4X0yxIPCvIv8cI0wSDVBfKiFVscZFc53Jb",
+    "javascriptKey": "GZRFxSeEtjYllIDMnA9NVTuSwZKACCXHeUD5y2PA",
+    "restKey": "qqzJbKz9BuDavFu4lHgGS0F1nMhHPlDYV9XP90kl",
+    "clientKey": "OFIM2twxUItriKjOTPi6WpLnTNK8dTg6vIPNhnW2",
+    "windowsKey": "92FVcA6eyzeCs2ROUXt9dYac7Vo098hiSKugWOCr",
+    "webhookKey": "rmR3G8H3jceOl4axdkIhat16HmokXGYQOdRoAdJf",
+    "apiKey": "f16baa90-2b10-454d-9484-2f1018e7da6d",
+    "appName": "LoadAnimTestApp",
+    "production": true,
+    "appNameForURL": "cf27535a-302b-47d0-9d14-fa877319bac5",
+    "feedbackEmail": "faisal@back4app.com",
+    "custom": {
+      "isGDPR": false,
+      "forceShowGDPRFields": false,
+      "showAdminPage": false,
+      "isOwner": true,
+      "isDatabasePublic": false
+    },
+    "supportedPushLocales": [],
+    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+    "parseOptions": "{\"resetTokenValidityDuration\":\"1\",\"maxPasswordAge\":\"1\",\"maxPasswordHistory\":\"1\"}"
+  }, {
+    "masterKey": "Ieh9hkLd4f1ypIy1QSvfYPVO1xWKQvMyJOcJCVaj",
+    "serverURL": "https://parseapi-homolog.back4app.com",
+    "appId": "fTI9r9hAcGWNRyi69Z0Zcnt69BrLcWO38vCKIDWt",
+    "javascriptKey": "fgQRgm2fTJcEscwnNnXCtwEtHUEDwmjr7E7UPVft",
+    "restKey": "ApshuJ3uXeZS29zeSHA5Bb8IA1JGHQFUEKbYsQbp",
+    "clientKey": "yvM5VrTPZZ6ZADcz9oCWZWfya8rCCapYh2s16iaD",
+    "windowsKey": "zCZyR6bd2W3oZ8APC6FPCvJysugT6snmnfL5cDCU",
+    "webhookKey": "KmElPUoL5cbjyuemQZ5e3NBq3LBUyj8Dqj5B5aVS",
+    "apiKey": "4731e0ce-ebfe-4df1-8a9e-e744ca8b7ee9",
+    "appName": "LoadAnimTestApp2",
+    "production": true,
+    "appNameForURL": "5e3b1b0c-3f09-4003-bc35-067174f0a14c",
+    "feedbackEmail": "faisal@back4app.com",
+    "custom": {
+      "isGDPR": false,
+      "forceShowGDPRFields": false,
+      "showAdminPage": false,
+      "isOwner": true,
+      "isDatabasePublic": false
+    },
+    "supportedPushLocales": [],
+    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+    "parseOptions": "{\"resetTokenValidityDuration\":\"1\"}"
+  }, {
+    "masterKey": "4NHgNXfIrfndvvWfjlwz5EEq8T2XQXVxDZnOam4y",
+    "serverURL": "https://parseapi-homolog.back4app.com",
+    "appId": "MPbw24G6rcmYBz86iJffITlNdwRlpbCizr6yrs17",
+    "javascriptKey": "ImUX1MnE98ixQ1GT9fBaWUsnvivcd012ijxmCGzX",
+    "restKey": "I31rfaui1HCHRWxwGjU4wfQJYCarxr2cC9YtG9SH",
+    "clientKey": "OKzfso5CbNVUvaI3pq2y7zWq1Dm1ijCtVccdbQnK",
+    "windowsKey": "HwGRfHBcaBN0XcF5xF7mNINZ5BukknVGbRdwoe1K",
+    "webhookKey": "faO2kA3ozxUUuNOAIN9OVb0OGYGBKtxPcSTJGZk7",
+    "apiKey": "2981bcf3-187a-471b-a7ef-92482d8c0b97",
+    "appName": "Test3",
+    "production": true,
+    "appNameForURL": "79af4bd1-e487-44d3-9fef-8345f4029e2d",
+    "feedbackEmail": "faisal@back4app.com",
+    "custom": {
+      "isGDPR": false,
+      "forceShowGDPRFields": false,
+      "showAdminPage": false,
+      "isOwner": true,
+      "isDatabasePublic": false
+    },
+    "supportedPushLocales": [],
+    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
+    "parseOptions": {
+      "accountLockout": {
+        "resetTokenValidityDuration": "1"
       }
     }
-  ]
+  }],
+  "newFeaturesInLatestVersion": []
 }
