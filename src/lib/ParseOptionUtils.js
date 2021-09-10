@@ -13,7 +13,7 @@ export const replaceSettingsInJson = ( jsonToUpdate, key ) => {
 }
 
 export const getSettingsFromKey = ( json, key ) => {
-  return json && key in json ? json[key] : '';
+  return json && key in json ? json[key] : undefined;
 }
 
 export const validateSettingsFloatMinMax = ( value, min, max ) => {
