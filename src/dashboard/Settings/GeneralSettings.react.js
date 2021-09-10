@@ -369,7 +369,7 @@ let ManageAppFields = ({
             input={
               <Toggle
                 additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-                value={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'doNotAllowUsername') || true }
+                value={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'doNotAllowUsername') !== undefined ? getSettingsFromKey(parseOptionsJson.passwordPolicy, 'doNotAllowUsername') : true }
                 onChange={doNotAllowUsername => {
                   parseOptionsJson.passwordPolicy.doNotAllowUsername = doNotAllowUsername;
                   setParseOptions(JSON.stringify( parseOptionsJson ));
