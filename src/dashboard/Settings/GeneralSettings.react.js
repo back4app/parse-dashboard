@@ -264,8 +264,6 @@ let ManageAppFields = ({
     }
   }
 
-  console.log(parseOptions);
-
   return (
     <Fieldset
       legend='App Management'
