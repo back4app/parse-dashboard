@@ -807,12 +807,12 @@ export default class GeneralSettings extends DashboardView {
               promiseList.push(this.context.currentApp.setAppStoreURL(urlKeys[key], changes[key]));
             }
           });
-          // return Promise.all(promiseList).then(() => {
-          //   this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
-          //   this.setState({ removedCollaborators: removedCollaborators || [] });
-          // }).catch(errors => {
-          //   return Promise.reject({ error: unique(pluck(errors, 'error')).join(' ')});
-          // });
+          return Promise.all(promiseList).then(() => {
+            this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
+            this.setState({ removedCollaborators: removedCollaborators || [] });
+          }).catch(errors => {
+            return Promise.reject({ error: unique(pluck(errors, 'error')).join(' ')});
+          });
         }}
         renderForm={({ fields, setField }) => {
           //let isCollaborator = AccountManager.currentUser().email !== this.props.initialFields.owner_email;
