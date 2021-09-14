@@ -44,7 +44,7 @@ import { cost, features }                from 'dashboard/Settings/GeneralSetting
 import Toggle                            from 'components/Toggle/Toggle.react';
 import CodeEditor                        from 'components/CodeEditor/CodeEditor.react';
 import {
-  replaceSettingsInJson, validateSettingsFloatMinMax, getSettingsFromKey
+  getSettingsFromKey, convertStringToInt
 }                                        from 'lib/ParseOptionUtils';
 
 const DEFAULT_SETTINGS_LABEL_WIDTH = 55;
@@ -63,7 +63,6 @@ const defaultParseOptions = {
     // 1. a RegExp object or a regex string representing the pattern to enforce
     validatorPattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, // enforce password with at least 8 char with at least 1 lower case, 1 upper case and 1 digit
     // 2. a callback function to be invoked to validate the password
-    validatorCallback: '(password) => { return validatePassword(password) }',
     validationError: 'Password must contain at least 1 digit.', // optional error message to be sent instead of the default "Password does not meet the Password Policy requirements." message.
     doNotAllowUsername: true, // optional setting to disallow username in passwords
     maxPasswordAge: 90, // optional setting in days for password expiry. Login fails if user does not reset the password within this period after signup/last reset.
@@ -286,7 +285,8 @@ let ManageAppFields = ({
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'resetTokenValidityDuration') || 24*60*60}
                 onChange={resetTokenValidityDuration => {
-                  parseOptionsJson.passwordPolicy.resetTokenValidityDuration = resetTokenValidityDuration;
+                  parseOptionsJson.passwordPolicy.resetTokenValidityDuration =
+                    convertStringToInt(resetTokenValidityDuration);
                   setParseOptions(JSON.stringify( parseOptionsJson ));
                 }} />
             }
@@ -312,25 +312,6 @@ let ManageAppFields = ({
             padding={'7px 0px'}
             labelWidth={'50%'}
             label={<LabelSettings
-              text='Validator Callback'
-              description='Callback for the validator'
-            />}
-            input={
-              <CodeEditor
-                placeHolder={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'validatorCallback') || '(password) => { return validatePassword(password) }'}
-                onCodeChange={ validatorCallback => {
-                  parseOptionsJson.passwordPolicy.validatorCallback = validatorCallback;
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
-                } }
-                fontSize={'10px'}
-                style={{ height: '60px', marginTop: '10px' }}
-              />
-            }
-          />
-          <FieldSettings
-            padding={'7px 0px'}
-            labelWidth={'50%'}
-            label={<LabelSettings
               text='Validator Pattern'
               description='The validator pattern'
             />}
@@ -338,7 +319,7 @@ let ManageAppFields = ({
               <TextInputSettings
                 defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'validatorPattern') || '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/'}
                 onChange={validatorPattern => {
-                  parseOptionsJson.passwordPolicy.validatorCallback = validatorPattern;
+                  parseOptionsJson.passwordPolicy.validatorPattern = validatorPattern;
                   setParseOptions(JSON.stringify( parseOptionsJson ));
                 }} />
             }
@@ -388,7 +369,7 @@ let ManageAppFields = ({
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'maxPasswordAge') || 90 }
                 onChange={maxPasswordAge => {
-                  parseOptionsJson.passwordPolicy.maxPasswordAge = maxPasswordAge;
+                  parseOptionsJson.passwordPolicy.maxPasswordAge = convertStringToInt(maxPasswordAge);
                   setParseOptions(JSON.stringify( parseOptionsJson ));
                 }} />
             }
@@ -405,7 +386,7 @@ let ManageAppFields = ({
                 min={0}
                 defaultValue={ getSettingsFromKey(parseOptionsJson.passwordPolicy, 'maxPasswordHistory') || 5 }
                 onChange={maxPasswordHistory => {
-                  parseOptionsJson.passwordPolicy.maxPasswordHistory = maxPasswordHistory;
+                  parseOptionsJson.passwordPolicy.maxPasswordHistory = convertStringToInt(maxPasswordHistory);
                   setParseOptions(JSON.stringify( parseOptionsJson ));
                 }} />
             }
@@ -441,7 +422,7 @@ let ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  parseOptionsJson.accountLockout.duration = duration;
+                  parseOptionsJson.accountLockout.duration = convertStringToInt(duration);
                   setParseOptions(JSON.stringify( parseOptionsJson ));
                 }} />
             }
@@ -468,7 +449,7 @@ let ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  parseOptionsJson.accountLockout.threshold = threshold;
+                  parseOptionsJson.accountLockout.threshold = convertStringToInt(threshold);
                   setParseOptions(JSON.stringify( parseOptionsJson ));
                 }} />
             }
