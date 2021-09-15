@@ -364,6 +364,12 @@ export default class ParseApp {
     return fields;
   }
 
+  async fetchAppSettings() {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/settings/${this.slug}`;
+    let response = await axios.get(path);
+    return response.data;
+  }
+
   cleanUpFiles() {
     let path = '/apps/' + this.slug + '/orphan_files';
     return AJAX.post(path);
