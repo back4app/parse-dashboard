@@ -24,6 +24,17 @@ const overwriteFileModal = {
   confirmButtonText: 'Yes, overwrite it!'
 }
 
+const confirmRemoveFileModal = {
+  title: 'Are you sure?',
+  text: '',
+  type: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#169cee',
+  cancelButtonColor: '#ff395e',
+  confirmButtonText: 'Yes, remove it!',
+  reverseButtons: true,
+};
+
 // Function used to force an update on jstree element. Useful to re-render tree
 // after deploy changes
 export const updateTreeContent = async (files) => {
@@ -51,11 +62,21 @@ const create = (data, file) => {
 }
 
 // Remove a node on tree
-const remove = (data) => {
+const remove = (data, showAlert=false) => {
   let inst = $.jstree.reference(data)
   let obj = inst.get_node(data);
-  if (inst.is_selected(obj)) return inst.delete_node(inst.get_selected());
-  else return inst.delete_node(obj);
+  if (showAlert) {
+    confirmRemoveFileModal.text = `Are you sure you want to remove ${obj.text} file?`;
+    MySwal.fire(confirmRemoveFileModal).then((alertResponse) => {
+      if (alertResponse.value) {
+        if (inst.is_selected(obj)) return inst.delete_node(inst.get_selected());
+        else return inst.delete_node(obj);
+      }
+    })
+  } else {
+    if (inst.is_selected(obj)) return inst.delete_node(inst.get_selected());
+    else return inst.delete_node(obj);
+  }
 }
 
 // Decode base64 file content.
@@ -137,7 +158,7 @@ const customMenu = node => {
     create(data.reference)
   };
   items.remove.action = function (data) {
-    remove(data.reference)
+    remove(data.reference, true)
   };
   delete items.ccp;
   if (node.type === 'default' || node.type === 'new-file') {

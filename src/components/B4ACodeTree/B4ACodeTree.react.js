@@ -98,7 +98,7 @@ export default class B4ACodeTree extends React.Component {
 
   deleteFile() {
     if (this.state.nodeId) {
-      B4ATreeActions.remove(`#${this.state.nodeId}`)
+      B4ATreeActions.remove(`#${this.state.nodeId}`, true);
       this.setState({ source: '', selectedFile: '', nodeId: '' })
       this.handleTreeChanges()
     }
