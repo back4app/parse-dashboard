@@ -8,13 +8,15 @@ import Button                       from 'components/Button/Button.react';
 import B4ACloudCodeView             from 'components/B4ACloudCodeView/B4ACloudCodeView.react';
 import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions';
 import Swal                         from 'sweetalert2';
+import B4AAlert                     from 'components/B4AAlert/B4AAlert.react';
+
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
 
 const getCloudFolderPlaceholder = (appId, restKey) =>
-  "// The Cloud Folder contains the javascript cloud code functions";
+  "The Cloud Folder can be used to deploy cloud functions, triggers, and custom Express.js routes.";
 
-const publicFolderPlaceholder = "// Public folder can be used to deploy public static content as html, images, css, etc.\n"
+const publicFolderPlaceholder = "Public folder can be used to deploy public static content as html, images, css, etc.\n"
 
 let cloudFolderPlaceholder
 
@@ -210,12 +212,52 @@ export default class B4ACodeTree extends React.Component {
     this.props.setCurrentCode(this.state.files);
   }
 
-  componentDidUpdate(){
-    if ( this.state.selectedFolder === 0 )
-      console.log(this.state.selectedFolder);
-  }
-
   render(){
+    let content;
+    if (this.state.isImage) {
+      content = <img src={this.state.source} />;
+    }
+    else if ( this.state.isFolderSelected === true ) {
+      content = <B4AAlert
+                  hideClose
+                  show={true}
+                  title={typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}
+                  description={this.state.source} />
+    }
+    else {
+      content = <div className={`${styles['files-box']}`}>
+            <div className={styles['files-header']} >
+              <p>{ typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
+              <Button
+                value={<div><i className="zmdi zmdi-minus"></i> REMOVE</div>}
+                primary={true}
+                color={'red'}
+                width='93'
+                disabled={!this.state.nodeId}
+                onClick={this.deleteFile.bind(this)}
+              />
+            </div>
+            <Resizable className={styles['files-text']}
+               defaultSize={{ height: '367px', width: '100%' }}
+               enable={{
+                top:false,
+                right:false,
+                bottom:true,
+                left:false,
+                topRight:false,
+                bottomRight:false,
+                bottomLeft:false,
+                topLeft:false
+              }}>
+              <B4ACloudCodeView
+                  isFolderSelected={this.state.isFolderSelected}
+                  onCodeChange={value => this.updateSelectedFileContent(value)}
+                  source={this.state.source}
+                  extension={this.state.extension} />
+            </Resizable>
+          </div>;
+    }
+
     return (
       <div className={styles.codeContainer}>
         <div className={styles.fileSelector}>
@@ -282,41 +324,7 @@ export default class B4ACodeTree extends React.Component {
           </div>
         </div>
         <div className={styles.filePreview}>
-          <div className={`${styles['files-box']}`}>
-            <div className={styles['files-header']} >
-              <p>{ typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
-              <Button
-                value={<div><i className="zmdi zmdi-minus"></i> REMOVE</div>}
-                primary={true}
-                color={'red'}
-                width='93'
-                disabled={!this.state.nodeId}
-                onClick={this.deleteFile.bind(this)}
-              />
-            </div>
-            <Resizable className={styles['files-text']}
-               defaultSize={{ height: '367px', width: '100%' }}
-               enable={{
-                top:false,
-                right:false,
-                bottom:true,
-                left:false,
-                topRight:false,
-                bottomRight:false,
-                bottomLeft:false,
-                topLeft:false
-              }}>
-              {
-                this.state.isImage ?
-                  <img src={this.state.source} /> :
-                  <B4ACloudCodeView
-                    isFolderSelected={this.state.isFolderSelected}
-                    onCodeChange={value => this.updateSelectedFileContent(value)}
-                    source={this.state.source}
-                    extension={this.state.extension} />
-              }
-            </Resizable>
-          </div>
+          {content}
         </div>
       </div>
     );

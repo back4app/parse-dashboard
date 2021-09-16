@@ -38,10 +38,12 @@ export default class B4AAlert extends React.Component {
         <div
           className={styles.title} >
           {this.props.title}
+          {
+          !this.props.hideClose &&
           <a
             className={`zmdi zmdi-close ${styles.close}`}
             onClick={this.onClose.bind(this)}>
-          </a>
+          </a>}
         </div>
         {this.props.description ? <div className={styles.description}>{this.props.description}</div> : null}
       </div>

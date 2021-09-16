@@ -9,7 +9,7 @@ import React           from 'react';
 import { withRouter }  from 'react-router';
 import history         from 'dashboard/history';
 import $               from 'jquery';
-import axios           from 'axios'
+import axios           from 'axios';
 import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
 import Button          from 'components/Button/Button.react';
 import B4ACodeTree     from 'components/B4ACodeTree/B4ACodeTree.react';
