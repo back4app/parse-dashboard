@@ -12,31 +12,10 @@ import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
 import { concatAST } from 'graphql';
 
-const getCloudFolderPlaceholder = (appId, restKey) => "// The first deployed file must be named main.js and must be placed on the root of the cloud folder.\n" +
-  "// The example below shows you how a cloud code function looks like.\n\n" +
-  "/* Parse Server 3.x"+
-  "\n* Parse.Cloud.define(\"hello\", (request) => {\n" +
-  "* \treturn(\"Hello world!\");\n" +
-  "* });\n*/\n\n" +
-  "/* Parse Server 2.x"+
-  "\n* Parse.Cloud.define(\"hello\", function(request, response){\n" +
-  "* \tresponse.success(\"Hello world!\");\n" +
-  "* });\n*/\n\n" +
-  "// To see it working, you only need to call it through SDK or REST API.\n" +
-  "// Here is how you have to call it via REST API:\n" +
-  "\n/*\n* curl -X POST \\\n" +
-  `* -H \"X-Parse-Application-Id: ${appId}\" \\\n` +
-  `* -H \"X-Parse-REST-API-Key: ${restKey}\" \\\n` +
-  "* -H \"Content-Type: application/json\" \\\n" +
-  "* -d \"{}\" \\\n" +
-  `* ${b4aSettings.PARSE_API_URL}/functions/hello\n*/\n` +
-  "\n// If you have set a function in another cloud code file, called \"test.js\" (for example)\n" +
-  "// you need to refer it in your main.js, as you can see below:\n" +
-  "\n/* require(\"./test.js\"); */"
+const getCloudFolderPlaceholder = (appId, restKey) =>
+  "// The Cloud Folder contains the javascript cloud code functions";
 
-const publicFolderPlaceholder = "// Public folder can be used to deploy public static content as html, images, css, etc.\n" +
-  "\n" +
-  "// You have to setup a custom domain or subdomain at Back4App to access the public static content"
+const publicFolderPlaceholder = "// Public folder can be used to deploy public static content as html, images, css, etc.\n"
 
 let cloudFolderPlaceholder
 
