@@ -46,6 +46,7 @@ export default class B4ACloudCodeView extends React.Component {
       newState[key] = this.props.source;
       this.setState(newState);
     }
+    console.log(this.props);
   }
 
   extensionDecoder() {
@@ -70,7 +71,7 @@ export default class B4ACloudCodeView extends React.Component {
       style.hljs.padding = '1em 0.5em';
     }
   return <div style={{ height: '367px' }}>
-      { this.props.extension === '' ?
+      { this.props.isFolderSelected === true ?
         <div style={{ height: this.props.source.length > pageSize ? '320px' : '367px' }}><SyntaxHighlighter
         showLineNumbers={true}
         lineNumberStyle={{

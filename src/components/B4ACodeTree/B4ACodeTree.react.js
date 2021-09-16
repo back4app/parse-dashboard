@@ -10,7 +10,6 @@ import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions'
 import Swal                         from 'sweetalert2';
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
-import { concatAST } from 'graphql';
 
 const getCloudFolderPlaceholder = (appId, restKey) =>
   "// The Cloud Folder contains the javascript cloud code functions";
@@ -311,6 +310,7 @@ export default class B4ACodeTree extends React.Component {
                 this.state.isImage ?
                   <img src={this.state.source} /> :
                   <B4ACloudCodeView
+                    isFolderSelected={this.state.isFolderSelected}
                     onCodeChange={value => this.updateSelectedFileContent(value)}
                     source={this.state.source}
                     extension={this.state.extension} />
