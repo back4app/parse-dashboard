@@ -87,7 +87,7 @@ export default class B4ACodeTree extends React.Component {
 
   // load file and add on tree
   loadFile() {
-    let file = this.state.newFile
+    let file = this.state.newFile;
     if (file) {
       let currentTree = '#'
       B4ATreeActions.addFilesOnTree(file, currentTree, this.state.selectedFolder)
@@ -126,7 +126,6 @@ export default class B4ACodeTree extends React.Component {
         });
         const fr = new FileReader();
         isImage = this.getFileType(selected.data.code)
-
         if ( isImage === false ) {
           if ( selectedFile instanceof Blob ) {
             fr.onload = () => {
@@ -138,7 +137,6 @@ export default class B4ACodeTree extends React.Component {
               source = fileUpdated ? fileUpdated.updatedContent : source;
               this.setState({ source, selectedFile, nodeId, extension, isImage })
             }
-
             fr.readAsText(selectedFile);
           }
           else {
@@ -185,13 +183,13 @@ export default class B4ACodeTree extends React.Component {
 
   getUpdatedFiles(files, value) {
     return files.map( (file) => {
-      if ( this.state.selectedFile === file.text && file.data ) {
+      if ( file.type === 'folder' || file.type === 'new-folder' ) {
+        file.children = this.getUpdatedFiles(file.children, value);
+      }
+      else if ( this.state.selectedFile === file.text && file.data ) {
         file.data.code = value;
       }
       // children.
-      if ( file.children && file.children.length > 0 ) {
-        file.children = this.getUpdatedFiles(file.children, value);
-      }
       return file;
     });
   }
@@ -199,7 +197,10 @@ export default class B4ACodeTree extends React.Component {
   async updateSelectedFileContent(value) {
     const updatedData = { file: this.state.selectedFile, updatedContent: value };
     const ecodedValue = await B4ATreeActions.encodeFile(value, 'data:plain/text;base64');
-    let updatedFiles = this.getUpdatedFiles(this.state.files, ecodedValue);
+    let updatedFiles = this.getUpdatedFiles(
+      this.state.files,
+      ecodedValue
+    );
     this.setState({ updatedFiles: [...this.state.updatedFiles.filter( f => f.file !== this.state.selectedFile ), updatedData], files: updatedFiles, source: value });
     this.props.setCurrentCode(updatedFiles);
 
@@ -230,11 +231,6 @@ export default class B4ACodeTree extends React.Component {
 
     // current code.
     this.props.setCurrentCode(this.state.files);
-  }
-
-  componentDidUpdate(){
-    if ( this.state.selectedFolder === 0 )
-      console.log(this.state.selectedFolder);
   }
 
   render(){
@@ -275,7 +271,9 @@ export default class B4ACodeTree extends React.Component {
                     }).then(({value}) => {
                       if (value) {
                         const parent = $('#tree').jstree('get_selected');
-                        $('#tree').jstree("create_node", parent, { data: '', type: 'new-file', text: value }, 'inside', false, false);
+                        $('#tree').jstree("create_node", parent, { data: {code: 'data:plain/text;base64,IA=='}, type: 'new-file', text: value }, 'inside', false, false);
+                        // console.log($('#tree').jstree('get_selected', true), this.state.files);
+                        this.setState({ files: $('#tree').jstree(true).get_json() });
                       }
                     })
                   }}

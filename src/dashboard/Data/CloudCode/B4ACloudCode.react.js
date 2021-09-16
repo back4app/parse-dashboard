@@ -133,12 +133,15 @@ class B4ACloudCode extends CloudCode {
 
   syncCurCode( nodesOnTree, currentCode ){
     return nodesOnTree.map( (node, idx) => {
-      if (  node.data?.code !== currentCode[idx].data?.code  ) {
-        node.data.code = currentCode[idx].data?.code;
-      }
-      if ( node.children.length > 0 ) {
+      const code = currentCode.find( code => code.text === node.text );
+      if ( node.type === 'folder' || node.type === 'new-folder' ) {
         node.children = this.syncCurCode(node.children, currentCode[idx].children);
       }
+      else if ( code && node.data?.code !== code?.data?.code
+          && node.text == currentCode[idx]?.text) {
+        node.data.code = currentCode[idx].data?.code;
+      }
+
       return node;
     });
   }
