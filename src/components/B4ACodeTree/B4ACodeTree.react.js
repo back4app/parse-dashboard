@@ -273,10 +273,10 @@ export default class B4ACodeTree extends React.Component {
                 {
                   this.state.isFolderSelected === true &&
                   <Button
-                  value={<div style={{ fontSize: '10px' }}><i className="zmdi zmdi-plus"></i> ADD</div>}
+                  value={<div style={{ fontSize: '10px' }}>Upload File</div>}
                   primary={true}
                   width='20'
-                  additionalStyles={{ minWidth: '55px' }}
+                  additionalStyles={{ minWidth: '70px' }}
                 />}
               </ReactFileReader>
               {
@@ -303,7 +303,7 @@ export default class B4ACodeTree extends React.Component {
                     })
                   }}
                   disabled={false}
-                  value={<div style={{ fontSize: '10px' }}><i className="zmdi zmdi-plus"></i> CREATE</div>}
+                  value={<div style={{ fontSize: '10px' }}>New File</div>}
                   primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '70px' }}
