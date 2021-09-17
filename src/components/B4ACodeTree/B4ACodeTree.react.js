@@ -239,7 +239,7 @@ export default class B4ACodeTree extends React.Component {
               />
             </div>
             <Resizable className={styles['files-text']}
-               defaultSize={{ height: '367px', width: '100%' }}
+               defaultSize={{ height: '100%', overflow: 'scroll', width: '100%' }}
                enable={{
                 top:false,
                 right:false,
@@ -311,7 +311,7 @@ export default class B4ACodeTree extends React.Component {
 
             </div>
             <Resizable className={styles['files-tree']}
-              defaultSize={{ height: '367px', width: '100%' }}
+              defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}
               enable={{
                 top:false,
                 right:false,

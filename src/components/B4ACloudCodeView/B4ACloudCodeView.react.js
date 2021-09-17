@@ -70,9 +70,9 @@ export default class B4ACloudCodeView extends React.Component {
       style.hljs.height = '100%';
       style.hljs.padding = '1em 0.5em';
     }
-  return <div style={{ height: '367px' }}>
+  return <div style={{ height: '100%' }}>
       { this.props.isFolderSelected === true ?
-        <div style={{ height: this.props.source.length > pageSize ? '320px' : '367px' }}><SyntaxHighlighter
+        <div style={{ height: '100%' }}><SyntaxHighlighter
         language={this.extensionDecoder()}
         style={style}>
           {this.props.source.length > pageSize ? this.props.source.substring(0,  pageSize) : this.props.source}

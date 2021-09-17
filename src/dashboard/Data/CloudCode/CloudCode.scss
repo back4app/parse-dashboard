@@ -12,6 +12,8 @@
 .source {
   position: relative;
   min-height: $content-max-height;
+  display: flex;
+  flex-direction: column;
 }
 
 .content {

@@ -5,24 +5,25 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React           from 'react';
-import { withRouter }  from 'react-router';
-import history         from 'dashboard/history';
-import $               from 'jquery';
-import axios           from 'axios';
-import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
-import Button          from 'components/Button/Button.react';
-import B4ACodeTree     from 'components/B4ACodeTree/B4ACodeTree.react';
+import React                  from 'react';
+import { withRouter }         from 'react-router';
+import history                from 'dashboard/history';
+import $                      from 'jquery';
+import axios                  from 'axios';
+import B4AAlert               from 'components/B4AAlert/B4AAlert.react';
+import Button                 from 'components/Button/Button.react';
+import B4ACodeTree            from 'components/B4ACodeTree/B4ACodeTree.react';
 import {
   getFiles,
   updateTreeContent
-}                      from 'components/B4ACodeTree/B4ATreeActions';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
-import styles          from 'dashboard/Data/CloudCode/CloudCode.scss';
-import CloudCode       from 'dashboard/Data/CloudCode/CloudCode.react';
-import LoaderDots      from 'components/LoaderDots/LoaderDots.react';
-import Modal           from 'components/Modal/Modal.react';
-import Icon            from 'components/Icon/Icon.react';
+}                             from 'components/B4ACodeTree/B4ATreeActions';
+import LoaderContainer        from 'components/LoaderContainer/LoaderContainer.react';
+import styles                 from 'dashboard/Data/CloudCode/CloudCode.scss';
+import CloudCode              from 'dashboard/Data/CloudCode/CloudCode.react';
+import LoaderDots             from 'components/LoaderDots/LoaderDots.react';
+import Modal                  from 'components/Modal/Modal.react';
+import Icon                   from 'components/Icon/Icon.react';
+import B4ACloudCodeToolbar    from 'dashboard/Data/CloudCode/B4ACloudCodeToolbar.react';
 
 class B4ACloudCode extends CloudCode {
   constructor() {
@@ -278,13 +279,15 @@ class B4ACloudCode extends CloudCode {
       </LoaderContainer>
     } else { // render cloud code page
 
-      title = <div className={styles.title}>
-        <div><p>Cloud Code Functions</p></div>
-        <Button
-          value='LEARN MORE'
-          primary={true}
-          onClick={() => window.open('https://www.back4app.com/docs/get-started/cloud-functions', '_blank')} />
-      </div>
+      // title = <div className={styles.title}>
+      //   <div><p>Cloud Code Functions</p></div>
+      //   <Button
+      //     value='LEARN MORE'
+      //     primary={true}
+      //     onClick={() => window.open('https://www.back4app.com/docs/get-started/cloud-functions', '_blank')} />
+      // </div>
+
+      title = <B4ACloudCodeToolbar />
 
       alertWhatIs = <B4AAlert
         show={true}
@@ -328,7 +331,6 @@ class B4ACloudCode extends CloudCode {
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
         {title}
-        {alertWhatIs}
         {content}
         {footer}
         {this.state.modal}
