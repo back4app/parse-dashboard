@@ -6,9 +6,8 @@ let B4ACloudCodeToolbar = () => {
   return (
     <Toolbar
       toolbarStyles={styles.title}
-      subsection={'Cloud Code'}
-      details={'Settings'}
-      helpsection={'helpsection'}>
+      subsection={'Cloud Code Functions'}
+      details={'Settings'}>
     </Toolbar>
   );
 };
