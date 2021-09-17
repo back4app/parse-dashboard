@@ -304,7 +304,7 @@ class B4ACloudCode extends CloudCode {
       />
 
       footer = <div className={styles.footer}>
-        <div className={styles.footerContainer}>
+        <div className={[styles.footerContainer, styles.footerContainerLeft].join(' ')}>
           <div className={styles.ccStatusIcon}>
             <span className={styles.deployedCircle}></span> <small>Deployed</small>
           </div>
