@@ -219,11 +219,11 @@ export default class B4ACodeTree extends React.Component {
       content = <img src={this.state.source} />;
     }
     else if ( this.state.isFolderSelected === true ) {
-      content = <B4AAlert
+      content = this.state.source && this.state.source !== '' ? <B4AAlert
                   hideClose
                   show={true}
                   title={typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}
-                  description={this.state.source} />
+                  description={this.state.source} /> : <div></div>;
     }
     else {
       content = <div className={`${styles['files-box']}`}>
