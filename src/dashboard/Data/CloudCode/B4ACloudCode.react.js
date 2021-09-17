@@ -107,7 +107,7 @@ class B4ACloudCode extends CloudCode {
 
   componentWillUnmount() {
     if (this.onBeforeUnloadSaveCode) {
-      window.removeEventListener(this.onBeforeUnloadSaveCode);
+      window.removeEventListener('onbeforeunload',this.onBeforeUnloadSaveCode);
     }
   }
 
