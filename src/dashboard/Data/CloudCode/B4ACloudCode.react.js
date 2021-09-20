@@ -99,7 +99,6 @@ class B4ACloudCode extends CloudCode {
 
   componentDidUpdate() {
     if ( this.state.codeUpdated === true ) {
-      console.log('code updated');
       this.onBeforeUnloadSaveCode = window.onbeforeunload = function() {
         return '';
       }
@@ -314,14 +313,20 @@ class B4ACloudCode extends CloudCode {
         </div>
         <div className={styles.footerContainer}>
           <Button
-            value='Logs'
-            primary={true}
+            // value={'Logs'}
             onClick={this.onLogClick}
+            // additionalStyles={{}}
+            value={
+              <div>
+                <span style={{ color: '#218BEC' }}>Logs</span>
+              </div>}
+            primary={true}
+            width='20'
+            additionalStyles={{ minWidth: '70px', background: 'transparent', color: 'dimgray!important' }}
           />
           <Button
             value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
             primary={true}
-            color='b4a-green'
             onClick={this.uploadCode.bind(this)}
           />
         </div>

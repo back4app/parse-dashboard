@@ -70,6 +70,9 @@
   .footerContainerLeft {
     width: 33%;
     border-right: 2px solid lightgray;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
   }
 
   .ccStatusIcon {
