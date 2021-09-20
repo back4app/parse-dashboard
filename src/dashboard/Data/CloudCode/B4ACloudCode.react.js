@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import React           from 'react';
-import { withRouter }  from 'react-router';
+import { withRouter, Prompt }  from 'react-router';
 import history         from 'dashboard/history';
 import $               from 'jquery';
 import axios           from 'axios';
@@ -327,6 +327,10 @@ class B4ACloudCode extends CloudCode {
 
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
+        <Prompt
+          when={this.state.codeUpdated === true}
+          message='Your cloud code changes may be lost. Please DEPLOY your changes before closing cloud code.'
+        />
         {title}
         {alertWhatIs}
         {content}
