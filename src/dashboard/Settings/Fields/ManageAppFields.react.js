@@ -122,10 +122,10 @@ export const ManageAppFields = ({
     <Fieldset
       legend='App Management'
       description='These options will affect your entire app.' >
-       <Field
+      <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
-        label={<Label text='Server Settings' description={'Manage Server settings'} />}
+        label={<Label text='Parse API' description={'Parse API configurations'} />}
         input={
           <div>
             <FieldSettings
@@ -144,6 +144,14 @@ export const ManageAppFields = ({
                 description={<span>{appSettings.parseVersion}</span>}
               />}
             />
+          </div>}
+      />
+      <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        // TODO replace with password policy
+        label={<Label text='MongoDB API' description={'MongoDB configurations'} />}
+        input={
+          <div>
             <FieldSettings
               padding={'7px 0px'}
               labelWidth={'50%'}
@@ -160,6 +168,14 @@ export const ManageAppFields = ({
                 description={<span>{appSettings.mongoVersion}</span>}
               />}
             />
+          </div>}
+      />
+      <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        // TODO replace with password policy
+        label={<Label text='Client settings' description={'Settings related to client'} />}
+        input={
+          <div>
             <FieldSettings
               padding={'7px 0px'}
               labelWidth={'50%'}
