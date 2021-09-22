@@ -290,7 +290,7 @@ export default class B4ACodeTree extends React.Component {
                     </div>}
                   primary={true}
                   width='20'
-                  additionalStyles={{ minWidth: '70px', background: 'transparent', border: 'none' }}
+                  additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none' }}
                 />}
               </ReactFileReader>
               {
@@ -323,7 +323,7 @@ export default class B4ACodeTree extends React.Component {
                     </div>}
                   primary={true}
                   width='20'
-                  additionalStyles={{ minWidth: '70px', background: 'transparent', border: 'none' }}
+                  additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none' }}
                 />}
 
             </div>
