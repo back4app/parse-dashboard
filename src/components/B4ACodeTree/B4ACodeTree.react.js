@@ -270,17 +270,13 @@ export default class B4ACodeTree extends React.Component {
                 base64={true}
                 multipleFiles={true}
                 handleFiles={this.handleFiles.bind(this)} >
-                {
-                  this.state.isFolderSelected === true &&
-                  <Button
+                <Button
                   value={<div style={{ fontSize: '10px' }}>Upload File</div>}
                   primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '70px' }}
-                />}
+                />
               </ReactFileReader>
-              {
-                this.state.isFolderSelected === true &&
                 <Button
                   onClick={() => {
                     Swal.fire({
@@ -295,19 +291,20 @@ export default class B4ACodeTree extends React.Component {
                       allowOutsideClick: () => !Swal.isLoading()
                     }).then(({value}) => {
                       if (value) {
-                        const parent = $('#tree').jstree('get_selected');
+                        let parent = $('#tree').jstree('get_selected');
+                        if ( ['default', 'file', 'new-file'].includes($('#tree').jstree().get_node(parent).type) ) {
+                          parent = $('#tree').jstree().get_node(parent).parent;
+                        }
                         $('#tree').jstree("create_node", parent, { data: {code: 'data:plain/text;base64,IA=='}, type: 'new-file', text: value }, 'inside', false, false);
-                        // console.log($('#tree').jstree('get_selected', true), this.state.files);
                         this.setState({ files: $('#tree').jstree(true).get_json() });
                       }
                     })
                   }}
-                  disabled={false}
                   value={<div style={{ fontSize: '10px' }}>New File</div>}
                   primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '70px' }}
-                />}
+                />
 
             </div>
             <Resizable className={styles['files-tree']}
