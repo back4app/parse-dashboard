@@ -65,6 +65,20 @@ export default class B4ACodeTree extends React.Component {
     this.loadFile()
   }
 
+  syncNewFileContent( tree, file ) {
+    return tree.map( (node) => {
+      if ( node.type === 'folder' || node.type === 'new-folder' ) {
+        node.children = this.syncNewFileContent(node.children, file);
+      }
+      else if ( file && node.data?.code !== file?.base64[0]
+          && node.text == file.fileList[0].name) {
+        node.data.code = file.base64[0];
+      }
+
+      return node;
+    });
+  }
+
   // load file and add on tree
   loadFile() {
     let file = this.state.newFile;
@@ -73,8 +87,12 @@ export default class B4ACodeTree extends React.Component {
       B4ATreeActions.addFilesOnTree(file, currentTree, this.state.selectedFolder)
       this.setState({ newFile: '', filesOnTree: file });
       this.handleTreeChanges()
+      const updatedFiles = this.syncNewFileContent(this.state.files, file);
+      this.props.setCurrentCode(updatedFiles);
     }
   }
+
+
 
   deleteFile() {
     if (this.state.nodeId) {
@@ -211,6 +229,7 @@ export default class B4ACodeTree extends React.Component {
 
     // current code.
     this.props.setCurrentCode(this.state.files);
+
   }
 
   render(){
@@ -297,7 +316,6 @@ export default class B4ACodeTree extends React.Component {
                       if (value) {
                         const parent = $('#tree').jstree('get_selected');
                         $('#tree').jstree("create_node", parent, { data: {code: 'data:plain/text;base64,IA=='}, type: 'new-file', text: value }, 'inside', false, false);
-                        // console.log($('#tree').jstree('get_selected', true), this.state.files);
                         this.setState({ files: $('#tree').jstree(true).get_json() });
                       }
                     })
