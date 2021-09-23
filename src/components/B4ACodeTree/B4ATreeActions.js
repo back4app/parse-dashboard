@@ -144,11 +144,17 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
       folder = obj.children[selectedFolder]
     }
     await verifyFileNames(folder, newTreeNodes[j]);
-    const position = 'inside';
-    const parent = $('#tree').jstree('get_selected');
-    $('#tree').jstree("create_node", parent, { data: newTreeNodes[j].data, type: 'new-file', text: newTreeNodes[j].text.name }, position, false, false);
+    addFileOnSelectedNode(newTreeNodes[j].text.name);
   }
   return currentCode;
+}
+
+const addFileOnSelectedNode = ( name, data = {code: 'data:plain/text;base64,IA=='} ) => {
+  let parent = $('#tree').jstree('get_selected');
+  if ( ['default', 'file', 'new-file'].includes($('#tree').jstree().get_node(parent).type) ) {
+    parent = $('#tree').jstree().get_node(parent).parent;
+  }
+  $('#tree').jstree("create_node", parent, { data, type: 'new-file', text: name }, 'inside', false, false);
 }
 
 // Configure the menu that is shown on right-click based on files type
@@ -250,5 +256,6 @@ export default {
   encodeFile,
   updateTreeContent,
   getExtension,
-  refreshEmptyFolderIcons
+  refreshEmptyFolderIcons,
+  addFileOnSelectedNode
 }
