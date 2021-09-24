@@ -23,6 +23,7 @@ import CloudCode       from 'dashboard/Data/CloudCode/CloudCode.react';
 import LoaderDots      from 'components/LoaderDots/LoaderDots.react';
 import Modal           from 'components/Modal/Modal.react';
 import Icon            from 'components/Icon/Icon.react';
+import { Prompt }      from 'react-router';
 
 class B4ACloudCode extends CloudCode {
   constructor() {
@@ -97,7 +98,7 @@ class B4ACloudCode extends CloudCode {
   }
 
   componentDidUpdate() {
-    if ( this.state.codeUpdated === true ) {
+    if ( this.state.codeUpdated === true || this.state.unsavedChanges === true ) {
       window.onbeforeunload = function() {
         return '';
       }
@@ -328,6 +329,7 @@ class B4ACloudCode extends CloudCode {
 
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
+        <Prompt when={this.state.codeUpdated === true || this.state.unsavedChanges === true} message={'Changes that you made may not be saved.'} />
         {title}
         {alertWhatIs}
         {content}
