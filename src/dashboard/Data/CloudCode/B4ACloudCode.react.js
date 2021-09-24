@@ -98,10 +98,11 @@ class B4ACloudCode extends CloudCode {
 
   componentDidUpdate() {
     if ( this.state.codeUpdated === true ) {
-      console.log('code updated');
-      this.onBeforeUnloadSaveCode = window.onbeforeunload = function() {
+      window.onbeforeunload = function() {
         return '';
       }
+    } else {
+      window.onbeforeunload = undefined;
     }
   }
 
@@ -215,7 +216,7 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
         />;
-      this.setState({ unsavedChanges: false, modal: successModal });
+      this.setState({ unsavedChanges: false, modal: successModal, codeUpdated: false });
       $('#tree').jstree(true).refresh();
     } catch (err) {
       const errorModal = <Modal
