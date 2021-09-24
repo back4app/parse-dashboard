@@ -104,7 +104,7 @@ const readFile = (file, newTreeNodes) => {
 const verifyFileNames = async (data, newNode) => {
   let currentCode = getFiles(data)
   currentCode = currentCode && currentCode.children
-
+  let overwrite = true;
   if ( currentCode ) {
     for (let i = 0; i < currentCode.length; i++) {
       if (newNode.text && currentCode[i].text === newNode.text.name) {
@@ -114,10 +114,13 @@ const verifyFileNames = async (data, newNode) => {
         let alertResponse = await MySwal.fire(overwriteFileModal)
         if (alertResponse.value) {
           await remove(`#${currentId}`)
+        } else {
+          overwrite = false;
         }
       }
     }
   }
+  return overwrite;
 }
 
 const getExtension = (fileName) => {
@@ -127,7 +130,7 @@ const getExtension = (fileName) => {
 
 // Function used to add files on tree.
 const addFilesOnTree = async (files, currentCode, selectedFolder) => {
-  let newTreeNodes = [];
+  let newTreeNodes = [], overwrite = true;
   let folder
   for (let i = 0; i < files.fileList.length; i++) {
     newTreeNodes = readFile({ name: files.fileList[i], code: files.base64[i] }, newTreeNodes);
@@ -137,7 +140,6 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
     if (currentCode === '#') {
       let inst = $.jstree.reference(currentCode)
       let obj = inst.get_node(currentCode);
-
       // Select the folder to insert based on file extension. If is a js file,
       // insert on "cloud" folder, else insert on "public" folder. This logic is
       // a legacy from the old Cloud Code page
@@ -146,10 +148,11 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
       } else
         folder = obj.children.find(f => f === selectedFolder);
     }
-    await verifyFileNames(folder, newTreeNodes[j]);
+    overwrite = await verifyFileNames(folder, newTreeNodes[j]);
+    if ( overwrite === false ) continue;
     addFileOnSelectedNode(newTreeNodes[j].text.name, newTreeNodes[j].data );
   }
-  return currentCode;
+  return overwrite;
 }
 
 const addFileOnSelectedNode = ( name, data = {code: 'data:plain/text;base64,IA=='} ) => {
