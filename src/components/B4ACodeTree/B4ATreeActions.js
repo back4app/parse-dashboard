@@ -143,11 +143,11 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
       // a legacy from the old Cloud Code page
       if (typeof selectedFolder === 'number') {
         folder = obj.children[selectedFolder]
-      } else 
+      } else
         folder = obj.children.find(f => f === selectedFolder);
     }
     await verifyFileNames(folder, newTreeNodes[j]);
-    addFileOnSelectedNode(newTreeNodes[j].text.name);
+    addFileOnSelectedNode(newTreeNodes[j].text.name, newTreeNodes[j].data );
   }
   return currentCode;
 }
