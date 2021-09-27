@@ -149,14 +149,14 @@ export const ManageAppFields = ({
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
-        label={<Label text='MongoDB API' description={'MongoDB configurations'} />}
+        label={<Label text='Databse' description={'Database configurations'} />}
         input={
           <div>
             <FieldSettings
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
-                text='MongoDB Database URI'
+                text='Database URI'
                 description={<a style={{ wordBreak: 'break-all', padding: '10px 0' }} href={appSettings.databaseURL}>{appSettings.databaseURL}</a>}
               />}
             />
@@ -164,37 +164,12 @@ export const ManageAppFields = ({
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
-                text='MongoDB Version'
+                text='Database Version'
                 description={<span>{appSettings.mongoVersion}</span>}
               />}
             />
           </div>}
       />
-      <Field
-        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-        // TODO replace with password policy
-        label={<Label text='Client settings' description={'Settings related to client'} />}
-        input={
-          <div>
-            <FieldSettings
-              padding={'7px 0px'}
-              labelWidth={'50%'}
-              label={<LabelSettings
-                text='Client Class Creation'
-                description={<span>{ `Client class creation is ${appSettings.clientClassCreation === true ? 'ALLOWED' : 'BLOCKED'}.`}</span>}
-              />}
-            />
-            <FieldSettings
-              padding={'7px 0px'}
-              labelWidth={'50%'}
-              label={<LabelSettings
-                text='Push Notification from Client'
-                description={<span>{ `Push Notification from Client is ${appSettings.clientPush === true ? 'ALLOWED' : 'BLOCKED'}.`}</span>}
-              />}
-            />
-          </div>
-        } />
-
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
@@ -385,6 +360,31 @@ export const ManageAppFields = ({
           </div>
         }
       />
+      <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        // TODO replace with password policy
+        label={<Label text='Danger Zone' description={'Settings related to client'} />}
+        input={
+          <div>
+            <FieldSettings
+              padding={'7px 0px'}
+              labelWidth={'50%'}
+              label={<LabelSettings
+                text='Client Class Creation'
+                description={<span>{ `Client class creation is ${appSettings.clientClassCreation === true ? 'ALLOWED' : 'BLOCKED'}.`}</span>}
+              />}
+            />
+            <FieldSettings
+              padding={'7px 0px'}
+              labelWidth={'50%'}
+              label={<LabelSettings
+                text='Push Notification from Client'
+                description={<span>{ `Push Notification from Client is ${appSettings.clientPush === true ? 'ALLOWED' : 'BLOCKED'}.`}</span>}
+              />}
+            />
+          </div>
+        } />
+
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
