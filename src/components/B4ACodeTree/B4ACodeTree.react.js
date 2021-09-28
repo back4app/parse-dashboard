@@ -9,7 +9,7 @@ import B4ACloudCodeView             from 'components/B4ACloudCodeView/B4ACloudCo
 import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions';
 import Swal                         from 'sweetalert2';
 import B4AAlert                     from 'components/B4AAlert/B4AAlert.react';
-
+import CloudCodeChanges             from 'lib/CloudCodeChanges';
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
 
@@ -40,9 +40,10 @@ export default class B4ACodeTree extends React.Component {
       isImage: false,
       selectedFolder: 0,
       isFolderSelected: true,
-      updatedFiles: [],
       selectedNodeData: null
     }
+
+    this.cloudCodeChanges = new CloudCodeChanges();
   }
 
   getFileType(file) {
@@ -65,20 +66,6 @@ export default class B4ACodeTree extends React.Component {
     this.loadFile()
   }
 
-  syncNewFileContent( tree, file ) {
-    return tree.map( (node) => {
-      if ( node.type === 'folder' || node.type === 'new-folder' ) {
-        node.children = this.syncNewFileContent(node.children, file);
-      }
-      else if ( file && node.data?.code !== file?.base64[0]
-          && node.text == file.fileList[0].name) {
-        node.data.code = file.base64[0];
-      }
-
-      return node;
-    });
-  }
-
   // load file and add on tree
   async loadFile() {
     let file = this.state.newFile;
@@ -88,13 +75,9 @@ export default class B4ACodeTree extends React.Component {
       if ( overwrite === true ) {
         this.setState({ newFile: '', filesOnTree: file });
         this.handleTreeChanges()
-        const updatedFiles = this.syncNewFileContent(this.state.files, file);
-        this.props.setCurrentCode(updatedFiles);
       }
     }
   }
-
-
 
   deleteFile() {
     if (this.state.nodeId) {
@@ -133,8 +116,6 @@ export default class B4ACodeTree extends React.Component {
               selectedFile = selected.text;
               nodeId = selected.id
               extension = B4ATreeActions.getExtension(selectedFile)
-              const fileUpdated = this.state.updatedFiles.find( f => f.file === this.state.selectedFile);
-              source = fileUpdated ? fileUpdated.updatedContent : source;
               this.setState({ source, selectedFile, nodeId, extension, isImage })
             }
             fr.readAsText(selectedFile);
@@ -163,8 +144,6 @@ export default class B4ACodeTree extends React.Component {
         }
       }
     }
-    const fileUpdated = this.state.updatedFiles.find( f => f.file === this.state.selectedFile);
-    source = fileUpdated ? fileUpdated.updatedContent : source;
     this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder' })
   }
 
@@ -181,19 +160,6 @@ export default class B4ACodeTree extends React.Component {
     return this.props.parentState({ unsavedChanges: true })
   }
 
-  getUpdatedFiles(files, value) {
-    return files.map( (file) => {
-      if ( file.type === 'folder' || file.type === 'new-folder' ) {
-        file.children = this.getUpdatedFiles(file.children, value);
-      }
-      else if ( this.state.selectedFile === file.text && file.data ) {
-        file.data.code = value;
-      }
-      // children.
-      return file;
-    });
-  }
-
   async updateSelectedFileContent(value) {
     const ecodedValue = await B4ATreeActions.encodeFile(value, 'data:plain/text;base64');
     this.setState({ source: value });
@@ -203,12 +169,20 @@ export default class B4ACodeTree extends React.Component {
 
     $('#tree').jstree('get_selected', true).pop().data.code = ecodedValue;
     $('#tree').jstree().redraw(true);
+
+    // set updated files.
+    this.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().text);
+    this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
   }
 
   updateCodeOnNewFile(type){
     if ( type === 'new-file' ) {
       this.props.setCodeUpdated(true);
     }
+
+    // set updated files.
+    this.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().text);
+    this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
   }
 
   componentDidMount() {

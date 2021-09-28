@@ -43,6 +43,7 @@ class B4ACloudCode extends CloudCode {
       unsavedChanges: false,
       modal: null,
       codeUpdated: false,
+      updatedFiles: [],
 
       // Parameters used to on/off alerts
       showTips: localStorage.getItem(this.alertTips) !== 'false',
@@ -274,6 +275,7 @@ class B4ACloudCode extends CloudCode {
         description={alertWhatIsMessage} />
 
       content = <B4ACodeTree
+        setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}
         setCodeUpdated={() => this.setState({ codeUpdated: true })}
         files={this.state.files}
         parentState={this.setState.bind(this)}
@@ -282,12 +284,12 @@ class B4ACloudCode extends CloudCode {
 
       footer = <div className={styles.footer}>
         <div className={styles.footerContainer}>
-          <div className={styles.ccStatusIcon}>
-            <span className={styles.deployedCircle}></span> <small>Deployed</small>
-          </div>
-          <div className={styles.ccStatusIcon}>
-            <span className={styles.undeployedCircle}></span> <small>Deploy pending</small>
-          </div>
+          {
+            this.state.updatedFiles.length > 0 &&
+            <div className={styles.ccStatusIcon}>
+              <span className={styles.undeployedCircle}></span> <small>Files pending deploy ({this.state.updatedFiles.length})</small>
+            </div>
+          }
         </div>
         <div className={styles.footerContainer}>
           <Button
