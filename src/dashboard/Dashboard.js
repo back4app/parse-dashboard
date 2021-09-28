@@ -473,13 +473,8 @@ export default class Dashboard extends React.Component {
             <Route path={ match.path + '/analytics' } render={AnalyticsRoute}/>
             <Redirect exact from={ match.path + '/settings' } to='/apps/:appId/settings/general' />
             <Route path={ match.path + '/settings' } render={SettingsRoute}/>
-
-            {user.allowHubPublish && (
-              <>
-                <Route exact path={ match.path + '/connections' } component={HubConnections} />
-                <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />
-              </>
-            )}
+            <Route exact path={ match.path + '/connections' } component={HubConnections} />
+            {user.allowHubPublish && <Route path={ match.path + '/hub-publish' } component={B4aHubPublishPage} />}
           </Switch>
         </AppData>
       )

@@ -65,16 +65,36 @@ export default class B4ACodeTree extends React.Component {
     this.loadFile()
   }
 
+  syncNewFileContent( tree, file ) {
+    return tree.map( (node) => {
+      if ( node.type === 'folder' || node.type === 'new-folder' ) {
+        node.children = this.syncNewFileContent(node.children, file);
+      }
+      else if ( file && node.data?.code !== file?.base64[0]
+          && node.text == file.fileList[0].name) {
+        node.data.code = file.base64[0];
+      }
+
+      return node;
+    });
+  }
+
   // load file and add on tree
-  loadFile() {
+  async loadFile() {
     let file = this.state.newFile;
     if (file) {
       let currentTree = '#';
-      B4ATreeActions.addFilesOnTree(file, currentTree, this.state.selectedFolder)
-      this.setState({ newFile: '', filesOnTree: file });
-      this.handleTreeChanges()
+      const overwrite = await B4ATreeActions.addFilesOnTree(file, currentTree, this.state.selectedFolder);
+      if ( overwrite === true ) {
+        this.setState({ newFile: '', filesOnTree: file });
+        this.handleTreeChanges()
+        const updatedFiles = this.syncNewFileContent(this.state.files, file);
+        this.props.setCurrentCode(updatedFiles);
+      }
     }
   }
+
+
 
   deleteFile() {
     if (this.state.nodeId) {
@@ -211,6 +231,7 @@ export default class B4ACodeTree extends React.Component {
 
     // current code.
     this.props.setCurrentCode(this.state.files);
+
   }
 
   render(){
@@ -225,7 +246,7 @@ export default class B4ACodeTree extends React.Component {
                   title={typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}
                   description={this.state.source} /> : <div></div>;
     }
-    else {
+    else if (this.state.selectedFile) {
       content = <div className={`${styles['files-box']}`}>
             <div className={styles['files-header']} >
               <p>{ typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
@@ -257,6 +278,10 @@ export default class B4ACodeTree extends React.Component {
                   extension={this.state.extension} />
             </Resizable>
           </div>;
+    } else {
+      content = (
+        <B4AAlert show={true} hideClose description="Select a file to edit" />
+      );
     }
 
     return (
@@ -292,6 +317,8 @@ export default class B4ACodeTree extends React.Component {
                     }).then(({value}) => {
                       if (value) {
                         B4ATreeActions.addFileOnSelectedNode(value);
+                        const parent = $('#tree').jstree('get_selected');
+                        $('#tree').jstree("create_node", parent, { data: {code: 'data:plain/text;base64,IA=='}, type: 'new-file', text: value }, 'inside', false, false);
                         this.setState({ files: $('#tree').jstree(true).get_json() });
                       }
                     })
