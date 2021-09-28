@@ -1,60 +1,16 @@
 {
-  "apps": [{
-    "serverURL": "https://parseapi-homolog.back4app.com",
-    "appId": "lqkY6nB7DhMMzvyh19td8rjWXL7nuHoPzy2BFzmG",
-    "javascriptKey": "jmZOfymYxOmn6FPKqk3vQZzZ2BQ1J7QzcqjcmXnx",
-    "restKey": "J9MFdESAU3rqEUAp9q1dG4G8tjWAkLG1HnoZYBbW",
-    "clientKey": "o2albOxWhtYcEH2MGPvK3xxFhHGN8cIIYbIHcehB",
-    "windowsKey": "9glKKLRePd0EYtduSnuhdTH13E8GsXXHp23KkJbW",
-    "webhookKey": "TBLLqKKNk52AMDrL7TVPxHVP3AvyggWtnajmIMAl",
-    "apiKey": "dc2daf84-12c5-4820-855d-5594d69dfe32",
-    "appName": "ParseOptions3",
-    "production": true,
-    "appNameForURL": "16e779cd-e863-4569-9827-955fb055cd41",
-    "feedbackEmail": "faisal@back4app.com",
-    "custom": {
-      "isGDPR": false,
-      "forceShowGDPRFields": false,
-      "showAdminPage": false,
-      "isOwner": true,
-      "isDatabasePublic": false
-    },
-    "supportedPushLocales": [],
-    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
-    "parseOptions": {},
-    "masterKey": "qvW0nCYbFFTMcPyqR7WS83sWDggOSFCtLYK1cnh0"
-  }, {
-    "serverURL": "https://parseapi-homolog.back4app.com",
-    "appId": "xqaqt2RWOU9Vp2qeirSOyBIubnBIfMGJd4pCuxg6",
-    "javascriptKey": "yy2FKWKJUktAi64KnCBKYmOiZZbV826dq9wjs59c",
-    "restKey": "qIfmYsPptubHDm0zGpnSKKh25kjHfALJlKB5zCCn",
-    "clientKey": "NHS0yGzFC8guSxseptNyxQzqBUxGstzVVAuZdPEt",
-    "windowsKey": "SKSYWlRkbilQOKOUHUWZwT0osSIfdqCQqYg0dDwx",
-    "webhookKey": "rA9CfHDSiDpzHrD17OqdTuS79tWgyxFvdFflueAb",
-    "apiKey": "7a76b0cc-bd4b-43d6-97aa-f638a86014d3",
-    "appName": "TestApp",
-    "production": true,
-    "appNameForURL": "03bda9d0-8837-4e8e-bed8-da2a6ccc237a",
-    "feedbackEmail": "faisal@back4app.com",
-    "custom": {
-      "isGDPR": false,
-      "forceShowGDPRFields": false,
-      "showAdminPage": false,
-      "isOwner": true,
-      "isDatabasePublic": false
-    },
-    "supportedPushLocales": [],
-    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
-    "parseOptions": {},
-    "masterKey": "rycYDnfB2HBOAPiLQ0fM7l8JInXKtgvSCcBjGMhX"
-  }],
-  "newFeaturesInLatestVersion": [],
-  "user": {
-    "email": "faisal@back4app.com",
-    "has_password": false,
-    "account_keys": [],
-    "name": "faisal@back4app.com",
-    "playDatabaseBrowserTutorial": false,
-    "allowHubPublish": false
-  }
+  "apps": [
+    {
+      "serverURL": "http://localhost:1338/parse",
+      "appId": "APPLICATION_ID",
+      "masterKey": "MASTER_KEY",
+      "appName": "Countries States and Cities",
+      "iconName": "",
+      "primaryBackgroundColor": "",
+      "secondaryBackgroundColor": "",
+      "custom": {
+        "isOwner": true
+      }
+    }
+  ]
 }
