@@ -216,7 +216,7 @@ class B4ACloudCode extends CloudCode {
         onConfirm={() => this.setState({ modal: null })}
         />;
       this.setState({ unsavedChanges: false, modal: successModal });
-      $('#tree').jstree(true).refresh();
+      $('#tree').jstree(true).redraw(true);
     } catch (err) {
       const errorModal = <Modal
         type={Modal.Types.DANGER}

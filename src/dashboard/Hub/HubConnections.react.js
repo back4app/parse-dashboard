@@ -1,3 +1,4 @@
+import AccountManager from 'lib/AccountManager';
 import PropTypes from 'prop-types'
 import React from 'react'
 import Swal from 'sweetalert2'
@@ -23,6 +24,8 @@ class HubConnections extends DashboardView {
       showDisconnectDialog: false,
       isDisconnecting: false
     };
+
+    this.user = AccountManager.currentUser();
   }
 
   async componentDidMount() {
@@ -33,11 +36,14 @@ class HubConnections extends DashboardView {
   renderSidebar() {
     const { path } = this.props.match;
     const current = path.substr(path.lastIndexOf("/") + 1, path.length - 1);
+    const categories = [
+      { name: 'Connections', id: 'connections' },
+    ];
+    if (this.user.allowHubPublish) {
+      categories.push({ name: 'Publish', id: 'hub-publish' })
+    }
     return (
-      <CategoryList current={current} linkPrefix={''} categories={[
-        { name: 'Connections', id: 'connections' },
-        { name: 'Publish', id: 'hub-publish' }
-      ]} />
+      <CategoryList current={current} linkPrefix={''} categories={categories} />
     );
   }
 

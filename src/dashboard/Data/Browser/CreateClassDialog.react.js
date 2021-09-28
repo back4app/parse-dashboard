@@ -11,6 +11,7 @@ import Label              from 'components/Label/Label.react';
 import Modal              from 'components/Modal/Modal.react';
 import Option             from 'components/Dropdown/Option.react';
 import React              from 'react';
+import semver             from 'semver/preload.js';
 import { SpecialClasses } from 'lib/Constants';
 import styles             from './Browser.scss';
 import TextInput          from 'components/TextInput/TextInput.react';
@@ -108,7 +109,7 @@ export default class CreateClassDialog extends React.Component {
           }
           input={typeDropdown} /> : null
         }
-        {this.state.type === 'Custom' ?
+        {this.state.type === 'Custom' && semver.gt(this.props.parseServerVersion, '3.1.1') ?
           (<>
             <Field
               label={<Label text='Add in Protected mode' description={'Your class\'s objects are protected by default. Client read/write access will only be granted when specified by your CLPs/ACLs security rules.'} />}

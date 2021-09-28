@@ -32,6 +32,7 @@ import prettyNumber                       from 'lib/prettyNumber';
 import queryFromFilters                   from 'lib/queryFromFilters';
 import React                              from 'react';
 import RemoveColumnDialog                 from 'dashboard/Data/Browser/RemoveColumnDialog.react';
+import semver                             from 'semver/preload.js';
 import SidebarAction                      from 'components/Sidebar/SidebarAction';
 import stringCompare                      from 'lib/stringCompare';
 import styles                             from 'dashboard/Data/Browser/Browser.scss';
@@ -605,6 +606,9 @@ class Browser extends DashboardView {
 
   createClass(className, isProtected) {
     let clp = isProtected ? protectedCLPs : defaultCLPS;
+    if (semver.lte(this.context.currentApp.serverInfo.parseServerVersion, '3.1.1')) {
+      clp = {};
+    }
     this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className, clp }).then(() => {
       this.state.counts[className] = 0;
       history.push(this.context.generatePath('browser/' + className));
@@ -838,7 +842,8 @@ class Browser extends DashboardView {
     }
 
     query.limit(MAX_ROWS_FETCHED);
-    this.excludeFields(query, source);
+    semver.gt(this.context.currentApp.serverInfo.parseServerVersion, '3.6.0') &&
+      this.excludeFields(query, source);
 
     let promise = query.find({ useMasterKey: true });
     let isUnique = false;
@@ -969,7 +974,8 @@ class Browser extends DashboardView {
       }
     }
     query.limit(MAX_ROWS_FETCHED);
-    this.excludeFields(query, source);
+    semver.gt(this.context.currentApp.serverInfo.parseServerVersion, '3.6.0') &&
+      this.excludeFields(query, source);
 
     query.find({ useMasterKey: true }).then((nextPage) => {
       if (className === this.props.params.className) {
@@ -1669,11 +1675,13 @@ class Browser extends DashboardView {
       );
     }
     if (this.state.showCreateClassDialog) {
+      const { currentApp = {} } = this.context;
       extras = (
         <CreateClassDialog
           currentAppSlug={this.context.currentApp.slug}
           onAddColumn={this.showAddColumn}
           currentClasses={this.props.schema.data.get('classes').keySeq().toArray()}
+          parseServerVersion={currentApp.serverInfo && currentApp.serverInfo.parseServerVersion}
           onCancel={() => this.setState({ showCreateClassDialog: false })}
           onConfirm={this.createClass} />
       );

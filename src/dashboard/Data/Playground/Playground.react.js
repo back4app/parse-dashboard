@@ -11,6 +11,7 @@ import Toolbar from 'components/Toolbar/Toolbar.react';
 
 import styles from './Playground.scss';
 
+const placeholderCode = "const myObj = new Parse.Object('MyClass');\nmyObj.set('myField', 'Hello World!');\nawait myObj.save();\nconsole.log(myObj);";
 export default class Playground extends Component {
   constructor() {
     super();
@@ -18,6 +19,7 @@ export default class Playground extends Component {
     this.subsection = 'JS Console';
     this.localKey = 'parse-dashboard-playground-code';
     this.state = {
+      code: '',
       results: [],
       running: false,
       saving: false,
@@ -90,7 +92,7 @@ export default class Playground extends Component {
         }
       })()`;
 
-      this.setState({ running: true, results: [] });
+      this.setState({ running: true, results: [], code: originalCode });
 
       await new Function('Parse', finalCode)(Parse);
     } catch (e) {
@@ -109,6 +111,7 @@ export default class Playground extends Component {
 
       window.localStorage.setItem(this.localKey, code);
       this.setState({
+        code,
         saving: false,
         savingState: SaveButton.States.SUCCEEDED
       });
@@ -134,9 +137,14 @@ export default class Playground extends Component {
   componentDidMount() {
     if (window.localStorage) {
       const initialCode = window.localStorage.getItem(this.localKey);
+      let code = '';
       if (initialCode) {
-        this.editor.value = initialCode;
+        code = initialCode;
+      } else {
+        code = placeholderCode;
       }
+      this.editor.value = code;
+      this.setState({ code });
     }
   }
 
@@ -146,12 +154,9 @@ export default class Playground extends Component {
     return React.cloneElement(
       <div className={styles['playground-ctn']}>
         <Toolbar section={this.section} subsection={this.subsection} />
-        <div style={{ minHeight: '25vh' }}>
+        <div style={{ height: 'calc(100vh - 96px)' }}>
           <CodeEditor
-            placeHolder={`const myObj = new Parse.Object('MyClass');
-myObj.set('myField', 'Hello World!')
-await myObj.save();
-console.log(myObj);`}
+            code={this.state.code}
             ref={editor => (this.editor = editor)}
           />
           <div className={styles['console-ctn']}>

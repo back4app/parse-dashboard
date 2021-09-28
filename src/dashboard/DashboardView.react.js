@@ -182,12 +182,10 @@ export default class DashboardView extends React.Component {
       link: '/analytics'
     })
 
-    if (user.allowHubPublish) {
-      moreSubSection.push({
-        name: 'Database HUB',
-        link: '/connections'
-      })
-    }
+    moreSubSection.push({
+      name: 'Database HUB',
+      link: '/connections'
+    })
 
     moreSubSection.push({
       name: 'Admin App',
