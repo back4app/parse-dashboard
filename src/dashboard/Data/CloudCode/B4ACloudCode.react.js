@@ -44,9 +44,6 @@ class B4ACloudCode extends CloudCode {
       modal: null,
       codeUpdated: false,
 
-      // updated cloudcode files.
-      currentCode: [],
-
       // Parameters used to on/off alerts
       showTips: localStorage.getItem(this.alertTips) !== 'false',
       showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false'
@@ -98,7 +95,6 @@ class B4ACloudCode extends CloudCode {
 
   componentDidUpdate() {
     if ( this.state.codeUpdated === true ) {
-      console.log('code updated');
       this.onBeforeUnloadSaveCode = window.onbeforeunload = function() {
         return '';
       }
@@ -131,25 +127,10 @@ class B4ACloudCode extends CloudCode {
     })
   }
 
-  syncCurCode( nodesOnTree, currentCode ){
-    return nodesOnTree.map( (node, idx) => {
-      const code = currentCode.find( code => code.text === node.text );
-      if ( node.type === 'folder' || node.type === 'new-folder' ) {
-        node.children = this.syncCurCode(node.children, currentCode[idx].children);
-      }
-      else if ( code && node.data?.code !== code?.data?.code
-          && node.text == currentCode[idx]?.text) {
-        node.data.code = currentCode[idx].data?.code;
-      }
-
-      return node;
-    });
-  }
-
   async uploadCode() {
     let tree = [];
     // Get current files on tree
-    let currentCode = this.syncCurCode(getFiles(), this.state.currentCode);
+    let currentCode = $('#tree').jstree().get_json();
     const missingFileModal = (
       <Modal
         type={Modal.Types.DANGER}
@@ -293,7 +274,6 @@ class B4ACloudCode extends CloudCode {
         description={alertWhatIsMessage} />
 
       content = <B4ACodeTree
-        setCurrentCode={(newCode) => this.setState({ currentCode: newCode })}
         setCodeUpdated={() => this.setState({ codeUpdated: true })}
         files={this.state.files}
         parentState={this.setState.bind(this)}
