@@ -113,6 +113,7 @@ export default class DateTimeEditor extends React.Component {
           ref='input'
           onFocus={e => e.target.select()}
           value={this.state.text}
+          onFocus={e => e.target.select()}
           onClick={this.toggle.bind(this)}
           onChange={this.inputDate.bind(this)}
           onBlur={this.commitDate.bind(this)} />

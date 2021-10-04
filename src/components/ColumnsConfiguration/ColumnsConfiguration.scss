@@ -12,6 +12,15 @@
   &:hover svg {
     fill: white;
   }
+
+  &.disabled {
+    cursor: not-allowed;
+    color: #66637A;
+
+    &:hover svg {
+      fill: #66637A;
+    }
+  }
 }
 
 .title {
@@ -107,4 +116,18 @@
     height: 14px;
     line-height: 14px;
   }
+
+  &.disabled {
+    cursor: not-allowed;
+    color: #bbbbbb;
+
+    svg {
+      fill: #bbbbbb;
+    }
+
+    &:hover svg {
+      fill: #9593a1;
+    }
+  }
+
 }

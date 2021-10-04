@@ -49,7 +49,7 @@ export default class FileInput extends React.Component {
     }
     let label = this.renderLabel();
     let buttonStyles = [styles.button];
-    if (this.props.disabled) {
+    if (this.props.disabled || this.props.uploading) {
       buttonStyles.push(styles.disabled);
     }
     if (label) {

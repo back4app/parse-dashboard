@@ -13,10 +13,10 @@ import Parse                     from 'parse';
 import Pill                      from 'components/Pill/Pill.react';
 import React, { Component }      from 'react';
 import styles                    from 'components/BrowserCell/BrowserCell.scss';
-import Tooltip                   from 'components/Tooltip/PopperTooltip.react';
 import PropTypes                 from "lib/PropTypes";
 import { unselectable }          from 'stylesheets/base.scss';
 import { DefaultColumns }        from 'lib/Constants';
+import Tooltip                   from '../Tooltip/PopperTooltip.react';
 
 class BrowserCell extends Component {
   constructor() {

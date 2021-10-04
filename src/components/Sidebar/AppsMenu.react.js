@@ -14,9 +14,9 @@ import styles           from 'components/Sidebar/Sidebar.scss';
 import { unselectable } from 'stylesheets/base.scss';
 import Icon             from 'components/Icon/Icon.react';
 
-let AppsMenu = ({ apps, current, height, onSelect, pin }) => (
+const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
   <div style={{ height }} className={[styles.appsMenu, unselectable].join(' ')}>
-    <AppName name={current.name} pin={pin} onClick={onSelect.bind(null, current.slug)} />
+    <AppName name={current.name} onClick={onSelect.bind(null, current.slug)} onPinClick={onPinClick} />
     <div className={styles.menuSection}>All Apps</div>
     <div className={styles.appsList}>
       {apps.map((app) => {

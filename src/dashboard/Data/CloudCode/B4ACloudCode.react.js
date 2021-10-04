@@ -17,13 +17,8 @@ import {
   getFiles,
   updateTreeContent
 }                      from 'components/B4ACodeTree/B4ATreeActions';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
-import styles          from 'dashboard/Data/CloudCode/CloudCode.scss';
-import CloudCode       from 'dashboard/Data/CloudCode/CloudCode.react';
-import LoaderDots      from 'components/LoaderDots/LoaderDots.react';
-import Modal           from 'components/Modal/Modal.react';
-import Icon            from 'components/Icon/Icon.react';
 import { Prompt }      from 'react-router';
+import B4ACloudCodeToolbar    from 'dashboard/Data/CloudCode/B4ACloudCodeToolbar.react';
 
 class B4ACloudCode extends CloudCode {
   constructor() {
@@ -264,13 +259,15 @@ class B4ACloudCode extends CloudCode {
       </LoaderContainer>
     } else { // render cloud code page
 
-      title = <div className={styles.title}>
-        <div><p>Cloud Code Functions</p></div>
-        <Button
-          value='LEARN MORE'
-          primary={true}
-          onClick={() => window.open('https://www.back4app.com/docs/get-started/cloud-functions', '_blank')} />
-      </div>
+      // title = <div className={styles.title}>
+      //   <div><p>Cloud Code Functions</p></div>
+      //   <Button
+      //     value='LEARN MORE'
+      //     primary={true}
+      //     onClick={() => window.open('https://www.back4app.com/docs/get-started/cloud-functions', '_blank')} />
+      // </div>
+
+      title = <B4ACloudCodeToolbar />
 
       alertWhatIs = <B4AAlert
         show={true}
@@ -297,14 +294,20 @@ class B4ACloudCode extends CloudCode {
         </div>
         <div className={styles.footerContainer}>
           <Button
-            value='Logs'
-            primary={true}
+            // value={'Logs'}
             onClick={this.onLogClick}
+            // additionalStyles={{}}
+            value={
+              <div>
+                <span style={{ color: '#218BEC' }}>Logs</span>
+              </div>}
+            primary={true}
+            width='20'
+            additionalStyles={{ minWidth: '70px', background: 'transparent', color: 'dimgray!important' }}
           />
           <Button
             value={<div className={styles['b4a-cc-deploy-btn']}><Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy</div>}
             primary={true}
-            color='b4a-green'
             onClick={this.uploadCode.bind(this)}
           />
         </div>
@@ -318,7 +321,6 @@ class B4ACloudCode extends CloudCode {
           message='Your cloud code changes may be lost. Please DEPLOY your changes before closing cloud code.'
         />
         {title}
-        {alertWhatIs}
         {content}
         {footer}
         {this.state.modal}

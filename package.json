@@ -1,5 +1,11 @@
 {
   "name": "parse-dashboard",
+  "version": "3.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ParsePlatform/parse-dashboard"
+  },
+  "description": "The Parse Dashboard",
   "parseDashboardFeatures": [
     "Data Browser",
     "Cloud Code Viewer",
@@ -15,18 +21,12 @@
     "Push Status Page",
     "Relation Editor"
   ],
-  "description": "The Parse Dashboard",
   "keywords": [
     "parse",
     "dashboard"
   ],
   "homepage": "https://github.com/ParsePlatform/parse-dashboard",
   "bugs": "https://github.com/ParsePlatform/parse-dashboard/issues",
-  "version": "2.1.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ParsePlatform/parse-dashboard"
-  },
   "license": "SEE LICENSE IN LICENSE",
   "files": [
     "Parse-Dashboard",
@@ -35,7 +35,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@babel/runtime": "7.13.10",
+    "@babel/runtime": "7.15.4",
     "@back4app/back4app-settings": "latest",
     "axios": "^0.18.0",
     "axios-rate-limit": "^1.3.0",
@@ -60,24 +60,27 @@
     "intro.js": "^2.9.3",
     "jquery": "^3.2.1",
     "js-base64": "^2.5.1",
-    "js-beautify": "1.13.5",
+    "inquirer": "8.1.2",
+    "js-beautify": "1.14.0",
     "js-cookie": "^2.2.1",
     "json-file-plus": "3.2.0",
     "jstree": "^3.3.5",
     "lodash": "^4.17.10",
     "material-design-iconic-font": "^2.2.0",
     "moment": "^2.24.0",
+    "otpauth": "7.0.5",
     "package-json": "6.5.0",
     "parse": "git+https://github.com/back4app/Parse-SDK-JS.git#back4app-upstream",
     "passport": "0.4.1",
     "passport-local": "1.0.0",
     "popper.js": "^1.12.9",
-    "prismjs": "1.23.0",
+    "prismjs": "1.25.0",
     "prop-types": "15.7.2",
+    "qrcode": "1.4.4",
     "query-string": "6.14.1",
     "re-resizable": "^4.11.0",
     "react": "16.14.0",
-    "react-ace": "9.4.0",
+    "react-ace": "9.4.3",
     "react-dnd": "10.0.2",
     "react-dnd-html5-backend": "10.0.2",
     "react-dom": "16.14.0",
@@ -86,25 +89,33 @@
     "react-infinite-scroller": "^1.2.4",
     "react-json-view": "1.21.3",
     "react-player": "^1.7.0",
-    "react-popper-tooltip": "4.2.0",
+    "react-popper-tooltip": "4.3.0",
     "react-redux": "5.1.2",
-    "react-router": "5.1.2",
-    "react-router-dom": "5.1.2",
     "react-syntax-highlighter": "11.0.2",
     "react-tabs": "^2.2.2",
-    "regenerator-runtime": "0.13.5",
+    "react-router": "5.2.1",
+    "react-router-dom": "5.2.1",
+    "regenerator-runtime": "0.13.8",
     "semver": "7.3.4",
     "sweetalert2": "^8.0.5",
     "sweetalert2-react-content": "^1.0.1",
     "symbol-observable": "^1.2.0"
   },
   "devDependencies": {
+    "@actions/core": "1.2.6",
     "@babel/core": "7.8.7",
     "@babel/plugin-proposal-decorators": "7.8.3",
     "@babel/plugin-transform-regenerator": "7.8.7",
     "@babel/plugin-transform-runtime": "7.8.3",
     "@babel/preset-env": "7.9.0",
     "@babel/preset-react": "7.8.3",
+    "@semantic-release/changelog": "5.0.1",
+    "@semantic-release/commit-analyzer": "8.0.1",
+    "@semantic-release/git": "9.0.0",
+    "@semantic-release/github": "7.2.3",
+    "@semantic-release/npm": "7.1.3",
+    "@semantic-release/release-notes-generator": "9.0.3",
+    "all-node-versions": "8.0.0",
     "babel-eslint": "10.1.0",
     "babel-loader": "8.1.0",
     "babel-plugin-transform-object-rest-spread": "6.26.0",
@@ -118,22 +129,25 @@
     "file-loader": "6.0.0",
     "http-server": "0.12.0",
     "jest": "24.8.0",
+    "madge": "5.0.1",
     "marked": "0.8.2",
-    "node-sass": "^4.13.1",
     "nodemon": "^1.18.3",
-    "null-loader": "^3.0.0",
     "parse-server": "4.10.3",
+    "node-sass": "5.0.0",
+    "null-loader": "3.0.0",
     "path-to-regexp": "3.2.0",
     "puppeteer": "3.0.0",
     "react-test-renderer": "16.13.1",
     "request": "2.88.2",
     "request-promise": "4.2.5",
-    "sass-loader": "8.0.0",
+    "sass-loader": "10.1.1",
+    "semantic-release": "17.4.6",
     "style-loader": "1.1.2",
     "svg-prep": "1.0.4",
     "terser-webpack-plugin": "^1.3.0",
     "webpack": "4.42.1",
-    "webpack-cli": "3.3.10"
+    "webpack-cli": "3.3.10",
+    "yaml": "1.10.0"
   },
   "scripts": {
     "dev": "nodemon ./Parse-Dashboard/index.js & cross-env ENVIRONMENT='local' webpack --config webpack/build.config.js --env.local --devtool eval-source-map --progress --watch",
@@ -155,7 +169,7 @@
     "parse-dashboard": "./bin/parse-dashboard"
   },
   "engines": {
-    "node": ">=10.6"
+    "node": ">=12.0.0 <16.0.0"
   },
   "main": "Parse-Dashboard/app.js",
   "jest": {

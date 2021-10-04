@@ -28,18 +28,25 @@ export default class BrowserMenu extends React.Component {
     let menu = null;
     if (this.state.open) {
       let position = Position.inDocument(this.node);
+      let titleStyle = [styles.title];
+      // if (this.props.active && !this.state.open) {
+      //   titleStyle.push(styles.active);
+      // }
       menu = (
         <Popover fixed={true} position={position} onExternalClick={() => this.setState({ open: false })}>
           <div className={styles.menu}>
-            <div className={styles.title} onClick={() => this.setState({ open: false })}>
+            <div className={titleStyle.join(' ')} onClick={() => this.setState({ open: false })}>
               <Icon name={this.props.icon} width={35} height={24} />
             </div>
             <div className={styles.body} style={{ minWidth: this.node.clientWidth }}>
               {React.Children.map(this.props.children, (child) => (
-                React.cloneElement(child, { ...child.props, onClick: () => {
-                  this.setState({ open: false });
-                  child.props.onClick();
-                }})
+                React.cloneElement(child, { ...child.props, 
+                  onClose: () => this.setState({ open: false }), 
+                  onClick: () => {
+                    this.setState({ open: false });
+                    child.props.onClick();
+                  }
+                })
               ))}
             </div>
           </div>
@@ -47,6 +54,9 @@ export default class BrowserMenu extends React.Component {
       );
     }
     const classes = [styles.entry];
+    if (this.props.active && !this.state.open) {
+      classes.push(styles.active);
+    }
     if (this.props.disabled) {
       classes.push(styles.disabled);
     }
@@ -54,6 +64,7 @@ export default class BrowserMenu extends React.Component {
     if (!this.props.disabled) {
       onClick = () => {
         this.setState({ open: true });
+        this.props.setCurrent(null);
       };
     }
     return (
@@ -76,5 +87,8 @@ BrowserMenu.propTypes = {
   ),
   children: PropTypes.arrayOf(PropTypes.node).describe(
     'The contents of the menu when open. It should be a set of MenuItem and Separator components.'
+  ),
+  active: PropTypes.bool.describe(
+    'Indicates whether it has any active item or not.'
   ),
 };

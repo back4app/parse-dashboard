@@ -9,6 +9,10 @@ import B4ACloudCodeView             from 'components/B4ACloudCodeView/B4ACloudCo
 import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions';
 import Swal                         from 'sweetalert2';
 import B4AAlert                     from 'components/B4AAlert/B4AAlert.react';
+import Icon                         from 'components/Icon/Icon.react';
+import addFileIcon                  from './icons/add-file.png';
+import uploadFileIcon               from './icons/file-upload-outline.png';
+import removeFileIcon               from './icons/trash-can-outline.png';
 import CloudCodeChanges             from 'lib/CloudCodeChanges';
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
@@ -219,7 +223,13 @@ export default class B4ACodeTree extends React.Component {
             <div className={styles['files-header']} >
               <p>{ typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
               <Button
-                value={<div><i className="zmdi zmdi-minus"></i> REMOVE</div>}
+                additionalStyles={{ minWidth: '70px', background: 'transparent', border: 'none' }}
+                value={
+                  <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img src={removeFileIcon} height='24px' width='24px' />
+                    <span style={{ color: 'dimgray', fontSize: '10px', lineHeight: '15px' }}>Remove File</span>
+                  </div>
+                }
                 primary={true}
                 color={'red'}
                 width='93'
@@ -228,7 +238,7 @@ export default class B4ACodeTree extends React.Component {
               />
             </div>
             <Resizable className={styles['files-text']}
-               defaultSize={{ height: '367px', width: '100%' }}
+               defaultSize={{ height: '100%', overflow: 'scroll', width: '100%' }}
                enable={{
                 top:false,
                 right:false,
@@ -263,12 +273,18 @@ export default class B4ACodeTree extends React.Component {
                 base64={true}
                 multipleFiles={true}
                 handleFiles={this.handleFiles.bind(this)} >
-                <Button
-                  value={<div style={{ fontSize: '10px' }}>Upload File</div>}
+                {
+                  this.state.isFolderSelected === true &&
+                  <Button
+                  value={
+                    <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <img src={uploadFileIcon} height='24px' width='24px' />
+                      <span style={{ color: 'dimgray', fontSize: '10px', lineHeight: '15px' }}>Upload File</span>
+                    </div>}
                   primary={true}
                   width='20'
-                  additionalStyles={{ minWidth: '70px' }}
-                />
+                  additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none' }}
+                />}
               </ReactFileReader>
                 <Button
                   onClick={() => {
@@ -291,15 +307,19 @@ export default class B4ACodeTree extends React.Component {
                       }
                     })
                   }}
-                  value={<div style={{ fontSize: '10px' }}>New File</div>}
+                  disabled={false}
+                  value={
+                    <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <img src={addFileIcon} height='24px' width='24px' />
+                      <span style={{ color: 'dimgray', fontSize: '10px', lineHeight: '15px' }}>New File</span>
+                    </div>}
                   primary={true}
                   width='20'
-                  additionalStyles={{ minWidth: '70px' }}
-                />
-
+                  additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none' }}
+                />}
             </div>
             <Resizable className={styles['files-tree']}
-              defaultSize={{ height: '367px', width: '100%' }}
+              defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}
               enable={{
                 top:false,
                 right:false,

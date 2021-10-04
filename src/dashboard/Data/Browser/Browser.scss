@@ -140,10 +140,18 @@ body:global(.expanded) {
 
 .toolbarButtonDisabled {
   cursor: not-allowed;
-  color: #66637A;
+  color: #bbbbbb;
+
+  svg {
+    fill: #bbbbbb;
+  }
 
   &:hover svg {
-    fill: #66637A;
+    fill: #9593a1;
+  }
+
+  &:hover span {
+    color: #9593a1;
   }
 }
 

@@ -31,7 +31,7 @@ let Toolbar = (props) => {
     );
   }
   return (
-    <div className={styles.toolbar}>
+    <div className={[styles.toolbar, props.toolbarStyles ? props.toolbarStyles : ''].join(' ')}>
       <div className={styles.title}>
         <div className={styles.nav}>
           {backButton}

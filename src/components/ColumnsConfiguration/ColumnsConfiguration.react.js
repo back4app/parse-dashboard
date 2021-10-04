@@ -41,11 +41,11 @@ export default class ColumnsConfiguration extends React.Component {
 
   showAll() {
     let shouldReload = false;
-    let updatedOrder = this.props.order.map((field) => {
+    let updatedOrder = this.props.order.map(field => {
       if (!shouldReload && !field.cached) {
         shouldReload = true;
       }
-      return { ...field, visible: true };
+      return { ...field, visible: true }
     });
     this.props.handleColumnsOrder(updatedOrder, shouldReload);
   }
@@ -55,12 +55,17 @@ export default class ColumnsConfiguration extends React.Component {
   }
 
   render() {
-    const { handleColumnDragDrop, handleColumnsOrder, order } = this.props;
-    const [ title, entry ] = [styles.title, `${styles.entry} ${styles.toolbarButton}`].map(className => (
+    const { handleColumnDragDrop, handleColumnsOrder, order, disabled } = this.props;
+    let [ title, entry ] = [styles.title, `${styles.entry} ${styles.toolbarButton}`].map(className => (
       <div className={className} onClick={this.toggle.bind(this)} >
         <Icon name='visibility-icon' width={32} height={26} />
       </div>
     ));
+    if (disabled) {
+      entry = <div className={styles.toolbarButton + ' ' + styles.disabled} onClick={null}>
+        <Icon name='visibility-icon' width={32} height={26} />
+      </div>;
+    }
 
     let popover = null;
     if (this.state.open) {

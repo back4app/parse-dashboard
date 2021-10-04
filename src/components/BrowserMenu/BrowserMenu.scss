@@ -35,6 +35,17 @@
       fill: #66637A;
     }
   }
+
+  &.active {
+    height: 100%;
+    background: $orange;
+    border-radius: 5px;
+    padding-top: 3px;
+
+    svg {
+      fill: white;
+    }
+  }
 }
 
 .title {
@@ -45,20 +56,26 @@
   svg {
     fill: white;
   }
+
+  &.active {
+    background: $orange;
+    border-radius: 5px;
+  }
 }
 
 .entry, .title {
   @include NotoSansFont;
+  position: relative;
   font-size: 14px;
   color: #ffffff;
   cursor: pointer;
 
   svg {
-    vertical-align: middle;
+    vertical-align: top;
   }
 
   span {
-    vertical-align: middle;
+    vertical-align: top;
     height: 14px;
     line-height: 14px;
   }
@@ -75,6 +92,7 @@
 }
 
 .item {
+  position: relative;
   padding: 6px 14px;
   white-space: nowrap;
   cursor: pointer;
@@ -83,6 +101,17 @@
 
   &:hover {
     background: $blue;
+  }
+
+  &.open {
+    background: $blue;
+  }
+
+  &.active {
+    background: $orange;
+    &:hover {
+      background: $orange !important;
+    }
   }
 
   &.disabled {
@@ -99,4 +128,42 @@
   background: rgba(0,0,0,0.1);
   height: 1px;
   margin: 4px 0;
+}
+
+.subMenuBody {
+  position: absolute;
+  top: -6px;
+  border-radius: 5px 0 0 5px;
+  background: #797592;
+  padding: 6px 0;
+  font-size: 14px;
+  & .item {
+    padding-left: 20px;
+  }
+  & .item::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 8px;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+  }
+  & .item.disabled::before {
+    background: rgba(0,0,0,0.2);
+  }
+}
+
+.rightArrowIcon {
+  &::before {
+    content: '';
+    position: absolute;
+    @include arrow('right', 8px, 4px, white);
+    top: 8px;
+    right: 10px;
+  }
+  &.open::before {
+    @include arrow('left', 8px, 4px, white);
+  }
 }

@@ -64,6 +64,10 @@ export default class Popover extends React.Component {
       this._popoverLayer.dataset.parentContentId = this.props.parentContentId;
     }
 
+    if (this.props.parentContentId) {
+      this._popoverLayer.dataset.parentContentId = this.props.parentContentId;
+    }
+
     document.body.addEventListener('click', this._checkExternalClick);
   }
 

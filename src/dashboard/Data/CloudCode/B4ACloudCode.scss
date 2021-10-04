@@ -1,7 +1,6 @@
 @import 'stylesheets/back4app.scss';
 
 .b4a-source {
-  margin: 0 38px;
   background-color: #f9f9f9;
 }
 
@@ -11,7 +10,6 @@
 }
 
 .title {
-  padding-top: 41px;
   margin-bottom: 21px;
 
   div {
@@ -59,12 +57,22 @@
 }
 
 .footer {
-  margin: 28px 0 20px 0;
+  // padding: 20px 0 20px 0;
   display: flex;
   justify-content: space-between;
+  border-top: 2px solid lightgrey;
 
   .footerContainer {
     display: flex;
+    padding: 5px;
+  }
+
+  .footerContainerLeft {
+    width: 33%;
+    border-right: 2px solid lightgray;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
   }
 
   .ccStatusIcon {

@@ -84,8 +84,8 @@ export default class AddColumnDialog extends React.Component {
       try {
         await parseFile.save();
         return parseFile;
-      } catch (error) {
-        this.props.showNote(error.message, true);
+      } catch (err) {
+        this.props.showNote(err.message, true);
         return parseFile;
       } finally {
         this.setState({

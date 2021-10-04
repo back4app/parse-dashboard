@@ -100,6 +100,7 @@ export function getOrder(cols, appId, className, defaultPrefs) {
     // and updates the cached preferences.
     if (typeof visible === 'undefined') {
       order[i].visible = true;
+      order[i].cached = visible;
       updated = true;
       order[i].cached = visible;
     }
@@ -115,7 +116,6 @@ export function getOrder(cols, appId, className, defaultPrefs) {
     if (typeof required === 'undefined') {
       order[i].required = false;
     }
-
     if (requested[name]) {
       filtered.push(order[i]);
     } else {

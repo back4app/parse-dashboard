@@ -30,6 +30,19 @@
   svg {
     fill: white;
   }
+  
+  &.disabled {
+    cursor: not-allowed;
+    color: #bbbbbb;
+
+    svg {
+      fill: #bbbbbb;
+    }
+
+    &:hover svg {
+      fill: #9593a1;
+    }
+  }
 }
 
 .entry.active {

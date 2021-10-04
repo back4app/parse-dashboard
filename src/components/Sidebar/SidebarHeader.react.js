@@ -34,7 +34,10 @@ export default class SidebarHeader extends React.Component {
             <div>
               Parse Dashboard {version}
               <div>
-                {this.state.dashboardUser}
+                Parse Dashboard {version}
+                <div>
+                  {this.state.dashboardUser}
+                </div>
               </div>
             </div>
           </div>

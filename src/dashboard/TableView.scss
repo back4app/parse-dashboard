@@ -20,7 +20,7 @@
 
 body:global(.expanded) {
   .headers {
-    left: 0;
+    left: $sidebarCollapsedWidth;
   }
 }
 
