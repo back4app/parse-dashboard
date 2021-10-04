@@ -7,6 +7,7 @@ import ParseApp from 'lib/ParseApp';
 import CodeEditor from 'components/CodeEditor/CodeEditor.react';
 import Button from 'components/Button/Button.react';
 import SaveButton from 'components/SaveButton/SaveButton.react';
+import Swal from 'sweetalert2';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 
 import styles from './Playground.scss';
@@ -106,9 +107,17 @@ export default class Playground extends Component {
 
   saveCode() {
     try {
-      this.setState({ saving: true, savingState: SaveButton.States.SAVING });
       const code = this.editor.value;
+      if (!code) {
+        Swal.fire({
+          title: 'Couldn\'t save latest changes',
+          text: 'Please add some code before saving',
+          type: 'error',
+        });
+        return this.setState({ code });
+      }
 
+      this.setState({ saving: true, savingState: SaveButton.States.SAVING });
       window.localStorage.setItem(this.localKey, code);
       this.setState({
         code,
