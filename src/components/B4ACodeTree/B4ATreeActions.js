@@ -163,6 +163,7 @@ const addFileOnSelectedNode = ( name, data = {code: 'data:plain/text;base64,IA==
   $('#tree').jstree("create_node", parent, { data, type: 'new-file', text: name }, 'inside', false, false);
 }
 
+
 // Configure the menu that is shown on right-click based on files type
 const customMenu = node => {
   let items = $.jstree.defaults.contextmenu.items();

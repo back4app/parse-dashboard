@@ -115,7 +115,7 @@ export function getOrder(cols, appId, className, defaultPrefs) {
     if (typeof required === 'undefined') {
       order[i].required = false;
     }
-    
+
     if (requested[name]) {
       filtered.push(order[i]);
     } else {

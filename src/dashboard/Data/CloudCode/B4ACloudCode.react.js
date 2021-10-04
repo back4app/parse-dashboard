@@ -5,14 +5,14 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React                  from 'react';
-import { withRouter }         from 'react-router';
-import history                from 'dashboard/history';
-import $                      from 'jquery';
-import axios                  from 'axios';
-import B4AAlert               from 'components/B4AAlert/B4AAlert.react';
-import Button                 from 'components/Button/Button.react';
-import B4ACodeTree            from 'components/B4ACodeTree/B4ACodeTree.react';
+import React           from 'react';
+import { withRouter, Prompt }  from 'react-router';
+import history         from 'dashboard/history';
+import $               from 'jquery';
+import axios           from 'axios';
+import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
+import Button          from 'components/Button/Button.react';
+import B4ACodeTree     from 'components/B4ACodeTree/B4ACodeTree.react';
 import {
   getFiles,
   updateTreeContent
@@ -44,9 +44,7 @@ class B4ACloudCode extends CloudCode {
       unsavedChanges: false,
       modal: null,
       codeUpdated: false,
-
-      // updated cloudcode files.
-      currentCode: [],
+      updatedFiles: [],
 
       // Parameters used to on/off alerts
       showTips: localStorage.getItem(this.alertTips) !== 'false',
@@ -131,25 +129,10 @@ class B4ACloudCode extends CloudCode {
     })
   }
 
-  syncCurCode( nodesOnTree, currentCode ){
-    return nodesOnTree.map( (node, idx) => {
-      const code = currentCode.find( code => code.text === node.text );
-      if ( node.type === 'folder' || node.type === 'new-folder' ) {
-        node.children = this.syncCurCode(node.children, currentCode[idx].children);
-      }
-      else if ( code && node.data?.code !== code?.data?.code
-          && node.text == currentCode[idx]?.text) {
-        node.data.code = currentCode[idx].data?.code;
-      }
-
-      return node;
-    });
-  }
-
   async uploadCode() {
     let tree = [];
     // Get current files on tree
-    let currentCode = this.syncCurCode(getFiles(), this.state.currentCode);
+    let currentCode = $('#tree').jstree().get_json();
     const missingFileModal = (
       <Modal
         type={Modal.Types.DANGER}
@@ -295,7 +278,7 @@ class B4ACloudCode extends CloudCode {
         description={alertWhatIsMessage} />
 
       content = <B4ACodeTree
-        setCurrentCode={(newCode) => this.setState({ currentCode: newCode })}
+        setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}
         setCodeUpdated={() => this.setState({ codeUpdated: true })}
         files={this.state.files}
         parentState={this.setState.bind(this)}
@@ -303,13 +286,13 @@ class B4ACloudCode extends CloudCode {
       />
 
       footer = <div className={styles.footer}>
-        <div className={[styles.footerContainer, styles.footerContainerLeft].join(' ')}>
-          <div className={styles.ccStatusIcon}>
-            <span className={styles.deployedCircle}></span> <small>Deployed</small>
-          </div>
-          <div className={styles.ccStatusIcon}>
-            <span className={styles.undeployedCircle}></span> <small>Deploy pending</small>
-          </div>
+        <div className={styles.footerContainer}>
+          {
+            this.state.updatedFiles.length > 0 &&
+            <div className={styles.ccStatusIcon}>
+              <span className={styles.undeployedCircle}></span> <small>Files pending deploy ({this.state.updatedFiles.length})</small>
+            </div>
+          }
         </div>
         <div className={styles.footerContainer}>
           <Button
@@ -335,6 +318,10 @@ class B4ACloudCode extends CloudCode {
 
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
+        <Prompt
+          when={this.state.codeUpdated === true}
+          message='Your cloud code changes may be lost. Please DEPLOY your changes before closing cloud code.'
+        />
         {title}
         {content}
         {footer}

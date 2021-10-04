@@ -14,13 +14,17 @@ export default class SettingsData extends React.Component {
     super();
 
     this.state = {
-      fields: undefined
+      fields: undefined,
+      appSettings: undefined
     };
   }
 
   componentDidMount() {
     this.context.currentApp.fetchSettingsFields().then(({ fields }) => {
       this.setState({ fields });
+    });
+    this.context.currentApp.fetchAppSettings().then(( data ) => {
+      this.setState({ appSettings: data });
     });
   }
 
@@ -38,6 +42,9 @@ export default class SettingsData extends React.Component {
       nextContext.currentApp.fetchSettingsFields().then(({ fields }) => {
         this.setState({ fields });
       });
+      nextContext.currentApp.fetchAppSettings().then(( data ) => {
+        this.setState({ appSettings: data });
+      });
     }
   }
 
@@ -53,6 +60,7 @@ export default class SettingsData extends React.Component {
   render() {
     return this.props.children({
       initialFields: this.state.fields,
+      initialAppSettings: this.state.appSettings,
       saveChanges: this.saveChanges.bind(this)
     })
   }

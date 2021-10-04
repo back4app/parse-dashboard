@@ -99,12 +99,13 @@ class BrowserCell extends Component {
                 <Pill key={i} value={v.objectId} onClick={this.props.onPointerClick.bind(undefined, object)} followClick={true} />
               );
           });
-          this.copyableValue = content = <ul>
+          content = <ul>
             { array.map( a => <li>{a}</li>) }
           </ul>
           if ( array.length > 1 ) {
             classes.push(styles.hasMore);
           }
+          this.copyableValue = JSON.stringify(this.props.value);
         }
         else {
           this.copyableValue = content = JSON.stringify(this.props.value);
