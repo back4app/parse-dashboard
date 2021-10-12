@@ -185,14 +185,16 @@ class BlockChainPage extends DashboardView {
 
   renderForm() {
     const classes = this.state.classes.filter(name => !this.state.blockChainClasses.includes(name));
-
+    let formattedBalance = (
+      Number(BigInt(this.state.appBalance) / BigInt(1000000000)) / 1000000000
+    ).toFixed(9);
     return (
       <div>
         <div className={styles.fieldset}>
           <div className={styles.legendText}>Blockchain Data Storage</div>
           <div className={styles.descText}>
             Save your App’s data on the Blockchain Network of your choice.
-            <br/> NOTE: This feature is on the alpha version.
+            <br /> NOTE: This feature is on the alpha version.
           </div>
         </div>
         <Fieldset
@@ -218,7 +220,7 @@ class BlockChainPage extends DashboardView {
                 </div>
               ) : (
                 <TextInput
-                  value={(Number(this.state.appBalance) / Math.pow(10, 18)).toFixed(2)}
+                  value={formattedBalance}
                   disabled
                   onChange={() => {}}
                 />

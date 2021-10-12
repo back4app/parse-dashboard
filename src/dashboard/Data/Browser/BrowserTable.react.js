@@ -408,41 +408,45 @@ export default class BrowserTable extends React.Component {
           </div>
         );
       } else {
-        table = (
-          <div className={styles.table} ref='table'>
-            <div className={styles.empty}>
-              {this.props.relation ?
+        if (this.props.err) {
+          table = (
+            <div className={styles.table} ref="table">
+              <div className={styles.empty}>
                 <EmptyState
-                  title='No data to display'
-                  description='This relation has no rows. Attach existing rows or create row.'
-                  cta={`Create ${this.props.relation.targetClassName} and attach`}
-                  action={this.props.onAddRow}
-                  secondaryCta={`Attach existing rows from ${this.props.relation.targetClassName}`}
-                  secondaryAction={this.props.onAttachRows}
-                  icon='files-solid' /> :
-                <EmptyState
-                  title='No data to display'
-                  description={this.props.onAddRow && 'Add a row to store an object in this class.'}
-                  icon='files-solid'
-                  cta={this.props.onAddRow && 'Add a row'}
-                  action={this.props.onAddRow}
-                  secondaryCta='Import a file'
-                  secondaryAction={this.props.onImport} />
-              }
+                  title="No data to display"
+                  description={this.props.err.message || 'Something went wrong!'}
+                  icon="files-solid"
+                />
+              </div>
             </div>
-          </div>
-        );
-      }
-      if (this.props.err && this.props.err.code === 403) {
-        table = (<div className={styles.table} ref='table'>
-          <div className={styles.empty}>
-              <EmptyState
-                title='No data to display'
-                description={this.props.err.message}
-                icon='files-solid' />
-          </div>
-        </div>)
-      }
+          );
+        } else {
+          table = (
+            <div className={styles.table} ref='table'>
+              <div className={styles.empty}>
+                {this.props.relation ?
+                  <EmptyState
+                    title='No data to display'
+                    description='This relation has no rows. Attach existing rows or create row.'
+                    cta={`Create ${this.props.relation.targetClassName} and attach`}
+                    action={this.props.onAddRow}
+                    secondaryCta={`Attach existing rows from ${this.props.relation.targetClassName}`}
+                    secondaryAction={this.props.onAttachRows}
+                    icon='files-solid' /> :
+                  <EmptyState
+                    title='No data to display'
+                    description={this.props.onAddRow && 'Add a row to store an object in this class.'}
+                    icon='files-solid'
+                    cta={this.props.onAddRow && 'Add a row'}
+                    action={this.props.onAddRow}
+                    secondaryCta='Import a file'
+                    secondaryAction={this.props.onImport} />
+                }
+              </div>
+            </div>
+          );
+        }
+      }   
     }
 
     return (

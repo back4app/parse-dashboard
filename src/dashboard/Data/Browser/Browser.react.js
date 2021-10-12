@@ -1154,6 +1154,7 @@ class Browser extends DashboardView {
       this.setState({ data: data, filters, lastMax: MAX_ROWS_FETCHED , filteredCounts: filteredCounts});
     } catch(err) {
       this.setState({ data: [], filters, err });
+      this.showNote(err.message, true);
     }
   }
 

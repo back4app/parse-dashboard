@@ -119,6 +119,13 @@ class Jobs extends TableView {
           hasPermission: false,
           errorMessage: err.message
         });
+      // incase of any other error, show error message
+      if (err) {
+        this.setState({
+          loading: false,
+          errorMessage: err.message,
+        });
+      }
       // If is a unexpected error just finish loading state
       else this.setState({ loading: false });
       this.renderEmpty()
@@ -210,8 +217,8 @@ class Jobs extends TableView {
   }
 
   renderEmpty() {
-    if (!this.state.hasPermission) {
-      // Permission denied state
+    if (!this.state.hasPermission || this.state.errorMessage) {
+      // Permission denied state or any other error
       return (
         <EmptyState
           title='Cloud Jobs'
@@ -269,8 +276,14 @@ class Jobs extends TableView {
       if (this.props.jobs.data) {
         let jobs = this.props.jobs.data.get('jobs');
         if (jobs) {
-          data = jobs.toArray();
+          if (Array.isArray(jobs)) {
+            data = jobs;
+          } else
+            data = jobs.toArray();
         }
+        // if (jobs) {
+        // data = jobs.toArray();
+        // }
       }
     } else {
       return this.state.jobStatus;
