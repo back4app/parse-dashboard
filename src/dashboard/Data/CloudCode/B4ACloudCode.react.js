@@ -5,20 +5,25 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React           from 'react';
-import { withRouter, Prompt }  from 'react-router';
-import history         from 'dashboard/history';
-import $               from 'jquery';
-import axios           from 'axios';
-import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
-import Button          from 'components/Button/Button.react';
-import B4ACodeTree     from 'components/B4ACodeTree/B4ACodeTree.react';
+import React                  from 'react';
+import { withRouter, Prompt } from 'react-router';
+import history                from 'dashboard/history';
+import $                      from 'jquery';
+import axios                  from 'axios';
+import B4AAlert               from 'components/B4AAlert/B4AAlert.react';
+import Button                 from 'components/Button/Button.react';
+import B4ACodeTree            from 'components/B4ACodeTree/B4ACodeTree.react';
 import {
   getFiles,
   updateTreeContent
-}                      from 'components/B4ACodeTree/B4ATreeActions';
+}                             from 'components/B4ACodeTree/B4ATreeActions';
 import B4ACloudCodeToolbar    from 'dashboard/Data/CloudCode/B4ACloudCodeToolbar.react';
-import CloudCode       from 'dashboard/Data/CloudCode/CloudCode.react';
+import CloudCode              from 'dashboard/Data/CloudCode/CloudCode.react';
+import LoaderContainer        from 'components/LoaderContainer/LoaderContainer.react';
+import LoaderDots             from 'components/LoaderDots/LoaderDots.react';
+import styles                 from 'dashboard/Data/CloudCode/CloudCode.scss';
+import Icon                   from 'components/Icon/Icon.react';
+import Modal                  from 'components/Modal/Modal.react';
 
 class B4ACloudCode extends CloudCode {
   constructor() {
@@ -199,6 +204,7 @@ class B4ACloudCode extends CloudCode {
         />;
       this.setState({ unsavedChanges: false, modal: successModal, codeUpdated: false });
       $('#tree').jstree(true).redraw(true);
+      this.fetchSource();
     } catch (err) {
       const errorModal = <Modal
         type={Modal.Types.DANGER}
@@ -222,8 +228,10 @@ class B4ACloudCode extends CloudCode {
   async fetchSource() {
     try {
       let response = await axios.get(this.getPath(), { withCredentials: true })
-      if (response.data && response.data.tree)
+      if (response.data && response.data.tree) {
         this.setState({ files: response.data.tree, loading: false })
+        $('#tree').jstree().refresh(true);
+      }
     } catch(err) {
       console.error(err)
       this.setState({ loading: false })

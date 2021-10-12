@@ -272,10 +272,8 @@ export default class B4ACodeTree extends React.Component {
                 fileTypes={'*/*'}
                 base64={true}
                 multipleFiles={true}
-                handleFiles={this.handleFiles.bind(this)} >
-                {
-                  this.state.isFolderSelected === true &&
-                  <Button
+                handleFiles={this.handleFiles.bind(this)}>
+                <Button
                   value={
                     <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <img src={uploadFileIcon} height='24px' width='24px' />
@@ -284,7 +282,7 @@ export default class B4ACodeTree extends React.Component {
                   primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none' }}
-                />}
+                />
               </ReactFileReader>
                 <Button
                   onClick={() => {
@@ -316,7 +314,7 @@ export default class B4ACodeTree extends React.Component {
                   primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none' }}
-                />}
+                />
             </div>
             <Resizable className={styles['files-tree']}
               defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}
