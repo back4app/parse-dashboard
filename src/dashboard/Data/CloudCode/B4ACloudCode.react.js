@@ -153,7 +153,7 @@ class B4ACloudCode extends CloudCode {
     );
 
     // get files in cloud folder
-    let cloudCode = currentCode.find(code => code.text === 'cloud');
+    let cloudCode = currentCode?.find(code => code.text === 'cloud');
     if (!cloudCode) {
       // show modal for missing main.js or app.js
       return this.setState({ modal: missingFileModal });

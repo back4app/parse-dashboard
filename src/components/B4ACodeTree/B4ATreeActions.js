@@ -146,7 +146,7 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
       if (typeof selectedFolder === 'number') {
         folder = obj.children[selectedFolder]
       } else
-        folder = obj.children.find(f => f === selectedFolder);
+        folder = obj.children?.find(f => f === selectedFolder);
     }
     overwrite = await verifyFileNames(folder, newTreeNodes[j]);
     if ( overwrite === false ) continue;

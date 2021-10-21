@@ -106,7 +106,7 @@ export default class B4ACodeTree extends React.Component {
       if (selected.data && selected.data.code && selected.type != 'folder') {
         // index of file on tree.
         const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
-        fileList.map( (file ) => {
+        fileList?.map( (file ) => {
           if ( file.name === selected.text ) {
             selectedFile = file;
           }
@@ -183,7 +183,7 @@ export default class B4ACodeTree extends React.Component {
     if (type === 'delete-file') {
       this.cloudCodeChanges.removeFile(text);
       this.props.setCodeUpdated(this.cloudCodeChanges.getFiles());
-    } else if (type === 'new-file') { 
+    } else if (type === 'new-file') {
       // incase of new-file, other file or folder is selected
       // so, directly add that file name in cloudCodeChanges
       text && this.cloudCodeChanges.addFile(text);
