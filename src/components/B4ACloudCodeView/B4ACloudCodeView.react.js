@@ -55,6 +55,8 @@ export default class B4ACloudCodeView extends React.Component {
           return 'javascript'
         case 'ejs':
           return 'html'
+        case 'csv':
+          return ''
         default:
           // css, html, ...
           return this.props.extension

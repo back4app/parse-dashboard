@@ -221,7 +221,7 @@ export default class B4ACodeTree extends React.Component {
     if (this.state.isImage) {
       content = <img src={this.state.source} />;
     }
-    else if ( this.state.isFolderSelected === true || this.state.extension === 'csv' ) {
+    else if ( this.state.isFolderSelected === true ) {
       content = this.state.source && this.state.source !== '' ? <B4AAlert
                   hideClose
                   show={true}
