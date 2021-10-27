@@ -87,7 +87,7 @@ export default class B4ACodeTree extends React.Component {
     if (this.state.nodeId) {
       B4ATreeActions.remove(`#${this.state.nodeId}`, true);
       this.setState({ source: '', selectedFile: '', nodeId: '' })
-      this.handleTreeChanges()
+      this.handleTreeChanges();
     }
   }
 
@@ -179,6 +179,13 @@ export default class B4ACodeTree extends React.Component {
     this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
   }
 
+  selectCloudFolder() {
+    if ( $('#tree').jstree().get_json().length > 0 ) {
+      const cloudFolder = $('#tree').jstree().get_json()[0].id;
+      $('#tree').jstree('select_node', cloudFolder);
+    }
+  }
+
   updateCodeOnNewFile(type, text){
     if (type === 'delete-file') {
       this.cloudCodeChanges.removeFile(text);
@@ -197,16 +204,18 @@ export default class B4ACodeTree extends React.Component {
     }
 
     this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
+
+    this.selectCloudFolder();
   }
 
   componentDidMount() {
     let config = B4ATreeActions.getConfig(this.state.files);
     $('#tree').jstree(config);
     this.watchSelectedNode();
-    $('#tree').on('changed.jstree', function (){
+    $('#tree').on('changed.jstree', function() {
       B4ATreeActions.refreshEmptyFolderIcons();
     });
-    $('#tree').on('create_node.jstree', function (){
+    $('#tree').on('create_node.jstree', function() {
       B4ATreeActions.refreshEmptyFolderIcons();
     });
 
@@ -214,6 +223,12 @@ export default class B4ACodeTree extends React.Component {
     $('#tree').on('rename_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
     $('#tree').on('delete_node.jstree', (node, parent) => this.updateCodeOnNewFile('delete-file', parent?.node?.text));
 
+  }
+
+  componentDidUpdate() {
+    if ( $('#tree').jstree().get_selected().length <= 0 ) {
+      this.selectCloudFolder();
+    }
   }
 
   render(){
@@ -296,6 +311,9 @@ export default class B4ACodeTree extends React.Component {
               </ReactFileReader>
                 <Button
                   onClick={() => {
+                    if ( this.state.selectedFile === '' ) {
+                      this.selectCloudFolder();
+                    }
                     Swal.fire({
                       title: 'Create a new empty file',
                       text: 'Name your file',
