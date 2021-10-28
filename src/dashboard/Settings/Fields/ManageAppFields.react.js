@@ -127,7 +127,7 @@ export const ManageAppFields = ({
         // TODO replace with password policy
         label={<Label text='Parse API' description={'Parse API configurations'} />}
         input={
-          <div>
+          <div style={{ flex: 1 }}>
             <FieldSettings
               padding={'7px 0px'}
               labelWidth={'50%'}
@@ -144,14 +144,15 @@ export const ManageAppFields = ({
                 description={<span>{appSettings?.parseVersion}</span>}
               />}
             />
-          </div>}
+          </div>
+          }
       />
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
         label={<Label text='Databse' description={'Database configurations'} />}
         input={
-          <div>
+          <div style={{ flex: 1 }}>
             <FieldSettings
               padding={'7px 0px'}
               labelWidth={'50%'}
@@ -302,7 +303,7 @@ export const ManageAppFields = ({
         // TODO Account lockout
         label={<Label text='Account lockout' description='Manage account lockout policies' />}
         input={
-          <div>
+          <div style={{ flex: 1 }}>
           <FieldSettings
             padding={'7px 0px'}
             labelWidth={'50%'}
