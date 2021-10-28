@@ -2,6 +2,7 @@ import React                from 'react';
 import SyntaxHighlighter    from 'react-syntax-highlighter';
 import style                from 'react-syntax-highlighter/dist/esm/styles/hljs/tomorrow-night-eighties';
 import CodeEditor           from '../CodeEditor/CodeEditor.react';
+import 'ace-builds/src-noconflict/mode-graphqlschema';
 
 const pageSize = 4000;
 export default class B4ACloudCodeView extends React.Component {
@@ -57,7 +58,7 @@ export default class B4ACloudCodeView extends React.Component {
           return 'html'
         case 'csv':
         case 'graphql':
-          return ''
+          return 'graphqlschema'
         default:
           // css, html, ...
           return this.props.extension
