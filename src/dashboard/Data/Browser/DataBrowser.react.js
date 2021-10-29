@@ -321,6 +321,7 @@ export default class DataBrowser extends React.Component {
     return (
       <div>
         <BrowserTable
+          appId={applicationId}
           order={this.state.order}
           current={this.state.current}
           editing={this.state.editing}

@@ -13,10 +13,10 @@ import Parse                     from 'parse';
 import Pill                      from 'components/Pill/Pill.react';
 import React, { Component }      from 'react';
 import styles                    from 'components/BrowserCell/BrowserCell.scss';
-import PropTypes                 from "lib/PropTypes";
 import { unselectable }          from 'stylesheets/base.scss';
-import { DefaultColumns }        from 'lib/Constants';
 import Tooltip                   from '../Tooltip/PopperTooltip.react';
+import * as ColumnPreferences    from 'lib/ColumnPreferences';
+import PropTypes                 from 'prop-types';
 
 class BrowserCell extends Component {
   constructor() {
@@ -33,140 +33,147 @@ class BrowserCell extends Component {
 
   async renderCellContent() {
     let content = this.props.value;
-      let isNewRow = this.props.row < 0;
-      this.copyableValue = content;
-      let classes = [styles.cell, unselectable];
-      if (this.props.hidden) {
-        content = this.props.value !== undefined || !isNewRow ? '(hidden)' : this.props.isRequired ? '(required)' : '(undefined)';
+    let isNewRow = this.props.row < 0;
+    this.copyableValue = content;
+    let classes = [styles.cell, unselectable];
+    if (this.props.hidden) {
+      content = this.props.value !== undefined || !isNewRow ? '(hidden)' : this.props.isRequired ? '(required)' : '(undefined)';
+      classes.push(styles.empty);
+    } else if (this.props.value === undefined) {
+      if (this.props.type === 'ACL') {
+        this.copyableValue = content = 'Public Read + Write';
+      } else {
+        this.copyableValue = content = '(undefined)';
         classes.push(styles.empty);
-      } else if (this.props.value === undefined) {
-        if (this.props.type === 'ACL') {
-          this.copyableValue = content = 'Public Read + Write';
-        } else {
-          this.copyableValue = content = '(undefined)';
-          classes.push(styles.empty);
-        }
-        content = isNewRow && this.props.isRequired && this.props.value === undefined ? '(required)' : content;
-      } else if (this.props.value === null) {
-        this.copyableValue = content = '(null)';
-        classes.push(styles.empty);
-      } else if (this.props.value === '') {
-        content = <span>&nbsp;</span>;
-        classes.push(styles.empty);
-      } else if (this.props.type === 'Pointer') {
-        const defaultPointerKey = await localStorage.getItem(this.props.value.className) || 'objectId';
-
-        let dataValue = this.props.value.id;
-        if( defaultPointerKey !== 'objectId' ) {
-          dataValue = this.props.value.get(defaultPointerKey);
-          if ( dataValue && typeof dataValue === 'object' ){
-            if ( dataValue instanceof Date ) {
-              dataValue = dataValue.toLocaleString();
-            }
-            else {
+      }
+      content = isNewRow && this.props.isRequired && this.props.value === undefined ? '(required)' : content;
+    } else if (this.props.value === null) {
+      this.copyableValue = content = '(null)';
+      classes.push(styles.empty);
+    } else if (this.props.value === '') {
+      content = <span>&nbsp;</span>;
+      classes.push(styles.empty);
+    } else if (this.props.type === 'Pointer') {
+      const defaultPointerKey = await ColumnPreferences.getPointerDefaultKey(this.props.appId, this.props.value.className);
+      let dataValue = this.props.value.id;
+      if( defaultPointerKey !== 'objectId' ) {
+        dataValue = this.props.value.get(defaultPointerKey);
+        if ( dataValue && typeof dataValue === 'object' ){
+          if ( dataValue instanceof Date ) {
+            dataValue = dataValue.toLocaleString();
+          }
+          else {
+            if ( !this.props.value.id ) {
+              dataValue = this.props.value.id;
+            } else {
               dataValue = '(undefined)';
             }
           }
-          if ( !dataValue ) {
+        }
+        if ( !dataValue ) {
+          if ( this.props.value.id ) {
+            dataValue = this.props.value.id;
+          } else {
             dataValue = '(undefined)';
           }
         }
-
-        if (this.props.value && this.props.value.__type) {
-          const object = new Parse.Object(this.props.value.className);
-          object.id = this.props.value.objectId;
-          this.props.value = object;
-        }
-
-        content = this.props.onPointerClick ? (
-          <Pill value={ dataValue } onClick={this.props.onPointerClick.bind(undefined, this.props.value)} followClick={true} />
-        ) : (
-          dataValue
-        );
-
-        this.copyableValue = this.props.value.id;
       }
-      else if (this.props.type === 'Array') {
-        if ( this.props.value[0] && typeof this.props.value[0] === 'object' && this.props.value[0].__type === 'Pointer' ) {
-          const array = [];
-          this.props.value.map( (v, i) => {
-            if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
-              throw new Error('Invalid type found in pointer array');
-            }
-            const object = new Parse.Object(v.className);
-            object.id = v.objectId;
-            array.push(
-                <Pill key={i} value={v.objectId} onClick={this.props.onPointerClick.bind(undefined, object)} followClick={true} />
-              );
-          });
-          content = <ul className={styles.hasMore}>
-            { array.map( a => <li>{a}</li>) }
-          </ul>
-          if ( array.length > 1 ) {
-            classes.push(styles.removePadding);
+
+      if (this.props.value && this.props.value.__type) {
+        const object = new Parse.Object(this.props.value.className);
+        object.id = this.props.value.objectId;
+        this.props.value = object;
+      }
+
+      content = this.props.onPointerClick ? (
+        <Pill value={ dataValue } onClick={this.props.onPointerClick.bind(undefined, this.props.value)} followClick={true} />
+      ) : (
+        dataValue
+      );
+
+      this.copyableValue = this.props.value.id;
+    }
+    else if (this.props.type === 'Array') {
+      if ( this.props.value[0] && typeof this.props.value[0] === 'object' && this.props.value[0].__type === 'Pointer' ) {
+        const array = [];
+        this.props.value.map( (v, i) => {
+          if ( typeof v !== 'object' || v.__type !== 'Pointer' ) {
+            throw new Error('Invalid type found in pointer array');
           }
-          this.copyableValue = JSON.stringify(this.props.value);
-        }
-        else {
-          this.copyableValue = content = JSON.stringify(this.props.value);
+          const object = new Parse.Object(v.className);
+          object.id = v.objectId;
+          array.push(
+              <Pill key={i} value={v.objectId} onClick={this.props.onPointerClick.bind(undefined, object)} followClick={true} />
+            );
+        });
+        this.copyableValue = content = <ul>
+          { array.map( a => <li>{a}</li>) }
+        </ul>
+        if ( array.length > 1 ) {
+          classes.push(styles.hasMore);
         }
       }
-      else if (this.props.type === 'Date') {
-        if (typeof value === 'object' && this.props.value.__type) {
-          this.props.value = new Date(this.props.value.iso);
-        } else if (typeof value === 'string') {
-          this.props.value = new Date(this.props.value);
-        }
-        this.copyableValue = content = dateStringUTC(this.props.value);
-      } else if (this.props.type === 'Boolean') {
-        this.copyableValue = content = this.props.value ? 'True' : 'False';
-      } else if (this.props.type === 'Object' || this.props.type === 'Bytes') {
+      else {
         this.copyableValue = content = JSON.stringify(this.props.value);
-      } else if (this.props.type === 'File') {
-        const fileName = this.props.value.url() ? getFileName(this.props.value) : 'Uploading\u2026';
-        content = <Pill value={fileName} fileDownloadLink={this.props.value.url()} />;
-        this.copyableValue = fileName;
-      } else if (this.props.type === 'ACL') {
-        let pieces = [];
-        let json = this.props.value.toJSON();
-        if (Object.prototype.hasOwnProperty.call(json, '*')) {
-          if (json['*'].read && json['*'].write) {
-            pieces.push('Public Read + Write');
-          } else if (json['*'].read) {
-            pieces.push('Public Read');
-          } else if (json['*'].write) {
-            pieces.push('Public Write');
-          }
-        }
-        for (let role in json) {
-          if (role !== '*') {
-            pieces.push(role);
-          }
-        }
-        if (pieces.length === 0) {
-          pieces.push('Master Key Only');
-        }
-        this.copyableValue = content = pieces.join(', ');
-      } else if (this.props.type === 'GeoPoint') {
-        this.copyableValue = content = `(${this.props.value.latitude}, ${this.props.value.longitude})`;
-      } else if (this.props.type === 'Polygon') {
-        this.copyableValue = content = this.props.value.coordinates.map(coord => `(${coord})`)
-      } else if (this.props.type === 'Relation') {
-        content = this.props.setRelation ? (
-          <div style={{ textAlign: 'center' }}>
-            <Pill onClick={() => this.props.setRelation(this.props.value)} value='View relation' followClick={true} />
-          </div>
-        ) : (
-            'Relation'
-          );
-        this.copyableValue = undefined;
       }
-
-      if (this.props.markRequiredField && this.props.isRequired && !this.props.value) {
-        classes.push(styles.required);
+    }
+    else if (this.props.type === 'Date') {
+      if (typeof value === 'object' && this.props.value.__type) {
+        this.props.value = new Date(this.props.value.iso);
+      } else if (typeof value === 'string') {
+        this.props.value = new Date(this.props.value);
       }
+      this.copyableValue = content = dateStringUTC(this.props.value);
+    } else if (this.props.type === 'Boolean') {
+      this.copyableValue = content = this.props.value ? 'True' : 'False';
+    } else if (this.props.type === 'Object' || this.props.type === 'Bytes') {
+      this.copyableValue = content = JSON.stringify(this.props.value);
+    } else if (this.props.type === 'File') {
+      const fileName = this.props.value.url() ? getFileName(this.props.value) : 'Uploading\u2026';
+      content = <Pill value={fileName} fileDownloadLink={this.props.value.url()} />;
+      this.copyableValue = fileName;
+    } else if (this.props.type === 'ACL') {
+      let pieces = [];
+      let json = this.props.value.toJSON();
+      if (Object.prototype.hasOwnProperty.call(json, '*')) {
+        if (json['*'].read && json['*'].write) {
+          pieces.push('Public Read + Write');
+        } else if (json['*'].read) {
+          pieces.push('Public Read');
+        } else if (json['*'].write) {
+          pieces.push('Public Write');
+        }
+      }
+      for (let role in json) {
+        if (role !== '*') {
+          pieces.push(role);
+        }
+      }
+      if (pieces.length === 0) {
+        pieces.push('Master Key Only');
+      }
+      this.copyableValue = content = pieces.join(', ');
+    } else if (this.props.type === 'GeoPoint') {
+      this.copyableValue = content = `(${this.props.value.latitude}, ${this.props.value.longitude})`;
+    } else if (this.props.type === 'Polygon') {
+      this.copyableValue = content = this.props.value.coordinates.map(coord => `(${coord})`)
+    } else if (this.props.type === 'Relation') {
+      content = this.props.setRelation ? (
+        <div style={{ textAlign: 'center' }}>
+          <Pill onClick={() => this.props.setRelation(this.props.value)} value='View relation' followClick={true} />
+        </div>
+      ) : (
+          'Relation'
+        );
+      this.copyableValue = undefined;
+    }
+    this.onContextMenu = this.onContextMenu.bind(this);
 
-      this.setState({ ...this.state, content, classes })
+    if (this.props.markRequiredField && this.props.isRequired && !this.props.value) {
+      classes.push(styles.required);
+    }
+
+    this.setState({ ...this.state, content, classes })
   }
 
   async componentDidUpdate(prevProps) {
@@ -241,7 +248,7 @@ class BrowserCell extends Component {
   }
 
   getContextMenuOptions(constraints) {
-    let { onEditSelectedRow, onAddRow, onAddColumn, onDeleteRows, onDeleteSelectedColumn, field, className } = this.props;
+    let { onEditSelectedRow, readonly } = this.props;
     const contextMenuOptions = [];
 
     const setFilterContextMenuOption = this.getSetFilterContextMenuOption(constraints);
@@ -253,7 +260,7 @@ class BrowserCell extends Component {
     const relatedObjectsContextMenuOption = this.getRelatedObjectsContextMenuOption();
     relatedObjectsContextMenuOption && contextMenuOptions.push(relatedObjectsContextMenuOption);
 
-    onEditSelectedRow && contextMenuOptions.push({
+    !readonly && onEditSelectedRow && contextMenuOptions.push({
       text: 'Edit row',
       callback: () => {
         let { objectId, onEditSelectedRow } = this.props;
@@ -261,37 +268,7 @@ class BrowserCell extends Component {
       }
     });
 
-    onAddRow && contextMenuOptions.push({
-      text: 'Add Row',
-      callback: onAddRow
-    });
-
-    onAddColumn && contextMenuOptions.push({
-      text: 'Add Column',
-      callback: onAddColumn
-    });
-
-    onDeleteRows && contextMenuOptions.push({
-      text: 'Delete this row',
-      callback: () => {
-        let { objectId } = this.props;
-        onDeleteRows({ [objectId]: true });
-      }
-    });
-
-    let isTouchableColumn = true;
-    isTouchableColumn = !(DefaultColumns.All.includes(field));
-    if (className[0] === '_' && DefaultColumns[className].includes(field)) {
-      isTouchableColumn = false;
-    }
-    isTouchableColumn && onDeleteSelectedColumn && contextMenuOptions.push({
-      text: 'Delete this column',
-      callback: () => {
-        onDeleteSelectedColumn(field);
-      },
-    });
-
-    if ( this.props.type === 'Pointer' ) {
+    if (this.props.type === 'Pointer') {
       onEditSelectedRow && contextMenuOptions.push({
         text: 'Open pointer in new tab',
         callback: () => {
@@ -309,7 +286,10 @@ class BrowserCell extends Component {
       return {
         text: 'Set filter...', items: constraints.map(constraint => {
           const definition = Filters.Constraints[constraint];
-          const text = `${this.props.field} ${definition.name}${definition.comparable ? (' ' + this.copyableValue) : ''}`;
+          // Smart ellipsis for value - if it's long trim it in the middle: Lorem ipsum dolor si... aliqua
+          const value = this.copyableValue.length < 30 ? this.copyableValue :
+            `${this.copyableValue.substr(0, 20)}...${this.copyableValue.substr(this.copyableValue.length - 7)}`;
+          const text = `${this.props.field} ${definition.name}${definition.comparable ? (' ' + value) : ''}`;
           return {
             text,
             callback: this.pickFilter.bind(this, constraint)
@@ -402,13 +382,14 @@ class BrowserCell extends Component {
   //#endregion
 
   render() {
-    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, isNewRow, markRequiredFieldRow, isRequired, onPointerCmdClick, row, col, readonly, field, onEditSelectedRow } = this.props;
+    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, onPointerCmdClick, row, col, field, onEditSelectedRow, readonly, isRequired, markRequiredFieldRow } = this.props;
+    let isNewRow = row < 0;
+
     let classes = [...this.state.classes];
 
     if ( current ) {
       classes.push(styles.current);
     }
-
     if (markRequiredFieldRow === row && isRequired && !value) {
       classes.push(styles.required);
     }
@@ -420,7 +401,7 @@ class BrowserCell extends Component {
           className={classes.join(' ')}
           style={{ width }}
           onClick={(e) => {
-            if ( e.metaKey === true && type === 'Pointer') {
+            if (e.metaKey === true && type === 'Pointer') {
               onPointerCmdClick(value);
             } else {
               onSelect({ row, col });
@@ -437,7 +418,7 @@ class BrowserCell extends Component {
               }, 2000);
             }
           }}
-          onContextMenu={this.onContextMenu.bind(this)}
+          onContextMenu={this.onContextMenu}
         >
           {row < 0 || isNewRow ? '(auto)' : this.state.content}
         </span>
@@ -448,9 +429,10 @@ class BrowserCell extends Component {
         className={classes.join(' ')}
         style={{ width }}
         onClick={(e) => {
-          if ( e.metaKey === true && type === 'Pointer') {
+          if (e.metaKey === true && type === 'Pointer') {
             onPointerCmdClick(value);
-          } else {
+          }
+          else {
             onSelect({ row, col });
             setCopyableValue(hidden ? undefined : this.copyableValue);
           }

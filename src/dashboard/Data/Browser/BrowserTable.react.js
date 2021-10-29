@@ -128,6 +128,7 @@ export default class BrowserTable extends React.Component {
               return (
                 <div key={index} style={{ borderBottom: '1px solid #169CEE', position: 'relative', paddingBottom: `${ROW_HEIGHT}px` }}>
                   <BrowserRow
+                    appId={this.props.appId}
                     key={index}
                     isEditing={isEditingRow}
                     className={this.props.className}
@@ -185,6 +186,7 @@ export default class BrowserTable extends React.Component {
         newRow = (
           <div style={{ borderBottom: '1px solid #169CEE', position: 'relative', paddingBottom: `${ROW_HEIGHT}px` }}>
             <BrowserRow
+              appId={this.props.appId}
               key={-1}
               className={this.props.className}
               columns={this.props.columns}
@@ -241,6 +243,7 @@ export default class BrowserTable extends React.Component {
         const isEditingRow = this.props.current && this.props.current.row === i && !!this.props.editing;
 
         rows[index] = <BrowserRow
+          appId={this.props.appId}
           key={index}
           isEditing={isEditingRow}
           className={this.props.className}
@@ -450,7 +453,7 @@ export default class BrowserTable extends React.Component {
             </div>
           );
         }
-      }   
+      }
     }
 
     return (
