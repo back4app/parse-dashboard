@@ -5,3 +5,10 @@
   width: 100%;
   margin-top: 0px;
 }
+
+body:global(.expanded) {
+  .title {
+    left: 0;
+  }
+}
+

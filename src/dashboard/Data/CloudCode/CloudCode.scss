@@ -20,3 +20,9 @@
   padding: 96px 0px 0px 0px;
   min-height: $content-max-height;
 }
+
+body:global(.expanded) {
+  .toolbar {
+    left: 0px!important;
+  }
+}
