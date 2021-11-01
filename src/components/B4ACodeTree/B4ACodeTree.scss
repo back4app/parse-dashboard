@@ -6,14 +6,25 @@
 
 @media (min-width: 774px) {
   .fileSelector {
-    flex: 0 0 33.33333%;
-    width: 33%;
-    padding-left: 15px;
+    flex: 0 0 29.33333%;
+    width: 29%;
   }
 
   .filePreview {
-    flex: 0 0 66.66667%;
-    max-width: 66.66667%;
+    flex: 0 0 70.66667%;
+    max-width: 70.66667%;
+  }
+}
+
+@media (min-width: 1440px) {
+  .fileSelector {
+    flex: 0 0 22.33333%;
+    width: 22%;
+  }
+
+  .filePreview {
+    flex: 0 0 77.66667%;
+    max-width: 77.66667%;
   }
 }
 
