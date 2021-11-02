@@ -262,24 +262,11 @@ export default class B4ACodeTree extends React.Component {
                 onClick={this.deleteFile.bind(this)}
               />
             </div>
-            <Resizable className={styles['files-text']}
-               defaultSize={{ height: '100%', overflow: 'scroll', width: '100%' }}
-               enable={{
-                top:false,
-                right:false,
-                bottom:true,
-                left:false,
-                topRight:false,
-                bottomRight:false,
-                bottomLeft:false,
-                topLeft:false
-              }}>
-              <B4ACloudCodeView
-                  isFolderSelected={this.state.isFolderSelected}
-                  onCodeChange={value => this.updateSelectedFileContent(value)}
-                  source={this.state.source}
-                  extension={this.state.extension} />
-            </Resizable>
+            <B4ACloudCodeView
+                isFolderSelected={this.state.isFolderSelected}
+                onCodeChange={value => this.updateSelectedFileContent(value)}
+                source={this.state.source}
+                extension={this.state.extension} />
           </div>;
     } else {
       content = (
