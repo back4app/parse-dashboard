@@ -129,6 +129,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             <FieldSettings
+              containerStyles={{ borderTop: 'none' }}
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
@@ -137,6 +138,7 @@ export const ManageAppFields = ({
               />}
             />
             <FieldSettings
+              containerStyles={{ borderBottom: 'none' }}
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
@@ -154,6 +156,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             <FieldSettings
+              containerStyles={{ borderTop: 'none' }}
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
@@ -162,6 +165,7 @@ export const ManageAppFields = ({
               />}
             />
             <FieldSettings
+              containerStyles={{ borderBottom: 'none' }}
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
@@ -176,8 +180,9 @@ export const ManageAppFields = ({
         // TODO replace with password policy
         label={<Label text='Password policy' description={'Manage password policies for this app'} />}
         input={
-          <div>
+          <div style={{ flex: 1 }}>
           <FieldSettings
+            containerStyles={{ borderTop: 'none' }}
             padding={'7px 0px'}
             labelWidth={'50%'}
             label={<LabelSettings
@@ -279,6 +284,7 @@ export const ManageAppFields = ({
             }
           />
           <FieldSettings
+            containerStyles={{ borderBottom: 'none' }}
             padding={'7px 0px'}
             labelWidth={'50%'}
             label={<LabelSettings
@@ -332,6 +338,7 @@ export const ManageAppFields = ({
             }
           />
           <FieldSettings
+            containerStyles={{ borderBottom: 'none' }}
             padding={'7px 0px'}
             labelWidth={'50%'}
             label={<LabelSettings
@@ -368,6 +375,7 @@ export const ManageAppFields = ({
         input={
           <div>
             <FieldSettings
+              containerStyles={{ borderTop: 'none' }}
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings
@@ -376,6 +384,7 @@ export const ManageAppFields = ({
               />}
             />
             <FieldSettings
+              containerStyles={{ borderBottom: 'none' }}
               padding={'7px 0px'}
               labelWidth={'50%'}
               label={<LabelSettings

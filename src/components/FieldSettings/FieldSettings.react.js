@@ -9,13 +9,13 @@ import PropTypes from 'lib/PropTypes';
 import React     from 'react';
 import styles    from 'components/FieldSettings/FieldSettings.scss';
 
-let FieldSettings = ({label, input, labelWidth = 50, labelPadding, height, className, minHeight, textAlign, padding}) => {
-  let classes = [styles.field];
+let FieldSettings = ({label, input, labelWidth = 50, containerStyles = {}, labelPadding, height, className, minHeight, textAlign, padding}) => {
+  let classes = [styles.field, containerStyles || '' ];
   if (className) {
     classes.push(className);
   }
   return (
-    <div className={classes.join(' ')} style={{minHeight, padding}}>
+    <div className={classes.join(' ')} style={{minHeight, padding, ...containerStyles}}>
       <div className={styles.left} style={{ height: height, minHeight }}>
         {label}
       </div>
