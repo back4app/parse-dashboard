@@ -23,9 +23,6 @@ export default class SettingsData extends React.Component {
     this.context.currentApp.fetchSettingsFields().then(({ fields }) => {
       this.setState({ fields });
     });
-    this.context.currentApp.fetchAppSettings().then(( data ) => {
-      this.setState({ appSettings: data });
-    });
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -41,9 +38,6 @@ export default class SettingsData extends React.Component {
       this.setState({ fields: undefined });
       nextContext.currentApp.fetchSettingsFields().then(({ fields }) => {
         this.setState({ fields });
-      });
-      nextContext.currentApp.fetchAppSettings().then(( data ) => {
-        this.setState({ appSettings: data });
       });
     }
   }

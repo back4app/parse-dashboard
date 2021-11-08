@@ -44,6 +44,7 @@ export const ManageAppFields = ({
   setParseOptions,
   appSettings
 }) => {
+  console.log(appSettings);
   let migrateAppField = null;
   if (!mongoURL && !hasInProgressMigration) {
     migrateAppField = <Field

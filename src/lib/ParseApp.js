@@ -356,18 +356,13 @@ export default class ParseApp {
     // }
     let path = '/apps/' + this.slug + '/dashboard_ajax/settings';
     let fields = await axios.get(path);
+
     fields = fields.data;
     for (let f in fields) {
       this.settings.fields[f] = fields[f];
       this.settings.lastFetched = new Date();
     }
     return fields;
-  }
-
-  async fetchAppSettings() {
-    let path = `${b4aSettings.PARSE_DASHBOARD_PATH}/parse-app/settings/${this.slug}`;
-    let response = await axios.get(path);
-    return response.data;
   }
 
   cleanUpFiles() {

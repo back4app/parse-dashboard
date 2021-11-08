@@ -286,7 +286,7 @@ export default class GeneralSettings extends DashboardView {
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
       parseOptions: this.context.currentApp.parseOptions,
-      appSettings: this.context.currentApp.initialAppSettings
+      appSettings: this.context.currentApp.settings.fields.fields.app,
     };
 
     let collaboratorRemovedWarningModal = this.state.removedCollaborators.length > 0 ? <Modal
@@ -372,6 +372,7 @@ export default class GeneralSettings extends DashboardView {
         }}
         renderForm={({ fields, setField }) => {
           //let isCollaborator = AccountManager.currentUser().email !== this.props.initialFields.owner_email;
+          console.log(fields);
           return <div className={styles.settings_page}>
             <AppInformationFields
               appName={fields.appName}
@@ -403,7 +404,7 @@ export default class GeneralSettings extends DashboardView {
               appSlug={this.context.currentApp.slug}
               parseOptions={fields.parseOptions}
               setParseOptions={setField.bind(this, 'parseOptions')}
-              appSettings={this.props.initialAppSettings}
+              appSettings={fields.appSettings}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
