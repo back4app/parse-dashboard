@@ -372,7 +372,6 @@ export default class GeneralSettings extends DashboardView {
         }}
         renderForm={({ fields, setField }) => {
           //let isCollaborator = AccountManager.currentUser().email !== this.props.initialFields.owner_email;
-          console.log(fields);
           return <div className={styles.settings_page}>
             <AppInformationFields
               appName={fields.appName}
