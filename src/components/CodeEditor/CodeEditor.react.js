@@ -69,7 +69,6 @@ export default class CodeEditor extends React.Component {
         showGutter={true}
         highlightActiveLine={true}
         width="100%"
-        // defaultValue={code || placeHolder}
         {...extraProps}
         enableBasicAutocompletion={true}
         enableLiveAutocompletion={true}
