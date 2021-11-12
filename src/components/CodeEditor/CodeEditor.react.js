@@ -41,15 +41,24 @@ export default class CodeEditor extends React.Component {
   }
 
   render() {
-    const { placeHolder, fontSize = 18, mode = 'javascript', height } = this.props;
+    const { placeHolder, fontSize = 18, mode = 'javascript', height, isConsole = true } = this.props;
     const { code } = this.state;
+
+    const extraProps = {};
+
+    let defaultPropValueKey = 'value';
+    if ( isConsole === false ) {
+      defaultPropValueKey = 'defaultValue';
+    }
+
+    extraProps[defaultPropValueKey] = code || placeHolder;
 
     return (
       <Editor
         mode={mode}
         theme="solarized_dark"
         onChange={value => {
-          this.setState({ code: value });
+          this.setState({ code })
           if ( this.props.onCodeChange ){
             this.props.onCodeChange(value);
           }
@@ -60,7 +69,8 @@ export default class CodeEditor extends React.Component {
         showGutter={true}
         highlightActiveLine={true}
         width="100%"
-        value={code || placeHolder}
+        // defaultValue={code || placeHolder}
+        {...extraProps}
         enableBasicAutocompletion={true}
         enableLiveAutocompletion={true}
         enableSnippets={false}
