@@ -58,7 +58,7 @@ export default class CodeEditor extends React.Component {
         mode={mode}
         theme="solarized_dark"
         onChange={value => {
-          this.setState({ code })
+          this.setState({ code: value })
           if ( this.props.onCodeChange ){
             this.props.onCodeChange(value);
           }
