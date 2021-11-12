@@ -161,7 +161,7 @@ export const ManageAppFields = ({
               labelWidth={'50%'}
               label={<LabelSettings
                 text='Database URI'
-                description={<a style={{ wordBreak: 'break-all', padding: '10px 0' }} href={appSettings?.databaseURL}>{appSettings?.databaseURL}</a>}
+                description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{appSettings?.databaseURL}</p>}
               />}
             />
             <FieldSettings
