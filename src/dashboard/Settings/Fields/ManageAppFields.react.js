@@ -1,5 +1,6 @@
 import React from 'react';
 import Field                             from 'components/Field/Field.react';
+import VisibilityField                   from 'components/VisibilityField/VisibilityField.react';
 import FieldSettings                     from 'components/FieldSettings/FieldSettings.react';
 import Fieldset                          from 'components/Fieldset/Fieldset.react';
 import FlowView                          from 'components/FlowView/FlowView.react';
@@ -154,26 +155,36 @@ export const ManageAppFields = ({
         // TODO replace with password policy
         label={<Label text='Database' description={'Database configurations'} />}
         input={
-          <div style={{ flex: 1 }}>
-            <FieldSettings
-              containerStyles={{ borderTop: 'none' }}
-              padding={'7px 0px'}
-              labelWidth={'50%'}
-              label={<LabelSettings
-                text='Database URI'
-                description={<a style={{ wordBreak: 'break-all', padding: '10px 0' }} href={appSettings?.databaseURL}>{appSettings?.databaseURL}</a>}
-              />}
-            />
-            <FieldSettings
-              containerStyles={{ borderBottom: 'none' }}
-              padding={'7px 0px'}
-              labelWidth={'50%'}
-              label={<LabelSettings
-                text='Database Version'
-                description={<span>{appSettings?.mongoVersion}</span>}
-              />}
-            />
-          </div>}
+          <VisibilityField
+            onVisibleComponent={
+              () => <div style={{ flex: 1 }}>
+                <FieldSettings
+                  containerStyles={{ borderTop: 'none' }}
+                  padding={'7px 0px'}
+                  labelWidth={'50%'}
+                  label={<LabelSettings
+                    text='Database URI'
+                    description={<a style={{ wordBreak: 'break-all', padding: '10px 0' }} href={appSettings?.databaseURL}>{appSettings?.databaseURL}</a>}
+                  />}
+                />
+                <FieldSettings
+                  containerStyles={{ borderBottom: 'none' }}
+                  padding={'7px 0px'}
+                  labelWidth={'50%'}
+                  label={<LabelSettings
+                    text='Database Version'
+                    description={<span>{appSettings?.mongoVersion}</span>}
+                  />}
+                />
+              </div>
+            }
+            onHiddenComponent={
+              (props) => <FormButton
+                onClick={() => props.toggleVisibility(true)}
+                value='Show Database URI'/>
+            }
+          />
+          }
       />
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
