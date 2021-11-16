@@ -234,7 +234,7 @@ export default class B4ACodeTree extends React.Component {
   render(){
     let content;
     if (this.state.isImage) {
-      content = <img style={{ width: '100%', height: 'auto' }} src={this.state.source} />;
+      content = <img style={{ width: '100%', height: '100%' }} src={this.state.source} />;
     }
     else if ( this.state.isFolderSelected === true ) {
       content = this.state.source && this.state.source !== '' ? <B4AAlert
