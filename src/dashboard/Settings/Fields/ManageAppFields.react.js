@@ -155,9 +155,10 @@ export const ManageAppFields = ({
         // TODO replace with password policy
         label={<Label text='Database' description={'Database configurations'} />}
         input={
+          <div style={{ flex: 1 }}>
           <VisibilityField
             onVisibleComponent={
-              () => <div style={{ flex: 1 }}>
+              () =>
                 <FieldSettings
                   containerStyles={{ borderTop: 'none' }}
                   padding={'7px 0px'}
@@ -166,24 +167,23 @@ export const ManageAppFields = ({
                     text='Database URI'
                     description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{appSettings?.databaseURL}</p>}
                   />}
-                />
-                <FieldSettings
-                  containerStyles={{ borderBottom: 'none' }}
-                  padding={'7px 0px'}
-                  labelWidth={'50%'}
-                  label={<LabelSettings
-                    text='Database Version'
-                    description={<span>{appSettings?.mongoVersion}</span>}
-                  />}
-                />
-              </div>
-            }
+                />}
             onHiddenComponent={
               (props) => <FormButton
                 onClick={() => props.toggleVisibility(true)}
                 value='Show Database URI'/>
             }
           />
+          <FieldSettings
+            containerStyles={{ borderBottom: 'none' }}
+            padding={'7px 0px'}
+            labelWidth={'50%'}
+            label={<LabelSettings
+              text='Database Version'
+              description={<span>{appSettings?.mongoVersion}</span>}
+            />}
+          />
+          </div>
           }
       />
       <Field
