@@ -31,8 +31,8 @@ let SaveButton = ({
       value = savingText;
       break;
     case SaveButton.States.SUCCEEDED:
+      color = 'green'
       value = succeededText;
-      color = 'green';
       break;
     case SaveButton.States.FAILED:
       value = failedText;
@@ -47,7 +47,7 @@ let SaveButton = ({
     color={color}
     onClick={state === SaveButton.States.WAITING ? onClick : null}
     value={value}
-    disabled={state === SaveButton.States.WAITING ? disabled : false}
+    disabled={(state === SaveButton.States.WAITING ? disabled : false) || state === SaveButton.States.SUCCEEDED}
     {...buttonProps}/>
   </span>;
 };

@@ -142,7 +142,7 @@ export default class FlowView extends React.Component {
       state={saveState}
       waitingText={submitText}
       savingText={inProgressText}
-      disabled={!!hasFormValidationError}
+      disabled={(!!hasFormValidationError)}
       onClick={this.handleClickSaveButton.bind(this)}
     />;
 
