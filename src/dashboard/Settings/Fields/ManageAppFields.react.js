@@ -379,7 +379,7 @@ export const ManageAppFields = ({
           </div>
         }
       />
-      <Field
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
         label={<Label text='Danger Zone' description={'Settings related to client'} />}
@@ -404,9 +404,9 @@ export const ManageAppFields = ({
               />}
             />
           </div>
-        } />
+        } /> */}
 
-      <Field
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
           text='Clean up app'
@@ -420,7 +420,7 @@ export const ManageAppFields = ({
       show={true}
       color={cleanUpMessageColor}>
       <div>{cleanUpFilesMessage}</div>
-    </FormNote> : null}
+    </FormNote> : null} */}
   </Fieldset>
   );
 }

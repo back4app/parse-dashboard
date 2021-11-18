@@ -45,6 +45,7 @@ import Toggle                            from 'components/Toggle/Toggle.react';
 import { ManageAppFields }               from 'dashboard/Settings/Fields/ManageAppFields.react';
 import { CollaboratorsFields }           from 'dashboard/Settings/Fields/CollaboratorsFields.react';
 import { AppInformationFields }          from 'dashboard/Settings/Fields/AppInformationFields.react';
+import { DangerzoneFields }              from 'dashboard/Settings/Fields/DangerzoneFields.react';
 import {
   CurrentPlan, CurrentPlanFields
 }                                        from 'dashboard/Settings/Fields/AppInformationFields.react';
@@ -397,6 +398,19 @@ export default class GeneralSettings extends DashboardView {
               removeCollaborator={setCollaborators.bind(undefined, setField)}
               editCollaborator={setCollaborators.bind(undefined, setField)}/>
             <ManageAppFields
+              mongoURL={fields.mongoURL}
+              isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
+              hasCollaborators={fields.collaborators.length > 0}
+              appSlug={this.context.currentApp.slug}
+              parseOptions={fields.parseOptions}
+              setParseOptions={setField.bind(this, 'parseOptions')}
+              appSettings={fields.appSettings}
+              cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
+              cleanUpFilesMessage={this.state.cleanupFilesMessage}
+              cleanUpMessageColor={this.state.cleanupNoteColor}
+              cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
+              cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage} />
+            <DangerzoneFields
               mongoURL={fields.mongoURL}
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
               hasCollaborators={fields.collaborators.length > 0}
