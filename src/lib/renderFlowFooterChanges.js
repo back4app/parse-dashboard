@@ -8,6 +8,7 @@
 import joinWithFinal from 'lib/joinWithFinal';
 import React         from 'react';
 import setDifference from 'lib/setDifference';
+import jsonChangesToString from 'lib/jsonChangesToString';
 
 // Display changes in a FlowFooter. The first argument is
 // an object of { changed_key: new_value ... }. The second argument is the initial
@@ -64,8 +65,21 @@ export default (changes, initial, fieldOptions) => {
           setChanges.push(<span key={key+'removed'}>removed <strong>{removalsFromSet.length} {friendlyRemoval}</strong></span>);
         }
 
+      } else if (fieldOptions[key].type === 'parseOptions') {
+        const passwordPolicyString = jsonChangesToString(JSON.parse(changes[key]).passwordPolicy);
+        const accountLockoutString = jsonChangesToString(JSON.parse(changes[key]).accountLockout);
+        let seperator = ' ', accountLockoutChanges = '', passwordPolicyChanges = '';
+        if ( accountLockoutString !== '' ) {
+          accountLockoutChanges = 'Account Lockout Settings: ' + accountLockoutString;
+        }
+        if ( passwordPolicyString !== '' ) {
+          passwordPolicyChanges = 'Password Policy Settings: ' + passwordPolicyString;
+        }
+        if ( passwordPolicyString !== '' && accountLockoutString !== '' ) {
+          seperator = ' and ';
+        }
+        stringChanges.push(<strong key={key}>{passwordPolicyChanges + seperator + accountLockoutChanges}</strong>);
       } else {
-
         // If the caller specifies no options, just display what has been changed.
         stringChanges.push(<strong key={key}>{fieldOptions[key].friendlyName}</strong>);
 
