@@ -45,6 +45,7 @@ import Toggle                            from 'components/Toggle/Toggle.react';
 import { ManageAppFields }               from 'dashboard/Settings/Fields/ManageAppFields.react';
 import { CollaboratorsFields }           from 'dashboard/Settings/Fields/CollaboratorsFields.react';
 import { AppInformationFields }          from 'dashboard/Settings/Fields/AppInformationFields.react';
+import { DangerzoneFields }              from 'dashboard/Settings/Fields/DangerzoneFields.react';
 import {
   CurrentPlan, CurrentPlanFields
 }                                        from 'dashboard/Settings/Fields/AppInformationFields.react';
@@ -409,6 +410,19 @@ export default class GeneralSettings extends DashboardView {
               cleanUpMessageColor={this.state.cleanupNoteColor}
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
               cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage} />
+            <DangerzoneFields
+              mongoURL={fields.mongoURL}
+              isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
+              hasCollaborators={fields.collaborators.length > 0}
+              appSlug={this.context.currentApp.slug}
+              parseOptions={fields.parseOptions}
+              setParseOptions={setField.bind(this, 'parseOptions')}
+              appSettings={fields.appSettings}
+              cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
+              cleanUpFilesMessage={this.state.cleanupFilesMessage}
+              cleanUpMessageColor={this.state.cleanupNoteColor}
+              cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
+              cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage} />
             {this.state.showPurgeFilesModal ? <Modal
               type={Modal.Types.INFO}
               icon='down-outline'
@@ -483,8 +497,8 @@ let generalFieldsOptions = {
   },
   parseOptions: {
     friendlyName: 'Parse Options',
-    showTo: true,
-
+    showTo: false,
+    type: 'parseOptions'
   },
   //TODO: This will display 'enabled production' or 'disabled production' which is sub-optimal. Try to make it better.
   inProduction: {

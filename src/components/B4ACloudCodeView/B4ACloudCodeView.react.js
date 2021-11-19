@@ -2,6 +2,7 @@ import React                from 'react';
 import SyntaxHighlighter    from 'react-syntax-highlighter';
 import style                from 'react-syntax-highlighter/dist/esm/styles/hljs/tomorrow-night-eighties';
 import CodeEditor           from '../CodeEditor/CodeEditor.react';
+import * as modelist        from 'ace-builds/src-noconflict/ext-modelist.js';
 import 'ace-builds/src-noconflict/mode-graphqlschema';
 
 const pageSize = 4000;
@@ -50,19 +51,9 @@ export default class B4ACloudCodeView extends React.Component {
   }
 
   extensionDecoder() {
-    if (this.props.extension)
-      switch (this.props.extension) {
-        case 'js':
-          return 'javascript'
-        case 'ejs':
-          return 'html'
-        case 'csv':
-        case 'graphql':
-          return 'graphqlschema'
-        default:
-          // css, html, ...
-          return this.props.extension
-      }
+    if (this.props.fileName && typeof this.props.fileName === 'string') {
+      return modelist.getModeForPath(this.props.fileName).name;
+    }
     return 'javascript'
   }
 
@@ -98,7 +89,7 @@ export default class B4ACloudCodeView extends React.Component {
           </form>
         }
         </div>:
-        <CodeEditor style={{ zIndex: 4 }} fontSize={13} placeHolder={this.props.source} isConsole={false} onCodeChange={ value => this.props.onCodeChange(value) } mode={this.extensionDecoder()}/>
+        <CodeEditor style={{ zIndex: 4 }} fontSize={13} placeHolder={this.props.source} onCodeChange={ value => this.props.onCodeChange(value) } mode={this.extensionDecoder()}/>
       }
     </div>;
   }

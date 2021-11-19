@@ -103,7 +103,7 @@ export default class FlowView extends React.Component {
       secondaryButton = () => <Button
         disabled={this.state.saveState === SaveButton.States.SAVING}
         onClick={this.resetFields.bind(this)}
-        value='Cancel'
+        value={this.state.saveState === SaveButton.States.SUCCEEDED ? 'Dismiss' : 'Cancel'}
       />,
     } = this.props;
     let {
@@ -142,7 +142,7 @@ export default class FlowView extends React.Component {
       state={saveState}
       waitingText={submitText}
       savingText={inProgressText}
-      disabled={!!hasFormValidationError}
+      disabled={(!!hasFormValidationError)}
       onClick={this.handleClickSaveButton.bind(this)}
     />;
 
