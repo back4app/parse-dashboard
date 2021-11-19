@@ -379,48 +379,6 @@ export const ManageAppFields = ({
           </div>
         }
       />
-      {/* <Field
-        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-        // TODO replace with password policy
-        label={<Label text='Danger Zone' description={'Settings related to client'} />}
-        input={
-          <div>
-            <FieldSettings
-              containerStyles={{ borderTop: 'none' }}
-              padding={'7px 0px'}
-              labelWidth={'50%'}
-              label={<LabelSettings
-                text='Client Class Creation'
-                description={<span>{ `Client class creation is ${appSettings?.clientClassCreation === true ? 'ALLOWED' : 'BLOCKED'}.`}</span>}
-              />}
-            />
-            <FieldSettings
-              containerStyles={{ borderBottom: 'none' }}
-              padding={'7px 0px'}
-              labelWidth={'50%'}
-              label={<LabelSettings
-                text='Push Notification from Client'
-                description={<span>{ `Push Notification from Client is ${appSettings?.clientPush === true ? 'ALLOWED' : 'BLOCKED'}.`}</span>}
-              />}
-            />
-          </div>
-        } /> */}
-
-      {/* <Field
-        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-        label={<Label
-          text='Clean up app'
-          description={<span>This will delete any files that are not referenced by any objects.
-          (Don't use the feature if you have Arrays of Files,<br/>or Files inside Object columns!)
-          </span>} />}
-      input={<FormButton
-      onClick={cleanUpFiles}
-      value='Clean Up Files'/>} />
-      {cleanUpFilesMessage ? <FormNote
-      show={true}
-      color={cleanUpMessageColor}>
-      <div>{cleanUpFilesMessage}</div>
-    </FormNote> : null} */}
   </Fieldset>
   );
 }
