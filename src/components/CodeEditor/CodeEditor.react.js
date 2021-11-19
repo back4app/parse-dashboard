@@ -10,9 +10,7 @@ import Editor from 'react-ace';
 import PropTypes from '../../lib/PropTypes';
 
 import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
-import 'ace-builds/src-noconflict/snippets/javascript';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
 export default class CodeEditor extends React.Component {

@@ -266,7 +266,8 @@ export default class B4ACodeTree extends React.Component {
                 isFolderSelected={this.state.isFolderSelected}
                 onCodeChange={value => this.updateSelectedFileContent(value)}
                 source={this.state.source}
-                extension={this.state.extension} />
+                extension={this.state.extension}
+                fileName={this.state.selectedFile} />
           </div>;
     } else {
       content = (
