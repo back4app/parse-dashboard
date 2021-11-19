@@ -103,7 +103,7 @@ export default class FlowView extends React.Component {
       secondaryButton = () => <Button
         disabled={this.state.saveState === SaveButton.States.SAVING}
         onClick={this.resetFields.bind(this)}
-        value='Dismiss'
+        value={this.state.saveState === SaveButton.States.SUCCEEDED ? 'Dismiss' : 'Cancel'}
       />,
     } = this.props;
     let {
