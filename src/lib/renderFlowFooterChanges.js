@@ -66,8 +66,8 @@ export default (changes, initial, fieldOptions) => {
         }
 
       } else if (fieldOptions[key].type === 'parseOptions') {
-        const passwordPolicyString = jsonChangesToString(JSON.parse(changes[key]).passwordPolicy);
-        const accountLockoutString = jsonChangesToString(JSON.parse(changes[key]).accountLockout);
+        const passwordPolicyString = jsonChangesToString(changes[key].passwordPolicy, initial.parseOptions?.passwordPolicy);
+        const accountLockoutString = jsonChangesToString(changes[key].accountLockout, initial.parseOptions?.accountLockout);
         let seperator = ' ', accountLockoutChanges = '', passwordPolicyChanges = '';
         if ( accountLockoutString !== '' ) {
           accountLockoutChanges = 'Account Lockout Settings: ' + accountLockoutString;

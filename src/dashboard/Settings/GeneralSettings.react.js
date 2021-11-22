@@ -40,6 +40,7 @@ import NumericInputSettings              from 'components/NumericInputSettings/N
 import Toolbar                           from 'components/Toolbar/Toolbar.react';
 import unique                            from 'lib/unique';
 import validateAndSubmitConnectionString from 'lib/validateAndSubmitConnectionString';
+import mergeDefaultParseOptions          from 'lib/mergeDefaultParseOptions';
 import { cost, features }                from 'dashboard/Settings/GeneralSettings.scss';
 import Toggle                            from 'components/Toggle/Toggle.react';
 import { ManageAppFields }               from 'dashboard/Settings/Fields/ManageAppFields.react';
@@ -286,7 +287,7 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
-      parseOptions: this.context.currentApp.parseOptions,
+      parseOptions: mergeDefaultParseOptions(this.context.currentApp.parseOptions),
       appSettings: this.context.currentApp.settings.fields.fields.app,
     };
 
@@ -325,10 +326,7 @@ export default class GeneralSettings extends DashboardView {
             promiseList.push(this.context.currentApp.setRequestLimit(changes.requestLimit));
           }
           if (changes.appName !== undefined || changes.parseOptions !== undefined ) {
-            const parseOptions = {...typeof changes.parseOptions == 'string' ? JSON.parse(changes.parseOptions) : {} };
-            promiseList.push(this.context.currentApp.setAppConfig(changes.appName,
-              { accountLockout: {...defaultParseOptions.accountLockout, ...parseOptions.accountLockout}, passwordPolicy: { ...defaultParseOptions.passwordPolicy, ...parseOptions.passwordPolicy }}
-            ));
+            promiseList.push(this.context.currentApp.setAppConfig(changes.appName, changes.parseOptions));
           }
           if (changes.inProduction !== undefined) {
             promiseList.push(this.context.currentApp.setInProduction(changes.inProduction));

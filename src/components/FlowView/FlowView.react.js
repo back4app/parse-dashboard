@@ -48,7 +48,10 @@ export default class FlowView extends React.Component {
     if (this.state.saveState !== SaveButton.States.SAVING) {
       let newChanges = {...this.state.changes};
       newChanges[key] = value;
-      if (newChanges[key] === this.props.initialFields[key]) {
+      if ( ((typeof newChanges[key] === 'object' && typeof this.props.initialFields[key] === 'object') &&
+        JSON.stringify(newChanges[key]) === JSON.stringify(this.props.initialFields[key]))
+        || newChanges[key] === this.props.initialFields[key]
+      ) {
         delete newChanges[key];
       }
       //Modify stored state in case component recieves new props,
