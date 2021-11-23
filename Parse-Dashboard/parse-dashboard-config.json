@@ -1,84 +1,17 @@
 {
-  "apps": [{
-    "serverURL": "https://parseapi-homolog.back4app.com",
-    "appId": "xqaqt2RWOU9Vp2qeirSOyBIubnBIfMGJd4pCuxg6",
-    "javascriptKey": "yy2FKWKJUktAi64KnCBKYmOiZZbV826dq9wjs59c",
-    "restKey": "qIfmYsPptubHDm0zGpnSKKh25kjHfALJlKB5zCCn",
-    "clientKey": "NHS0yGzFC8guSxseptNyxQzqBUxGstzVVAuZdPEt",
-    "windowsKey": "SKSYWlRkbilQOKOUHUWZwT0osSIfdqCQqYg0dDwx",
-    "webhookKey": "rA9CfHDSiDpzHrD17OqdTuS79tWgyxFvdFflueAb",
-    "apiKey": "7a76b0cc-bd4b-43d6-97aa-f638a86014d3",
-    "appName": "TestApp",
-    "production": true,
-    "appNameForURL": "03bda9d0-8837-4e8e-bed8-da2a6ccc237a",
-    "feedbackEmail": "faisal@back4app.com",
-    "custom": {
-      "isGDPR": false,
-      "forceShowGDPRFields": false,
-      "showAdminPage": false,
-      "isOwner": true,
-      "isDatabasePublic": false
-    },
-    "supportedPushLocales": [],
-    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
-    "parseOptions": {},
-    "masterKey": "rycYDnfB2HBOAPiLQ0fM7l8JInXKtgvSCcBjGMhX"
-  }, {
-    "serverURL": "https://parseapi-homolog.back4app.com",
-    "appId": "0wrfYDKjnol2VsVoGRIYRYChqNZZvGW8BolHzRpH",
-    "javascriptKey": "Z8Yvk9LBbzjumh5KxIRBf6rMbjrM6qqUXOu3uoS0",
-    "restKey": "2edlG4GKgsvt7yb2ytC7xxkZkOOexFviezHjU5LJ",
-    "clientKey": "MsrBzSsxnKPWH5CH4EwUA1VDTOVoWx2C0Ud8cbb8",
-    "windowsKey": "wK9I1tAArjDyDZDuDM6djuT20GFFskn59XyUdcou",
-    "webhookKey": "wly9DdWSSmlg1O5eRf13hAmxxU7SPPfh9bU3Btaf",
-    "apiKey": "620f615f-5a38-49e3-9dfa-4749ec3f3fab",
-    "appName": "TestApp2",
-    "production": true,
-    "appNameForURL": "409a2dc6-1f5e-4cf0-aaff-96bc47d73f0e",
-    "feedbackEmail": "faisal@back4app.com",
-    "custom": {
-      "isGDPR": false,
-      "forceShowGDPRFields": false,
-      "showAdminPage": false,
-      "isOwner": true,
-      "isDatabasePublic": false
-    },
-    "supportedPushLocales": [],
-    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
-    "parseOptions": {},
-    "masterKey": "4UNIJC1p1cn7yV8CKsgNaK6ZsWgGd8JYXG62jGvI"
-  }, {
-    "serverURL": "https://parseapi-homolog.back4app.com",
-    "appId": "S4U8GOT018IOMBGalSEHlbEI2jodQi3vu5iCbbGA",
-    "javascriptKey": "u9MveNlWvmtVB4zBynqoOKQZl9OdJRp88zA9mLAR",
-    "restKey": "OZPPwG449bb9OncibomEDnPPGNCqRPlwgOLsEGhC",
-    "clientKey": "bK6F14Onj6dtRwPIuBBGc3eQWzFxR5Ha25Zd8G7l",
-    "windowsKey": "eIW2u1GSSC9ZckxGqzkmoVCu1C3y6zMMK1HRKP7v",
-    "webhookKey": "g2B6qOMZDYn3gYh9LKRcnYun0miVTxkcr7lMmBti",
-    "apiKey": "cf171a3b-f7e5-4926-b715-07a60c7e0543",
-    "appName": "HomologApp1",
-    "production": true,
-    "appNameForURL": "202c6e5c-2027-449b-8992-6275d86ef8cf",
-    "feedbackEmail": "faisal@back4app.com",
-    "custom": {
-      "isGDPR": false,
-      "forceShowGDPRFields": false,
-      "showAdminPage": false,
-      "isOwner": true,
-      "isDatabasePublic": false
-    },
-    "supportedPushLocales": [],
-    "graphQLServerURL": "https://parseapi.back4app.com/graphql",
-    "parseOptions": {},
-    "masterKey": "BwEK8J7VzkyfQlEjz198waB5JPJYZPRGpN2W8Msx"
-  }],
-  "newFeaturesInLatestVersion": [],
-  "user": {
-    "email": "faisal@back4app.com",
-    "has_password": false,
-    "account_keys": [],
-    "name": "faisal@back4app.com",
-    "playDatabaseBrowserTutorial": false,
-    "allowHubPublish": false
-  }
+  "apps": [
+    {
+      "serverURL": "http://localhost:1338/parse",
+      "appId": "APPLICATION_ID",
+      "masterKey": "MASTER_KEY",
+      "appName": "Countries States and Cities",
+      "iconName": "",
+      "primaryBackgroundColor": "",
+      "secondaryBackgroundColor": "",
+      "custom": {
+        "isOwner": true
+      }
+    }
+  ],
+  "iconsFolder": "icons"
 }
