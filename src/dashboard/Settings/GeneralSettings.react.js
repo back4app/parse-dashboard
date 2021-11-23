@@ -288,6 +288,8 @@ export default class GeneralSettings extends DashboardView {
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
       parseOptions: this.context.currentApp.parseOptions,
       appSettings: this.context.currentApp.settings.fields.fields.app,
+      clientPush: this.context.currentApp.settings.fields.fields.clientPush,
+      clientClassCreation: this.context.currentApp.settings.fields.fields.clientClassCreation
     };
 
     let collaboratorRemovedWarningModal = this.state.removedCollaborators.length > 0 ? <Modal
@@ -324,10 +326,18 @@ export default class GeneralSettings extends DashboardView {
           if (changes.requestLimit !== undefined) {
             promiseList.push(this.context.currentApp.setRequestLimit(changes.requestLimit));
           }
-          if (changes.appName !== undefined || changes.parseOptions !== undefined ) {
+          if (changes.appName !== undefined || changes.parseOptions !== undefined || changes.clientPush !== undefined || changes.clientClassCreation ) {
             const parseOptions = {...typeof changes.parseOptions == 'string' ? JSON.parse(changes.parseOptions) : {} };
+            let settings = {};
+            if ( changes.clientPush !== undefined ) {
+              settings.clientPush = changes.clientPush
+            }
+            if ( changes.clientClassCreation !== null ) {
+              settings.clientClassCreation = changes.clientClassCreation
+            }
             promiseList.push(this.context.currentApp.setAppConfig(changes.appName,
-              { accountLockout: {...defaultParseOptions.accountLockout, ...parseOptions.accountLockout}, passwordPolicy: { ...defaultParseOptions.passwordPolicy, ...parseOptions.passwordPolicy }}
+              { accountLockout: {...defaultParseOptions.accountLockout, ...parseOptions.accountLockout}, passwordPolicy: { ...defaultParseOptions.passwordPolicy, ...parseOptions.passwordPolicy }},
+              settings
             ));
           }
           if (changes.inProduction !== undefined) {
@@ -418,6 +428,10 @@ export default class GeneralSettings extends DashboardView {
               parseOptions={fields.parseOptions}
               setParseOptions={setField.bind(this, 'parseOptions')}
               appSettings={fields.appSettings}
+              clientPush={fields.clientPush}
+              setClientPush={setField.bind(this, 'clientPush')}
+              clientClassCreation={fields.clientClassCreation}
+              setClientClassCreation={setField.bind(this, 'clientClassCreation')}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
