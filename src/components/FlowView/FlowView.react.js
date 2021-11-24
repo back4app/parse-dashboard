@@ -100,6 +100,7 @@ export default class FlowView extends React.Component {
       validate = () => '',
       onSubmit,
       afterSave = () => {},
+      renderModals = [],
       secondaryButton = () => <Button
         disabled={this.state.saveState === SaveButton.States.SAVING}
         onClick={this.resetFields.bind(this)}
@@ -115,6 +116,7 @@ export default class FlowView extends React.Component {
     let resetFields = this.resetFields.bind(this);
     let fields = this.currentFields();
     let form = renderForm({ fields, changes, setField, resetFields });
+    let flowModals = <div>{renderModals.map( (modal, key) => <div key={key}>{modal}</div> )}</div>
 
     let invalidFormMessage = validate({ changes, fields });
     let hasFormValidationError = React.isValidElement(invalidFormMessage) || (invalidFormMessage && invalidFormMessage.length > 0);
@@ -153,7 +155,7 @@ export default class FlowView extends React.Component {
       {footerMessage}
     </FlowFooter> : null;
 
-    return <div>{form}{footer}</div>;
+    return <div>{form}{flowModals}{footer}</div>;
   }
 }
 

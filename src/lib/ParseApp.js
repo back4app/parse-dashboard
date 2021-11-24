@@ -370,6 +370,16 @@ export default class ParseApp {
     return AJAX.post(path);
   }
 
+  restartApp() {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/restart`;
+    return AJAX.post(path);
+  }
+
+  transferApp(newOwner) {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/transfer`;
+    return AJAX.post(path, { newOwner });
+  }
+
   cleanUpSystemLog() {
     let path = '/parse-app/' + this.slug + '/purge-logs';
     return AJAX.post(path);
