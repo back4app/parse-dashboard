@@ -64,7 +64,7 @@ return <Modal
     labelWidth={100}
     label={
       <Label
-        text={<span><input onChange={(e) => setAgreed(e.target.checked)} type={'checkbox'} /> &nbsp; I agree to transfer this app to {'Test user'} </span>}
+        text={<span><input onChange={(e) => setAgreed(e.target.checked)} type={'checkbox'} /> &nbsp; I agree to transfer this app to {email} </span>}
       />
     }
   />

@@ -426,7 +426,7 @@ export default class ParseApp {
   }
 
   async deleteApp(appId) {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId}`;
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId || this.slug}`;
     return fetch(path, { method: 'DELETE', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
       if (response.ok) {
         return response;

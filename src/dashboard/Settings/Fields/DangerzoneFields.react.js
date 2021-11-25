@@ -17,6 +17,7 @@ export const DangerzoneFields = ({
   restartApp,
   transferApp,
   cloneApp,
+  deleteApp,
   appSettings
 }) => <Fieldset
   legend='Dangerzone'
@@ -78,6 +79,15 @@ export const DangerzoneFields = ({
         // additionalStyles={{ backgroundColor: 'transparent', borderColor: '#f90015', color: '#f90015' }}
         onClick={cloneApp}
         value='Clone App'/>} />
+     <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        label={<Label
+          text='Delete App'
+          description={<span>Delete this app.</span>} />}
+        input={<FormButton
+        additionalStyles={{ backgroundColor: '#f90015', borderColor: '#f90015', color: 'white' }}
+        onClick={deleteApp}
+        value='Delete App'/>} />
     {cleanUpFilesMessage ? <FormNote
       show={true}
       color={cleanUpMessageColor}>

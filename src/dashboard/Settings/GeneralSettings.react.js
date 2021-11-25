@@ -51,6 +51,7 @@ import { PurgeFilesModal }               from 'dashboard/Settings/Modals/purgeFi
 import { PurgeSystemLogModal }           from 'dashboard/Settings/Modals/purgeSystemLogModal.react';
 import { TransferAppModal }              from 'dashboard/Settings/Modals/TransferAppModal.react';
 import { CloneAppModal }                 from 'dashboard/Settings/Modals/CloneAppModal.react';
+import { DeleteAppModal }                from 'dashboard/Settings/Modals/DeleteAppModal.react';
 
 import {
   generalFieldsOptions,
@@ -106,7 +107,6 @@ export default class GeneralSettings extends DashboardView {
       showRestartAppModal: false,
       showPurgeSystemLogModal: false,
       showTransferAppModal: false,
-      showCloneAppModal: false
     };
   }
 
@@ -167,7 +167,8 @@ export default class GeneralSettings extends DashboardView {
           renderModal(this.state.showPurgeFilesModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeFilesModal),
           renderModal(this.state.showPurgeSystemLogModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeSystemLogModal),
           renderModal(this.state.showTransferAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, TransferAppModal),
-          renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal)
+          renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal),
+          renderModal(this.state.showDeleteAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, DeleteAppModal)
         ]}
         renderForm={({ fields, setField }) => {
           return <div className={styles.settings_page}>
@@ -219,6 +220,7 @@ export default class GeneralSettings extends DashboardView {
               restartApp={() => this.setState({ showRestartAppModal: true })}
               transferApp={() => this.setState({ showTransferAppModal:true })}
               cloneApp={() => this.setState({ showCloneAppModal: true })}
+              deleteApp={() => this.setState({ showDeleteAppModal: true })}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
