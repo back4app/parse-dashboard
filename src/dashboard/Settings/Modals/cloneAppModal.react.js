@@ -3,7 +3,6 @@ import Modal                              from 'components/Modal/Modal.react';
 import Field                              from 'components/Field/Field.react';
 import Label                              from 'components/Label/Label.react';
 import TextInput                          from 'components/TextInput/TextInput.react';
-import { validateEmail }                  from 'dashboard/Settings/Util';
 import FormNote                           from 'components/FormNote/FormNote.react';
 import Dropdown                           from 'components/Dropdown/Dropdown.react';
 import Option                             from 'components/Dropdown/Option.react';
