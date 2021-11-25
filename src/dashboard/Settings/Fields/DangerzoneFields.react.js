@@ -16,6 +16,7 @@ export const DangerzoneFields = ({
   cleanUpMessageColor = 'orange',
   restartApp,
   transferApp,
+  cloneApp,
   appSettings
 }) => <Fieldset
   legend='Dangerzone'
@@ -56,18 +57,27 @@ export const DangerzoneFields = ({
         label={<Label
           text='Restart App'
           description={<span>This will restart the app. (This might cause the app might not be available while it restarts) </span>} />}
-      input={<FormButton
-        onClick={restartApp}
-        value='Restart App'/>} />
+        input={<FormButton
+          onClick={restartApp}
+          value='Restart App'/>} />
     <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
           text='Transfer App'
           description={<span>This will transfer the app to another user. (You may not be able to access this app after it's transfered to another user.) </span>} />}
-      input={<FormButton
+        input={<FormButton
         // additionalStyles={{ backgroundColor: 'transparent', borderColor: '#f90015', color: '#f90015' }}
         onClick={transferApp}
         value='Transfer App'/>} />
+    <Field
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        label={<Label
+          text='Clone App'
+          description={<span>Make a new clone app from this app.</span>} />}
+        input={<FormButton
+        // additionalStyles={{ backgroundColor: 'transparent', borderColor: '#f90015', color: '#f90015' }}
+        onClick={cloneApp}
+        value='Clone App'/>} />
     {cleanUpFilesMessage ? <FormNote
       show={true}
       color={cleanUpMessageColor}>

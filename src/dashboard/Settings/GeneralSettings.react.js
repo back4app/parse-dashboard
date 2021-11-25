@@ -49,7 +49,9 @@ import { DangerzoneFields }              from 'dashboard/Settings/Fields/Dangerz
 import { RestartAppModal }               from 'dashboard/Settings/Modals/restartAppModal.react';
 import { PurgeFilesModal }               from 'dashboard/Settings/Modals/purgeFilesModal.react';
 import { PurgeSystemLogModal }           from 'dashboard/Settings/Modals/purgeSystemLogModal.react';
-import { TransferAppModal }              from 'dashboard/Settings/Modals/TransferAppModal.react'
+import { TransferAppModal }              from 'dashboard/Settings/Modals/TransferAppModal.react';
+import { CloneAppModal }                 from 'dashboard/Settings/Modals/CloneAppModal.react';
+
 import {
   generalFieldsOptions,
   compareCollaborators,
@@ -103,7 +105,8 @@ export default class GeneralSettings extends DashboardView {
       showPurgeFilesModal: false,
       showRestartAppModal: false,
       showPurgeSystemLogModal: false,
-      showTransferAppModal: false
+      showTransferAppModal: false,
+      showCloneAppModal: false
     };
   }
 
@@ -163,7 +166,8 @@ export default class GeneralSettings extends DashboardView {
           renderModal(this.state.showRestartAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, RestartAppModal),
           renderModal(this.state.showPurgeFilesModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeFilesModal),
           renderModal(this.state.showPurgeSystemLogModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeSystemLogModal),
-          renderModal(this.state.showTransferAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, TransferAppModal)
+          renderModal(this.state.showTransferAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, TransferAppModal),
+          renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal)
         ]}
         renderForm={({ fields, setField }) => {
           return <div className={styles.settings_page}>
@@ -214,6 +218,7 @@ export default class GeneralSettings extends DashboardView {
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               restartApp={() => this.setState({ showRestartAppModal: true })}
               transferApp={() => this.setState({ showTransferAppModal:true })}
+              cloneApp={() => this.setState({ showCloneAppModal: true })}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}

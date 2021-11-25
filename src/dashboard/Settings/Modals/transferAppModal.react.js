@@ -1,7 +1,5 @@
 import React, { useState }                from 'react';
-import FormModal                          from 'components/FormModal/FormModal.react';
 import Modal                              from 'components/Modal/Modal.react';
-import validateAndSubmitConnectionString  from 'lib/validateAndSubmitConnectionString';
 import Field                              from 'components/Field/Field.react';
 import Label                              from 'components/Label/Label.react';
 import TextInput                          from 'components/TextInput/TextInput.react';
