@@ -98,9 +98,6 @@ export default class GeneralSettings extends DashboardView {
 
       showChangeConnectionStringModal: false,
       newConnectionString: '',
-      transferApp: {
-        newOwner: '',
-      },
 
       removedCollaborators: [],
       showPurgeFilesModal: false,
