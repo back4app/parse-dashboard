@@ -24,7 +24,6 @@ export const CloneAppModal = ({ context, setParentState }) => {
     setProcessing(true);
     context.currentApp.supportedParseServerVersions()
       .then((data) => {
-        // console.log(response, context.currentApp.settings.fields.fields.app.mongoVersion);
         setParseVersions(data);
         setCloneParseVersion(data[0]);
       })
