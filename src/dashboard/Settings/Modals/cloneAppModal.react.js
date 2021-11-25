@@ -38,15 +38,6 @@ export const CloneAppModal = ({ context, setParentState }) => {
 
   useEffect(() => {cloneAppName.length <= 0 ? setCanSubmit(false) : setCanSubmit(true)},[cloneAppName]);
 
-  const handleError = (e) => {
-    setProcessing(false);
-    setParentState({
-      cleanupFilesMessage: e.error,
-      cleanupNoteColor: 'red',
-      showTransferAppModal: false,
-    });
-  }
-
   return <Modal
   type={Modal.Types.INFO}
   icon='gear-solid'
@@ -135,46 +126,3 @@ export const CloneAppModal = ({ context, setParentState }) => {
       </FormNote> : null}
 </Modal>
 }
-{/* <FormModal
-title='Clone App'
-icon='files-outline'
-iconSize={30}
-subtitle='Create a copy of this app'
-submitText='Clone'
-inProgressText={'Cloning\u2026'}
-open={state.showCloneAppModal}
-enabled={state.cloneAppName.length > 0}
-onSubmit={() => {
-  setParentState({
-    cloneAppMessage: '',
-  });
-  return AppsManager.cloneApp(this.context.currentApp.slug, this.state.cloneAppName, this.state.cloneOptionsSelection)
-}}
-onSuccess={({notice}) => setParentState({cloneAppMessage: notice})}
-onClose={() => setParentState({showCloneAppModal: false})}
-clearFields={() => setParentState({
-  cloneAppName: '',
-  cloneOptionsSelection: ['schema', 'app_settings', 'config', 'cloud_code'],
-})}>
-<Field
-  labelWidth={50}
-  label={<Label text='Name your cloned app' />}
-  input={<TextInput
-    value={state.cloneAppName}
-    onChange={value => setParentState({cloneAppName: value})
-  } /> } />
-<Field
-  labelWidth={35}
-  label={<Label text='What should we include in the clone?' />}
-  input={<MultiSelect
-    fixed={true}
-    value={state.cloneOptionsSelection}
-    onChange={options => setParentState({cloneOptionsSelection: options})}
-  >
-    <MultiSelectOption value='schema'>Schema</MultiSelectOption>
-    <MultiSelectOption value='app_settings'>App Settings</MultiSelectOption>
-    <MultiSelectOption value='config'>Config</MultiSelectOption>
-    <MultiSelectOption value='cloud_code'>Cloud Code</MultiSelectOption>
-    <MultiSelectOption value='background_jobs'>Background Jobs</MultiSelectOption>
-  </MultiSelect>} />
-</FormModal> */}
