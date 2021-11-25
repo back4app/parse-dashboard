@@ -14,7 +14,6 @@ export const CloneAppModal = ({ context, setParentState }) => {
   const [ note, setNote ] = useState('')
   const [ processing, setProcessing ] = useState(false);
   const [ cloneDb, setCloneDb ] = useState(false);
-  const [ canCloneDb, setCanCloneDb ] = useState(false);
   const [ canSubmit, setCanSubmit ] = useState(false);
 
   const [ parseVersions, setParseVersions ] = useState([]);
