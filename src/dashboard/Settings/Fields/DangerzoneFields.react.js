@@ -47,9 +47,7 @@ export const DangerzoneFields = ({
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
           text='Clean up app'
-          description={<span>This will delete any files that are not referenced by any objects.
-          (Don't use the feature if you have Arrays of Files,<br/>or Files inside Object columns!)
-          </span>} />}
+          description={<span>This will delete any files that are not referenced by any objects. Don't use the feature if you have Arrays of Files, or Files inside Object columns.</span>} />}
       input={<FormButton
       onClick={cleanUpFiles}
       value='Clean Up Files'/>} />

@@ -48,7 +48,7 @@ return <Modal
   <Field
     label={<Label
       text={'New owner\'s email.'}
-      description={<span>The email address of the user whom you wish to transfer the app to? (the email has to be registered at back4app).</span>} />
+      description={<span>The email must be registered at Back4App.</span>} />
     }
     input={<TextInput
       height={100}

@@ -50,7 +50,7 @@ export const DeleteAppModal = ({ context, setParentState }) => {
   <Field
     label={<Label
       text={'App Name.'}
-      description={<span>Please enter the name of the app ({context.currentApp.name}) for confirmation?</span>} />
+      description={<span>Please enter the name of the app ({context.currentApp.name}) for confirmation</span>} />
     }
     input={<TextInput
       height={100}
