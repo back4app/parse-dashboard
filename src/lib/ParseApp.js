@@ -415,7 +415,7 @@ export default class ParseApp {
 
   async cloneApp(appId, parseVersion) {
     // check storage.
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/database`;
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
     return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()}, body: {appId, parseVersion} }).then((response) => {
       if (response.ok) {
         return response;
