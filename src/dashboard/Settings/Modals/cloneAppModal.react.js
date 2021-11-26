@@ -49,12 +49,8 @@ export const CloneAppModal = ({ context, setParentState }) => {
   onCancel={() => setParentState({ showCloneAppModal: false })}
   onConfirm={async () => {
     setProcessing(true);
-    let newApp;
     try {
-      await context.currentApp.checkStorage();
-      newApp = await context.currentApp.createApp(cloneAppName);
-      await context.currentApp.initializeDb(newApp.id);
-      await context.currentApp.cloneApp(newApp.appId, cloneParseVersion);
+      await context.currentApp.cloneApp(cloneAppName, cloneParseVersion);
       setParentState({
         cleanupFilesMessage: 'Your app has been cloned successfully.',
         cleanupNoteColor: 'orange',
@@ -62,13 +58,6 @@ export const CloneAppModal = ({ context, setParentState }) => {
       });
     } catch(e) {
       console.log(e);
-      if ( newApp ) {
-        try {
-          await context.currentApp.deleteApp(newApp.id);
-        } catch(ex) {
-          console.log(ex);
-        }
-      }
       setParentState({
         cleanupFilesMessage: e.error,
         cleanupNoteColor: 'red',

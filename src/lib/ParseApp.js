@@ -413,16 +413,13 @@ export default class ParseApp {
     })
   }
 
-  async cloneApp(appId, parseVersion) {
+  async cloneApp(appName, parseVersion) {
     // check storage.
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()}, body: {appId, parseVersion} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone-app`;
+    return AJAX.post(path, {
+      appName,
+      parseVersion,
+    });
   }
 
   async deleteApp(appId) {
