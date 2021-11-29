@@ -22,7 +22,7 @@ export const DangerzoneFields = ({
 }) => {
   return (
     <Fieldset
-      legend='Dangerzone'
+      legend='Danger Zone'
       description='These options will effect your app'>
         <Field
             labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
