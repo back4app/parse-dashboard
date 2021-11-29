@@ -29,6 +29,7 @@
   &:hover, &:focus {
     background-color: $blue;
     color: white;
+    text-decoration: none;
   }
 }
 
@@ -38,6 +39,7 @@
 
   &:hover, &:focus {
     background-color: $darkBlue;
+    text-decoration: none;
   }
 }
 
@@ -47,6 +49,7 @@
 
   &:hover, &:focus {
     background-color: $lightGreen;
+    text-decoration: none;
   }
 
   &.primary {
@@ -55,6 +58,7 @@
 
     &:hover, &:focus {
       background-color: $darkGreen;
+      text-decoration: none;
     }
   }
 }
@@ -65,6 +69,7 @@
 
   &:hover, &:focus {
     background-color: $lightRed;
+    text-decoration: none;
   }
 
   &.primary {
@@ -73,6 +78,7 @@
 
     &:hover, &:focus {
       background-color: $darkRed;
+      text-decoration: none;
     }
   }
 }
@@ -85,6 +91,7 @@
   &:hover, &:focus{
     background-color: $white;
     color: $blue;
+    text-decoration: none;
   }
 
   &.primary {
@@ -95,6 +102,7 @@
       background-color: $blue;
       border-color: $blue;
       color: white;
+      text-decoration: none;
     }
   }
 
@@ -111,6 +119,7 @@
 
   &:hover, &:focus {
     background-color: $lightYellow;
+    text-decoration: none;
   }
 
   &.primary {
@@ -119,6 +128,7 @@
 
     &:hover, &:focus {
       background-color: $darkYellow;
+      text-decoration: none;
     }
   }
 }
