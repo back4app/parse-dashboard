@@ -29,7 +29,6 @@
   &:hover, &:focus {
     background-color: $blue;
     color: white;
-    text-decoration: none;
   }
 }
 
@@ -39,7 +38,6 @@
 
   &:hover, &:focus {
     background-color: $darkBlue;
-    text-decoration: none;
   }
 }
 
@@ -49,7 +47,6 @@
 
   &:hover, &:focus {
     background-color: $lightGreen;
-    text-decoration: none;
   }
 
   &.primary {
@@ -58,7 +55,6 @@
 
     &:hover, &:focus {
       background-color: $darkGreen;
-      text-decoration: none;
     }
   }
 }
@@ -78,7 +74,6 @@
 
     &:hover, &:focus {
       background-color: $darkRed;
-      text-decoration: none;
     }
   }
 }
@@ -102,7 +97,6 @@
       background-color: $blue;
       border-color: $blue;
       color: white;
-      text-decoration: none;
     }
   }
 
@@ -128,7 +122,6 @@
 
     &:hover, &:focus {
       background-color: $darkYellow;
-      text-decoration: none;
     }
   }
 }
@@ -150,6 +143,7 @@
     background-color: #e0e0ea;
     border-color: #e0e0ea;
     color: white;
+    text-decoration: none;
   }
 }
 
