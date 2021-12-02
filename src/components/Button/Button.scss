@@ -16,7 +16,6 @@
   border: 1px solid $blue;
   line-height: 28px;
   outline: 0;
-  text-decoration: none;
   text-align: center;
   border-radius: 5px;
   cursor: pointer;
@@ -65,7 +64,6 @@
 
   &:hover, &:focus {
     background-color: $lightRed;
-    text-decoration: none;
   }
 
   &.primary {
@@ -86,7 +84,6 @@
   &:hover, &:focus{
     background-color: $white;
     color: $blue;
-    text-decoration: none;
   }
 
   &.primary {
@@ -113,7 +110,6 @@
 
   &:hover, &:focus {
     background-color: $lightYellow;
-    text-decoration: none;
   }
 
   &.primary {
@@ -143,7 +139,7 @@
     background-color: #e0e0ea;
     border-color: #e0e0ea;
     color: white;
-    text-decoration: none;
+    text-decoration: none!important;
   }
 }
 
