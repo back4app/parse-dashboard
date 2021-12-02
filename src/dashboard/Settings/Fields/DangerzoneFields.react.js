@@ -6,6 +6,7 @@ import Label                             from 'components/Label/Label.react';
 import TextInput                         from 'components/TextInput/TextInput.react';
 import FormButton                        from 'components/FormButton/FormButton.react';
 import FormNote                          from 'components/FormNote/FormNote.react';
+import Toggle                            from 'components/Toggle/Toggle.react';
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 }                                        from 'dashboard/Settings/Fields/Constants';
@@ -14,35 +15,49 @@ export const DangerzoneFields = ({
   cleanUpFiles,
   cleanUpFilesMessage,
   cleanUpMessageColor = 'orange',
+  clientPush,
+  setClientPush,
+  clientClassCreation,
+  setClientClassCreation,
   restartApp,
   transferApp,
   cloneApp,
   deleteApp,
-  appSettings
 }) => <Fieldset
   legend='Dangerzone'
   description='These options will effect your app'>
     <Field
-        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-        label={<Label
-          text='Push Notification from Client'
-          description={<span>This settings will effect Push notifications from client permissions.
-          </span>} />}
-      input={<span style={{ textAlign: 'center' }}>
-          { `Push Notification from Client is ${appSettings?.clientPush === true ? 'ALLOWED' : 'BLOCKED'}.`}
-        </span>}
-      />
-    <Field
-        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-        label={<Label
-          text='Client Class Creation'
-          description={<span>This settings will effect client class creation permission.
-          </span>} />}
+      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+      label={<Label
+        text='Push Notification from Client'
+        description={<span>This settings will effect Push notifications from client permissions.
+        </span>} />}
       input={
         <span style={{ textAlign: 'center' }}>
-          { `Client class creation is ${appSettings?.clientClassCreation === true ? 'ALLOWED' : 'BLOCKED'}.`}
-        </span>}
+          <Toggle
+            additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
+            value={ clientPush === true }
+            onChange={ clientPush => setClientPush(clientPush) } />
+          { clientPush === true ? 'ALLOWED' : 'BLOCKED' }
+        </span>
+      }
       />
+    <Field
+      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+      label={<Label
+        text='Client Class Creation'
+        description={<span>This settings will effect client class creation permission.
+        </span>} />}
+    input={
+      <span style={{ textAlign: 'center' }}>
+        <Toggle
+          additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
+          value={ clientClassCreation }
+          onChange={ clientClassCreation => setClientClassCreation(clientClassCreation) } />
+        { clientClassCreation === true ? 'ALLOWED' : 'BLOCKED' }
+      </span>
+    }
+    />
     <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
@@ -92,3 +107,4 @@ export const DangerzoneFields = ({
       <div>{cleanUpFilesMessage}</div>
     </FormNote> : null}
 </Fieldset>;
+

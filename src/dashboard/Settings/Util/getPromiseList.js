@@ -11,10 +11,18 @@ export const getPromiseList = ({ changes, setDifference, initialFields }) => {
   if (changes.requestLimit !== undefined) {
     promiseList.push(this.context.currentApp.setRequestLimit(changes.requestLimit));
   }
-  if (changes.appName !== undefined || changes.parseOptions !== undefined ) {
+  if (changes.appName !== undefined || changes.parseOptions !== undefined || changes.clientPush !== undefined || changes.clientClassCreation ) {
     const parseOptions = {...typeof changes.parseOptions == 'string' ? JSON.parse(changes.parseOptions) : {} };
+    let settings = {};
+    if ( changes.clientPush !== undefined ) {
+      settings.clientPush = changes.clientPush
+    }
+    if ( changes.clientClassCreation !== null ) {
+      settings.clientClassCreation = changes.clientClassCreation
+    }
     promiseList.push(this.context.currentApp.setAppConfig(changes.appName,
-      { accountLockout: {...defaultParseOptions.accountLockout, ...parseOptions.accountLockout}, passwordPolicy: { ...defaultParseOptions.passwordPolicy, ...parseOptions.passwordPolicy }}
+      { accountLockout: {...defaultParseOptions.accountLockout, ...parseOptions.accountLockout}, passwordPolicy: { ...defaultParseOptions.passwordPolicy, ...parseOptions.passwordPolicy }},
+      settings
     ));
   }
   if (changes.inProduction !== undefined) {

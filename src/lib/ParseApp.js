@@ -751,10 +751,11 @@ export default class ParseApp {
     return promise;
   }
 
-  setAppConfig(name, parseOptions) {
+  setAppConfig(name, parseOptions, appSettings) {
     let config = {};
     if ( name ) config['appName'] = name;
     if ( parseOptions ) config['parseOptions'] = parseOptions;
+    if ( appSettings ) config = { ...config, ...appSettings }
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}`;
     let promise = axios.patch(path, config, { withCredentials: true });
     promise.then(() => {
@@ -762,6 +763,9 @@ export default class ParseApp {
         this.name = name;
       if(parseOptions)
         this.parseOptions = parseOptions;
+      if ( appSettings ) {
+        this.settings.fields.fields = appSettings
+      }
     });
     return promise;
   }
