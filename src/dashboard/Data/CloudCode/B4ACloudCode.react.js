@@ -202,7 +202,7 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
         />;
-      this.setState({ unsavedChanges: false, modal: successModal, codeUpdated: false });
+      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal, codeUpdated: false });
       $('#tree').jstree(true).redraw(true);
       this.fetchSource();
     } catch (err) {
@@ -267,14 +267,6 @@ class B4ACloudCode extends CloudCode {
         <div className={styles.loading}></div>
       </LoaderContainer>
     } else { // render cloud code page
-
-      // title = <div className={styles.title}>
-      //   <div><p>Cloud Code Functions</p></div>
-      //   <Button
-      //     value='LEARN MORE'
-      //     primary={true}
-      //     onClick={() => window.open('https://www.back4app.com/docs/get-started/cloud-functions', '_blank')} />
-      // </div>
 
       title = <B4ACloudCodeToolbar />
 

@@ -205,9 +205,8 @@ function AnalyticsQueryStore(state, action) {
     case ActionTypes.FETCH:
       return post(urlPrefix, queryToPayload(action.query)).then((result) => {
         result.objectId = result.id;
-
-        let realResult = result[LABEL_TO_KEY_MAPPING[action.query.source]];
-        return state.setIn(['queries', action.query.localId], { ...action.query, result: realResult });
+        // let realResult = result[LABEL_TO_KEY_MAPPING[action.query.source]];
+        return state.setIn(['queries', action.query.localId], { ...action.query, result });
       });
     case ActionTypes.CREATE:
       return post(`${urlPrefix}/saveQuery`, queryToPayload(action.query)).then(() => {

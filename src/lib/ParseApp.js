@@ -10,6 +10,7 @@ import encodeFormData from 'lib/encodeFormData';
 import Parse          from 'parse';
 import axios          from 'lib/axios';
 import csv            from 'csvtojson';
+import * as CSRFManager from 'lib/CSRFManager';
 
 function setEnablePushSource(setting, enable) {
   let path = `/apps/${this.slug}/update_push_notifications`;
@@ -370,10 +371,75 @@ export default class ParseApp {
     return AJAX.post(path);
   }
 
+  restartApp() {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/restart`;
+    return AJAX.post(path);
+  }
+
+  transferApp(newOwner) {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/transfer`;
+    return AJAX.post(path, { newOwner });
+  }
+
+  supportedParseServerVersions() {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-version`;
+    return AJAX.get(path);
+  }
+
+  checkStorage() {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/check-storage`;
+    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
+      if (response.ok) {
+        return response;
+      } else {
+        throw new Error({error: 'An error occurred'});
+      }
+    })
+  }
+
+  createApp(appName) {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app`;
+    return AJAX.post(path, { appDescription: "", appId: null, appName, isPublic: false })
+  }
+
+  initializeDb(appId) {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId}/database`;
+    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
+      if (response.ok) {
+        return response;
+      } else {
+        throw new Error({error: 'An error occurred'});
+      }
+    })
+  }
+
+  async cloneApp(appId, parseVersion) {
+    // check storage.
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
+    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()}, body: {appId, parseVersion} }).then((response) => {
+      if (response.ok) {
+        return response;
+      } else {
+        throw new Error({error: 'An error occurred'});
+      }
+    })
+  }
+
+  async deleteApp(appId) {
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId || this.slug}`;
+    return fetch(path, { method: 'DELETE', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
+      if (response.ok) {
+        return response;
+      } else {
+        throw new Error({error: 'An error occurred'});
+      }
+    })
+  }
+
   cleanUpSystemLog() {
     let path = '/parse-app/' + this.slug + '/purge-logs';
     return AJAX.post(path);
- }
+  }
 
   normalizePath(path) {
     path = path.replace(/([^:\s])\/+/g, '$1/');
@@ -685,10 +751,11 @@ export default class ParseApp {
     return promise;
   }
 
-  setAppConfig(name, parseOptions) {
+  setAppConfig(name, parseOptions, appSettings) {
     let config = {};
     if ( name ) config['appName'] = name;
     if ( parseOptions ) config['parseOptions'] = parseOptions;
+    if ( appSettings ) config = { ...config, ...appSettings }
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}`;
     let promise = axios.patch(path, config, { withCredentials: true });
     promise.then(() => {
@@ -696,6 +763,9 @@ export default class ParseApp {
         this.name = name;
       if(parseOptions)
         this.parseOptions = parseOptions;
+      if ( appSettings ) {
+        this.settings.fields.fields = appSettings
+      }
     });
     return promise;
   }

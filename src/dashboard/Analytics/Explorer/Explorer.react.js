@@ -245,7 +245,9 @@ class Explorer extends DashboardView {
             }
             return {
               ...query,
-              result: serverResult.result
+              result: serverResult.result.map((point) => (
+                [Parse._decode('date', point[0]).getTime(), point[1]]
+              ))
             };
           });
 
@@ -296,7 +298,10 @@ class Explorer extends DashboardView {
           csvContent += row + '\r\n';
         });
 
-        window.open(encodeURI( csvDeclaration + csvContent));
+        // "\uFEFF"(BOM) using BOM(https://en.wikipedia.org/wiki/Byte_order_mark) to force Excel to open in utf-8 
+        // using encodeURIComponent as it encodes '#' as well, since browser usually treats everything after '#' as a fragment 
+        // which was causing to download csv file data till before '#' character
+        window.open(csvDeclaration + encodeURIComponent("\uFEFF" + csvContent)); 
         return;
       }
       case 'table': {
