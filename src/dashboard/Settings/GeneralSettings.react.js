@@ -6,41 +6,13 @@
  * the root directory of this source tree.
  */
 import AccountManager                    from 'lib/AccountManager';
-import AppsManager                       from 'lib/AppsManager';
-import Collaborators                     from 'dashboard/Settings/Collaborators.react';
 import DashboardView                     from 'dashboard/DashboardView.react';
-import Dropdown                          from 'components/Dropdown/Dropdown.react';
-import DropdownOption                    from 'components/Dropdown/Option.react';
-import Field                             from 'components/Field/Field.react';
-import FieldSettings                     from 'components/FieldSettings/FieldSettings.react';
-import Fieldset                          from 'components/Fieldset/Fieldset.react';
 import FlowView                          from 'components/FlowView/FlowView.react';
-import FormButton                        from 'components/FormButton/FormButton.react';
-import FormModal                         from 'components/FormModal/FormModal.react';
-import FormNote                          from 'components/FormNote/FormNote.react';
-import getSiteDomain                     from 'lib/getSiteDomain';
-import history                           from 'dashboard/history';
-import joinWithFinal                     from 'lib/joinWithFinal';
-import KeyField                          from 'components/KeyField/KeyField.react';
-import Label                             from 'components/Label/Label.react';
-import LabelSettings                     from 'components/LabelSettings/LabelSettings.react';
-import Modal                             from 'components/Modal/Modal.react';
-import MultiSelect                       from 'components/MultiSelect/MultiSelect.react';
-import MultiSelectOption                 from 'components/MultiSelect/MultiSelectOption.react';
-import pluck                             from 'lib/pluck';
-import Range                             from 'components/Range/Range.react';
 import React                             from 'react';
 import renderFlowFooterChanges           from 'lib/renderFlowFooterChanges';
 import setDifference                     from 'lib/setDifference';
 import styles                            from 'dashboard/Settings/Settings.scss';
-import TextInputSettings                 from 'components/TextInputSettings/TextInputSettings.react';
-import NumericInput                      from 'components/NumericInput/NumericInput.react';
-import NumericInputSettings              from 'components/NumericInputSettings/NumericInputSettings.react';
 import Toolbar                           from 'components/Toolbar/Toolbar.react';
-import unique                            from 'lib/unique';
-import validateAndSubmitConnectionString from 'lib/validateAndSubmitConnectionString';
-import { cost, features }                from 'dashboard/Settings/GeneralSettings.scss';
-import Toggle                            from 'components/Toggle/Toggle.react';
 import { ManageAppFields }               from 'dashboard/Settings/Fields/ManageAppFields.react';
 import { CollaboratorsFields }           from 'dashboard/Settings/Fields/CollaboratorsFields.react';
 import { AppInformationFields }          from 'dashboard/Settings/Fields/AppInformationFields.react';
@@ -59,9 +31,6 @@ import {
   getPromiseList,
   renderModal
 }                                        from './Util';
-import {
-  CurrentPlan, CurrentPlanFields
-}                                        from 'dashboard/Settings/Fields/AppInformationFields.react';
 
 export default class GeneralSettings extends DashboardView {
   constructor() {
