@@ -33,7 +33,6 @@ import React                             from 'react';
 import renderFlowFooterChanges           from 'lib/renderFlowFooterChanges';
 import setDifference                     from 'lib/setDifference';
 import styles                            from 'dashboard/Settings/Settings.scss';
-import TextInput                         from 'components/TextInput/TextInput.react';
 import TextInputSettings                 from 'components/TextInputSettings/TextInputSettings.react';
 import NumericInput                      from 'components/NumericInput/NumericInput.react';
 import NumericInputSettings              from 'components/NumericInputSettings/NumericInputSettings.react';
@@ -49,9 +48,9 @@ import { DangerzoneFields }              from 'dashboard/Settings/Fields/Dangerz
 import { RestartAppModal }               from 'dashboard/Settings/Modals/restartAppModal.react';
 import { PurgeFilesModal }               from 'dashboard/Settings/Modals/purgeFilesModal.react';
 import { PurgeSystemLogModal }           from 'dashboard/Settings/Modals/purgeSystemLogModal.react';
-import { TransferAppModal }              from 'dashboard/Settings/Modals/TransferAppModal.react';
-import { CloneAppModal }                 from 'dashboard/Settings/Modals/CloneAppModal.react';
-import { DeleteAppModal }                from 'dashboard/Settings/Modals/DeleteAppModal.react';
+import { TransferAppModal }              from 'dashboard/Settings/Modals/transferAppModal.react';
+import { CloneAppModal }                 from 'dashboard/Settings/Modals/cloneAppModal.react';
+import { DeleteAppModal }                from 'dashboard/Settings/Modals/deleteAppModal.react';
 
 import {
   generalFieldsOptions,
