@@ -17,12 +17,13 @@ export default class CodeEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { code: '' };
+    this.state = { code: '', reset: false };
+    this.editorRef = React.createRef();
   }
 
   componentWillReceiveProps(props){
     if (this.state.code !== props.code) {
-      this.setState({ code: props.code });
+      this.setState({ code: props.code, reset: true });
     }
     if (props.mode) {
       require(`ace-builds/src-noconflict/mode-${props.mode}`);
@@ -40,17 +41,27 @@ export default class CodeEditor extends React.Component {
 
   render() {
     const { fontSize = 18, mode = 'javascript', height } = this.props;
-    const { code } = this.state;
-
+    
     return (
       <Editor
         mode={mode}
         theme="solarized_dark"
         onChange={value => {
-          this.setState({ code: value });
           if ( this.props.onCodeChange ){
             this.props.onCodeChange(value);
           }
+        }}
+        ref={this.editorRef}
+        onLoad={editor => {
+          editor.once("change", () => {
+            editor.session.getUndoManager().reset();
+          });
+          editor.on('change', () => {
+            if ( this.state.reset === true ) {
+              editor.session.getUndoManager().reset();
+              this.setState({ reset: false })
+            }
+          })
         }}
         height={height || '100%'}
         fontSize={fontSize}
@@ -58,7 +69,7 @@ export default class CodeEditor extends React.Component {
         showGutter={true}
         highlightActiveLine={true}
         width="100%"
-        value={code}
+        value={this.state.code}
         enableBasicAutocompletion={true}
         enableLiveAutocompletion={true}
         enableSnippets={false}
