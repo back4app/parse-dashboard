@@ -18,7 +18,6 @@ export default class CodeEditor extends React.Component {
     super(props);
 
     this.state = { code: '', reset: false };
-    this.editorRef = React.createRef();
   }
 
   componentWillReceiveProps(props){
@@ -51,7 +50,6 @@ export default class CodeEditor extends React.Component {
             this.props.onCodeChange(value);
           }
         }}
-        ref={this.editorRef}
         onLoad={editor => {
           editor.once("change", () => {
             editor.session.getUndoManager().reset();
