@@ -109,9 +109,9 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenValidityDuration') || 24*60*60}
-                onChange={({ target: {value} }) => {
-                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration: value } } );
+                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenValidityDuration') || 24 * 60 * 60}
+                onChange={(resetTokenValidityDuration) => {
+                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration } } );
                 }} />
             }
           />

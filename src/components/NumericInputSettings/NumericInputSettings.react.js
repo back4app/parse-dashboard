@@ -47,6 +47,9 @@ export default class NumericInputSettings extends React.Component {
     if (this.props.monospace) {
       classes.push(styles.monospace);
     }
+
+    console.log( this.props.validate );
+
     return (
       <div style={{ background: '#f6fafb', display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
         <input
