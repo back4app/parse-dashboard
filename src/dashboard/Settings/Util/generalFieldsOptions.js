@@ -13,7 +13,7 @@ export const generalFieldsOptions = {
   parseOptions: {
     friendlyName: 'Parse Options',
     showTo: false,
-    type: 'parseOptions'
+    type: 'json'
   },
   clientPush: {
     friendlyName: 'Client Push',

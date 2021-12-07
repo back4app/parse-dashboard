@@ -1,36 +1,17 @@
 {
-  "apps": [{
-    "serverURL": "http://localhost:1337/parse",
-    "appId": "pCFpVu8TttIZCkdTgSQ3jIwWDIq7o05l0AiutCGC",
-    "javascriptKey": "DBYpklIQQFnaGhJej39X0ciULoHhFZVu7kcHWXa6",
-    "restKey": "NNf6rZV6qNSptFCOvliBhB4hg20H9yLhn9knZY9F",
-    "clientKey": "rseciAfL5Q0KvTuDHWGWpDJeLBchk30YLwsq3vLs",
-    "windowsKey": "4aCl33VjrR387CPxaKF5efBRHwUoTntUYULIX8Il",
-    "webhookKey": "dcflCyFqJFvlyg5yKfehyseLuFAG8DAk9t1iLOvK",
-    "apiKey": "221d8461-231b-4218-9a38-d8aeed868566",
-    "appName": "Local1",
-    "production": true,
-    "appNameForURL": "df1d2060-4a44-4aef-9ac9-79ed3eae75e0",
-    "feedbackEmail": "faisal@local.com",
-    "custom": {
-      "isGDPR": false,
-      "forceShowGDPRFields": false,
-      "showAdminPage": false,
-      "isOwner": true,
-      "isDatabasePublic": false
-    },
-    "supportedPushLocales": [],
-    "graphQLServerURL": "http://parseapi-dev.back4app.com/graphql",
-    "parseOptions": {},
-    "masterKey": "H4WOpZnkQljbr85Knpf5eQ702KEGV5919YcZpeur"
-  }],
-  "newFeaturesInLatestVersion": [],
-  "user": {
-    "email": "faisal@local.com",
-    "has_password": false,
-    "account_keys": [],
-    "name": "faisal@local.com",
-    "playDatabaseBrowserTutorial": true,
-    "allowHubPublish": false
-  }
+  "apps": [
+    {
+      "serverURL": "http://localhost:1338/parse",
+      "appId": "APPLICATION_ID",
+      "masterKey": "MASTER_KEY",
+      "appName": "Countries States and Cities",
+      "iconName": "",
+      "primaryBackgroundColor": "",
+      "secondaryBackgroundColor": "",
+      "custom": {
+        "isOwner": true
+      }
+    }
+  ],
+  "iconsFolder": "icons"
 }

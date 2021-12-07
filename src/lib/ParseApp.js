@@ -761,11 +761,11 @@ export default class ParseApp {
     promise.then(() => {
       if (name)
         this.name = name;
-      if(parseOptions)
-        this.parseOptions = parseOptions;
       if ( appSettings ) {
-        this.settings.fields.fields = appSettings
+        this.settings.fields.fields = { ...this.settings.fields.fields, ...appSettings }
       }
+      if(parseOptions)
+        this.settings.fields.fields.app.parseOptions = parseOptions;
     });
     return promise;
   }
