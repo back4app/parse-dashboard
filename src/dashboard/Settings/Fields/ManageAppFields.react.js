@@ -43,7 +43,11 @@ export const ManageAppFields = ({
   deleteApp,
   parseOptions,
   setParseOptions,
-  appSettings
+  appSettings,
+  dashboardAPI,
+  databaseURL,
+  parseVersion,
+  mongoVersion
 }) => {
   let migrateAppField = null;
   if (!mongoURL && !hasInProgressMigration) {
@@ -135,7 +139,7 @@ export const ManageAppFields = ({
               labelWidth={'50%'}
               label={<LabelSettings
                 text='Parse API Address'
-                description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{appSettings?.dashboardAPI}</p>}
+                description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{dashboardAPI}</p>}
               />}
             />
             <FieldSettings
@@ -144,7 +148,7 @@ export const ManageAppFields = ({
               labelWidth={'50%'}
               label={<LabelSettings
                 text='Parse Version'
-                description={<span>{appSettings?.parseVersion}</span>}
+                description={<span>{parseVersion}</span>}
               />}
             />
           </div>
@@ -165,7 +169,7 @@ export const ManageAppFields = ({
                   labelWidth={'50%'}
                   label={<LabelSettings
                     text='Database URI'
-                    description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{appSettings?.databaseURL}</p>}
+                    description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
                   />}
                 />}
             onHiddenComponent={
@@ -180,7 +184,7 @@ export const ManageAppFields = ({
             labelWidth={'50%'}
             label={<LabelSettings
               text='Database Version'
-              description={<span>{appSettings?.databaseURL?.split('://')[0]} {appSettings?.mongoVersion}</span>}
+              description={<span>{databaseURL?.split('://')[0]} {mongoVersion}</span>}
             />}
           />
           </div>

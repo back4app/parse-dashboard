@@ -127,7 +127,10 @@ export default class GeneralSettings extends DashboardView {
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
       parseOptions: this.context.currentApp.parseOptions,
-      appSettings: this.context.currentApp.settings.fields.fields.app,
+      dashboardAPI: this.context.currentApp.settings.fields.fields.dashboardAPI,
+      databaseURL: this.context.currentApp.settings.fields.fields.databaseURL,
+      parseVersion: this.context.currentApp.settings.fields.fields.parseVersion,
+      mongoVersion: this.context.currentApp.settings.fields.fields.mongoVersion,
       clientPush: this.context.currentApp.settings.fields.fields.clientPush,
       clientClassCreation: this.context.currentApp.settings.fields.fields.clientClassCreation
     };
@@ -157,7 +160,7 @@ export default class GeneralSettings extends DashboardView {
     return <div>
       <FlowView
         initialFields={initialFields}
-        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions)}
+        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions )}
         onSubmit={({ changes }) => {
           return getPromiseList({ changes, setDifference, initialFields })
         }}
@@ -201,7 +204,10 @@ export default class GeneralSettings extends DashboardView {
               appSlug={this.context.currentApp.slug}
               parseOptions={fields.parseOptions}
               setParseOptions={setField.bind(this, 'parseOptions')}
-              appSettings={fields.appSettings}
+              dashboardAPI={fields.dashboardAPI}
+              databaseURL={fields.databaseURL}
+              parseVersion={fields.parseVersion}
+              mongoVersion={fields.mongoVersion}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
