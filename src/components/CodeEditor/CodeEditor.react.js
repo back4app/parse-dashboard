@@ -39,7 +39,7 @@ export default class CodeEditor extends React.Component {
   }
 
   render() {
-    const { placeHolder, fontSize = 18, mode = 'javascript', height } = this.props;
+    const { fontSize = 18, mode = 'javascript', height } = this.props;
     const { code } = this.state;
 
     return (
@@ -58,7 +58,7 @@ export default class CodeEditor extends React.Component {
         showGutter={true}
         highlightActiveLine={true}
         width="100%"
-        value={code || placeHolder}
+        value={code}
         enableBasicAutocompletion={true}
         enableLiveAutocompletion={true}
         enableSnippets={false}

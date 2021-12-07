@@ -37,6 +37,8 @@ let Modal = (({
   onConfirm,
   disabled = false,
   progress = false,
+  disableConfirm = false,
+  disableCancel = false,
   customFooter,
   textModal = false,
   width,
@@ -59,12 +61,12 @@ let Modal = (({
       {showCancel ? <Button
         value={cancelText}
         onClick={!progress ? onCancel : null}
-        disabled={!canCancel} /> : null}
+        disabled={!canCancel || disableCancel} /> : null}
       <Button
         primary={true}
         value={confirmText}
         color={buttonColors[type]}
-        disabled={!!disabled}
+        disabled={!!disabled || disableConfirm}
         onClick={!progress ? onConfirm : null}
         progress={progress} />
       {

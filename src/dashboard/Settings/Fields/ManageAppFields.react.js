@@ -21,104 +21,10 @@ import {
 }                                        from 'dashboard/Settings/Fields/Constants';
 
 export const ManageAppFields = ({
-  isCollaborator,
-  hasCollaborators,
-  mongoURL,
-  changeConnectionString,
-  startMigration,
-  hasInProgressMigration,
-  appSlug,
-  cleanUpFiles,
-  cleanUpFilesMessage,
-  cleanUpMessageColor = 'orange',
-  cleanUpSystemLog,
-  cleanUpSystemLogMessage,
-  exportData,
-  exportDataMessage,
-  exportMessageColor = 'orange',
-  cloneApp,
-  cloneAppMessage,
-  transferApp,
-  transferAppMessage,
-  deleteApp,
   parseOptions,
   setParseOptions,
   appSettings
 }) => {
-  let migrateAppField = null;
-  if (!mongoURL && !hasInProgressMigration) {
-    migrateAppField = <Field
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Migrate to external database'
-        description='Move your data and queries to your own database.' />
-      }
-      input={<FormButton
-        color='red'
-        onClick={startMigration}
-        value='Migrate' />
-      } />;
-  } else if (hasInProgressMigration) {
-    migrateAppField = <Field
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Migrate to external database'
-        description='View your migration progress.' />}
-      input={<FormButton
-        color='blue'
-        onClick={() => history.push(`/apps/${appSlug}/migration`)}
-        value='View progress' />} />
-  } else {
-    migrateAppField = [<Field
-      key='show'
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Migration complete'
-        description='Your database has been migrated to an external database.'
-      />}
-      //TODO: KeyField bascially does what we want, but is maybe too specialized. Maybe at some point we should have a component dedicated to semi-secret stuff that we want to prevent shoulder surfers from seeing, and emphasizing that stuff something should be secret.
-      input={<KeyField
-        hidden={true}
-        whenHiddenText='Show connection string'
-      >
-        <TextInput
-          value={mongoURL}
-          onChange={() => {}} //Make propTypes happy
-          disabled={true}
-          monospace={true}
-        />
-      </KeyField>}
-    />,
-    <Field
-      key='new'
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Change connection string'
-        description='Upgrate or change your database.'/>}
-      input={<FormButton
-        additionalStyles={{fontSize: '13px'}}
-        color='red'
-        onClick={changeConnectionString}
-        value='Change connection string' />} />
-    ];
-  }
-
-  let parseOptionsJson = { accountLockout: {}, passwordPolicy: {} };
-  if ( parseOptions ) {
-    if ( typeof parseOptions === 'string' ) {
-      parseOptionsJson = JSON.parse(parseOptions);
-    }
-    if ( parseOptions instanceof Array ) {
-      parseOptionsJson = {
-        ...parseOptionsJson,
-        ...parseOptions[0]
-      };
-    }
-    else if ( parseOptions instanceof Object ) {
-      parseOptionsJson = { accountLockout: { ...parseOptions.accountLockout }, passwordPolicy: { ...parseOptions.passwordPolicy } };
-    }
-  }
-
   return (
     <Fieldset
       legend='App Management'
@@ -203,11 +109,9 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'resetTokenValidityDuration') || 24*60*60}
-                onChange={resetTokenValidityDuration => {
-                  parseOptionsJson.passwordPolicy.resetTokenValidityDuration =
-                    convertStringToInt(resetTokenValidityDuration);
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenValidityDuration') || 24*60*60}
+                onChange={({ target: {value} }) => {
+                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration: value } } );
                 }} />
             }
           />
@@ -221,10 +125,9 @@ export const ManageAppFields = ({
             input={
               <Toggle
                 additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-                value={ getSettingsFromKey(parseOptionsJson.passwordPolicy, 'resetTokenReuseIfValid') || false }
+                defaultValue={ getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenReuseIfValid') || false }
                 onChange={resetTokenReuseIfValid => {
-                  parseOptionsJson.passwordPolicy.resetTokenReuseIfValid = resetTokenReuseIfValid;
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                  setParseOptions({ passwordPolicy: { resetTokenReuseIfValid: resetTokenReuseIfValid } });
                 }} />
             }
           />
@@ -237,10 +140,9 @@ export const ManageAppFields = ({
             />}
             input={
               <TextInputSettings
-                defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'validatorPattern') || '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/'}
-                onChange={validatorPattern => {
-                  parseOptionsJson.passwordPolicy.validatorPattern = validatorPattern;
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'validatorPattern') || '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/'}
+                onChange={({ target: {value} }) => {
+                  setParseOptions( { passwordPolicy: { validatorPattern: value } } );
                 }} />
             }
           />
@@ -253,10 +155,9 @@ export const ManageAppFields = ({
             />}
             input={
               <TextInputSettings
-                defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'validationError') || 'Password must contain at least 1 digit.'}
-                onChange={validationError => {
-                  parseOptionsJson.passwordPolicy.validationError = validationError;
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'validationError') || 'Password must contain at least 1 digit.'}
+                onChange={({ target: {value} }) => {
+                  setParseOptions({ passwordPolicy: { validationError: value } });
                 }} />
             }
           />
@@ -270,10 +171,9 @@ export const ManageAppFields = ({
             input={
               <Toggle
                 additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-                value={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'doNotAllowUsername') !== undefined ? getSettingsFromKey(parseOptionsJson.passwordPolicy, 'doNotAllowUsername') : true }
+                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'doNotAllowUsername') !== undefined ? getSettingsFromKey(parseOptions.passwordPolicy, 'doNotAllowUsername') : true }
                 onChange={doNotAllowUsername => {
-                  parseOptionsJson.passwordPolicy.doNotAllowUsername = doNotAllowUsername;
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                  setParseOptions({ passwordPolicy: { doNotAllowUsername } });
                 }} />
             }
           />
@@ -287,10 +187,9 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                defaultValue={getSettingsFromKey(parseOptionsJson.passwordPolicy, 'maxPasswordAge') || 90 }
-                onChange={maxPasswordAge => {
-                  parseOptionsJson.passwordPolicy.maxPasswordAge = convertStringToInt(maxPasswordAge);
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'maxPasswordAge') || 90 }
+                onChange={({ target: {value} }) => {
+                  setParseOptions({ passwordPolicy: { maxPasswordAge: (value) } });
                 }} />
             }
           />
@@ -305,10 +204,9 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                defaultValue={ getSettingsFromKey(parseOptionsJson.passwordPolicy, 'maxPasswordHistory') || 5 }
-                onChange={maxPasswordHistory => {
-                  parseOptionsJson.passwordPolicy.maxPasswordHistory = convertStringToInt(maxPasswordHistory);
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                defaultValue={ getSettingsFromKey(parseOptions.passwordPolicy, 'maxPasswordHistory') || 5 }
+                onChange={({ target: {value} }) => {
+                  setParseOptions({ passwordPolicy: { maxPasswordHistory: value } });
                 }} />
             }
           />
@@ -331,10 +229,10 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                defaultValue={getSettingsFromKey(parseOptionsJson.accountLockout, 'duration') || 5}
-                onChange={duration => {
+                defaultValue={getSettingsFromKey(parseOptions.accountLockout, 'duration') || 5}
+                onChange={({ target: {value} }) => {
                   try {
-                    const durationNum = parseInt(duration);
+                    const durationNum = parseInt(value);
                     if ( durationNum <= 0 || durationNum > 99999 ) {
                       return;
                     }
@@ -343,8 +241,7 @@ export const ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  parseOptionsJson.accountLockout.duration = convertStringToInt(duration);
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                  setParseOptions({ accountLockout: { duration: value } });
                 }} />
             }
           />
@@ -359,10 +256,10 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                defaultValue={ getSettingsFromKey(parseOptionsJson.accountLockout, 'threshold') || 3}
-                onChange={threshold => {
+                defaultValue={ getSettingsFromKey(parseOptions.accountLockout, 'threshold') || 3}
+                onChange={({ target: {value} }) => {
                   try {
-                    const thresholdNum = parseInt(threshold);
+                    const thresholdNum = parseInt(value);
                     if ( thresholdNum <= 0 || thresholdNum > 1000 ) {
                       return;
                     }
@@ -371,8 +268,7 @@ export const ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  parseOptionsJson.accountLockout.threshold = convertStringToInt(threshold);
-                  setParseOptions(JSON.stringify( parseOptionsJson ));
+                  setParseOptions({ accountLockout: { threshold: value } });
                 }} />
             }
           />
