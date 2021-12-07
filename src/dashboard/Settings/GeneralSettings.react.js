@@ -94,7 +94,7 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
-      parseOptions: this.context.currentApp.settings.fields.fields.app.parseOptions,
+      parseOptions: this.context.currentApp.parseOptions,
       appSettings: this.context.currentApp.settings.fields.fields.app,
       clientPush: this.context.currentApp.settings.fields.fields.app.clientPush,
       clientClassCreation: this.context.currentApp.settings.fields.fields.app.clientClassCreation,
