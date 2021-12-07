@@ -16,6 +16,7 @@ import {
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 }                                        from 'dashboard/Settings/Fields/Constants';
+import getError                          from 'dashboard/Settings/Util/getError';
 
 export const ManageAppFields = ({
   parseOptions,
@@ -26,8 +27,6 @@ export const ManageAppFields = ({
   mongoVersion,
   errors
 }) => {
-  const getError = ( field ) => errors.find( error => error.startsWith(field) )?.replace(field, '')
-
   return (
     <Fieldset
       legend='App Management'
@@ -105,7 +104,7 @@ export const ManageAppFields = ({
             containerStyles={{ borderTop: 'none' }}
             padding={'7px 0px'}
             labelWidth={'50%'}
-            error={getError('parseOptions.passwordPolicy.resetTokenValidityDuration')}
+            error={getError(errors, 'parseOptions.passwordPolicy.resetTokenValidityDuration')}
             label={<LabelSettings
               text='Reset Token Validity Duration.'
               description='Set the validity duration of the password reset token in seconds after which the token expires.'
@@ -113,7 +112,7 @@ export const ManageAppFields = ({
             input={
               <NumericInputSettings
                 min={0}
-                error={getError('parseOptions.passwordPolicy.resetTokenValidityDuration')}
+                error={getError(errors, 'parseOptions.passwordPolicy.resetTokenValidityDuration')}
                 defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenValidityDuration') || 24 * 60 * 60}
                 onChange={(resetTokenValidityDuration) => {
                   setParseOptions( { passwordPolicy: { resetTokenValidityDuration } } );
@@ -139,14 +138,14 @@ export const ManageAppFields = ({
           <FieldSettings
             padding={'7px 0px'}
             labelWidth={'50%'}
-            error={getError('parseOptions.passwordPolicy.validatorPattern')}
+            error={getError(errors, 'parseOptions.passwordPolicy.validatorPattern')}
             label={<LabelSettings
               text='Password Validator Pattern'
               description='Set the regular expression validation pattern a password must match to be accepted.'
             />}
             input={
               <TextInputSettings
-                error={getError('parseOptions.passwordPolicy.validatorPattern')}
+                error={getError(errors,'parseOptions.passwordPolicy.validatorPattern')}
                 defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'validatorPattern') || '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/'}
                 onChange={({ target: {value} }) => {
                   setParseOptions( { passwordPolicy: { validatorPattern: value } } );
@@ -156,14 +155,14 @@ export const ManageAppFields = ({
           <FieldSettings
             padding={'7px 0px'}
             labelWidth={'50%'}
-            error={getError('parseOptions.passwordPolicy.validationError')}
+            error={getError(errors, 'parseOptions.passwordPolicy.validationError')}
             label={<LabelSettings
               text='Validation Error Message'
               description='Set the error message to be sent for failed password validation'
             />}
             input={
               <TextInputSettings
-                error={getError('parseOptions.passwordPolicy.validationError')}
+                error={getError(errors, 'parseOptions.passwordPolicy.validationError')}
                 defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'validationError') || 'Password must contain at least 1 digit.'}
                 onChange={({ target: {value} }) => {
                   setParseOptions({ passwordPolicy: { validationError: value } });
@@ -187,7 +186,7 @@ export const ManageAppFields = ({
             }
           />
           <FieldSettings
-            error={getError('parseOptions.passwordPolicy.maxPasswordAge')}
+            error={getError(errors, 'parseOptions.passwordPolicy.maxPasswordAge')}
             padding={'7px 0px'}
             labelWidth={'50%'}
             label={<LabelSettings
@@ -196,7 +195,7 @@ export const ManageAppFields = ({
             />}
             input={
               <NumericInputSettings
-                error={getError('parseOptions.passwordPolicy.maxPasswordAge')}
+                error={getError(errors, 'parseOptions.passwordPolicy.maxPasswordAge')}
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'maxPasswordAge') || 90 }
                 onChange={(maxPasswordAge) => {
@@ -205,7 +204,7 @@ export const ManageAppFields = ({
             }
           />
           <FieldSettings
-            error={getError('parseOptions.passwordPolicy.maxPasswordHistory')}
+            error={getError(errors, 'parseOptions.passwordPolicy.maxPasswordHistory')}
             containerStyles={{ borderBottom: 'none' }}
             padding={'7px 0px'}
             labelWidth={'50%'}
@@ -215,7 +214,7 @@ export const ManageAppFields = ({
             />}
             input={
               <NumericInputSettings
-                error={getError('parseOptions.passwordPolicy.maxPasswordHistory')}
+                error={getError(errors, 'parseOptions.passwordPolicy.maxPasswordHistory')}
                 min={0}
                 defaultValue={ getSettingsFromKey(parseOptions.passwordPolicy, 'maxPasswordHistory') || 5 }
                 onChange={(maxPasswordHistory) => {
@@ -233,7 +232,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
           <FieldSettings
-            error={getError('parseOptions.accountLockout.duration')}
+            error={getError(errors, 'parseOptions.accountLockout.duration')}
             padding={'7px 0px'}
             labelWidth={'50%'}
             label={<LabelSettings
@@ -242,7 +241,7 @@ export const ManageAppFields = ({
             />}
             input={
               <NumericInputSettings
-                error={getError('parseOptions.accountLockout.duration')}
+                error={getError(errors, 'parseOptions.accountLockout.duration')}
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptions.accountLockout, 'duration') || 5}
                 onChange={(duration) => {
@@ -251,7 +250,7 @@ export const ManageAppFields = ({
             }
           />
           <FieldSettings
-            error={getError('parseOptions.accountLockout.threshold')}
+            error={getError(errors, 'parseOptions.accountLockout.threshold')}
             containerStyles={{ borderBottom: 'none' }}
             padding={'7px 0px'}
             labelWidth={'50%'}
@@ -261,7 +260,7 @@ export const ManageAppFields = ({
             />}
             input={
               <NumericInputSettings
-                error={getError('parseOptions.accountLockout.threshold')}
+                error={getError(errors, 'parseOptions.accountLockout.threshold')}
                 min={0}
                 defaultValue={ getSettingsFromKey(parseOptions.accountLockout, 'threshold') || 3}
                 onChange={(threshold) => {

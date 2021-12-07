@@ -1,8 +1,7 @@
 import * as yup from 'yup';
 
-yup.object
-
 export default yup.object({
+    appName: yup.string().min(0).max(255),
     parseOptions: yup.object({
         passwordPolicy: yup.object({
             resetTokenValidityDuration: yup.number().positive(),

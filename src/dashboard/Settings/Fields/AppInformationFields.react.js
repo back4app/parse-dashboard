@@ -7,23 +7,14 @@ import TextInput                         from 'components/TextInput/TextInput.re
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 }                                        from 'dashboard/Settings/Fields/Constants';
+import getError                          from 'dashboard/Settings/Util/getError';
 
 export const AppInformationFields = ({
   appName,
   setAppName,
-  inProduction,
-  setInProduction,
-  iTunesURL,
-  setiTunesURL,
-  googlePlayURL,
-  setGooglePlayURL,
-  windowsAppStoreURL,
-  setWindowsAppStoreURL,
-  webAppURL,
-  setWebAppURL,
-  otherURL,
-  setOtherURL,
+  errors
 }) => <Fieldset
+  error={getError(errors, 'appName')}
   legend='App Information'
   description='Update general information about your app.'>
   <Field
