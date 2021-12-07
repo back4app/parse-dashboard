@@ -37,7 +37,6 @@ export const DangerzoneFields = ({
             additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
             value={ clientPush === true }
             onChange={ clientPush => setClientPush(clientPush) } />
-          { clientPush === true ? 'ALLOWED' : 'BLOCKED' }
         </span>
       }
       />
@@ -52,7 +51,6 @@ export const DangerzoneFields = ({
             additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
             value={ clientClassCreation }
             onChange={ clientClassCreation => setClientClassCreation(clientClassCreation) } />
-          { clientClassCreation === true ? 'ALLOWED' : 'BLOCKED' }
         </span>
       }
     />
