@@ -110,8 +110,8 @@ export const ManageAppFields = ({
               <NumericInputSettings
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenValidityDuration') || 24*60*60}
-                onChange={({ target: {value} }) => {
-                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration: value } } );
+                onChange={resetTokenValidityDuration => {
+                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration } } );
                 }} />
             }
           />
@@ -125,9 +125,9 @@ export const ManageAppFields = ({
             input={
               <Toggle
                 additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-                defaultValue={ getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenReuseIfValid') || false }
+                value={ getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenReuseIfValid') || false }
                 onChange={resetTokenReuseIfValid => {
-                  setParseOptions({ passwordPolicy: { resetTokenReuseIfValid: resetTokenReuseIfValid } });
+                  setParseOptions({ passwordPolicy: { resetTokenReuseIfValid } });
                 }} />
             }
           />
@@ -188,8 +188,8 @@ export const ManageAppFields = ({
               <NumericInputSettings
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptions.passwordPolicy, 'maxPasswordAge') || 90 }
-                onChange={({ target: {value} }) => {
-                  setParseOptions({ passwordPolicy: { maxPasswordAge: (value) } });
+                onChange={maxPasswordAge => {
+                  setParseOptions({ passwordPolicy: { maxPasswordAge } });
                 }} />
             }
           />
@@ -205,8 +205,8 @@ export const ManageAppFields = ({
               <NumericInputSettings
                 min={0}
                 defaultValue={ getSettingsFromKey(parseOptions.passwordPolicy, 'maxPasswordHistory') || 5 }
-                onChange={({ target: {value} }) => {
-                  setParseOptions({ passwordPolicy: { maxPasswordHistory: value } });
+                onChange={(maxPasswordHistory) => {
+                  setParseOptions({ passwordPolicy: { maxPasswordHistory } });
                 }} />
             }
           />
@@ -230,9 +230,9 @@ export const ManageAppFields = ({
               <NumericInputSettings
                 min={0}
                 defaultValue={getSettingsFromKey(parseOptions.accountLockout, 'duration') || 5}
-                onChange={({ target: {value} }) => {
+                onChange={duration => {
                   try {
-                    const durationNum = parseInt(value);
+                    const durationNum = parseInt(duration);
                     if ( durationNum <= 0 || durationNum > 99999 ) {
                       return;
                     }
@@ -241,7 +241,7 @@ export const ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  setParseOptions({ accountLockout: { duration: value } });
+                  setParseOptions({ accountLockout: { duration } });
                 }} />
             }
           />
@@ -257,9 +257,9 @@ export const ManageAppFields = ({
               <NumericInputSettings
                 min={0}
                 defaultValue={ getSettingsFromKey(parseOptions.accountLockout, 'threshold') || 3}
-                onChange={({ target: {value} }) => {
+                onChange={threshold => {
                   try {
-                    const thresholdNum = parseInt(value);
+                    const thresholdNum = parseInt(threshold);
                     if ( thresholdNum <= 0 || thresholdNum > 1000 ) {
                       return;
                     }
@@ -268,7 +268,7 @@ export const ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  setParseOptions({ accountLockout: { threshold: value } });
+                  setParseOptions({ accountLockout: { threshold } });
                 }} />
             }
           />
