@@ -402,9 +402,9 @@ export default class ParseApp {
     return AJAX.post(path, { appDescription: "", appId: null, appName, isPublic: false })
   }
 
-  initializeDb(appId) {
+  initializeDb(appId, body) {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId}/database`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
+    return fetch(path, { method: 'POST', body , headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
       if (response.ok) {
         return response;
       } else {
@@ -413,11 +413,10 @@ export default class ParseApp {
     })
   }
 
-  async cloneApp(appName, parseVersion) {
-    // check storage.
+  async cloneApp(appId, parseVersion) {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone-app`;
     return AJAX.post(path, {
-      appName,
+      appId,
       parseVersion,
     });
   }

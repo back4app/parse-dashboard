@@ -56,7 +56,6 @@ export default class GeneralSettings extends DashboardView {
       showCloneAppModal: false,
       cloneAppMessage: '',
       cloneAppName:'',
-      cloneOptionsSelection: ['schema', 'app_settings', 'config', 'cloud_code'],
 
       showMigrateAppModal: false,
       migrationMongoURL: '',
