@@ -94,8 +94,9 @@ export default class GeneralSettings extends DashboardView {
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
       parseOptions: this.context.currentApp.parseOptions,
-      appSettings: this.context.currentApp.settings.fields.fields.app,
-    }
+      clientPush: this.context.currentApp.settings.fields.fields.clientPush,
+      clientClassCreation: this.context.currentApp.settings.fields.fields.clientClassCreation
+    };
   }
 
   setCollaborators (initialFields, setField, _, allCollabs) {
@@ -180,6 +181,10 @@ export default class GeneralSettings extends DashboardView {
               parseOptions={fields.parseOptions}
               setParseOptions={setField.bind(this, 'parseOptions')}
               appSettings={fields.appSettings}
+              clientPush={fields.clientPush}
+              setClientPush={setField.bind(this, 'clientPush')}
+              clientClassCreation={fields.clientClassCreation}
+              setClientClassCreation={setField.bind(this, 'clientClassCreation')}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               restartApp={() => this.setState({ showRestartAppModal: true })}
               transferApp={() => this.setState({ showTransferAppModal:true })}
