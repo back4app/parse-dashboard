@@ -6,7 +6,7 @@ git diff --cached --name-status | while read st file; do
     if [ "$st" = 'D' ]; then continue; fi
     if [ "$file" = "Parse-Dashboard/parse-dashboard-config.json" ]; then
         git reset
-        git clean -df
+        git checkout -- .
         echo "[Error] Can not commit parse dashboard config file: $file"
         exit 1
     fi
