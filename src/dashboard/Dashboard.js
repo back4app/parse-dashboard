@@ -401,6 +401,7 @@ export default class Dashboard extends React.Component {
         history.replace('/apps');
         return <div />
       };
+      
       if (currentApp.serverInfo.status === 'LOADING') {
         return (
           <div className={center}>
