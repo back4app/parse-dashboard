@@ -30,7 +30,7 @@
       "no-console": 0,
       "no-case-declarations": 0,
       "quotes": ["error", "single"]
-    },
+    }
   },
   "globals": {
     "b4aSettings": true
