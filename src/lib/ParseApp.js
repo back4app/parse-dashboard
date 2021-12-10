@@ -402,38 +402,19 @@ export default class ParseApp {
     return AJAX.post(path, { appDescription: "", appId: null, appName, isPublic: false })
   }
 
-  initializeDb(appId) {
+  initializeDb(appId, parseVersion) {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId}/database`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    return AJAX.post(path, { parseVersion })
   }
 
   async cloneApp(appId, parseVersion) {
-    // check storage.
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()}, body: {appId, parseVersion} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    return AJAX.post(path, { appId, parseVersion })
   }
 
   async deleteApp(appId) {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId || this.slug}`;
-    return fetch(path, { method: 'DELETE', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    return AJAX.del(path);
   }
 
   cleanUpSystemLog() {

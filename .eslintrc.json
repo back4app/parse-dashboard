@@ -5,7 +5,7 @@
     "browser": true
   },
   "parser": "babel-eslint",
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended", "plugin/react:recommended"],
   "parserOptions": {
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
@@ -31,8 +31,8 @@
       "no-case-declarations": 0,
       "quotes": ["error", "single"]
     },
-    "globals": {
-      "b4aSettings": true
-    }
+  },
+  "globals": {
+    "b4aSettings": true
   }
 }
