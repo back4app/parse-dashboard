@@ -18,7 +18,7 @@ git diff --cached --name-status | while read st file; do
         exit 1
     fi
     
-    "$ESLINT .. --ignore-path .gitignore --cache" "$file"
+    "$ESLINT" "$file"
 
     if [ "$?" == 0 ]; then
         git reset
