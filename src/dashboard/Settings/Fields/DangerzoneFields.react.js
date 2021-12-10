@@ -15,21 +15,14 @@ export const DangerzoneFields = ({
   cleanUpFiles,
   cleanUpFilesMessage,
   cleanUpMessageColor = 'orange',
-<<<<<<< HEAD
-=======
   clientPush,
   setClientPush,
   clientClassCreation,
   setClientClassCreation,
->>>>>>> 6270580cb484df46990d456af24b2e9154fbe1b1
   restartApp,
   transferApp,
   cloneApp,
   deleteApp,
-<<<<<<< HEAD
-  appSettings
-=======
->>>>>>> 6270580cb484df46990d456af24b2e9154fbe1b1
 }) => <Fieldset
   legend='Dangerzone'
   description='These options will effect your app'>
