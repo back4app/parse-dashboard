@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ESLINT="$(git rev-parse --show-toplevel)/node_modules/.bin/eslint . --ignore-path .gitignore --cache"
+ESLINT="$(git rev-parse --show-toplevel)/node_modules/.bin/eslint"
 
 if [[ ! -x "$ESLINT" ]]; then
   echo "\t\033[41mPlease install ESlint\033[0m (npm i --save --save-exact --dev eslint)"
@@ -18,7 +18,7 @@ git diff --cached --name-status | while read st file; do
         exit 1
     fi
     
-    "$ESLINT" "$file"
+    "$ESLINT .. --ignore-path .gitignore --cache" "$file"
 
     if [ "$?" == 0 ]; then
         git reset
