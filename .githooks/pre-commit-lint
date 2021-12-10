@@ -1,0 +1,22 @@
+#!/bin/sh
+
+ESLINT="$(git rev-parse --show-toplevel)/node_modules/.bin/eslint"
+
+if [[ ! -x "$ESLINT" ]]; then
+  echo "\t\033[41mPlease install ESlint\033[0m (npm i --save --save-exact --dev eslint)"
+  exit 1
+fi
+
+
+exec 1>&2
+git diff --cached --name-status | while read st file; do
+    # skip deleted files
+    if [ "$st" = 'D' ]; then continue; fi
+
+    if [ ["$ESLINT" "$FILE" = 0] ]; then
+        git reset
+        git checkout -- $file
+        echo "[Error] eslint failed for file: $file"
+        exit 1
+    fi
+done
