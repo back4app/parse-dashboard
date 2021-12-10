@@ -17,13 +17,14 @@ git diff --cached --name-status | while read st file; do
         echo "[Error] Can not commit parse dashboard config file: $file"
         exit 1
     fi
-    
-    "$ESLINT" "$file"
-    echo $?
-    if [ "$?" == 0 ]; then
-        git reset
-        git checkout -- $file
-        echo "[Error] eslint failed for file: $file"
-        exit 1
+
+    if [ "$file" | grep \.js$ ]; then
+        "$ESLINT" "$file"
+        if [ "$?" = 1 ]; then
+            git reset
+            git checkout -- $file
+            echo "[Error] eslint failed for file: $file"
+            exit 1
+        fi
     fi
 done
