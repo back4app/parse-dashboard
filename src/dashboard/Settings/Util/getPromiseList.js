@@ -9,7 +9,6 @@ import deepmerge  from 'deepmerge';
 
 export const getPromiseList = ({ changes, setDifference, initialFields, app, promiseCallback }) => {
   let promiseList = [];
-  console.log('parseOptions updated');
   if (changes.requestLimit !== undefined) {
     promiseList.push(app.setRequestLimit(changes.requestLimit));
   }
@@ -62,7 +61,6 @@ export const getPromiseList = ({ changes, setDifference, initialFields, app, pro
     }
   });
   return Promise.all(promiseList).then(() => promiseCallback({ removedCollaborators })).catch(errors => {
-    console.log(errors);
     return Promise.reject({ error: unique(pluck(errors, 'error')).join(' ')});
   });
 }
