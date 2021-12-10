@@ -7,7 +7,6 @@ if [[ ! -x "$ESLINT" ]]; then
   exit 1
 fi
 
-
 exec 1>&2
 git diff --cached --name-status | while read st file; do
     # skip deleted files
