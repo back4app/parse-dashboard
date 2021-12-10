@@ -29,7 +29,6 @@ import JobEdit            from 'dashboard/Data/Jobs/JobEdit.react';
 import Jobs               from './Data/Jobs/Jobs.react';
 import JobsData           from 'dashboard/Data/Jobs/JobsData.react';
 import Loader             from 'components/Loader/Loader.react';
-import Logs               from './Data/Logs/Logs.react';
 import InfoLogs           from './Data/Logs/InfoLogs.react';
 import ErrorLogs          from './Data/Logs/ErrorLogs.react';
 import AccessLogs         from './Data/Logs/AccessLogs.react';
@@ -159,6 +158,7 @@ export default class Dashboard extends React.Component {
       newFeaturesInLatestVersion: [],
       apps: []
     };
+    // eslint-disable-next-line react/prop-types
     setBasePath(props.path);
     this.updateApp = this.updateApp.bind(this);
     sessionStorage.removeItem('username');
@@ -400,7 +400,7 @@ export default class Dashboard extends React.Component {
       if (!currentApp) {
         history.replace('/apps');
         return <div />
-      };
+      }
       if (currentApp.serverInfo.status === 'LOADING') {
         return (
           <div className={center}>
