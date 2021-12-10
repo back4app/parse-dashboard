@@ -18,13 +18,13 @@ git diff --cached --name-status | while read st file; do
         exit 1
     fi
 
-    if [ "$file" | grep \.js$ ]; then
-        "$ESLINT" "$file"
-        if [ "$?" = 1 ]; then
-            git reset
-            git checkout -- $file
-            echo "[Error] eslint failed for file: $file"
-            exit 1
-        fi
+    echo "$file" | grep \.js$ -i
+    
+    "$ESLINT" "$file"
+    if [ "$?" = 1 ]; then
+        git reset
+        git checkout -- $file
+        echo "[Error] eslint failed for file: $file"
+        exit 1
     fi
 done
