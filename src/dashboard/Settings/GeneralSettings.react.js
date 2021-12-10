@@ -140,7 +140,7 @@ export default class GeneralSettings extends DashboardView {
         onSubmit={async ({ changes }) => {
           try {
             // await GeneralSettingsValidataions.validate(changes);
-            // return getPromiseList({ changes, setDifference, initialFields, app: this.context.currentApp, promiseCallback: this.promiseCallback.bind(this) })
+            return getPromiseList({ changes, setDifference, initialFields, app: this.context.currentApp, promiseCallback: this.promiseCallback.bind(this) })
           } catch ( e ) {
             console.error(e);
           } 
