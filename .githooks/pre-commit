@@ -19,6 +19,7 @@ git diff --cached --name-status | while read st file; do
     fi
 
     echo "$file" | grep \.js$ -i
+
     
     "$ESLINT" "$file"
     if [ "$?" = 1 ]; then
