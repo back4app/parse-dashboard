@@ -19,7 +19,7 @@ git diff --cached --name-status | while read st file; do
     fi
     
     "$ESLINT" "$file"
-
+    echo $?
     if [ "$?" == 0 ]; then
         git reset
         git checkout -- $file
