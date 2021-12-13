@@ -746,7 +746,7 @@ export default class ParseApp {
         this.settings.fields.fields = { ...this.settings.fields.fields, ...appSettings }
       }
       if(parseOptions)
-        this.settings.fields.fields.app.parseOptions = parseOptions;
+        this.settings.fields.fields.parseOptions = parseOptions;
     });
     return promise;
   }
