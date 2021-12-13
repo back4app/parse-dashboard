@@ -46,7 +46,7 @@ export default class FlowView extends React.Component {
     return fields;
   }
 
-  async setField(key, value, preserveSavingState = false) {
+  setField(key, value, preserveSavingState = false) {
     if (this.state.saveState !== SaveButton.States.SAVING) {
       let newChanges = {...this.state.changes};
       newChanges[key] = value;
