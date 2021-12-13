@@ -3,7 +3,6 @@ import React from 'react';
 import Fieldset                          from 'components/Fieldset/Fieldset.react';
 import Field                             from 'components/Field/Field.react';
 import Label                             from 'components/Label/Label.react';
-import TextInput                         from 'components/TextInput/TextInput.react';
 import FormButton                        from 'components/FormButton/FormButton.react';
 import FormNote                          from 'components/FormNote/FormNote.react';
 import Toggle                            from 'components/Toggle/Toggle.react';
@@ -24,7 +23,7 @@ export const DangerzoneFields = ({
   cloneApp,
   deleteApp,
 }) => <Fieldset
-  legend='Dangerzone'
+  legend='Danger Zone'
   description='These options will effect your app'>
     <Field
       labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}

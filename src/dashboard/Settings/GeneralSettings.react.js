@@ -136,15 +136,10 @@ export default class GeneralSettings extends DashboardView {
       <FlowView
         initialFields={initialFields}
         validate={(changes) => GeneralSettingsValidataions.validate(changes)}
-        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions )}
         onSubmit={async ({ changes }) => {
-          try {
-            // await GeneralSettingsValidataions.validate(changes);
-            return getPromiseList({ changes, setDifference, initialFields, app: this.context.currentApp, promiseCallback: this.promiseCallback.bind(this) })
-          } catch ( e ) {
-            console.error(e);
-          } 
+          return getPromiseList({ changes, setDifference, initialFields, app: this.context.currentApp, promiseCallback: this.promiseCallback.bind(this) })
         }}
+        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions )}
         renderModals={[
           renderModal(this.state.showRestartAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, RestartAppModal),
           renderModal(this.state.showPurgeFilesModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeFilesModal),
