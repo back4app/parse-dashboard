@@ -24,21 +24,19 @@ export const DangerzoneFields = ({
   cloneApp,
   deleteApp,
 }) => <Fieldset
-  legend='Dangerzone'
+  legend='Danger Zone'
   description='These options will effect your app'>
     <Field
       labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
       label={<Label
         text='Push Notification from Client'
-        description={<span>This settings will effect Push notifications from client permissions.
-        </span>} />}
+        description={<span>For security reasons, we recommend to disable this option.</span>} />}
       input={
         <span style={{ textAlign: 'center' }}>
           <Toggle
             additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
             value={ clientPush === true }
             onChange={ clientPush => setClientPush(clientPush) } />
-          { clientPush === true ? 'ALLOWED' : 'BLOCKED' }
         </span>
       }
       />
@@ -46,17 +44,15 @@ export const DangerzoneFields = ({
       labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
       label={<Label
         text='Client Class Creation'
-        description={<span>This settings will effect client class creation permission.
-        </span>} />}
-    input={
-      <span style={{ textAlign: 'center' }}>
-        <Toggle
-          additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-          value={ clientClassCreation }
-          onChange={ clientClassCreation => setClientClassCreation(clientClassCreation) } />
-        { clientClassCreation === true ? 'ALLOWED' : 'BLOCKED' }
-      </span>
-    }
+        description={<span>For security reasons, we recommend to disable this option.</span>} />}
+      input={
+        <span style={{ textAlign: 'center' }}>
+          <Toggle
+            additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
+            value={ clientClassCreation }
+            onChange={ clientClassCreation => setClientClassCreation(clientClassCreation) } />
+        </span>
+      }
     />
     <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}

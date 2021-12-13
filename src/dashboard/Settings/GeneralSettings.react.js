@@ -93,7 +93,11 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
-      parseOptions: this.context.currentApp.parseOptions,
+      parseOptions: this.context.currentApp.settings.fields.fields.parseOptions,
+      dashboardAPI: this.context.currentApp.settings.fields.fields.dashboardAPI,
+      databaseURL: this.context.currentApp.settings.fields.fields.databaseURL,
+      parseVersion: this.context.currentApp.settings.fields.fields.parseVersion,
+      mongoVersion: this.context.currentApp.settings.fields.fields.mongoVersion,
       clientPush: this.context.currentApp.settings.fields.fields.clientPush,
       clientClassCreation: this.context.currentApp.settings.fields.fields.clientClassCreation
     };
@@ -113,6 +117,11 @@ export default class GeneralSettings extends DashboardView {
     setField('collaborators', allCollabs);
   }
 
+  promiseCallback({ removedCollaborators }) {
+    this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
+    this.setState({ removedCollaborators: removedCollaborators || [] });
+  }
+
   renderContent() {
     if (!this.props.initialFields) {
       return <Toolbar section='Settings' subsection='General' />
@@ -123,9 +132,9 @@ export default class GeneralSettings extends DashboardView {
     return <div>
       <FlowView
         initialFields={initialFields}
-        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions)}
+        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions )}
         onSubmit={({ changes }) => {
-          return getPromiseList({ changes, setDifference, initialFields })
+          return getPromiseList({ changes, setDifference, initialFields, app: this.context.currentApp, promiseCallback: this.promiseCallback.bind(this) })
         }}
         renderModals={[
           renderModal(this.state.showRestartAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, RestartAppModal),
@@ -135,7 +144,7 @@ export default class GeneralSettings extends DashboardView {
           renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal),
           renderModal(this.state.showDeleteAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, DeleteAppModal)
         ]}
-        renderForm={({ fields, setField }) => {
+        renderForm={({ fields, setField, setFieldJson }) => {
           return <div className={styles.settings_page}>
             <AppInformationFields
               appName={fields.appName}
@@ -166,8 +175,11 @@ export default class GeneralSettings extends DashboardView {
               hasCollaborators={fields.collaborators.length > 0}
               appSlug={this.context.currentApp.slug}
               parseOptions={fields.parseOptions}
-              setParseOptions={setField.bind(this, 'parseOptions')}
-              appSettings={fields.appSettings}
+              setParseOptions={setFieldJson.bind(this, 'parseOptions')}
+              dashboardAPI={fields.dashboardAPI}
+              databaseURL={fields.databaseURL}
+              parseVersion={fields.parseVersion}
+              mongoVersion={fields.mongoVersion}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
