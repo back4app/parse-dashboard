@@ -109,26 +109,6 @@ export default class FlowView extends React.Component {
     }
   }
 
-  setFieldJson(key, value, preserveSavingState = false) {
-    if (this.state.saveState !== SaveButton.States.SAVING) {
-      const newChanges = { ...this.state.changes };
-      if ( !newChanges[key] ) {
-        newChanges[key] = {};
-      }
-      newChanges[key] = deepmerge(newChanges[key], value);
-      //Modify stored state in case component recieves new props,
-      //as componentWillReceiveProps would otherwise clobber this change.
-      this.setState({
-        saveState: preserveSavingState ? this.state.saveState : SaveButton.States.WAITING,
-        saveError: '',
-        changes: newChanges,
-      });
-      if(key === 'collaborators'){
-        this.handleClickSaveButton();
-      }
-    }
-  }
-
   resetFields() {
     if (this.state.saveState !== SaveButton.States.SAVING) {
       this.setState({
