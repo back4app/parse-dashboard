@@ -135,7 +135,7 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
   for (let i = 0; i < files.fileList.length; i++) {
     newTreeNodes = readFile({ name: files.fileList[i], code: files.base64[i] }, newTreeNodes);
   }
-
+  let newNodeId = '';
   for (let j = 0; j < newTreeNodes.length; j++ ) {
     if (currentCode === '#') {
       let inst = $.jstree.reference(currentCode)
@@ -151,9 +151,9 @@ const addFilesOnTree = async (files, currentCode, selectedFolder) => {
     let selectedParent = getSelectedParent();
     overwrite = await verifyFileNames(folder, newTreeNodes[j]);
     if ( overwrite === false ) continue;
-    addFileOnSelectedNode(newTreeNodes[j].text.name, selectedParent, newTreeNodes[j].data);
+    newNodeId = addFileOnSelectedNode(newTreeNodes[j].text.name, selectedParent, newTreeNodes[j].data);
   }
-  return overwrite;
+  return { overwrite, newNodeId };
 }
 
 const getSelectedParent = () => {
@@ -165,7 +165,8 @@ const getSelectedParent = () => {
 }
 
 const addFileOnSelectedNode = (name, parent, data = {code: 'data:plain/text;base64,IA=='}) => {
-  $('#tree').jstree("create_node", parent, { data, type: 'new-file', text: name }, 'inside', false, false);
+  let newNodeId = $('#tree').jstree("create_node", parent, { data, type: 'new-file', text: name }, 'inside', false, false);
+  return newNodeId;
 }
 
 
@@ -258,6 +259,11 @@ export const refreshEmptyFolderIcons = () => {
   }
 }
 
+const selectFileOnTree = (nodeId) => {
+  $('#tree').jstree().deselect_all(true); // first deselect all selected files
+  $('#tree').jstree().select_node(nodeId); // select specified node
+}
+
 export default {
   getConfig,
   remove,
@@ -270,5 +276,6 @@ export default {
   getExtension,
   refreshEmptyFolderIcons,
   addFileOnSelectedNode,
-  getSelectedParent
-}
+  getSelectedParent,
+  selectFileOnTree,
+};

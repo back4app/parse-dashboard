@@ -62,7 +62,6 @@ export const getPromiseList = ({ changes, setDifference, initialFields, app, pro
     }
   });
   return Promise.all(promiseList).then(() => promiseCallback({ removedCollaborators })).catch(errors => {
-    console.log(errors);
     return Promise.reject({ error: unique(pluck(errors, 'error')).join(' ')});
   });
 }
