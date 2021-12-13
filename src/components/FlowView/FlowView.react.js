@@ -10,6 +10,7 @@ import FlowFooter from 'components/FlowFooter/FlowFooter.react';
 import PropTypes  from 'lib/PropTypes';
 import React      from 'react';
 import SaveButton from 'components/SaveButton/SaveButton.react';
+import deepmerge  from 'deepmerge';
 
 export default class FlowView extends React.Component {
   constructor(props) {
@@ -23,6 +24,7 @@ export default class FlowView extends React.Component {
     this.handleClickSaveButton = this.handleClickSaveButton.bind(this);
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(props) {
     let newChanges = {...this.state.changes};
     for (let k in props.initialFields) {
@@ -39,7 +41,11 @@ export default class FlowView extends React.Component {
       fields[k] = this.props.initialFields[k];
     }
     for (let k in this.state.changes) {
-      fields[k] = this.state.changes[k];
+      if ( typeof this.state.changes[k] === 'object' ) {
+        fields[k] = deepmerge(fields[k], this.state.changes[k])
+      } else {
+        fields[k] = this.state.changes[k];
+      }
     }
     return fields;
   }
@@ -56,6 +62,7 @@ export default class FlowView extends React.Component {
       }
       //Modify stored state in case component recieves new props,
       //as componentWillReceiveProps would otherwise clobber this change.
+      // eslint-disable-next-line react/no-direct-mutation-state
       this.state.changes[key] = value;
       this.setState({
         saveState: preserveSavingState ? this.state.saveState : SaveButton.States.WAITING,
@@ -68,8 +75,28 @@ export default class FlowView extends React.Component {
     }
   }
 
-  resetFields() {
+  setFieldJson(key, value, preserveSavingState = false) {
     if (this.state.saveState !== SaveButton.States.SAVING) {
+      const newChanges = { ...this.state.changes };
+      if ( !newChanges[key] ) {
+        newChanges[key] = {};
+      }
+      newChanges[key] = deepmerge(newChanges[key], value);
+      //Modify stored state in case component recieves new props,
+      //as componentWillReceiveProps would otherwise clobber this change.
+      this.setState({
+        saveState: preserveSavingState ? this.state.saveState : SaveButton.States.WAITING,
+        saveError: '',
+        changes: newChanges,
+      });
+      if(key === 'collaborators'){
+        this.handleClickSaveButton();
+      }
+    }
+  }
+
+  resetFields() {
+    if ( this.state.saveState !== SaveButton.States.SAVING ) {
       this.setState({
         saveState: SaveButton.States.WAITING,
         saveError: '',
@@ -83,7 +110,7 @@ export default class FlowView extends React.Component {
     this.setState({ saveState: SaveButton.States.SAVING });
     this.props.onSubmit({ changes: this.state.changes, fields, setField: this.setField, resetFields: this.resetFields }).then(() => {
       this.setState({ saveState: SaveButton.States.SUCCEEDED });
-      this.props.afterSave({ fields, setField: this.setField, resetFields: this.resetFields });
+      this.props.afterSave({ fields, setField: this.setField, setFieldJson: this.setFieldJson, resetFields: this.resetFields });
     }).catch(({ message, error, notice, errors = [] }) => {
       this.setState({
         saveState: SaveButton.States.FAILED,
@@ -101,8 +128,6 @@ export default class FlowView extends React.Component {
       defaultFooterMessage,
       renderForm,
       validate = () => '',
-      onSubmit,
-      afterSave = () => {},
       renderModals = [],
       secondaryButton = () => <Button
         disabled={this.state.saveState === SaveButton.States.SAVING}
@@ -117,8 +142,9 @@ export default class FlowView extends React.Component {
     } = this.state;
     let setField = this.setField.bind(this);
     let resetFields = this.resetFields.bind(this);
+    let setFieldJson = this.setFieldJson.bind(this);
     let fields = this.currentFields();
-    let form = renderForm({ fields, changes, setField, resetFields });
+    let form = renderForm({ fields, changes, setField, resetFields, setFieldJson });
     let flowModals = <div>{renderModals.map( (modal, key) => <div key={key}>{modal}</div> )}</div>
 
     let invalidFormMessage = validate({ changes, fields });
@@ -175,6 +201,7 @@ FlowView.propTypes = {
   showFooter: PropTypes.func.describe('Recieves the changes, and returns false if the footer should be hidden. By default the footer shows if there are any changes.'),
   secondaryButton: PropTypes.func.describe('Overrride the cancel button by passing a function that returns your custom node. By default, the cancel button says "Cancel" and calls resetFields().'),
   defaultFooterMessage: PropTypes.node.describe('A message for the footer when the validate message is "use default"'),
+  renderModals: PropTypes.object.describe('An array of modals to render in the document')
 };
 
 FlowView.defaultProps = {

@@ -11,7 +11,7 @@ export const defaultParseOptions = {
     // Two optional settings to enforce strong passwords. Either one or both can be specified.
     // If both are specified, both checks must pass to accept the password
     // 1. a RegExp object or a regex string representing the pattern to enforce
-    validatorPattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/, // enforce password with at least 8 char with at least 1 lower case, 1 upper case and 1 digit
+    validatorPattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/', // enforce password with at least 8 char with at least 1 lower case, 1 upper case and 1 digit
     // 2. a callback function to be invoked to validate the password
     validationError: 'Password must contain at least 1 digit.', // optional error message to be sent instead of the default "Password does not meet the Password Policy requirements." message.
     doNotAllowUsername: true, // optional setting to disallow username in passwords

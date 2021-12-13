@@ -6,7 +6,9 @@ function jsonChangesToString(json, initialValue) {
     if ( typeof json[jsonKey] === 'object' && Object.keys(json[jsonKey]).length >= 1 ) {
       joinedArr.push(jsonChangesToString(json[jsonKey]))
     } else {
-      if ( initialValue[jsonKey] !== json[jsonKey] ) {
+      if ( initialValue && initialValue[jsonKey] !== json[jsonKey] ) {
+        joinedArr.push(jsonKey + ' to ' + json[jsonKey]);
+      } else if ( !initialValue ) {
         joinedArr.push(jsonKey + ' to ' + json[jsonKey]);
       }
     }

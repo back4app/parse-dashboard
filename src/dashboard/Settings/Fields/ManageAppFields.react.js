@@ -3,106 +3,25 @@ import Field                             from 'components/Field/Field.react';
 import VisibilityField                   from 'components/VisibilityField/VisibilityField.react';
 import FieldSettings                     from 'components/FieldSettings/FieldSettings.react';
 import Fieldset                          from 'components/Fieldset/Fieldset.react';
-import FlowView                          from 'components/FlowView/FlowView.react';
 import FormButton                        from 'components/FormButton/FormButton.react';
-import FormModal                         from 'components/FormModal/FormModal.react';
-import FormNote                          from 'components/FormNote/FormNote.react';
 import Label                             from 'components/Label/Label.react';
 import LabelSettings                     from 'components/LabelSettings/LabelSettings.react';
 import NumericInputSettings              from 'components/NumericInputSettings/NumericInputSettings.react';
 import Toggle                            from 'components/Toggle/Toggle.react';
 import TextInputSettings                 from 'components/TextInputSettings/TextInputSettings.react';
 import {
-  getSettingsFromKey, convertStringToInt
-}                                        from 'lib/ParseOptionUtils';
-
-import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 }                                        from 'dashboard/Settings/Fields/Constants';
+import PropTypes                         from 'lib/PropTypes';
 
 export const ManageAppFields = ({
-  isCollaborator,
-  hasCollaborators,
-  mongoURL,
-  changeConnectionString,
-  startMigration,
-  hasInProgressMigration,
-  appSlug,
-  cleanUpFiles,
-  cleanUpFilesMessage,
-  cleanUpMessageColor = 'orange',
-  cleanUpSystemLog,
-  cleanUpSystemLogMessage,
-  exportData,
-  exportDataMessage,
-  exportMessageColor = 'orange',
-  cloneApp,
-  cloneAppMessage,
-  transferApp,
-  transferAppMessage,
-  deleteApp,
   parseOptions,
   setParseOptions,
-  appSettings
+  dashboardAPI,
+  databaseURL,
+  parseVersion,
+  mongoVersion
 }) => {
-  let migrateAppField = null;
-  if (!mongoURL && !hasInProgressMigration) {
-    migrateAppField = <Field
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Migrate to external database'
-        description='Move your data and queries to your own database.' />
-      }
-      input={<FormButton
-        color='red'
-        onClick={startMigration}
-        value='Migrate' />
-      } />;
-  } else if (hasInProgressMigration) {
-    migrateAppField = <Field
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Migrate to external database'
-        description='View your migration progress.' />}
-      input={<FormButton
-        color='blue'
-        onClick={() => history.push(`/apps/${appSlug}/migration`)}
-        value='View progress' />} />
-  } else {
-    migrateAppField = [<Field
-      key='show'
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Migration complete'
-        description='Your database has been migrated to an external database.'
-      />}
-      //TODO: KeyField bascially does what we want, but is maybe too specialized. Maybe at some point we should have a component dedicated to semi-secret stuff that we want to prevent shoulder surfers from seeing, and emphasizing that stuff something should be secret.
-      input={<KeyField
-        hidden={true}
-        whenHiddenText='Show connection string'
-      >
-        <TextInput
-          value={mongoURL}
-          onChange={() => {}} //Make propTypes happy
-          disabled={true}
-          monospace={true}
-        />
-      </KeyField>}
-    />,
-    <Field
-      key='new'
-      labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-      label={<Label
-        text='Change connection string'
-        description='Upgrate or change your database.'/>}
-      input={<FormButton
-        additionalStyles={{fontSize: '13px'}}
-        color='red'
-        onClick={changeConnectionString}
-        value='Change connection string' />} />
-    ];
-  }
-
   return (
     <Fieldset
       legend='App Management'
@@ -119,7 +38,7 @@ export const ManageAppFields = ({
               labelWidth={'50%'}
               label={<LabelSettings
                 text='Parse API Address'
-                description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{appSettings?.dashboardAPI}</p>}
+                description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{dashboardAPI}</p>}
               />}
             />
             <FieldSettings
@@ -128,7 +47,7 @@ export const ManageAppFields = ({
               labelWidth={'50%'}
               label={<LabelSettings
                 text='Parse Version'
-                description={<span>{appSettings?.parseVersion}</span>}
+                description={<span>{parseVersion}</span>}
               />}
             />
           </div>
@@ -149,7 +68,7 @@ export const ManageAppFields = ({
                   labelWidth={'50%'}
                   label={<LabelSettings
                     text='Database URI'
-                    description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{appSettings?.databaseURL}</p>}
+                    description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
                   />}
                 />}
             onHiddenComponent={
@@ -164,7 +83,7 @@ export const ManageAppFields = ({
             labelWidth={'50%'}
             label={<LabelSettings
               text='Database Version'
-              description={<span>{appSettings?.databaseURL?.split('://')[0]} {appSettings?.mongoVersion}</span>}
+              description={<span>{databaseURL?.split('://')[0]} {mongoVersion}</span>}
             />}
           />
           </div>
@@ -189,13 +108,7 @@ export const ManageAppFields = ({
                 min={0}
                 value={parseOptions?.passwordPolicy?.resetTokenValidityDuration}
                 onChange={resetTokenValidityDuration => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      resetTokenValidityDuration: convertStringToInt(resetTokenValidityDuration)
-                    }
-                  });
+                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration } } );
                 }} />
             }
           />
@@ -209,15 +122,9 @@ export const ManageAppFields = ({
             input={
               <Toggle
                 additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-                value={ getSettingsFromKey(parseOptions.passwordPolicy, 'resetTokenReuseIfValid') }
+                value={ parseOptions?.passwordPolicy?.resetTokenReuseIfValid }
                 onChange={resetTokenReuseIfValid => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      resetTokenReuseIfValid: resetTokenReuseIfValid
-                    }
-                  });
+                  setParseOptions({ passwordPolicy: { resetTokenReuseIfValid } });
                 }} />
             }
           />
@@ -231,14 +138,8 @@ export const ManageAppFields = ({
             input={
               <TextInputSettings
                 value={parseOptions?.passwordPolicy?.validatorPattern}
-                onChange={validatorPattern => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      validatorPattern: validatorPattern
-                    }
-                  });
+                onChange={({ target: {value} }) => {
+                  setParseOptions( { passwordPolicy: { validatorPattern: value } } );
                 }} />
             }
           />
@@ -252,14 +153,8 @@ export const ManageAppFields = ({
             input={
               <TextInputSettings
                 value={parseOptions?.passwordPolicy?.validationError}
-                onChange={validationError => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      validationError: validationError
-                    }
-                  });
+                onChange={({ target: {value} }) => {
+                  setParseOptions({ passwordPolicy: { validationError: value } });
                 }} />
             }
           />
@@ -275,13 +170,7 @@ export const ManageAppFields = ({
                 additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
                 value={parseOptions?.passwordPolicy?.doNotAllowUsername}
                 onChange={doNotAllowUsername => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      doNotAllowUsername: doNotAllowUsername
-                    }
-                  });
+                  setParseOptions({ passwordPolicy: { doNotAllowUsername } });
                 }} />
             }
           />
@@ -297,13 +186,7 @@ export const ManageAppFields = ({
                 min={0}
                 value={parseOptions?.passwordPolicy?.maxPasswordAge}
                 onChange={maxPasswordAge => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      maxPasswordAge: convertStringToInt(maxPasswordAge)
-                    }
-                  });
+                  setParseOptions({ passwordPolicy: { maxPasswordAge } });
                 }} />
             }
           />
@@ -319,14 +202,8 @@ export const ManageAppFields = ({
               <NumericInputSettings
                 min={0}
                 value={ parseOptions?.passwordPolicy?.maxPasswordHistory }
-                onChange={maxPasswordHistory => {
-                  setParseOptions({
-                    ...parseOptions,
-                    passwordPolicy: {
-                      ...parseOptions.passwordPolicy,
-                      maxPasswordHistory: convertStringToInt(maxPasswordHistory)
-                    }
-                  });
+                onChange={(maxPasswordHistory) => {
+                  setParseOptions({ passwordPolicy: { maxPasswordHistory } });
                 }} />
             }
           />
@@ -361,13 +238,7 @@ export const ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  setParseOptions({
-                    ...parseOptions,
-                    accountLockout: {
-                      ...parseOptions.accountLockout,
-                      duration: convertStringToInt(duration)
-                    }
-                  });
+                  setParseOptions({ accountLockout: { duration } });
                 }} />
             }
           />
@@ -394,13 +265,7 @@ export const ManageAppFields = ({
                     console.error(e);
                     return;
                   }
-                  setParseOptions({
-                    ...parseOptions,
-                    accountLockout: {
-                      ...parseOptions.accountLockout,
-                      threshold: convertStringToInt(threshold)
-                    }
-                  });
+                  setParseOptions({ accountLockout: { threshold } });
                 }} />
             }
           />
@@ -409,4 +274,14 @@ export const ManageAppFields = ({
       />
   </Fieldset>
   );
+}
+
+ManageAppFields.propTypes = {
+  parseOptions: PropTypes.object.isRequired.describe('Parse options for the fields'),
+  setParseOptions: PropTypes.func.isRequired.describe('Set parse options'),
+  toggleVisibility: PropTypes.bool.describe('Toggle visibility'),
+  dashboardAPI: PropTypes.string.describe('Parse Server API URL'),
+  databaseURL: PropTypes.string.describe('Dashboard API URL'),
+  parseVersion: PropTypes.string.describe('Parse server version'),
+  mongoVersion: PropTypes.string.describe('Database version')
 }
