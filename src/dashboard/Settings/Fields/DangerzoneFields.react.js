@@ -3,7 +3,6 @@ import React from 'react';
 import Fieldset                          from 'components/Fieldset/Fieldset.react';
 import Field                             from 'components/Field/Field.react';
 import Label                             from 'components/Label/Label.react';
-import TextInput                         from 'components/TextInput/TextInput.react';
 import FormButton                        from 'components/FormButton/FormButton.react';
 import FormNote                          from 'components/FormNote/FormNote.react';
 import Toggle                            from 'components/Toggle/Toggle.react';
@@ -23,22 +22,21 @@ export const DangerzoneFields = ({
   transferApp,
   cloneApp,
   deleteApp,
+  isCollaborator
 }) => <Fieldset
-  legend='Dangerzone'
+  legend='Danger Zone'
   description='These options will effect your app'>
     <Field
       labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
       label={<Label
         text='Push Notification from Client'
-        description={<span>This settings will effect Push notifications from client permissions.
-        </span>} />}
+        description={<span>For security reasons, we recommend to disable this option.</span>} />}
       input={
         <span style={{ textAlign: 'center' }}>
           <Toggle
             additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
             value={ clientPush === true }
             onChange={ clientPush => setClientPush(clientPush) } />
-          { clientPush === true ? 'ALLOWED' : 'BLOCKED' }
         </span>
       }
       />
@@ -46,17 +44,15 @@ export const DangerzoneFields = ({
       labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
       label={<Label
         text='Client Class Creation'
-        description={<span>This settings will effect client class creation permission.
-        </span>} />}
-    input={
-      <span style={{ textAlign: 'center' }}>
-        <Toggle
-          additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
-          value={ clientClassCreation }
-          onChange={ clientClassCreation => setClientClassCreation(clientClassCreation) } />
-        { clientClassCreation === true ? 'ALLOWED' : 'BLOCKED' }
-      </span>
-    }
+        description={<span>For security reasons, we recommend to disable this option.</span>} />}
+      input={
+        <span style={{ textAlign: 'center' }}>
+          <Toggle
+            additionalStyles={{ display: 'block', textAlign: 'center', margin: '6px 0px 0 0' }}
+            value={ clientClassCreation }
+            onChange={ clientClassCreation => setClientClassCreation(clientClassCreation) } />
+        </span>
+      }
     />
     <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
@@ -74,6 +70,7 @@ export const DangerzoneFields = ({
         input={<FormButton
           onClick={restartApp}
           value='Restart App'/>} />
+    { isCollaborator == false &&
     <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
@@ -82,16 +79,17 @@ export const DangerzoneFields = ({
         input={<FormButton
         // additionalStyles={{ backgroundColor: 'transparent', borderColor: '#f90015', color: '#f90015' }}
         onClick={transferApp}
-        value='Transfer App'/>} />
+        value='Transfer App'/>} />}
+    { isCollaborator == false &&
     <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
           text='Clone App'
           description={<span>Make a new clone app from this app.</span>} />}
         input={<FormButton
-        // additionalStyles={{ backgroundColor: 'transparent', borderColor: '#f90015', color: '#f90015' }}
         onClick={cloneApp}
-        value='Clone App'/>} />
+        value='Clone App'/>} />}
+    { isCollaborator == false &&
      <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
@@ -100,7 +98,7 @@ export const DangerzoneFields = ({
         input={<FormButton
         additionalStyles={{ backgroundColor: '#f90015', borderColor: '#f90015', color: 'white' }}
         onClick={deleteApp}
-        value='Delete App'/>} />
+        value='Delete App'/>} /> }
     {cleanUpFilesMessage ? <FormNote
       show={true}
       color={cleanUpMessageColor}>

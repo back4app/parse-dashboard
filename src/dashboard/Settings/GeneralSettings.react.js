@@ -6,42 +6,13 @@
  * the root directory of this source tree.
  */
 import AccountManager                    from 'lib/AccountManager';
-import AppsManager                       from 'lib/AppsManager';
-import Collaborators                     from 'dashboard/Settings/Collaborators.react';
 import DashboardView                     from 'dashboard/DashboardView.react';
-import Dropdown                          from 'components/Dropdown/Dropdown.react';
-import DropdownOption                    from 'components/Dropdown/Option.react';
-import Field                             from 'components/Field/Field.react';
-import FieldSettings                     from 'components/FieldSettings/FieldSettings.react';
-import Fieldset                          from 'components/Fieldset/Fieldset.react';
 import FlowView                          from 'components/FlowView/FlowView.react';
-import FormButton                        from 'components/FormButton/FormButton.react';
-import FormModal                         from 'components/FormModal/FormModal.react';
-import FormNote                          from 'components/FormNote/FormNote.react';
-import getSiteDomain                     from 'lib/getSiteDomain';
-import history                           from 'dashboard/history';
-import joinWithFinal                     from 'lib/joinWithFinal';
-import KeyField                          from 'components/KeyField/KeyField.react';
-import Label                             from 'components/Label/Label.react';
-import LabelSettings                     from 'components/LabelSettings/LabelSettings.react';
-import Modal                             from 'components/Modal/Modal.react';
-import MultiSelect                       from 'components/MultiSelect/MultiSelect.react';
-import MultiSelectOption                 from 'components/MultiSelect/MultiSelectOption.react';
-import pluck                             from 'lib/pluck';
-import Range                             from 'components/Range/Range.react';
 import React                             from 'react';
 import renderFlowFooterChanges           from 'lib/renderFlowFooterChanges';
 import setDifference                     from 'lib/setDifference';
 import styles                            from 'dashboard/Settings/Settings.scss';
-import TextInput                         from 'components/TextInput/TextInput.react';
-import TextInputSettings                 from 'components/TextInputSettings/TextInputSettings.react';
-import NumericInput                      from 'components/NumericInput/NumericInput.react';
-import NumericInputSettings              from 'components/NumericInputSettings/NumericInputSettings.react';
 import Toolbar                           from 'components/Toolbar/Toolbar.react';
-import unique                            from 'lib/unique';
-import validateAndSubmitConnectionString from 'lib/validateAndSubmitConnectionString';
-import { cost, features }                from 'dashboard/Settings/GeneralSettings.scss';
-import Toggle                            from 'components/Toggle/Toggle.react';
 import { ManageAppFields }               from 'dashboard/Settings/Fields/ManageAppFields.react';
 import { CollaboratorsFields }           from 'dashboard/Settings/Fields/CollaboratorsFields.react';
 import { AppInformationFields }          from 'dashboard/Settings/Fields/AppInformationFields.react';
@@ -60,9 +31,8 @@ import {
   getPromiseList,
   renderModal
 }                                        from './Util';
-import {
-  CurrentPlan, CurrentPlanFields
-}                                        from 'dashboard/Settings/Fields/AppInformationFields.react';
+
+import GeneralSettingsValidataions       from 'dashboard/Settings/GeneralSettingsValidataions';
 
 export default class GeneralSettings extends DashboardView {
   constructor() {
@@ -88,7 +58,6 @@ export default class GeneralSettings extends DashboardView {
       showCloneAppModal: false,
       cloneAppMessage: '',
       cloneAppName:'',
-      cloneOptionsSelection: ['schema', 'app_settings', 'config', 'cloud_code'],
 
       showMigrateAppModal: false,
       migrationMongoURL: '',
@@ -126,8 +95,11 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
-      parseOptions: this.context.currentApp.parseOptions,
-      appSettings: this.context.currentApp.settings.fields.fields.app,
+      parseOptions: this.context.currentApp.settings.fields.fields.parseOptions,
+      dashboardAPI: this.context.currentApp.settings.fields.fields.dashboardAPI,
+      databaseURL: this.context.currentApp.settings.fields.fields.databaseURL,
+      parseVersion: this.context.currentApp.settings.fields.fields.parseVersion,
+      mongoVersion: this.context.currentApp.settings.fields.fields.mongoVersion,
       clientPush: this.context.currentApp.settings.fields.fields.clientPush,
       clientClassCreation: this.context.currentApp.settings.fields.fields.clientClassCreation
     };
@@ -147,6 +119,11 @@ export default class GeneralSettings extends DashboardView {
     setField('collaborators', allCollabs);
   }
 
+  promiseCallback({ removedCollaborators }) {
+    this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
+    this.setState({ removedCollaborators: removedCollaborators || [] });
+  }
+
   renderContent() {
     if (!this.props.initialFields) {
       return <Toolbar section='Settings' subsection='General' />
@@ -157,10 +134,11 @@ export default class GeneralSettings extends DashboardView {
     return <div>
       <FlowView
         initialFields={initialFields}
-        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions)}
-        onSubmit={({ changes }) => {
-          return getPromiseList({ changes, setDifference, initialFields })
+        validate={(changes) => GeneralSettingsValidataions.validate(changes)}
+        onSubmit={async ({ changes }) => {
+          return getPromiseList({ changes, setDifference, initialFields, app: this.context.currentApp, promiseCallback: this.promiseCallback.bind(this) })
         }}
+        footerContents={({changes}) => renderFlowFooterChanges(changes, initialFields, generalFieldsOptions )}
         renderModals={[
           renderModal(this.state.showRestartAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, RestartAppModal),
           renderModal(this.state.showPurgeFilesModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeFilesModal),
@@ -169,9 +147,10 @@ export default class GeneralSettings extends DashboardView {
           renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal),
           renderModal(this.state.showDeleteAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, DeleteAppModal)
         ]}
-        renderForm={({ fields, setField }) => {
+        renderForm={({ fields, setField, setFieldJson, errors }) => {
           return <div className={styles.settings_page}>
             <AppInformationFields
+              errors={errors}
               appName={fields.appName}
               setAppName={setField.bind(this, 'appName')}
               inProduction={fields.inProduction}
@@ -187,6 +166,7 @@ export default class GeneralSettings extends DashboardView {
               otherURL={fields.otherURL}
               setOtherURL={setField.bind(this, 'otherURL')} />
             <CollaboratorsFields
+              errors={errors}
               collaborators={fields.collaborators}
               waiting_collaborators={fields.waiting_collaborators}
               ownerEmail={this.props.initialFields.owner_email}
@@ -195,19 +175,24 @@ export default class GeneralSettings extends DashboardView {
               removeCollaborator={this.setCollaborators.bind(undefined, initialFields, setField)}
               editCollaborator={this.setCollaborators.bind(undefined, initialFields, setField)}/>
             <ManageAppFields
+              errors={errors}
               mongoURL={fields.mongoURL}
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
               hasCollaborators={fields.collaborators.length > 0}
               appSlug={this.context.currentApp.slug}
               parseOptions={fields.parseOptions}
-              setParseOptions={setField.bind(this, 'parseOptions')}
-              appSettings={fields.appSettings}
+              setParseOptions={setFieldJson.bind(this, 'parseOptions')}
+              dashboardAPI={fields.dashboardAPI}
+              databaseURL={fields.databaseURL}
+              parseVersion={fields.parseVersion}
+              mongoVersion={fields.mongoVersion}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
               cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage} />
             <DangerzoneFields
+              errors={errors}
               mongoURL={fields.mongoURL}
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
               hasCollaborators={fields.collaborators.length > 0}

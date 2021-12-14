@@ -17,7 +17,6 @@ git diff --cached --name-status | while read st file; do
         echo "[Error] Can not commit parse dashboard config file: $file"
         exit 1
     fi
-
     "$ESLINT" "$file"
     if [ "$?" = 1 ]; then
         git reset

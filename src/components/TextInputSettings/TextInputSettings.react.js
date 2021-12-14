@@ -41,34 +41,33 @@ export default class TextInputSettings extends React.Component {
     if (this.props.monospace) {
       classes.push(styles.monospace);
     }
+    if ( this.props.error ) {
+      classes.push(styles.error);
+    }
     if (this.props.multiline || this.props.multiplelines) {
       return (
         <textarea
           ref="textarea"
-          id={this.props.id}
           disabled={!!this.props.disabled}
           className={classes.join(' ')}
           rows={this.props.rows && this.props.rows > 3 ? this.props.rows : null}
           style={this.props.rows && this.props.rows > 3 ? null : {height: this.props.height || 80}}
-          placeholder={this.props.placeholder}
-          value={this.props.value}
           onChange={this.changeValue.bind(this)}
-          onBlur={this.updateValue.bind(this)} />
+          onBlur={this.updateValue.bind(this)} 
+          {...this.props} />
       );
     }
     return (
       <div style={{ background: '#f6fafb', display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
         <input
           ref="input"
-          id={this.props.id}
           type={this.props.hidden ? 'password' : 'text'}
           disabled={!!this.props.disabled}
           className={classes.join(' ')}
           style={{height: this.props.height || 40, width: '90%', borderRadius: '10px'}}
-          placeholder={this.props.placeholder}
-          value={this.props.value}
           onChange={this.changeValue.bind(this)}
-          onBlur={this.updateValue.bind(this)} />
+          onBlur={this.updateValue.bind(this)} 
+          {...this.props} />
       </div>
     );
   }

@@ -52,7 +52,9 @@ export function request(method, url, body, abortable = false, withCredentials = 
     });
   };
   xhr.onload = function() {
-    if (this.status === 200) {
+    if (this.status === 200 && !this.responseText ) {
+      p.resolve();
+    } else if (this.status === 200) {
       let json = {};
       try {
         json = JSON.parse(this.responseText);

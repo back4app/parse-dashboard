@@ -10,6 +10,7 @@ import FlowFooter from 'components/FlowFooter/FlowFooter.react';
 import PropTypes  from 'lib/PropTypes';
 import React      from 'react';
 import SaveButton from 'components/SaveButton/SaveButton.react';
+import deepmerge  from 'deepmerge';
 
 export default class FlowView extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class FlowView extends React.Component {
       changes: props.initialChanges || {},
       saveState: SaveButton.States.WAITING,
       saveError: '',
+      errors: []
     };
     this.handleClickSaveButton = this.handleClickSaveButton.bind(this);
   }
@@ -51,17 +53,59 @@ export default class FlowView extends React.Component {
       if (newChanges[key] === this.props.initialFields[key]) {
         delete newChanges[key];
       }
-      //Modify stored state in case component recieves new props,
-      //as componentWillReceiveProps would otherwise clobber this change.
-      this.state.changes[key] = value;
-      this.setState({
-        saveState: preserveSavingState ? this.state.saveState : SaveButton.States.WAITING,
-        saveError: '',
-        changes: newChanges,
-      });
-      if(key === 'collaborators'){
-        this.handleClickSaveButton();
+      this.props.validate(newChanges)
+        .then(() => {
+          //Modify stored state in case component recieves new props,
+          //as componentWillReceiveProps would otherwise clobber this change.
+          this.state.changes[key] = value;
+          this.setState({
+            saveState: preserveSavingState ? this.state.saveState : SaveButton.States.WAITING,
+            saveError: '',
+            changes: newChanges,
+            errors: []
+          });
+          if(key === 'collaborators'){
+            this.handleClickSaveButton();
+          }
+        })
+        .catch(({ errors }) => {
+          this.setState({
+            saveError: 'Validation failed',
+            errors
+          });
+        })
+    }
+  }
+
+  setFieldJson(key, value, preserveSavingState = false) {
+    if (this.state.saveState !== SaveButton.States.SAVING) {
+      const newChanges = { ...this.state.changes };
+      if ( !newChanges[key] ) {
+        newChanges[key] = {};
       }
+      newChanges[key] = deepmerge(newChanges[key], value);
+
+      this.props.validate(newChanges)
+        .then(() => {
+          //Modify stored state in case component recieves new props,
+          //as componentWillReceiveProps would otherwise clobber this change.
+          this.setState({
+            saveState: preserveSavingState ? this.state.saveState : SaveButton.States.WAITING,
+            saveError: '',
+            changes: newChanges,
+            errors: []
+          });
+          if(key === 'collaborators'){
+            this.handleClickSaveButton();
+          }
+        })
+        .catch(({ errors }) => {
+          this.setState({
+            saveError: 'Validation failed',
+            errors
+          });
+        })
+      
     }
   }
 
@@ -80,7 +124,7 @@ export default class FlowView extends React.Component {
     this.setState({ saveState: SaveButton.States.SAVING });
     this.props.onSubmit({ changes: this.state.changes, fields, setField: this.setField, resetFields: this.resetFields }).then(() => {
       this.setState({ saveState: SaveButton.States.SUCCEEDED });
-      this.props.afterSave({ fields, setField: this.setField, resetFields: this.resetFields });
+      this.props.afterSave({ fields, setField: this.setField, setFieldJson: this.setFieldJson, resetFields: this.resetFields });
     }).catch(({ message, error, notice, errors = [] }) => {
       this.setState({
         saveState: SaveButton.States.FAILED,
@@ -114,8 +158,9 @@ export default class FlowView extends React.Component {
     } = this.state;
     let setField = this.setField.bind(this);
     let resetFields = this.resetFields.bind(this);
+    let setFieldJson = this.setFieldJson.bind(this);
     let fields = this.currentFields();
-    let form = renderForm({ fields, changes, setField, resetFields });
+    let form = renderForm({ fields, changes, setField, resetFields, setFieldJson, errors: this.state.errors });
     let flowModals = <div>{renderModals.map( (modal, key) => <div key={key}>{modal}</div> )}</div>
 
     let invalidFormMessage = validate({ changes, fields });
