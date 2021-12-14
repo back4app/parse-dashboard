@@ -185,9 +185,16 @@ class BlockChainPage extends DashboardView {
 
   renderForm() {
     const classes = this.state.classes.filter(name => !this.state.blockChainClasses.includes(name));
-    let formattedBalance = (
-      this.state.appBalance / 1000000000 / 1000000000
-    ).toFixed(9);
+    let formattedBalance;
+    if ( BigInt ) {
+      formattedBalance = (
+        Number(BigInt(this.state.appBalance) / BigInt(1000000000)) / 1000000000
+      ).toFixed(9)
+    } else {
+      formattedBalance = (
+        (this.state.appBalance / 1000000000) / 1000000000
+      ).toFixed(9)
+    }
     return (
       <div>
         <div className={styles.fieldset}>
