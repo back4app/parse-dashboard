@@ -10,7 +10,8 @@ import Option                             from 'components/Dropdown/Option.react
 export const CloneAppModal = ({ context, setParentState }) => {
 
   const [ cloneAppName, setCloneAppName ] = useState('');
-  const [ note, setNote ] = useState('')
+  const [ note, setNote ] = useState('');
+  const [ noteColor, setNoteColor ] = useState('red');
   const [ processing, setProcessing ] = useState(false);
   const [ cloneDb, setCloneDb ] = useState(false);
   const [ canSubmit, setCanSubmit ] = useState(false);
@@ -34,6 +35,43 @@ export const CloneAppModal = ({ context, setParentState }) => {
   },[]);
 
   useEffect(() => {cloneAppName.length <= 0 ? setCanSubmit(false) : setCanSubmit(true)},[cloneAppName]);
+  
+  const cloneApp = async () => {
+
+    try {
+      // check storage for the current app.
+      setProcessing(true)
+      setNote('Validationg app strage...');
+      setNoteColor('blue');
+
+      await context.currentApp.checkStorage();
+
+      setNote('Creating a new parse app...');
+      setNoteColor('blue');
+
+      const newApp = await context.currentApp.createApp(cloneAppName);
+
+      setNote('Creating database for the new parse app...');
+      setNoteColor('blue');
+
+      await context.currentApp.initializeDb(newApp.appId, { parseVersion: cloneParseVersion });
+
+      setNote('Cloning app...');
+      setNoteColor('blue');
+
+      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion );
+
+      setNote('App cloned successfully!');
+      setNoteColor('green');
+
+    } catch(e){
+      console.log(e);
+      setNote('An error occurred');
+      setNoteColor('red');  
+    } finally {
+      setProcessing(false);
+    }
+  }
 
   return <Modal
   type={Modal.Types.INFO}
@@ -47,79 +85,51 @@ export const CloneAppModal = ({ context, setParentState }) => {
   disableCancel={processing}
   buttonsInCenter={true}
   onCancel={() => setParentState({ showCloneAppModal: false })}
-  onConfirm={async () => {
-    setProcessing(true);
-    let newApp;
-    try {
-      await context.currentApp.checkStorage();
-      newApp = await context.currentApp.createApp(cloneAppName);
-      await context.currentApp.initializeDb(newApp.id);
-      await context.currentApp.cloneApp(newApp.appId, cloneParseVersion);
-      setParentState({
-        cleanupFilesMessage: 'Your app has been cloned successfully.',
-        cleanupNoteColor: 'orange',
-        showCloneAppModal: false,
-      });
-    } catch(e) {
-      console.log(e);
-      if ( newApp ) {
-        try {
-          await context.currentApp.deleteApp(newApp.id);
-        } catch(ex) {
-          console.log(ex);
+  onConfirm={() => cloneApp()}>
+    <div>
+      <Field
+        label={<Label
+          text={'Name of the new app.'}
+          description={<span>Enter a name for the clone app</span>} />
         }
-      }
-      setParentState({
-        cleanupFilesMessage: e.error,
-        cleanupNoteColor: 'red',
-        showCloneAppModal: false,
-      });
-    } finally {
-      setProcessing(false)
-    }
-  }}>
-  <Field
-    label={<Label
-      text={'Name of the new app.'}
-      description={<span>Enter a name for the clone app</span>} />
-    }
-    input={<TextInput
-      height={100}
-      placeholder='Clone App Name'
-      value={cloneAppName}
-      onChange={(value) => {
-        setCloneAppName(value)
-      }}
-      />}
-  />
+        input={<TextInput
+          height={100}
+          placeholder='Clone App Name'
+          value={cloneAppName}
+          onChange={(value) => {
+            setCloneAppName(value)
+          }}
+          />}
+      />
 
-  <Field
-    label={<Label
-      text={'Parse server version.'}
-      description={<span>The version of the parse server the clone app should use</span>} />
-    }
-    input={
-      <Dropdown placeHolder={cloneParseVersion?.version} onChange={value => {
-          setCloneParseVersion(value);
-        }}>
-        {
-          parseVersions.map( ( parseVersion ) => <Option value={parseVersion}>{`${parseVersion.version} - ${parseVersion.description}`}</Option>)
+      <Field
+        label={<Label
+          text={'Parse server version.'}
+          description={<span>The version of the parse server the clone app should use</span>} />
         }
-      </Dropdown>
-    }
-  />
-  <Field
-      labelWidth={100}
-      label={
-        <Label
-          text={<span><input onChange={(e) => setCloneDb(e.target.checked)} type={'checkbox'} /> &nbsp; {'Clone Database'} </span>}
+        input={
+          <Dropdown placeHolder={cloneParseVersion?.version} onChange={value => {
+              setCloneParseVersion(value);
+            }}>
+            {
+              parseVersions.map( ( parseVersion ) => <Option value={parseVersion}>{`${parseVersion.version} - ${parseVersion.description}`}</Option>)
+            }
+          </Dropdown>
+        }
+      />
+      <Field
+          labelWidth={100}
+          label={
+            <Label
+              text={<span><input onChange={(e) => setCloneDb(e.target.checked)} type={'checkbox'} /> &nbsp; {'Clone Database'} </span>}
+            />
+          }
         />
-      }
-    />
-  {note.length > 0 ? <FormNote
-        show={note.length > 0}
-        color='red' >
-        {note}
-      </FormNote> : null}
+      {note.length > 0 ? <FormNote
+            show={note.length > 0}
+            color={noteColor} >
+            {note}
+          </FormNote> : null}
+    </div>
 </Modal>
 }

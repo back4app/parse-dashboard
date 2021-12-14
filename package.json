@@ -100,7 +100,8 @@
     "semver": "7.3.4",
     "sweetalert2": "^8.0.5",
     "sweetalert2-react-content": "^1.0.1",
-    "symbol-observable": "^1.2.0"
+    "symbol-observable": "^1.2.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@actions/core": "1.2.6",

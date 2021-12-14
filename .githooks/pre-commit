@@ -1,0 +1,13 @@
+#!/bin/sh
+
+exec 1>&2
+git diff --cached --name-status | while read st file; do
+    # skip deleted files
+    if [ "$st" = 'D' ]; then continue; fi
+    if [ "$file" = "Parse-Dashboard/parse-dashboard-config.json" ]; then
+        git reset
+        git checkout -- Parse-Dashboard/parse-dashboard-config.json
+        echo "[Error] Can not commit parse dashboard config file: $file"
+        exit 1
+    fi
+done

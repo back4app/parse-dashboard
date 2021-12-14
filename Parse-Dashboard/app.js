@@ -90,6 +90,7 @@ module.exports = function(config, options) {
       let response = {
         apps: apps,
         newFeaturesInLatestVersion: newFeaturesInLatestVersion,
+        user: config.user
       };
 
       //Based on advice from Doug Wilson here:

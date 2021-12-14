@@ -5,10 +5,11 @@ import pluck                             from 'lib/pluck';
 import {
   defaultParseOptions
 }                                        from 'dashboard/Settings/Fields/Constants';
-import deepmerge  from 'deepmerge';
+import deepmerge                         from 'deepmerge';
 
 export const getPromiseList = ({ changes, setDifference, initialFields, app, promiseCallback }) => {
   let promiseList = [];
+  console.log('parseOptions updated');
   if (changes.requestLimit !== undefined) {
     promiseList.push(app.setRequestLimit(changes.requestLimit));
   }
