@@ -37,7 +37,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
   useEffect(() => {cloneAppName.length <= 0 ? setCanSubmit(false) : setCanSubmit(true)},[cloneAppName]);
   
   const cloneApp = async () => {
-
+    let newApp;
     try {
       // check storage for the current app.
       setProcessing(true)
@@ -49,12 +49,12 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('Creating a new parse app...');
       setNoteColor('blue');
 
-      const newApp = await context.currentApp.createApp(cloneAppName);
+      newApp = await context.currentApp.createApp(cloneAppName);
 
       setNote('Creating database for the new parse app...');
       setNoteColor('blue');
 
-      await context.currentApp.initializeDb(newApp.appId, { parseVersion: cloneParseVersion?.version });
+      await context.currentApp.initializeDb(newApp.appId, cloneParseVersion?.version);
 
       setNote('Cloning app...');
       setNoteColor('blue');
@@ -68,6 +68,10 @@ export const CloneAppModal = ({ context, setParentState }) => {
       console.log(e);
       setNote('An error occurred');
       setNoteColor('red');  
+      if ( newApp ) {
+        await context.currentApp.deleteApp( newApp.appId );
+      }
+
     } finally {
       setProcessing(false);
     }
