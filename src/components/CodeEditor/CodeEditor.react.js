@@ -29,14 +29,6 @@ export default class CodeEditor extends React.Component {
     }
   }
 
-  // get value() {
-  //   return this.state.code || this.props.placeHolder;
-  // }
-
-  // set value(code) {
-  //   this.setState({ code });
-  // }
-
   render() {
     const { fontSize = 18, mode = 'javascript', height } = this.props;
     
