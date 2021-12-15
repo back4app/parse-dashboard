@@ -41,7 +41,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
     try {
       // check storage for the current app.
       setProcessing(true)
-      setNote('Validationg app strage...');
+      setNote('Validationg app storage...');
       setNoteColor('blue');
 
       await context.currentApp.checkStorage();
