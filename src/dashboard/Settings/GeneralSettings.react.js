@@ -33,7 +33,10 @@ import {
 }                                        from './Util';
 
 import GeneralSettingsValidataions       from 'dashboard/Settings/GeneralSettingsValidataions';
-
+import deepmerge from 'deepmerge';
+import {
+  defaultParseOptions
+}                                        from 'dashboard/Settings/Fields/Constants';
 export default class GeneralSettings extends DashboardView {
   constructor() {
     super();
@@ -95,7 +98,7 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
-      parseOptions: this.context.currentApp.settings.fields.fields.parseOptions,
+      parseOptions: deepmerge(defaultParseOptions, this.context.currentApp.settings.fields.fields.parseOptions),
       dashboardAPI: this.context.currentApp.settings.fields.fields.dashboardAPI,
       databaseURL: this.context.currentApp.settings.fields.fields.databaseURL,
       parseVersion: this.context.currentApp.settings.fields.fields.parseVersion,
