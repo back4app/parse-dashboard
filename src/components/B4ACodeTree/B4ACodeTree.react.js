@@ -13,7 +13,6 @@ import Icon                         from 'components/Icon/Icon.react';
 import addFileIcon                  from './icons/add-file.png';
 import uploadFileIcon               from './icons/file-upload-outline.png';
 import removeFileIcon               from './icons/trash-can-outline.png';
-import CloudCodeChanges             from 'lib/CloudCodeChanges';
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
 
@@ -47,7 +46,6 @@ export default class B4ACodeTree extends React.Component {
       selectedNodeData: null
     }
 
-    this.cloudCodeChanges = new CloudCodeChanges();
   }
 
   getFileType(file) {
@@ -177,9 +175,6 @@ export default class B4ACodeTree extends React.Component {
     $('#tree').jstree('get_selected', true).pop().data.code = ecodedValue;
     $('#tree').jstree().redraw(true);
 
-    // set updated files.
-    this.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().text);
-    this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
   }
 
   selectCloudFolder() {
@@ -189,27 +184,6 @@ export default class B4ACodeTree extends React.Component {
     }
   }
 
-  updateCodeOnNewFile(type, text){
-    if (type === 'delete-file') {
-      this.cloudCodeChanges.removeFile(text);
-      this.props.setCodeUpdated(this.cloudCodeChanges.getFiles());
-    } else if (type === 'new-file') {
-      // incase of new-file, other file or folder is selected
-      // so, directly add that file name in cloudCodeChanges
-      text && this.cloudCodeChanges.addFile(text);
-      this.props.setCodeUpdated(true);
-    } else {
-      // set updated files.
-      let selectedFiles = $('#tree').jstree('get_selected', true)
-      if (selectedFiles.length) {
-        this.cloudCodeChanges.addFile(selectedFiles.pop().text);
-      }
-    }
-
-    this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
-
-    this.selectCloudFolder();
-  }
 
   componentDidMount() {
     let config = B4ATreeActions.getConfig(this.state.files);
@@ -221,11 +195,6 @@ export default class B4ACodeTree extends React.Component {
     $('#tree').on('create_node.jstree', function() {
       B4ATreeActions.refreshEmptyFolderIcons();
     });
-
-    $('#tree').on('create_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type, parent?.node?.text));
-    $('#tree').on('rename_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type));
-    $('#tree').on('delete_node.jstree', (node, parent) => this.updateCodeOnNewFile('delete-file', parent?.node?.text));
-
   }
 
   componentDidUpdate() {

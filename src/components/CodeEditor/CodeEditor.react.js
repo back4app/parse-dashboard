@@ -16,12 +16,12 @@ export default class CodeEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { code: '', reset: false };
+    this.state = { code: '', reset: false, fileName: '' };
   }
 
   componentWillReceiveProps(props){
-    if (this.state.code !== props.code) {
-      this.setState({ code: props.code, reset: true });
+    if (this.state.code !== props.code && this.state.fileName !== props.fileName ) {
+      this.setState({ code: props.code, fileName: props.fileName, reset: true });
     }
     if (props.mode) {
       require(`ace-builds/src-noconflict/mode-${props.mode}`);
@@ -29,13 +29,13 @@ export default class CodeEditor extends React.Component {
     }
   }
 
-  get value() {
-    return this.state.code || this.props.placeHolder;
-  }
+  // get value() {
+  //   return this.state.code || this.props.placeHolder;
+  // }
 
-  set value(code) {
-    this.setState({ code });
-  }
+  // set value(code) {
+  //   this.setState({ code });
+  // }
 
   render() {
     const { fontSize = 18, mode = 'javascript', height } = this.props;
@@ -45,20 +45,19 @@ export default class CodeEditor extends React.Component {
         mode={mode}
         theme="solarized_dark"
         onChange={value => {
-          if ( this.props.onCodeChange ){
-            this.props.onCodeChange(value);
-          }
+          this.setState({ code: value });
+          this.props.onCodeChange(value);
         }}
         onLoad={editor => {
           editor.once("change", () => {
             editor.session.getUndoManager().reset();
           });
           editor.on('change', () => {
-            if ( this.state.reset === true ) {
+            if ( this.state.reset ){
               editor.session.getUndoManager().reset();
               this.setState({ reset: false })
             }
-          })
+          });
         }}
         height={height || '100%'}
         fontSize={fontSize}
@@ -81,5 +80,9 @@ export default class CodeEditor extends React.Component {
 CodeEditor.propTypes = {
   fontSize: PropTypes.number.describe('Font size of the editor'),
   placeHolder: PropTypes.string.describe('Code place holder'),
-  height: PropTypes.string.describe('Code Editor height')
+  height: PropTypes.string.describe('Code Editor height'),
+  style: PropTypes.node.describe('Additional editor styles'),
+  onCodeChange: PropTypes.func.describe('On change code callback'),
+  mode: PropTypes.string.describe('Editor mode'),
+  code: PropTypes.string.describe('Default code to display')
 };
