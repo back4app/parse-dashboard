@@ -388,13 +388,7 @@ export default class ParseApp {
 
   checkStorage() {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/check-storage`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    return AJAX.post(path)
   }
 
   createApp(appName) {
@@ -595,24 +589,24 @@ export default class ParseApp {
   }
 
   validateCollaborator(email) {
-    let path = '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
     return AJAX.get(path);
   }
 
   sendEmailToInviteCollaborator(email, featuresPermission, classesPermission, owner) {
-    let path = '/apps/' + this.slug + '/collaborations/saveInvite';
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/saveInvite';
     let promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     return promise;
   }
 
   editInvitePermissionCollaborator(email, featuresPermission, classesPermission, owner) {
-    let path = '/apps/' + this.slug + '/collaborations/editInvite';
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/editInvite';
     let promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     return promise;
   }
 
   removeInviteCollaborator(email) {
-    let path = '/apps/' + this.slug + '/collaborations/removeInvite/'+ encodeURIComponent(email);
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/removeInvite/'+ encodeURIComponent(email);
     let promise = AJAX.del(path)
     return promise;
   }
@@ -679,7 +673,7 @@ export default class ParseApp {
   }
 
   removeCollaboratorById(id) {
-    let path = '/apps/' + this.slug + '/collaborations/' + id.toString();
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/' + id.toString();
     let promise = AJAX.del(path)
     promise.then(() => {
       //TODO: this currently works because everything that uses collaborators
@@ -718,7 +712,7 @@ export default class ParseApp {
       this.settings.fields.fields.collaborators =
         Array.isArray(this.settings.fields.fields.collaborators) ?
           this.settings.fields.fields.collaborators : [];
-      this.settings.fields.fields.collaborators.unshift(data.data);
+      this.settings.fields.fields.collaborators = [ ...this.settings.fields.fields.collaborators, data.data ];
     });
     return promise;
   }
