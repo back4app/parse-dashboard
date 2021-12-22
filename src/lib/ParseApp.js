@@ -388,7 +388,13 @@ export default class ParseApp {
 
   checkStorage() {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/check-storage`;
-    return AJAX.post(path)
+    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
+      if (response.ok) {
+        return response;
+      } else {
+        throw new Error({error: 'An error occurred'});
+      }
+    })
   }
 
   createApp(appName) {
@@ -589,24 +595,24 @@ export default class ParseApp {
   }
 
   validateCollaborator(email) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
+    let path = '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
     return AJAX.get(path);
   }
 
   sendEmailToInviteCollaborator(email, featuresPermission, classesPermission, owner) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/saveInvite';
+    let path = '/apps/' + this.slug + '/collaborations/saveInvite';
     let promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     return promise;
   }
 
   editInvitePermissionCollaborator(email, featuresPermission, classesPermission, owner) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/editInvite';
+    let path = '/apps/' + this.slug + '/collaborations/editInvite';
     let promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     return promise;
   }
 
   removeInviteCollaborator(email) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/removeInvite/'+ encodeURIComponent(email);
+    let path = '/apps/' + this.slug + '/collaborations/removeInvite/'+ encodeURIComponent(email);
     let promise = AJAX.del(path)
     return promise;
   }
@@ -673,7 +679,7 @@ export default class ParseApp {
   }
 
   removeCollaboratorById(id) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/' + id.toString();
+    let path = '/apps/' + this.slug + '/collaborations/' + id.toString();
     let promise = AJAX.del(path)
     promise.then(() => {
       //TODO: this currently works because everything that uses collaborators
