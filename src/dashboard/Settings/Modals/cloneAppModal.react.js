@@ -6,6 +6,7 @@ import TextInput                          from 'components/TextInput/TextInput.r
 import FormNote                           from 'components/FormNote/FormNote.react';
 import Dropdown                           from 'components/Dropdown/Dropdown.react';
 import Option                             from 'components/Dropdown/Option.react';
+import PropTypes                          from 'prop-types';
 
 export const CloneAppModal = ({ context, setParentState }) => {
 
@@ -41,7 +42,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
     try {
       // check storage for the current app.
       setProcessing(true)
-      setNote('Validationg app storage...');
+      setNote('Validatisng app storage...');
       setNoteColor('blue');
 
       await context.currentApp.checkStorage();
@@ -51,15 +52,21 @@ export const CloneAppModal = ({ context, setParentState }) => {
 
       newApp = await context.currentApp.createApp(cloneAppName);
 
-      setNote('Creating database for the new parse app...');
-      setNoteColor('blue');
+      if ( !newApp || Object.keys(newApp).length <= 0 ) {
+        throw new Error();
+      }
 
-      await context.currentApp.initializeDb(newApp.id, cloneParseVersion?.version);
+      console.log(newApp);
 
-      setNote('Cloning app...');
-      setNoteColor('blue');
+      // setNote('Creating database for the new parse app...');
+      // setNoteColor('blue');
 
-      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version );
+      // await context.currentApp.initializeDb(newApp.id, cloneParseVersion?.version);
+
+      // setNote('Cloning app...');
+      // setNoteColor('blue');
+
+      // await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version );
 
       setNote('App cloned successfully!');
       setNoteColor('green');
@@ -69,7 +76,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('An error occurred');
       setNoteColor('red');  
       if ( newApp ) {
-        await context.currentApp.deleteApp( newApp.id );
+        // await context.currentApp.deleteApp( newApp.id );
       }
 
     } finally {
@@ -116,7 +123,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
               setCloneParseVersion(value);
             }}>
             {
-              parseVersions.map( ( parseVersion ) => <Option value={parseVersion}>{`${parseVersion.version} - ${parseVersion.description}`}</Option>)
+              parseVersions.map( ( parseVersion ) => <Option key={parseVersion.version} value={parseVersion}>{`${parseVersion.version} - ${parseVersion.description}`}</Option>)
             }
           </Dropdown>
         }
@@ -136,4 +143,9 @@ export const CloneAppModal = ({ context, setParentState }) => {
           </FormNote> : null}
     </div>
 </Modal>
+}
+
+CloneAppModal.propTypes = {
+  context: PropTypes.any.isRequired.describe( 'The application context.' ),
+  setParentState: PropTypes.func.isRequired.describe( 'Update parent state'),
 }
