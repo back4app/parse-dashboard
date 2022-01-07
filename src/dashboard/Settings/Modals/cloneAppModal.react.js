@@ -42,7 +42,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
     try {
       // check storage for the current app.
       setProcessing(true)
-      setNote('Validatisng app storage...');
+      setNote('Validating app storage...');
       setNoteColor('blue');
 
       await context.currentApp.checkStorage();
@@ -58,10 +58,10 @@ export const CloneAppModal = ({ context, setParentState }) => {
 
       console.log(newApp);
 
-      // setNote('Creating database for the new parse app...');
-      // setNoteColor('blue');
+      setNote('Creating database for the new parse app...');
+      setNoteColor('blue');
 
-      // await context.currentApp.initializeDb(newApp.id, cloneParseVersion?.version);
+      await context.currentApp.initializeDb(newApp._id, cloneParseVersion?.version);
 
       // setNote('Cloning app...');
       // setNoteColor('blue');
