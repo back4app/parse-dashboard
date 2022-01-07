@@ -14913,20 +14913,15 @@ oop.inherits(JavaScriptWorker, Mirror);
 (function() {
     this.setOptions = function(options) {
         this.options = options || {
-            // esnext: true,
             esversion: 11,
             moz: true,
             devel: true,
             browser: true,
             node: true,
-            laxcomma: true,
-            laxbreak: true,
             lastsemic: true,
             onevar: false,
-            passfail: false,
             maxerr: 100,
             expr: true,
-            multistr: true,
             globalstrict: true
         };
         this.doc.getValue() && this.deferredUpdate.schedule(100);

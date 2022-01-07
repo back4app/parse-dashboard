@@ -164,6 +164,7 @@ export default class Playground extends Component {
         <Toolbar section={this.section} subsection={this.subsection} />
         <div style={{ height: 'calc(100vh - 96px)' }}>
           <CodeEditor
+            mode='javascript'
             code={this.state.code}
             height={'calc(100% - 60px)'}
             onCodeChange={(code) => this.setState({ code })}

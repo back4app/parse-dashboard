@@ -9,6 +9,7 @@ import React from 'react';
 import Editor from 'react-ace';
 import PropTypes from '../../lib/PropTypes';
 
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
@@ -26,6 +27,10 @@ export default class CodeEditor extends React.Component {
     if (props.mode) {
       require(`ace-builds/src-noconflict/mode-${props.mode}`);
       require(`ace-builds/src-noconflict/snippets/${props.mode}`);
+    }
+
+    if (props.mode === 'javascript') {
+      ace.config.setModuleUrl('ace/mode/javascript_worker', `${window.PARSE_DASHBOARD_PATH}/worker-javascript.js`);
     }
   }
 
