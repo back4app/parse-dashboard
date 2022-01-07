@@ -14,7 +14,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
   const [ note, setNote ] = useState('');
   const [ noteColor, setNoteColor ] = useState('red');
   const [ processing, setProcessing ] = useState(false);
-  const [ cloneDb, setCloneDb ] = useState(false);
+  const [ cloneType, setCloneType ] = useState('database');
   const [ canSubmit, setCanSubmit ] = useState(false);
 
   const [ parseVersions, setParseVersions ] = useState([]);
@@ -40,12 +40,15 @@ export const CloneAppModal = ({ context, setParentState }) => {
   const cloneApp = async () => {
     let newApp;
     try {
-      // check storage for the current app.
       setProcessing(true)
-      setNote('Validating app storage...');
-      setNoteColor('blue');
+      
+      if ( cloneType === 'database' ) {
+        // check storage for the current app.
+        setNote('Validating app storage...');
+        setNoteColor('blue');
 
-      await context.currentApp.checkStorage();
+        await context.currentApp.checkStorage();
+      }
 
       setNote('Creating a new parse app...');
       setNoteColor('blue');
@@ -64,7 +67,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('Cloning app...');
       setNoteColor('blue');
 
-      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version );
+      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType );
 
       setNote('App cloned successfully!');
       setNoteColor('green');
@@ -73,8 +76,8 @@ export const CloneAppModal = ({ context, setParentState }) => {
       console.log(e);
       setNote('An error occurred');
       setNoteColor('red');  
-      if ( newApp ) {
-        // await context.currentApp.deleteApp( newApp.id );
+      if ( newApp && newApp._id ) {
+        await context.currentApp.deleteApp( newApp._id );
       }
 
     } finally {
@@ -90,7 +93,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
   subtitle={'This allows you to create a clone from this app'}
   confirmText={processing === false ? 'Clone' : 'Please wait...'}
   cancelText='Cancel'
-  disableConfirm={ canSubmit === false || processing || cloneDb === false }
+  disableConfirm={ canSubmit === false || processing }
   disableCancel={processing}
   buttonsInCenter={true}
   onCancel={() => setParentState({ showCloneAppModal: false })}
@@ -130,7 +133,15 @@ export const CloneAppModal = ({ context, setParentState }) => {
           labelWidth={100}
           label={
             <Label
-              text={<span><input onChange={(e) => setCloneDb(e.target.checked)} type={'checkbox'} /> &nbsp; {'Clone Database'} </span>}
+              text={<span><input onChange={(e) => setCloneType(e.target.value)} name="copyType" value="database" type={'radio'} checked={cloneType === 'database'}/> &nbsp; {'Clone Database'} </span>}
+            />
+          }
+        />
+      <Field
+          labelWidth={100}
+          label={
+            <Label
+              text={<span><input onChange={(e) => setCloneType(e.target.value)} name="copyType" value="schema" type={'radio'} checked={cloneType === 'schema'}/> &nbsp; {'Clone Schema'} </span>}
             />
           }
         />

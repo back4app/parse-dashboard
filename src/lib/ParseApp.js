@@ -405,12 +405,12 @@ export default class ParseApp {
 
   initializeDb(appId, parseVersion) {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId}/database`;
-    return AJAX.post(path, { parseVersion: parseVersion })
+    return AJAX.post(path, { parseVersion })
   }
 
-  async cloneApp(appId, parseVersion) {
+  async cloneApp(appId, parseVersion, cloneType) {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
-    return AJAX.post(path, { appId: appId, parseVersion: parseVersion })
+    return AJAX.post(path, { appId, parseVersion, cloneType })
   }
 
   async deleteApp(appId) {
