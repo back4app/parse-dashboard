@@ -112,7 +112,7 @@ export const ManageAppFields = ({
                 value={parseOptions?.passwordPolicy?.resetTokenValidityDuration}
                 error={getError(errors, 'parseOptions.passwordPolicy.resetTokenValidityDuration')}
                 onChange={(resetTokenValidityDuration) => {
-                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration } } );
+                  setParseOptions( { passwordPolicy: { resetTokenValidityDuration: parseInt(resetTokenValidityDuration) } } );
                 }} />
             }
           />
@@ -196,7 +196,7 @@ export const ManageAppFields = ({
                 min={0}
                 value={parseOptions?.passwordPolicy?.maxPasswordAge}
                 onChange={(maxPasswordAge) => {
-                  setParseOptions({ passwordPolicy: { maxPasswordAge } });
+                  setParseOptions({ passwordPolicy: { maxPasswordAge: parseInt(maxPasswordAge) } });
                 }} />
             }
           />
@@ -215,7 +215,7 @@ export const ManageAppFields = ({
                 min={0}
                 value={ parseOptions?.passwordPolicy?.maxPasswordHistory }
                 onChange={(maxPasswordHistory) => {
-                  setParseOptions({ passwordPolicy: { maxPasswordHistory } });
+                  setParseOptions({ passwordPolicy: { maxPasswordHistory: parseInt(maxPasswordHistory) } });
                 }} />
             }
           />
@@ -242,7 +242,7 @@ export const ManageAppFields = ({
                 min={0}
                 value={parseOptions?.accountLockout?.duration}
                 onChange={(duration) => {
-                  setParseOptions({ accountLockout: { duration } });
+                  setParseOptions({ accountLockout: { duration: parseInt(duration) } });
                 }} />
             }
           />
@@ -261,7 +261,7 @@ export const ManageAppFields = ({
                 min={0}
                 value={ parseOptions?.accountLockout?.threshold }
                 onChange={(threshold) => {
-                  setParseOptions({ accountLockout: { threshold } });
+                  setParseOptions({ accountLockout: { threshold: parseInt(threshold) } });
                 }} />
             }
           />
