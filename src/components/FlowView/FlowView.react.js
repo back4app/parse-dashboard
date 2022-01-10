@@ -76,6 +76,12 @@ export default class FlowView extends React.Component {
         });
       }
       Promise.resolve(this.props.validate(newChanges))
+        .then((errors) => {
+          this.setState({
+            saveError: 'Validation failed',
+            errors: 'errors' in errors ? errors.errors : []
+          });
+        })
         .catch(({ errors }) => {
           this.setState({
             saveError: 'Validation failed',
