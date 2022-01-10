@@ -279,5 +279,6 @@ ManageAppFields.propTypes = {
   dashboardAPI: PropTypes.string.describe('Parse Server API URL'),
   databaseURL: PropTypes.string.describe('Dashboard API URL'),
   parseVersion: PropTypes.string.describe('Parse server version'),
-  mongoVersion: PropTypes.string.describe('Database version')
+  mongoVersion: PropTypes.string.describe('Database version'),
+  errors: PropTypes.array.describe('An array of errors')
 }

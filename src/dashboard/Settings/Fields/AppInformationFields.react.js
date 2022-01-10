@@ -8,6 +8,7 @@ import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 }                                        from 'dashboard/Settings/Fields/Constants';
 import getError                          from 'dashboard/Settings/Util/getError';
+import PropTypes                         from 'lib/PropTypes';
 
 export const AppInformationFields = ({
   appName,
@@ -25,3 +26,9 @@ export const AppInformationFields = ({
       onChange={setAppName} />
     } />
 </Fieldset>;
+
+AppInformationFields.propTypes = {
+  appName: PropTypes.string.isRequired.describe('The name of the application.'),
+  setAppName: PropTypes.func.isRequired.describe('Update the app name.'),
+  errors: PropTypes.array.isRequired.describe('Validation errors.')
+}

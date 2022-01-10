@@ -75,11 +75,13 @@ export default class FlowView extends React.Component {
           errors: []
         });
       }
-      let validateErrorMsg = this.props.validate(newChanges)
-      this.setState({
-        saveError: 'Validation failed',
-        errors: validateErrorMsg
-      });
+      Promise.resolve(this.props.validate(newChanges))
+        .catch(({ errors }) => {
+          this.setState({
+            saveError: 'Validation failed',
+            errors: 'errors' in errors ? errors.errors : []
+          });
+        });
     }
   }
 
@@ -193,7 +195,7 @@ export default class FlowView extends React.Component {
       state={saveState}
       waitingText={submitText}
       savingText={inProgressText}
-      disabled={(!!hasFormValidationError)}
+      disabled={(!!hasFormValidationError) || this.state.errors.length > 0}
       onClick={this.handleClickSaveButton.bind(this)}
     />;
 
