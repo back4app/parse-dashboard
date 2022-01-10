@@ -389,13 +389,7 @@ export default class ParseApp {
 
   checkStorage() {
     let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/check-storage`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    return AJAX.post(path);
   }
 
   createApp(appName) {
