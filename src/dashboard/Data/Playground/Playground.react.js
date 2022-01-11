@@ -107,7 +107,7 @@ export default class Playground extends Component {
 
   saveCode() {
     try {
-      const code = this.editor.value;
+      const code = this.state.code;
       if (!code) {
         Swal.fire({
           title: 'Couldn\'t save latest changes',

@@ -76,13 +76,20 @@ export default class FlowView extends React.Component {
           errors: []
         });
       }
-      this.props.validate(newChanges)
+      Promise.resolve(this.props.validate(newChanges))
+        .then((errors) => {
+          if ( errors )
+          this.setState({
+            saveError: 'Validation failed',
+            errors: 'errors' in errors ? errors.errors : errors
+          });
+        })
         .catch(({ errors }) => {
           this.setState({
             saveError: 'Validation failed',
-            errors
+            errors: 'errors' in errors ? errors.errors : []
           });
-        })
+        });
     }
   }
 
@@ -130,7 +137,7 @@ export default class FlowView extends React.Component {
     let fields = this.currentFields();
     this.setState({ saveState: SaveButton.States.SAVING });
     this.props.onSubmit({ changes: this.state.changes, fields, setField: this.setField, resetFields: this.resetFields }).then(() => {
-      this.setState({ saveState: SaveButton.States.SUCCEEDED, changes: {} });
+      this.setState({ saveState: SaveButton.States.SUCCEEDED });
       this.props.afterSave({ fields, setField: this.setField, setFieldJson: this.setFieldJson, resetFields: this.resetFields });
     }).catch(({ message, error, notice, errors = [] }) => {
       this.setState({
@@ -168,7 +175,7 @@ export default class FlowView extends React.Component {
     let form = renderForm({ fields, changes, setField, resetFields, setFieldJson, errors: this.state.errors });
     let flowModals = <div>{renderModals.map( (modal, key) => <div key={key}>{modal}</div> )}</div>
 
-    let invalidFormMessage = validate({ changes, fields });
+    let invalidFormMessage = validate(changes);
     let hasFormValidationError = React.isValidElement(invalidFormMessage) || (invalidFormMessage && invalidFormMessage.length > 0);
     let errorMessage = '';
     let footerMessage = null;
