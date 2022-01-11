@@ -195,6 +195,13 @@ export default class B4ACodeTree extends React.Component {
     $('#tree').on('create_node.jstree', function() {
       B4ATreeActions.refreshEmptyFolderIcons();
     });
+
+    $('#tree').on('delete_node.jstree', function() {
+      if ( $('#tree').jstree().get_json().length > 0 ) {
+        const cloudFolder = $('#tree').jstree().get_json()[0].id;
+        $('#tree').jstree('select_node', cloudFolder);
+      }
+    });
   }
 
   componentDidUpdate() {
