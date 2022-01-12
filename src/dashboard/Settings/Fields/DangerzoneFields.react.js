@@ -9,6 +9,7 @@ import Toggle                            from 'components/Toggle/Toggle.react';
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 }                                        from 'dashboard/Settings/Fields/Constants';
+import PropTypes                         from 'lib/PropTypes';
 
 export const DangerzoneFields = ({
   cleanUpFiles,
@@ -23,8 +24,7 @@ export const DangerzoneFields = ({
   cloneApp,
   deleteApp,
   isCollaborator
-}) => (<></>);
-{/* <Fieldset
+}) => <Fieldset
   legend='Danger Zone'
   description='These options will effect your app'>
     <Field
@@ -59,7 +59,7 @@ export const DangerzoneFields = ({
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
           text='Clean up app'
-          description={<span>This will delete any files that are not referenced by any objects. Don't use the feature if you have Arrays of Files, or Files inside Object columns.</span>} />}
+          description={<span>This will delete any files that are not referenced by any objects. Don&apos;t use the feature if you have Arrays of Files, or Files inside Object columns.</span>} />}
       input={<FormButton
       onClick={cleanUpFiles}
       value='Clean Up Files'/>} />
@@ -105,5 +105,19 @@ export const DangerzoneFields = ({
       color={cleanUpMessageColor}>
       <div>{cleanUpFilesMessage}</div>
     </FormNote> : null}
-</Fieldset>; */}
+</Fieldset>;
 
+DangerzoneFields.propTypes = {
+  cleanUpFiles: PropTypes.func.isRequired.describe('Cleanup files function'),
+  cleanUpFilesMessage: PropTypes.string.isRequired.describe('Cleanup file message'),
+  cleanUpMessageColor: PropTypes.string.describe('Cleanup files note color'),
+  clientPush: PropTypes.bool.isRequired.describe('Client push settings'),
+  setClientPush: PropTypes.func.isRequired.describe('Set client push settings'),
+  clientClassCreation: PropTypes.bool.isRequired.describe('Client class creation settings'),
+  setClientClassCreation: PropTypes.func.isRequired.describe('Set client class creation settings'),
+  restartApp: PropTypes.func.isRequired.describe('Restart app function'),
+  transferApp: PropTypes.func.isRequired.describe('Transfer app function'),
+  cloneApp: PropTypes.func.isRequired.describe('Clone app function'),
+  deleteApp: PropTypes.func.isRequired.describe('Delete app function'),
+  isCollaborator: PropTypes.bool.isRequired.describe('The current user is collaborator')
+};
