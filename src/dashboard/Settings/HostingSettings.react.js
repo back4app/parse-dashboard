@@ -307,7 +307,7 @@ export default class HostingSettings extends DashboardView {
 					return Promise.reject({ error: unique(Object.values(failures).concat(error)).join(' ') });
 				});
 			}}
-			validate={() => '' /*TODO: do some validation*/}
+			// validate={() => '' /*TODO: do some validation*/}
 			renderForm={this.renderForm.bind(this)}
 		/>;
 	}
