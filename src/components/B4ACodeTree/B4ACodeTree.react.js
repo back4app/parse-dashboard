@@ -187,6 +187,10 @@ export default class B4ACodeTree extends React.Component {
   updateCodeOnNewFile(type, text){
     if (type === 'delete-file') {
       this.cloudCodeChanges.removeFile(text);
+      if ( $('#tree').jstree().get_json().length > 0 ) {
+        const cloudFolder = $('#tree').jstree().get_json()[0].id;
+        $('#tree').jstree('select_node', cloudFolder);
+      }
     } else if (type === 'new-file') {
       // incase of new-file, other file or folder is selected
       // so, directly add that file name in cloudCodeChanges

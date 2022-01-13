@@ -35,6 +35,15 @@ const confirmRemoveFileModal = {
   reverseButtons: true,
 };
 
+const preventRemoveFileModal = {
+  title: 'Can not remove file',
+  text: '',
+  type: 'error',
+  confirmButtonColor: '#169cee',
+  confirmButtonText: 'Ok',
+  reverseButtons: true,
+};
+
 // Function used to force an update on jstree element. Useful to re-render tree
 // after deploy changes
 export const updateTreeContent = async (files) => {
@@ -180,7 +189,13 @@ const customMenu = node => {
     create(data.reference)
   };
   items.remove.action = function (data) {
-    remove(data.reference, true)
+    const obj = $('#tree').jstree().get_node(data.reference); 
+    if ( obj?.text === 'main.js' || obj?.text === 'index.html' ) {
+      preventRemoveFileModal.text = `Can not remove ${obj.text} file as it is required by cloud code.`;
+      MySwal.fire(preventRemoveFileModal);
+    } else {
+     remove(data.reference, true)
+    }
   };
   delete items.ccp;
   if (node.type === 'default' || node.type === 'new-file') {

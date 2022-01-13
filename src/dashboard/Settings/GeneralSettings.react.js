@@ -33,7 +33,7 @@ import {
 }                                        from './Util';
 
 import GeneralSettingsValidataions       from 'dashboard/Settings/GeneralSettingsValidataions';
-import deepmerge from 'deepmerge';
+import deepmerge                         from 'deepmerge';
 import {
   defaultParseOptions
 }                                        from 'dashboard/Settings/Fields/Constants';
