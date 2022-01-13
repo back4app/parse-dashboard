@@ -101,8 +101,7 @@ export default (changes, initial, fieldOptions) => {
   let allChangeNodes = changesList.filter(({ changes }) => changes.length > 0).map(({ changes, prefix }, index, wholeList) =>
     renderChangeList(prefix, changes, index === wholeList.length - 1)
   );
-  console.log();
   return <span>
-    You've {joinWithFinal(null, allChangeNodes, ', ', allChangeNodes.length < 3 ? ' and ' : ', and ')}.
+    You&apos;ve {joinWithFinal(null, allChangeNodes, ', ', allChangeNodes.length < 3 ? ' and ' : ', and ')}.
   </span>;
 };

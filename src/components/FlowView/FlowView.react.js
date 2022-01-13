@@ -20,7 +20,8 @@ export default class FlowView extends React.Component {
       changes: props.initialChanges || {},
       saveState: SaveButton.States.WAITING,
       saveError: '',
-      errors: []
+      errors: [],
+      footerMessage: undefined
     };
     this.handleClickSaveButton = this.handleClickSaveButton.bind(this);
   }
@@ -35,8 +36,6 @@ export default class FlowView extends React.Component {
     }
     this.setState({changes: newChanges});
   }
-
-  updateArray(){}
 
   currentFields() {
     let fields = {};
@@ -69,13 +68,15 @@ export default class FlowView extends React.Component {
         changes: newChanges,
         errors: []
       });
+      
       if(key === 'collaborators'){
         this.handleClickSaveButton();
         this.setState({
-          changes: [],
-          errors: []
+          changes: {},
+          errors: [],
+          footerMessage: this.props.footerContents({ changes: this.state.changes, fields: this.state.fields })
         });
-      }
+      } 
       Promise.resolve(this.props.validate(newChanges))
         .catch(({ errors }) => {
           this.setState({
@@ -83,6 +84,7 @@ export default class FlowView extends React.Component {
             errors
           });
         });
+      
     }
   }
 
@@ -121,7 +123,8 @@ export default class FlowView extends React.Component {
         saveState: SaveButton.States.WAITING,
         saveError: '',
         changes: this.props.initialChanges || {},
-        errors: []
+        errors: [],
+        footerMessage: undefined
       });
     }
   }
@@ -188,6 +191,10 @@ export default class FlowView extends React.Component {
     } else if (shouldShowFooter) {
       shouldShowFooter = Object.keys(changes).length > 0;
       footerMessage = shouldShowFooter ? footerContents({ changes, fields }) : '';
+    } 
+
+    if ( (!footerMessage || footerMessage == '') && this.state.footerMessage ) {
+      footerMessage = this.state.footerMessage
     }
 
     let saveButton = <SaveButton
