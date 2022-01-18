@@ -31,9 +31,12 @@ VisibilityField.propTypes = {
   onVisibleComponent: PropTypes.node.describe(
     'The component to show when visible'
   ),
+  onHiddenComponent: PropTypes.node.describe(
+    'The component to show when hidden'
+  ),
   input: PropTypes.node.describe(
     'The component to show when visible'
-  ),
+  )
 };
 
 export default VisibilityField;

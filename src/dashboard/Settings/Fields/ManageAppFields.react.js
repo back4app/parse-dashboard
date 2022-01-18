@@ -22,7 +22,8 @@ export const ManageAppFields = ({
   databaseURL,
   parseVersion,
   mongoVersion,
-  errors
+  errors,
+  isGDPR
 }) => {
   return (
     <Fieldset
@@ -61,6 +62,8 @@ export const ManageAppFields = ({
         label={<Label text='Database' description={'Database configurations'} />}
         input={
           <div style={{ flex: 1 }}>
+          {
+          (isGDPR !== true) && 
           <VisibilityField
             onVisibleComponent={
               () =>
@@ -78,7 +81,7 @@ export const ManageAppFields = ({
                 onClick={() => props.toggleVisibility(true)}
                 value='Show Database URI'/>
             }
-          />
+          />}
           <FieldSettings
             containerStyles={{ borderBottom: 'none' }}
             padding={'7px 0px'}
@@ -280,5 +283,6 @@ ManageAppFields.propTypes = {
   databaseURL: PropTypes.string.describe('Dashboard API URL'),
   parseVersion: PropTypes.string.describe('Parse server version'),
   mongoVersion: PropTypes.string.describe('Database version'),
-  errors: PropTypes.array.describe('An array of errors')
+  errors: PropTypes.array.describe('An array of errors'),
+  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier')
 }
