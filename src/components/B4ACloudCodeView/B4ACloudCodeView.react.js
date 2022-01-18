@@ -65,12 +65,17 @@ export default class B4ACloudCodeView extends React.Component {
       style.hljs.height = '100%';
       style.hljs.padding = '1em 0.5em';
     }
-  return <CodeEditor 
-      style={{ zIndex: 4 }} 
-      fontSize={13} 
-      fileName={this.props.fileName}
-      code={this.props.source} 
-      onCodeChange={ value => this.props.onCodeChange(value) } 
-      mode={this.extensionDecoder()} />
+  return (
+    <div style={{ height: 'calc(100% - 55px)'}} >
+      <CodeEditor
+        style={{ zIndex: 4 }}
+        fontSize={13}
+        fileName={this.props.fileName}
+        code={this.props.source}
+        onCodeChange={(value) => this.props.onCodeChange(value)}
+        mode={this.extensionDecoder()}
+      />
+    </div>
+  );
   }
 }

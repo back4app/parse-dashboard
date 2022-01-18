@@ -648,17 +648,18 @@ class PushNew extends DashboardView {
         pushAudiencesStore={this.props.pushaudiences}
         current={fields.audience_id}
         onChange={(audienceId, queryOrFilters, deviceCount) => {
-          this.setState({ deviceCount, audienceId });
-          setField('audience_id', audienceId);
-          if (audienceId === PushConstants.NEW_SEGMENT_ID) {
-            // Horrible code here is due to old rails code that sent pushes through it's own endpoint, while Parse Server sends through Parse.Push.
-            // Ideally, we would pass a Parse.Query around everywhere.
-            if (queryOrFilters instanceof Parse.Query) {
-              setField('target', queryOrFilters);
-            } else {
-              setField('target', queryFromFilters('_Installation', queryOrFilters));
+          this.setState({ deviceCount, audienceId }, () => {
+            setField('audience_id', audienceId);
+            if (audienceId === PushConstants.NEW_SEGMENT_ID) {
+              // Horrible code here is due to old rails code that sent pushes through it's own endpoint, while Parse Server sends through Parse.Push.
+              // Ideally, we would pass a Parse.Query around everywhere.
+              if (queryOrFilters instanceof Parse.Query) {
+                setField('target', queryOrFilters);
+              } else {
+                setField('target', queryFromFilters('_Installation', queryOrFilters));
+              }
             }
-          }
+          });
         }} />
     </Fieldset>
 
@@ -876,7 +877,7 @@ class PushNew extends DashboardView {
       onSubmit={({ changes }) => this.handlePushSubmit(changes)}
       inProgressText={'Sending\u2026'}
       renderForm={this.renderForm.bind(this)}
-      validate={({ changes }) => this.valid(changes)}
+      validate={(changes) => this.valid(changes)}
       footerContents={({changes}) => {
         let deviceNote = null;
         if(this.state.deviceCount){

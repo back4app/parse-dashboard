@@ -1,7 +1,6 @@
 import React                        from 'react';
 import $                            from 'jquery';
 import Resizable                    from 're-resizable';
-import jstree                       from 'jstree';
 import ReactFileReader              from 'react-file-reader';
 import styles                       from 'components/B4ACodeTree/B4ACodeTree.scss'
 import Button                       from 'components/Button/Button.react';
@@ -9,14 +8,16 @@ import B4ACloudCodeView             from 'components/B4ACloudCodeView/B4ACloudCo
 import B4ATreeActions               from 'components/B4ACodeTree/B4ATreeActions';
 import Swal                         from 'sweetalert2';
 import B4AAlert                     from 'components/B4AAlert/B4AAlert.react';
-import Icon                         from 'components/Icon/Icon.react';
 import addFileIcon                  from './icons/add-file.png';
 import uploadFileIcon               from './icons/file-upload-outline.png';
 import removeFileIcon               from './icons/trash-can-outline.png';
+import CloudCodeChanges             from 'lib/CloudCodeChanges';
+import PropTypes                    from 'lib/PropTypes';
+
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
 
-const getCloudFolderPlaceholder = (appId, restKey) =>
+const getCloudFolderPlaceholder = () =>
   "The Cloud Folder can be used to deploy cloud functions, triggers, and custom Express.js routes.";
 
 const publicFolderPlaceholder = "Public folder can be used to deploy public static content as html, images, css, etc.\n"
@@ -27,12 +28,8 @@ export default class B4ACodeTree extends React.Component {
   constructor(props){
     super(props);
 
-    // get appId and restKey from props
-    this.appId = this.props.currentApp && this.props.currentApp.applicationId || '<YOUR_APP_ID_HERE>'
-    this.restKey = this.props.currentApp && this.props.currentApp.restKey || '<YOUR_REST_KEY_HERE>'
-
     // set a cloudCodePlaceholder with the app's data
-    cloudFolderPlaceholder = getCloudFolderPlaceholder(this.appId, this.restKey)
+    cloudFolderPlaceholder = getCloudFolderPlaceholder()
 
     this.state = {
       selectedFile: '',
@@ -46,6 +43,7 @@ export default class B4ACodeTree extends React.Component {
       selectedNodeData: null
     }
 
+    this.cloudCodeChanges = new CloudCodeChanges();
   }
 
   getFileType(file) {
@@ -169,12 +167,14 @@ export default class B4ACodeTree extends React.Component {
     const ecodedValue = await B4ATreeActions.encodeFile(value, 'data:plain/text;base64');
     this.setState({ source: value });
 
-    this.props.setCodeUpdated(true);
     this.state.selectedNodeData?.instance.set_icon(this.state.selectedNodeData.node, require('./icons/file.png').default);
 
     $('#tree').jstree('get_selected', true).pop().data.code = ecodedValue;
     $('#tree').jstree().redraw(true);
-
+    
+    // set updated files.
+    this.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().text);
+    this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
   }
 
   selectCloudFolder() {
@@ -184,17 +184,38 @@ export default class B4ACodeTree extends React.Component {
     }
   }
 
+  updateCodeOnNewFile(type, text){
+    if (type === 'delete-file') {
+      this.cloudCodeChanges.removeFile(text);
+      if ( $('#tree').jstree().get_json().length > 0 ) {
+        const cloudFolder = $('#tree').jstree().get_json()[0].id;
+        $('#tree').jstree('select_node', cloudFolder);
+      }
+    } else if (type === 'new-file') {
+      // incase of new-file, other file or folder is selected
+      // so, directly add that file name in cloudCodeChanges
+      text && this.cloudCodeChanges.addFile(text);
+    } else {
+      // set updated files.
+      let selectedFiles = $('#tree').jstree('get_selected', true)
+      if (selectedFiles.length) {
+        this.cloudCodeChanges.addFile(selectedFiles.pop().text);
+      }
+    }
+
+    this.props.setUpdatedFile(this.cloudCodeChanges.getFiles());
+
+    this.selectCloudFolder();
+
+    B4ATreeActions.refreshEmptyFolderIcons();
+  }
 
   componentDidMount() {
     let config = B4ATreeActions.getConfig(this.state.files);
     $('#tree').jstree(config);
     this.watchSelectedNode();
-    $('#tree').on('changed.jstree', function() {
-      B4ATreeActions.refreshEmptyFolderIcons();
-    });
-    $('#tree').on('create_node.jstree', function() {
-      B4ATreeActions.refreshEmptyFolderIcons();
-    });
+    $('#tree').on('create_node.jstree', (node, parent) => this.updateCodeOnNewFile(parent?.node?.type, parent?.node?.text));
+    $('#tree').on('delete_node.jstree', (node, parent) => this.updateCodeOnNewFile('delete-file', parent?.node?.text));
   }
 
   componentDidUpdate() {
@@ -287,7 +308,7 @@ export default class B4ACodeTree extends React.Component {
                     }).then(({value}) => {
                       if (value) {
                         const parent = B4ATreeActions.getSelectedParent();
-                        let newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent);
+                        let newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
                         B4ATreeActions.selectFileOnTree(newNodeId); // select new file
                         this.setState({ files: $('#tree').jstree(true).get_json() });
                       }
@@ -326,4 +347,11 @@ export default class B4ACodeTree extends React.Component {
       </div>
     );
   }
+}
+
+B4ACodeTree.propTypes = {
+  setUpdatedFile: PropTypes.func.isRequired.describe('Function to update undeployed file count.'),
+  currentApp: PropTypes.any.isRequired.describe('The current parseApp.'),
+  files: PropTypes.any.isRequired.describe('Array of files'),
+  parentState: PropTypes.func.isRequired.describe('Update parent state.')
 }

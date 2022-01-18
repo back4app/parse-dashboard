@@ -373,48 +373,42 @@ export default class ParseApp {
   }
 
   restartApp() {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/restart`;
+    let path = `/parse-app/${this.slug}/restart`;
     return AJAX.post(path);
   }
 
   transferApp(newOwner) {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/transfer`;
+    let path = `/parse-app/${this.slug}/transfer`;
     return AJAX.post(path, { newOwner });
   }
 
   supportedParseServerVersions() {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-version`;
+    let path = `/parse-version`;
     return AJAX.get(path);
   }
 
   checkStorage() {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/check-storage`;
-    return fetch(path, { method: 'POST', headers: {'X-CSRF-Token': CSRFManager.getToken()} }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error({error: 'An error occurred'});
-      }
-    })
+    let path = `/parse-app/${this.slug}/check-storage`;
+    return AJAX.post(path);
   }
 
   createApp(appName) {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app`;
+    let path = `/parse-app`;
     return AJAX.post(path, { appDescription: "", appId: null, appName, isPublic: false })
   }
 
   initializeDb(appId, parseVersion) {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId}/database`;
-    return AJAX.post(path, { parseVersion })
+    let path = `/parse-app/${appId}/database`;
+    return AJAX.post(path, { parseVersion: parseVersion })
   }
 
   async cloneApp(appId, parseVersion, cloneType) {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
+    let path = `/parse-app/${this.slug}/clone`;
     return AJAX.post(path, { appId, parseVersion, cloneType })
   }
 
   async deleteApp(appId) {
-    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${appId || this.slug}`;
+    let path = `/parse-app/${appId || this.slug}`;
     return AJAX.del(path);
   }
 
@@ -596,7 +590,7 @@ export default class ParseApp {
   }
 
   validateCollaborator(email) {
-    let path = '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
     return AJAX.get(path);
   }
 
@@ -680,7 +674,7 @@ export default class ParseApp {
   }
 
   removeCollaboratorById(id) {
-    let path = '/apps/' + this.slug + '/collaborations/' + id.toString();
+    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/' + id.toString();
     let promise = AJAX.del(path)
     promise.then(() => {
       //TODO: this currently works because everything that uses collaborators

@@ -2,10 +2,6 @@ import { compareCollaborators,
   verifyEditedCollaborators }            from ".";
 import unique                            from 'lib/unique';
 import pluck                             from 'lib/pluck';
-import {
-  defaultParseOptions
-}                                        from 'dashboard/Settings/Fields/Constants';
-import deepmerge                         from 'deepmerge';
 
 export const getPromiseList = ({ changes, setDifference, initialFields, app, promiseCallback }) => {
   let promiseList = [];

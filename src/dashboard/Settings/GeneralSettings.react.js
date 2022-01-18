@@ -33,7 +33,7 @@ import {
 }                                        from './Util';
 
 import GeneralSettingsValidataions       from 'dashboard/Settings/GeneralSettingsValidataions';
-import deepmerge from 'deepmerge';
+import deepmerge                         from 'deepmerge';
 import {
   defaultParseOptions
 }                                        from 'dashboard/Settings/Fields/Constants';
@@ -172,7 +172,8 @@ export default class GeneralSettings extends DashboardView {
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
-              cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage} />
+              cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage} 
+              isGDPR={this.context.currentApp.custom && this.context.currentApp.custom.isGDPR}/>
             <DangerzoneFields
               errors={errors}
               mongoURL={fields.mongoURL}
