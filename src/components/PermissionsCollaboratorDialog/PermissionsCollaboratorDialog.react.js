@@ -29,7 +29,7 @@ function renderSimpleCheckboxes(feature, permissions, collaboratorsCanWrite, onC
             id={feature + 'None'}
             name={feature}
             className={styles.input}
-            defaultChecked={permissions[feature] === 'None'}
+            defaultChecked={permissions && feature in permissions && permissions[feature] === 'None'}
             onChange={() => onChange(feature, 'None', permissions)}
           />None
       </div>
@@ -40,7 +40,7 @@ function renderSimpleCheckboxes(feature, permissions, collaboratorsCanWrite, onC
             id={feature + 'Read'}
             name={feature}
             className={styles.input}
-            defaultChecked={permissions[feature] === 'Read'}
+            defaultChecked={permissions && feature in permissions && permissions[feature] === 'Read'}
             onChange={() => onChange(feature, 'Read', permissions)}
           />Read
       </div>
@@ -51,7 +51,7 @@ function renderSimpleCheckboxes(feature, permissions, collaboratorsCanWrite, onC
           id={feature + 'Write'}
           name={feature}
           className={styles.input}
-          defaultChecked={permissions[feature] === 'Write'}
+          defaultChecked={permissions && feature in permissions && permissions[feature] === 'Write'}
           onChange={() => onChange(feature, 'Write', permissions)}
           disabled={!collaboratorsCanWrite}
         />Write
@@ -63,7 +63,7 @@ function renderSimpleCheckboxes(feature, permissions, collaboratorsCanWrite, onC
           id={feature + 'Custom'}
           name={feature}
           className={styles.input}
-          defaultChecked={permissions[feature] === 'Custom'}
+          defaultChecked={permissions && feature in permissions && permissions[feature] === 'Custom'}
           onChange={() => onChange(feature, 'Custom', permissions)}
           disabled={!collaboratorsCanWrite}
         />Custom
@@ -88,8 +88,9 @@ export default class PermissionsCollaboratorDialog extends React.Component {
               }) {
     super();
 
-    const isDefaultFeatures = lodash.isEqual(customFeaturesPermissions, defaultFeaturesPermissions)
-    const selectedClassesTab = !customFeaturesPermissions['classes'] ? 'Write' : (customFeaturesPermissions['classes'] === 'Custom' ? 'CustomClasses' :  customFeaturesPermissions['classes'])
+    const isDefaultFeatures = lodash.isEqual(customFeaturesPermissions, defaultFeaturesPermissions);
+    console.log(customFeaturesPermissions);
+    const selectedClassesTab = customFeaturesPermissions === undefined || !customFeaturesPermissions['classes'] ? 'Write' : (customFeaturesPermissions['classes'] === 'Custom' ? 'CustomClasses' :  customFeaturesPermissions['classes'])
 
     this.state = {
       transitioning: false,

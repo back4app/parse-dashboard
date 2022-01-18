@@ -2,6 +2,7 @@ import * as yup from 'yup';
 
 export default yup.object({
     appName: yup.string().min(0).max(255),
+    collaborators: yup.array(),
     parseOptions: yup.object({
         passwordPolicy: yup.object({
             resetTokenValidityDuration: yup.number().positive(),

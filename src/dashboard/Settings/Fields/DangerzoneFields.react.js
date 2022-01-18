@@ -24,7 +24,8 @@ export const DangerzoneFields = ({
   cloneApp,
   deleteApp,
   isCollaborator
-}) => <Fieldset
+}) => 
+<Fieldset
   legend='Danger Zone'
   description='These options will effect your app'>
     <Field
@@ -105,7 +106,7 @@ export const DangerzoneFields = ({
       color={cleanUpMessageColor}>
       <div>{cleanUpFilesMessage}</div>
     </FormNote> : null}
-</Fieldset>;
+</Fieldset>; 
 
 DangerzoneFields.propTypes = {
   cleanUpFiles: PropTypes.func.isRequired.describe('Cleanup files function'),

@@ -6,15 +6,13 @@
  * the root directory of this source tree.
  */
 import React                  from 'react';
-import { withRouter, Prompt } from 'react-router';
+import { withRouter } from 'react-router';
 import history                from 'dashboard/history';
 import $                      from 'jquery';
 import axios                  from 'axios';
-import B4AAlert               from 'components/B4AAlert/B4AAlert.react';
 import Button                 from 'components/Button/Button.react';
 import B4ACodeTree            from 'components/B4ACodeTree/B4ACodeTree.react';
 import {
-  getFiles,
   updateTreeContent
 }                             from 'components/B4ACodeTree/B4ATreeActions';
 import B4ACloudCodeToolbar    from 'dashboard/Data/CloudCode/B4ACloudCodeToolbar.react';
@@ -43,7 +41,6 @@ class B4ACloudCode extends CloudCode {
       loading: true,
       unsavedChanges: false,
       modal: null,
-      codeUpdated: false,
       updatedFiles: [],
 
       // Parameters used to on/off alerts
@@ -72,7 +69,7 @@ class B4ACloudCode extends CloudCode {
     await this.fetchSource()
     // define the parameters to show unsaved changes warning modal
     const unbindHook = this.props.history.block(nextLocation => {
-      if (this.state.unsavedChanges || this.state.codeUpdated) {
+      if (this.state.unsavedChanges || this.state.updatedFiles.length > 0) {
         const warningModal = <Modal
           type={Modal.Types.WARNING}
           icon='warn-triangle-solid'
@@ -85,8 +82,7 @@ class B4ACloudCode extends CloudCode {
             history.push(nextLocation);
           }}
           onCancel={() => { this.setState({ modal: null }); }}
-          children='There are undeployed changes, if you leave the page you will lose it.'
-          />;
+          >There are undeployed changes, if you leave the page you will lose it.</Modal>;
         this.setState({ modal: warningModal });
         return false;
       } else {
@@ -96,7 +92,7 @@ class B4ACloudCode extends CloudCode {
   }
 
   componentDidUpdate() {
-    if ( this.state.codeUpdated === true || this.state.unsavedChanges === true ) {
+    if ( this.state.updatedFiles.length > 0 || this.state.unsavedChanges === true ) {
       window.onbeforeunload = function() {
         this.onBeforeUnloadSaveCode = window.onbeforeunload = function() {
           return '';
@@ -142,14 +138,15 @@ class B4ACloudCode extends CloudCode {
         type={Modal.Types.DANGER}
         icon='warn-triangle-solid'
         title='Missing required file'
-        children='The cloud folder must contain either main.js or app.js file, and must be placed on the root of the folder.'
         showCancel={false}
         textModal={true}
         confirmText='Ok, got it'
         buttonsInCenter={true}
         onConfirm={() => {
           this.setState({ modal: null });
-        }} />
+        }}>
+          The cloud folder must contain either main.js or app.js file, and must be placed on the root of the folder.
+        </Modal>
     );
 
     // get files in cloud folder
@@ -171,16 +168,14 @@ class B4ACloudCode extends CloudCode {
       icon='files-outline'
       title='Deploying...'
       textModal={true}
-      children={
+      customFooter={<div style={{ padding: '10px 0 20px' }}></div>}>
         <div>
           <LoaderDots />
           <div>
             Please wait, deploying in progress...
           </div>
         </div>
-      }
-      customFooter={<div style={{ padding: '10px 0 20px' }}></div>}
-      />;
+      </Modal>;
     // show 'loading' modal
     this.setState({ modal: loadingModal });
     try{
@@ -202,7 +197,7 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
         />;
-      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal, codeUpdated: false });
+      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal });
       $('#tree').jstree(true).redraw(true);
       this.fetchSource();
     } catch (err) {
@@ -210,14 +205,15 @@ class B4ACloudCode extends CloudCode {
         type={Modal.Types.DANGER}
         icon='warn-triangle-solid'
         title='Something went wrong'
-        children='Please try to deploy your changes again.'
         showCancel={false}
         textModal={true}
         confirmText='Ok, got it'
         buttonsInCenter={true}
         onConfirm={() => {
           this.setState({ modal: null });
-        }} />;
+        }}>
+          Please try to deploy your changes again.
+        </Modal>;
       this.setState({
         modal: errorModal
       });
@@ -251,15 +247,6 @@ class B4ACloudCode extends CloudCode {
     let content = null;
     let title = null;
     let footer = null;
-    let alertWhatIs = null;
-
-    let alertWhatIsMessage = <div>
-      <p style={{height:"auto"}}>
-        First, you must create a file called main.js with all your javascript-based functions inside.
-        After that, upload it by clicking on the ADD button and then click on the DEPLOY button.
-        For more details, check our Cloud Code guide <a href="https://www.back4app.com/docs/get-started/cloud-functions">https://www.back4app.com/docs/get-started/cloud-functions</a>.
-      </p>
-    </div>
 
     // Show loading page before fetch data
     if (this.state.loading) {
@@ -270,15 +257,8 @@ class B4ACloudCode extends CloudCode {
 
       title = <B4ACloudCodeToolbar />
 
-      alertWhatIs = <B4AAlert
-        show={true}
-        handlerCloseEvent={this.handlerCloseAlert.bind(this)}
-        title="How to deploy your functions"
-        description={alertWhatIsMessage} />
-
       content = <B4ACodeTree
         setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}
-        setCodeUpdated={() => this.setState({ codeUpdated: true })}
         files={this.state.files}
         parentState={this.setState.bind(this)}
         currentApp={this.context.currentApp}
@@ -295,9 +275,7 @@ class B4ACloudCode extends CloudCode {
         </div>
         <div className={styles.footerContainer}>
           <Button
-            // value={'Logs'}
             onClick={this.onLogClick}
-            // additionalStyles={{}}
             value={
               <div>
                 <span style={{ color: '#218BEC' }}>Logs</span>
@@ -317,10 +295,6 @@ class B4ACloudCode extends CloudCode {
 
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
-        {/* <Prompt
-          when={this.state.codeUpdated === true}
-          message='Your cloud code changes may be lost. Please DEPLOY your changes before closing cloud code.'
-        /> */}
         {title}
         {content}
         {footer}

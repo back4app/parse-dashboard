@@ -34,6 +34,7 @@ return <Modal
           cleanupNoteColor: 'orange',
           showTransferAppModal: false,
         });
+        window.location = `${b4aSettings.DASHBOARD_PATH}/apps`;
       }).catch((e) => {
         setParentState({
           cleanupFilesMessage: e.error,
