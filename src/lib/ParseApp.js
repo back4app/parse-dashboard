@@ -590,7 +590,7 @@ export default class ParseApp {
   }
 
   validateCollaborator(email) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
+    let path = '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
     return AJAX.get(path);
   }
 
@@ -674,7 +674,7 @@ export default class ParseApp {
   }
 
   removeCollaboratorById(id) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/' + id.toString();
+    let path = '/apps/' + this.slug + '/collaborations/' + id.toString();
     let promise = AJAX.del(path)
     promise.then(() => {
       //TODO: this currently works because everything that uses collaborators

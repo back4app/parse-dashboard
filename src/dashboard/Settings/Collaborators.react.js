@@ -95,7 +95,7 @@ export default class Collaborators extends React.Component {
         return false;
       }
     }).catch(error => {
-      this.setState({ lastError: error.message, inviteCollab: true })
+      this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true })
     });
   }
 

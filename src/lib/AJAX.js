@@ -42,8 +42,8 @@ export function request(method, url, body, abortable = false, withCredentials = 
   p.resolve = resolve;
   p.reject = reject;
   xhr.onerror = (e) => {
-    console.log(e);
     p.reject({
+      status: this.status,
       success: false,
       message: 'Network Error',
       error: 'Network Error',
@@ -69,6 +69,7 @@ export function request(method, url, body, abortable = false, withCredentials = 
       }
     } else if (this.status === 403) {
       p.reject({
+        status: this.status,
         success: false,
         message: 'Permission Denied',
         error: 'Permission Denied',
@@ -85,6 +86,7 @@ export function request(method, url, body, abortable = false, withCredentials = 
       }
       let message = json.message || json.error || json.notice || 'Request Error';
       p.reject({
+        status: this.status,
         success: false,
         message: message,
         error: message,
@@ -93,6 +95,7 @@ export function request(method, url, body, abortable = false, withCredentials = 
       });
     } else if (this.status >= 500) {
       p.reject({
+        status: this.status,
         success: false,
         message: 'Server Error',
         error: 'Server Error',

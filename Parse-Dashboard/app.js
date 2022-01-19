@@ -9,6 +9,11 @@ const settings = require('@back4app/back4app-settings');
 
 const currentVersionFeatures = require('../package.json').parseDashboardFeatures;
 
+const redirectURLsToAPI = [
+  '/apps/:id/collaborations/validate'
+];
+
+
 var newFeaturesInLatestVersion = [];
 packageJson('parse-dashboard', 'latest').then(latestPackage => {
   if (latestPackage.parseDashboardFeatures instanceof Array) {
@@ -209,6 +214,12 @@ module.exports = function(config, options) {
         </html>
       `);
     });
+
+    redirectURLsToAPI.map( uri => {
+      app.get(uri, (req, res) => {
+        return res.redirect(settings.BACK4APP_API_PATH + req.path);
+      });
+    } );
 
     // For every other request, go to index.html. Let client-side handle the rest.
     app.get('/*', function(req, res) {
