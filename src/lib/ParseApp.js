@@ -590,7 +590,7 @@ export default class ParseApp {
   }
 
   validateCollaborator(email) {
-    let path = b4aSettings.BACK4APP_API_PATH + '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
+    let path = '/apps/' + this.slug + '/collaborations/validate?email=' + encodeURIComponent(email);
     return AJAX.get(path);
   }
 
