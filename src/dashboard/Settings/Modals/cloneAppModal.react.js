@@ -16,6 +16,9 @@ export const CloneAppModal = ({ context, setParentState }) => {
   const [ processing, setProcessing ] = useState(false);
   const [ cloneType, setCloneType ] = useState('database');
   const [ canSubmit, setCanSubmit ] = useState(false);
+  const [ cloneCloudCode, setCloneCloudCode ] = useState(false);
+  const [ cloneFiles, setCloneFiles ] = useState(false);
+  const [ cloneConfigs, setCloneConfigs ] = useState(false);
 
   const [ parseVersions, setParseVersions ] = useState([]);
   const [ cloneParseVersion, setCloneParseVersion ] = useState();
@@ -67,7 +70,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('Cloning app...');
       setNoteColor('blue');
 
-      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType );
+      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneFiles, cloneConfigs );
 
       setNote('App cloned successfully!');
       setNoteColor('green');
@@ -142,6 +145,30 @@ export const CloneAppModal = ({ context, setParentState }) => {
           label={
             <Label
               text={<span><input onChange={(e) => setCloneType(e.target.value)} name="copyType" value="schema" type={'radio'} checked={cloneType === 'schema'}/> &nbsp; {'Clone Schema'} </span>}
+            />
+          }
+        />
+      <Field
+          labelWidth={100}
+          label={
+            <Label
+              text={<span><input onChange={(e) => setCloneCloudCode(e.target.checked)} name="cloneCloudCode" type={'checkbox'} /> &nbsp; {'Clone Cloud Code'} </span>}
+            />
+          }
+        />
+      <Field
+          labelWidth={100}
+          label={
+            <Label
+              text={<span><input onChange={(e) => setCloneFiles(e.target.checked)} name="cloneFiles" type={'checkbox'} /> &nbsp; {'Clone Files'} </span>}
+            />
+          }
+        />
+      <Field
+          labelWidth={100}
+          label={
+            <Label
+              text={<span><input onChange={(e) => setCloneConfigs(e.target.checked)} name="cloneConfigs" type={'checkbox'} /> &nbsp; {'Clone Configurations'} </span>}
             />
           }
         />

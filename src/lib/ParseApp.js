@@ -402,9 +402,9 @@ export default class ParseApp {
     return AJAX.post(path, { parseVersion: parseVersion })
   }
 
-  async cloneApp(appId, parseVersion, cloneType) {
+  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneFiles = false, cloneConfigs = false) {
     let path = `/parse-app/${this.slug}/clone`;
-    return AJAX.post(path, { appId, parseVersion, cloneType })
+    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneFiles, cloneConfigs })
   }
 
   async deleteApp(appId) {
