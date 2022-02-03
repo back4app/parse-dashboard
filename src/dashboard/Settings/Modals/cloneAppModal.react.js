@@ -72,8 +72,12 @@ export const CloneAppModal = ({ context, setParentState }) => {
 
       await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneFiles, cloneConfigs );
 
-      setNote('App cloned successfully!');
+      setNote('App cloned successfully! Redirecting in 1 second');
       setNoteColor('green');
+
+      setTimeout(() => {
+        window.location.href = `/apps/${newApp.appId}`;
+      }, 1000);
 
     } catch(e){
       console.log(e);
