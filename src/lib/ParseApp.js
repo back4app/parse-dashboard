@@ -383,7 +383,7 @@ export default class ParseApp {
   }
 
   supportedParseServerVersions() {
-    let path = `/parse-version`;
+    let path = b4aSettings.BACK4APP_API_PATH + `/parse-version`;
     return AJAX.get(path);
   }
 
@@ -402,9 +402,9 @@ export default class ParseApp {
     return AJAX.post(path, { parseVersion: parseVersion })
   }
 
-  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneFiles = false, cloneConfigs = false) {
+  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false) {
     let path = `/parse-app/${this.slug}/clone`;
-    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneFiles, cloneConfigs })
+    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs })
   }
 
   async deleteApp(appId) {

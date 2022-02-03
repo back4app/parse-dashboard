@@ -17,7 +17,6 @@ export const CloneAppModal = ({ context, setParentState }) => {
   const [ cloneType, setCloneType ] = useState('database');
   const [ canSubmit, setCanSubmit ] = useState(false);
   const [ cloneCloudCode, setCloneCloudCode ] = useState(false);
-  const [ cloneFiles, setCloneFiles ] = useState(false);
   const [ cloneConfigs, setCloneConfigs ] = useState(false);
 
   const [ parseVersions, setParseVersions ] = useState([]);
@@ -70,7 +69,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('Cloning app...');
       setNoteColor('blue');
 
-      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneFiles, cloneConfigs );
+      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneConfigs );
 
       setNote('App cloned successfully! Redirecting in 1 second');
       setNoteColor('green');
@@ -157,14 +156,6 @@ export const CloneAppModal = ({ context, setParentState }) => {
           label={
             <Label
               text={<span><input onChange={(e) => setCloneCloudCode(e.target.checked)} name="cloneCloudCode" type={'checkbox'} /> &nbsp; {'Clone Cloud Code'} </span>}
-            />
-          }
-        />
-      <Field
-          labelWidth={100}
-          label={
-            <Label
-              text={<span><input onChange={(e) => setCloneFiles(e.target.checked)} name="cloneFiles" type={'checkbox'} /> &nbsp; {'Clone Files'} </span>}
             />
           }
         />
