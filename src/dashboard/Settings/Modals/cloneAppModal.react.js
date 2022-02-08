@@ -79,8 +79,12 @@ export const CloneAppModal = ({ context, setParentState }) => {
       }, 1000);
 
     } catch(e){
-      console.log(e);
-      setNote('An error occurred');
+      console.error(e);
+      let error = 'An error occurred.';
+      if ( e.message ) {
+        error = e.message;
+      }
+      setNote(error);
       setNoteColor('red');  
       if ( newApp && newApp._id ) {
         await context.currentApp.deleteApp( newApp._id );
