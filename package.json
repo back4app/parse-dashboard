@@ -121,7 +121,7 @@
     "node-sass": "^4.13.1",
     "nodemon": "^1.18.3",
     "null-loader": "^3.0.0",
-    "parse-server": "github:parseplatform/parse-server#master",
+    "parse-server": "git+https://github.com/parse-community/parse-server.git#alpha",
     "path-to-regexp": "3.2.0",
     "puppeteer": "3.0.0",
     "react-test-renderer": "16.13.1",
