@@ -77,7 +77,7 @@ export default class GeneralSettings extends DashboardView {
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
       mongoURL: this.context.currentApp.settings.fields.fields.opendb_connection_string,
-      parseOptions: deepmerge(defaultParseOptions, this.context.currentApp.settings.fields.fields.parseOptions),
+      parseOptions: this.context.currentApp.settings.fields.fields.parseOptions,
       dashboardAPI: this.context.currentApp.settings.fields.fields.dashboardAPI,
       databaseURL: this.context.currentApp.settings.fields.fields.databaseURL,
       parseVersion: this.context.currentApp.settings.fields.fields.parseVersion,
