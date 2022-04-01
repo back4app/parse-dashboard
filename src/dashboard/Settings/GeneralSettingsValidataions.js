@@ -6,8 +6,8 @@ export default yup.object({
     parseOptions: yup.object({
         passwordPolicy: yup.object({
             resetTokenValidityDuration: yup.number().positive(),
-            validatorPattern: yup.string().max(1000).min(3),
-            validationError: yup.string().max(1000).min(1),
+            validatorPattern: yup.string().trim().max(1000).min(3),
+            validationError: yup.string().trim().max(1000).min(1),
             maxPasswordAge: yup.number().integer().min(0),
             maxPasswordHistory: yup.number().integer().min(0).max(20)
         }),
