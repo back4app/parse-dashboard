@@ -383,7 +383,7 @@ export default class ParseApp {
   }
 
   supportedParseServerVersions() {
-    let path = `/parse-version`;
+    let path = `${b4aSettings.BACK4APP_API_PATH}/parse-version`;
     return AJAX.get(path);
   }
 
