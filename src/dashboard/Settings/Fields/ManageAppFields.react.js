@@ -285,5 +285,6 @@ ManageAppFields.propTypes = {
   parseVersion: PropTypes.string.describe('Parse server version'),
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
-  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier')
+  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
+  databaseVersion: PropTypes.string.describe('Database version')
 }
