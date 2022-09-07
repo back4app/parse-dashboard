@@ -82,6 +82,7 @@ export default class GeneralSettings extends DashboardView {
       databaseURL: this.context.currentApp.settings.fields.fields.databaseURL,
       parseVersion: this.context.currentApp.settings.fields.fields.parseVersion,
       mongoVersion: this.context.currentApp.settings.fields.fields.mongoVersion,
+      databaseVersion: this.context.currentApp.settings.fields.fields.databaseVersion,
       clientPush: this.context.currentApp.settings.fields.fields.clientPush,
       clientClassCreation: this.context.currentApp.settings.fields.fields.clientClassCreation
     };
@@ -168,6 +169,7 @@ export default class GeneralSettings extends DashboardView {
               databaseURL={fields.databaseURL}
               parseVersion={fields.parseVersion}
               mongoVersion={fields.mongoVersion}
+              databaseVersion={fields.databaseVersion}
               cleanUpFiles={() => this.setState({showPurgeFilesModal: true})}
               cleanUpFilesMessage={this.state.cleanupFilesMessage}
               cleanUpMessageColor={this.state.cleanupNoteColor}
