@@ -292,8 +292,8 @@ ManageAppFields.propTypes = {
   dashboardAPI: PropTypes.string.describe('Parse Server API URL'),
   databaseURL: PropTypes.string.describe('Dashboard API URL'),
   parseVersion: PropTypes.string.describe('Parse server version'),
+  databaseVersion: PropTypes.string.describe('Database version'),
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
-  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
-  databaseVersion: PropTypes.string.describe('Database version')
+  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier')
 }
