@@ -89,7 +89,7 @@ export const ManageAppFields = ({
             labelWidth={'50%'}
             label={<LabelSettings
               text='Database Version'
-              description={<span>{databaseURL?.split('://')[0]} {databaseVersion ? databaseVersion : mongoVersion}</span>}
+              description={<span>{(databaseURL?.split('://')[0]).split('+srv')} {databaseVersion ? databaseVersion : mongoVersion}</span>}
             />}
           />
           </div>
