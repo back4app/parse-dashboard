@@ -93,11 +93,8 @@ export const ManageAppFields = ({
                   text="Database Version"
                   description={
                     <>
-                      <span>
-                        {checkDB.split('+srv')[0] && !databaseVersion
-                          ? mongoVersion
-                          : databaseVersion}
-                      </span>
+                      <span>{checkDB.split('+srv')[0]}</span>
+                      {!databaseVersion ? mongoVersion : databaseVersion}
                     </>
                   }
                 />
