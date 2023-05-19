@@ -24,8 +24,9 @@ export const ManageAppFields = ({
   mongoVersion,
   errors,
   isGDPR,
-  databaseVersion
+  databaseVersion,
 }) => {
+  const checkDB = databaseURL?.split('://')[0];
   return (
     <Fieldset
       legend='App Management'
@@ -83,15 +84,25 @@ export const ManageAppFields = ({
                 value='Show Database URI'/>
             }
           />}
-          <FieldSettings
-            containerStyles={{ borderBottom: 'none' }}
-            padding={'7px 0px'}
-            labelWidth={'50%'}
-            label={<LabelSettings
-              text='Database Version'
-              description={<span>{(databaseURL?.split('://')[0]).split('+srv')[0]} {databaseVersion ? databaseVersion : mongoVersion}</span>}
-            />}
-          />
+            <FieldSettings
+              containerStyles={{ borderBottom: 'none' }}
+              padding="7px 0px"
+              labelWidth="50%"
+              label={(
+                <LabelSettings
+                  text="Database Version"
+                  description={
+                    <>
+                      <span>
+                        {checkDB.split('+srv')[0] && !databaseVersion
+                          ? mongoVersion
+                          : databaseVersion}
+                      </span>
+                    </>
+                  }
+                />
+              )}
+            />
           </div>
           }
       />
