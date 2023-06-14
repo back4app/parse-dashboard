@@ -26,7 +26,9 @@ export const ManageAppFields = ({
   isGDPR,
   databaseVersion,
 }) => {
+  
   const checkDB = databaseURL?.split('://')[0];
+
   return (
     <Fieldset
       legend='App Management'
