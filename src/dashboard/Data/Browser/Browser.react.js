@@ -247,6 +247,7 @@ class Browser extends DashboardView {
       if (this.props.params.appId !== nextProps.params.appId || !this.props.params.className) {
         this.setState({ counts: {} });
         Parse.Object._clearAllState();
+        nextProps.schema.dispatch(ActionTypes.FETCH).then(() => this.handleFetchedSchema());
       }
 
       // check if the changes are in currentApp serverInfo status
@@ -266,8 +267,6 @@ class Browser extends DashboardView {
       }
 
       this.prefetchData(nextProps, nextContext);
-      nextProps.schema.dispatch(ActionTypes.FETCH)
-      .then(() => this.handleFetchedSchema());
     }
     if (!nextProps.params.className && nextProps.schema.data.get('classes')) {
       this.redirectToFirstClass(nextProps.schema.data.get('classes'));
@@ -875,7 +874,10 @@ class Browser extends DashboardView {
           if (this.props.params.className === obj.className) {
             this.state.data.unshift(obj);
           }
-          this.state.counts[obj.className] += 1;
+          let newCount = this.state.counts[obj.className] + 1;
+          this.state.counts[obj.className] = newCount;
+          // update class count in currentApp context so that cache will have updated count
+          this.context.currentApp.setClassCountForClass(obj.className, newCount);
         }
 
         this.setState(state);
@@ -1455,6 +1457,8 @@ class Browser extends DashboardView {
             lastMax: MAX_ROWS_FETCHED,
             selection: {},
           });
+          // update class count in currentApp context
+          this.context.currentApp.setClassCountForClass(className, 0);
         }
       });
     } else {
@@ -1498,6 +1502,9 @@ class Browser extends DashboardView {
           } else {
             deletedNote = toDeleteObjectIds.length + ' ' + className + ' objects deleted';
           }
+
+          // update class count in context currentApp so that cached values are updated
+          this.context.currentApp.setClassCountForClass(className, this.state.counts[className] - toDeleteObjectIds.length);
 
           this.showNote(deletedNote, false);
 

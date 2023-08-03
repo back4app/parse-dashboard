@@ -749,6 +749,10 @@ export default class ParseApp {
     return promise;
   }
 
+  setClassCountForClass(className, count) {
+    return this.classCounts.counts[className] = count;
+  }
+
   setAppStoreURL(type, url) {
     let path = '/apps/' + this.slug;
     let promise = AJAX.put(path, {['parse_app[parse_app_metadata][url][' + type + ']']: url});
