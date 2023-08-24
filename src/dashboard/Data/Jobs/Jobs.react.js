@@ -10,7 +10,6 @@ import Button                 from 'components/Button/Button.react';
 import * as DateUtils         from 'lib/DateUtils';
 import CategoryList           from 'components/CategoryList/CategoryList.react';
 import EmptyState             from 'components/EmptyState/EmptyState.react';
-import history                from 'dashboard/history';
 import Icon                   from 'components/Icon/Icon.react';
 import Modal                  from 'components/Modal/Modal.react';
 import React                  from 'react';
@@ -24,6 +23,8 @@ import subscribeTo            from 'lib/subscribeTo';
 import TableHeader            from 'components/Table/TableHeader.react';
 import TableView              from 'dashboard/TableView.react';
 import Toolbar                from 'components/Toolbar/Toolbar.react';
+import generatePath from 'lib/generatePath';
+import { withRouter } from 'lib/withRouter';
 
 let subsections = {
   all: 'All Jobs',
@@ -59,8 +60,8 @@ function scheduleString(data) {
 }
 
 // TODO: create scrollable view component that handles lazy fetch container on scroll
-export default
 @subscribeTo('Jobs', 'jobs')
+@withRouter
 class Jobs extends TableView {
   constructor() {
     super();
@@ -101,11 +102,11 @@ class Jobs extends TableView {
   }
 
   navigateToNew() {
-    history.push(this.context.generatePath('jobs/new'));
+    this.props.navigate(generatePath(this.context, 'jobs/new'));
   }
 
   navigateToJob(jobId) {
-    history.push(this.context.generatePath(`jobs/edit/${jobId}`))
+    this.props.navigate(generatePath(this.context, `jobs/edit/${jobId}`))
   }
 
   loadData() {
@@ -130,7 +131,7 @@ class Jobs extends TableView {
       else this.setState({ loading: false });
       this.renderEmpty()
     });
-    this.context.currentApp.getJobStatus().then((status) => {
+    this.context.getJobStatus().then((status) => {
       this.setState({ jobStatus: status });
     }).catch(() => {
       this.setState({ jobStatus: [] });
@@ -257,8 +258,8 @@ class Jobs extends TableView {
           type={Modal.Types.DANGER}
           title='Delete job schedule?'
           subtitle='Careful, this action cannot be undone'
-          confirmText='Yes, delete it'
-          cancelText={'Never mind, don\'t'}
+          confirmText='Delete'
+          cancelText='Cancel'
           onCancel={() => this.setState({ toDelete: null })}
           onConfirm={() => {
             this.setState({ toDelete: null });
@@ -319,3 +320,5 @@ class Jobs extends TableView {
     return null;
   }
 }
+
+export default Jobs;

@@ -110,7 +110,7 @@ $permissionsDialogWidth: calc(
     float: right;
     padding: 10px 15px;
 
-    a {
+    button {
       margin-left: 10px;
     }
   }
@@ -175,6 +175,10 @@ $permissionsDialogWidth: calc(
   height: 50px;
   padding-top: 15px;
   text-align: right;
+
+  button {
+    @include buttonReset;
+  }
 
   svg {
     vertical-align: top;

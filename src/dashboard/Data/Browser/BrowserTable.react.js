@@ -6,7 +6,6 @@
  * the root directory of this source tree.
  */
 import BrowserRow             from 'components/BrowserRow/BrowserRow.react';
-import * as browserUtils      from 'lib/browserUtils';
 import DataBrowserHeaderBar   from 'components/DataBrowserHeaderBar/DataBrowserHeaderBar.react';
 import Editor                 from 'dashboard/Data/Browser/Editor.react';
 import EmptyState             from 'components/EmptyState/EmptyState.react';
@@ -16,8 +15,7 @@ import encode                 from 'parse/lib/browser/encode';
 import React                  from 'react';
 import styles                 from 'dashboard/Data/Browser/Browser.scss';
 import Button                 from 'components/Button/Button.react';
-import ParseApp               from 'lib/ParseApp';
-import PropTypes              from 'lib/PropTypes';
+import { CurrentApp }         from 'context/currentApp';
 
 const MAX_ROWS = 200; // Number of rows to render at any time
 const ROWS_OFFSET = 160;
@@ -26,6 +24,7 @@ const ROW_HEIGHT = 30;
 const READ_ONLY = [ 'objectId', 'createdAt', 'updatedAt'];
 
 export default class BrowserTable extends React.Component {
+  static contextType = CurrentApp;
   constructor() {
     super();
 
@@ -33,6 +32,7 @@ export default class BrowserTable extends React.Component {
       offset: 0,
     };
     this.handleScroll = this.handleScroll.bind(this);
+    this.tableRef = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -40,22 +40,22 @@ export default class BrowserTable extends React.Component {
       this.setState({
         offset: 0,
       });
-      this.refs.table.scrollTop = 0;
+      this.tableRef.current.scrollTop = 0;
     } else if (this.props.newObject !== props.newObject) {
       this.setState({ offset: 0 });
-      this.refs.table.scrollTop = 0;
+      this.tableRef.current.scrollTop = 0;
     } else if (this.props.ordering !== props.ordering) {
       this.setState({ offset: 0 });
-      this.refs.table.scrollTop = 0;
+      this.tableRef.current.scrollTop = 0;
     }
   }
 
   componentDidMount() {
-    this.refs.table.addEventListener('scroll', this.handleScroll);
+    this.tableRef.current.addEventListener('scroll', this.handleScroll);
   }
 
   componentWillUnmount() {
-    this.refs.table.removeEventListener('scroll', this.handleScroll);
+    this.tableRef.current.removeEventListener('scroll', this.handleScroll);
   }
 
   handleScroll() {
@@ -63,7 +63,7 @@ export default class BrowserTable extends React.Component {
       return;
     }
     requestAnimationFrame(() => {
-      const currentScrollTop = this.refs.table.scrollTop;
+      const currentScrollTop = this.tableRef.current.scrollTop;
       let rowsAbove = Math.floor(currentScrollTop / ROW_HEIGHT);
       let offset = this.state.offset;
       const currentRow = rowsAbove - this.state.offset;
@@ -80,7 +80,7 @@ export default class BrowserTable extends React.Component {
       }
       if (this.state.offset !== offset) {
         this.setState({ offset });
-        this.refs.table.scrollTop = currentScrollTop;
+        this.tableRef.current.scrollTop = currentScrollTop;
       }
       if (this.props.maxFetched - offset <= ROWS_OFFSET * 1.4) {
         this.props.fetchNextPage();
@@ -111,7 +111,7 @@ export default class BrowserTable extends React.Component {
       }
     ));
     let editor = null;
-    let table = <div ref='table' />;
+    let table = <div ref={this.tableRef} />;
     if (this.props.data) {
       const rowWidth = this.props.order.reduce(
         (rowWidth, { visible, width }) => visible ? rowWidth + width : rowWidth,
@@ -126,7 +126,11 @@ export default class BrowserTable extends React.Component {
               const currentCol = this.props.current && this.props.current.row === index ? this.props.current.col : undefined;
               const isEditingRow = this.props.current && this.props.current.row === index && !!this.props.editing;
               return (
+<<<<<<< HEAD
                 <div key={index} style={{ borderBottom: '1px solid #169CEE', position: 'relative', paddingBottom: `${ROW_HEIGHT}px` }}>
+=======
+                <div key={index} style={{ borderBottom: '1px solid #169CEE' }}>
+>>>>>>> origin/upstream
                   <BrowserRow
                     appId={this.props.appId}
                     key={index}
@@ -156,6 +160,7 @@ export default class BrowserTable extends React.Component {
                     onEditSelectedRow={this.props.onEditSelectedRow}
                     markRequiredFieldRow={this.props.markRequiredFieldRow}
                   />
+<<<<<<< HEAD
                   <div style={{ position: "fixed", height: `${ROW_HEIGHT}px`}}>
                     <Button
                       value="Clone"
@@ -174,6 +179,24 @@ export default class BrowserTable extends React.Component {
                       additionalStyles={{ fontSize: '12px', height: '20px', lineHeight: '20px', margin: '5px', padding: '0'}}
                     />
                   </div>
+=======
+                  <Button
+                    value="Clone"
+                    width="55px"
+                    primary={true}
+                    onClick={() => {
+                      this.props.onSaveEditCloneRow(index);
+                      this.props.setEditing(false);
+                    }}
+                    additionalStyles={{ fontSize: '12px', height: '20px', lineHeight: '20px', margin: '5px', padding: '0'}}
+                  />
+                  <Button
+                    value="Cancel"
+                    width="55px"
+                    onClick={() => this.props.onAbortEditCloneRow(index)}
+                    additionalStyles={{ fontSize: '12px', height: '20px', lineHeight: '20px', margin: '5px', padding: '0'}}
+                  />
+>>>>>>> origin/upstream
                 </div>
               );
             })}
@@ -184,7 +207,11 @@ export default class BrowserTable extends React.Component {
       if (this.props.newObject && this.state.offset <= 0) {
         const currentCol = this.props.current && this.props.current.row === -1 ? this.props.current.col : undefined;
         newRow = (
+<<<<<<< HEAD
           <div style={{ borderBottom: '1px solid #169CEE', position: 'relative', paddingBottom: `${ROW_HEIGHT}px` }}>
+=======
+          <div style={{ borderBottom: '1px solid #169CEE' }}>
+>>>>>>> origin/upstream
             <BrowserRow
               appId={this.props.appId}
               key={-1}
@@ -210,6 +237,7 @@ export default class BrowserTable extends React.Component {
               onEditSelectedRow={this.props.onEditSelectedRow}
               markRequiredFieldRow={this.props.markRequiredFieldRow}
             />
+<<<<<<< HEAD
             <div style={{ position: "fixed", height: `${ROW_HEIGHT}px`}}>
               <Button
                 value="Add"
@@ -228,6 +256,24 @@ export default class BrowserTable extends React.Component {
                 additionalStyles={{ fontSize: '12px', height: '20px', lineHeight: '20px', margin: '5px', padding: '0'}}
               />
             </div>
+=======
+            <Button
+              value="Add"
+              width="55px"
+              primary={true}
+              onClick={() => {
+                this.props.onSaveNewRow();
+                this.props.setEditing(false);
+              }}
+              additionalStyles={{ fontSize: '12px', height: '20px', lineHeight: '20px', margin: '5px', marginRight: '0px', padding: '0'}}
+            />
+            <Button
+              value="Cancel"
+              width="55px"
+              onClick={this.props.onAbortAddRow}
+              additionalStyles={{ fontSize: '12px', height: '20px', lineHeight: '20px', margin: '5px', padding: '0'}}
+            />
+>>>>>>> origin/upstream
           </div>
         );
       }
@@ -241,7 +287,6 @@ export default class BrowserTable extends React.Component {
         // Needed in order to force BrowserRow to update and re-render (and possibly update columns values),
         // since the "obj" instance will only be updated when the update request is done.
         const isEditingRow = this.props.current && this.props.current.row === i && !!this.props.editing;
-
         rows[index] = <BrowserRow
           appId={this.props.appId}
           key={index}
@@ -404,7 +449,7 @@ export default class BrowserTable extends React.Component {
 
       if (this.props.newObject || this.props.data.length > 0) {
         table = (
-          <div className={styles.table} ref='table'>
+          <div className={styles.table} ref={this.tableRef}>
             <div style={{ height: Math.max(0, this.state.offset * ROW_HEIGHT) }} />
             {editCloneRows}
             {newRow}
@@ -415,10 +460,17 @@ export default class BrowserTable extends React.Component {
           </div>
         );
       } else {
+<<<<<<< HEAD
         if (this.props.err) {
           table = (
             <div className={styles.table} ref="table">
               <div className={styles.empty}>
+=======
+        table = (
+          <div className={styles.table} ref={this.tableRef}>
+            <div className={styles.empty}>
+              {this.props.relation ?
+>>>>>>> origin/upstream
                 <EmptyState
                   title="No data to display"
                   description={this.props.err || 'Something went wrong!'}
@@ -457,12 +509,12 @@ export default class BrowserTable extends React.Component {
     }
 
     return (
-      <div className={[styles.browser, browserUtils.isSafari() ? styles.safari : ''].join(' ')}>
+      <div className={styles.browser}>
         {table}
         <DataBrowserHeaderBar
           selected={
-            this.props.selection &&
-            this.props.data &&
+            !!this.props.selection &&
+            !!this.props.data &&
             Object.values(this.props.selection).filter(checked => checked).length === this.props.data.length
           }
           selectAll={checked => this.props.data.forEach(({ id }) => this.props.selectRow(id, checked))}
@@ -472,13 +524,10 @@ export default class BrowserTable extends React.Component {
           handleDragDrop={this.props.handleHeaderDragDrop}
           onResize={this.props.handleResize}
           onAddColumn={this.props.onAddColumn}
-          preventSchemaEdits={this.context.currentApp.preventSchemaEdits} />
+          preventSchemaEdits={this.context.preventSchemaEdits}
+          isDataLoaded={!!this.props.data}
+        />
       </div>
     );
   }
 }
-
-BrowserTable.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};
-

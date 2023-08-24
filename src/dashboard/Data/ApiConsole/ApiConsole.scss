@@ -24,6 +24,7 @@
 
 .content {
   position: relative;
+<<<<<<< HEAD
   min-height: calc(#{$content-max-height} - #{$toolbar-height});
   margin-top: $toolbar-height;
 }
@@ -45,4 +46,9 @@
       }
     }
   }
+=======
+  height: calc(100vh - 96px);
+  margin-top: 96px;
+  overflow: hidden;
+>>>>>>> origin/upstream
 }

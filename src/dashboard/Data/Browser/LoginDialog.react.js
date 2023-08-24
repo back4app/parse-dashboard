@@ -1,6 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import ParseApp from 'lib/ParseApp';
 import PropTypes from 'prop-types';
+=======
+>>>>>>> origin/upstream
 import Modal from 'components/Modal/Modal.react';
 import LoginRow from 'components/LoginRow/LoginRow.react';
 import Notification from 'dashboard/Data/Browser/Notification.react';
@@ -106,7 +109,10 @@ export default class LoginDialog extends React.Component {
     );
   }
 }
+<<<<<<< HEAD
 
 LoginDialog.contextTypes = {
   currentApp: PropTypes.instanceOf(ParseApp)
 };
+=======
+>>>>>>> origin/upstream

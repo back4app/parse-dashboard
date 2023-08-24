@@ -5,11 +5,12 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import ParseApp   from 'lib/ParseApp';
-import React      from 'react';
-import PropTypes  from 'lib/PropTypes'; 
+import React          from 'react';
+import { CurrentApp } from 'context/currentApp';
+import { Outlet }     from 'react-router-dom';
 
 export default class JobsData extends React.Component {
+  static contextType = CurrentApp;
   constructor() {
     super();
 
@@ -47,32 +48,37 @@ export default class JobsData extends React.Component {
   */
 
   componentDidMount() {
+<<<<<<< HEAD
     // this.fetchJobs(this.context.currentApp);
     // this.fetchRelease(this.context.currentApp);
+=======
+    this.fetchJobs(this.context);
+    // this.fetchRelease(this.context);
+>>>>>>> origin/upstream
   }
 
   componentWillReceiveProps(props, context) {
     if (this.context !== context) {
+<<<<<<< HEAD
       this.setState({ release: undefined, jobs: undefined, inUse: undefined });
       // this.fetchJobs(context.currentApp);
       // this.fetchRelease(context.currentApp);
+=======
+      this.fetchJobs(context);
+      // this.fetchRelease(context);
+>>>>>>> origin/upstream
     }
   }
 
   render() {
-    let child = React.Children.only(this.props.children);
-    return React.cloneElement(
-      child,
-      {
-        ...child.props,
-        availableJobs: this.state.jobs,
-        jobsInUse: this.state.inUse,
-        release: this.state.release
-      }
+    return (
+      <Outlet
+        context={{
+          availableJobs: this.state.jobs,
+          jobsInUse: this.state.inUse,
+          release: this.state.release
+        }}
+      />
     );
   }
 }
-
-JobsData.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

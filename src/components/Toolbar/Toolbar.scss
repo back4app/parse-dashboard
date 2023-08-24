@@ -16,14 +16,22 @@
   background: #353446;
   height: 48px;
   color: white;
+<<<<<<< HEAD
   margin-top: $header-height;
   transition: left 0.5s ease-in;
   z-index: 0;
+=======
+  z-index: 5;
+>>>>>>> origin/upstream
 }
 
 body:global(.expanded) {
   .toolbar {
+<<<<<<< HEAD
     left: 54px;
+=======
+    left: $sidebarCollapsedWidth;
+>>>>>>> origin/upstream
   }
 }
 
@@ -107,6 +115,7 @@ body:global(.expanded) {
 .actions {
   position: absolute;
   right: 14px;
+<<<<<<< HEAD
   height: 100%;
   display: flex;
   align-items: center;
@@ -115,6 +124,9 @@ body:global(.expanded) {
   align-items: center;
   justify-content: center;
   gap: 4px;
+=======
+  top: 4px;
+>>>>>>> origin/upstream
 }
 
 .publicAccess {

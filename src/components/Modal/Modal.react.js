@@ -58,10 +58,22 @@ let Modal = (({
 
   let footer = customFooter || (
     <div style={{textAlign: buttonsInCenter ? 'center' : 'right'}} className={styles.footer}>
-      {showCancel ? <Button
+      {showCancel && <Button
         value={cancelText}
+<<<<<<< HEAD
         onClick={!progress ? onCancel : null}
         disabled={!canCancel || disableCancel} /> : null}
+=======
+        onClick={onCancel}
+        disabled={!canCancel} /> }
+      { showContinue && <Button
+        primary={true}
+        value={continueText}
+        color={buttonColors[type]}
+        disabled={!!disabled}
+        onClick={onContinue}
+        progress={progress} /> }
+>>>>>>> origin/upstream
       <Button
         primary={true}
         value={confirmText}

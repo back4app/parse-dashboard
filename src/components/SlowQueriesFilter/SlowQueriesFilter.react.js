@@ -11,7 +11,6 @@ import Popover        from 'components/Popover/Popover.react';
 import Position       from 'lib/Position';
 import PropTypes      from 'lib/PropTypes';
 import React          from 'react';
-import ReactDOM       from 'react-dom';
 import styles         from 'components/SlowQueriesFilter/SlowQueriesFilter.scss';
 import Button         from 'components/Button/Button.react';
 
@@ -22,10 +21,8 @@ export default class SlowQueriesFilter extends React.Component {
     this.state = {
       open: false
     }
-  }
 
-  componentDidMount() {
-    this.node = ReactDOM.findDOMNode(this);
+    this.wrapRef = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -45,7 +42,7 @@ export default class SlowQueriesFilter extends React.Component {
     let popover = null;
     let active = method || path || respStatus || respTime;
     if (this.state.open) {
-      let position = Position.inDocument(this.node);
+      let position = Position.inDocument(this.wrapRef.current);
       let popoverStyle = [styles.popover];
       if (active) {
         popoverStyle.push(styles.active);
@@ -99,7 +96,7 @@ export default class SlowQueriesFilter extends React.Component {
       buttonStyle.push(styles.active);
     }
     return (
-      <div className={styles.wrap}>
+      <div className={styles.wrap} ref={this.wrapRef}>
         <div className={buttonStyle.join(' ')} onClick={() => this.setState({ open: true })}>
           <Icon name='filter-solid' width={14} height={14} />
           <span>Filter</span>

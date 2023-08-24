@@ -5,15 +5,22 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import PropTypes from 'lib/PropTypes';
-import React     from 'react';
-import ReactDOM  from 'react-dom';
-import styles    from 'components/CategoryList/CategoryList.scss';
-import { Link }  from 'react-router-dom';
+import PropTypes      from 'lib/PropTypes';
+import React          from 'react';
+import styles         from 'components/CategoryList/CategoryList.scss';
+import { Link }       from 'react-router-dom';
+import generatePath   from 'lib/generatePath';
+import { CurrentApp } from 'context/currentApp';
 
 export default class CategoryList extends React.Component {
+  static contextType = CurrentApp;
+  constructor() {
+    super();
+    this.listWrapperRef = React.createRef();
+  }
+
   componentDidMount() {
-    let listWrapper = ReactDOM.findDOMNode(this.refs.listWrapper);
+    let listWrapper = this.listWrapperRef.current;
     if (listWrapper) {
       this.highlight = document.createElement('div');
       this.highlight.className = styles.highlight;
@@ -52,12 +59,16 @@ export default class CategoryList extends React.Component {
       return null;
     }
     return (
-      <div ref='listWrapper' className={styles.class_list}>
+      <div ref={this.listWrapperRef} className={styles.class_list}>
         {this.props.categories.map((c) => {
           let id = c.id || c.name;
+          if (c.type === 'separator') {
+            return <hr key={id} className={styles.separator} />;
+          }
           let count = c.count;
           let className = id === this.props.current ? styles.active : '';
-          let link = this.context.generatePath(
+          let link = generatePath(
+            this.context,
             (this.props.linkPrefix || '') + (c.link || id)
           );
           let categoryActive = c.currentActive;
@@ -94,8 +105,4 @@ CategoryList.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.object).describe('Array of categories used to populate list.'),
   current: PropTypes.string.describe('Id of current category to be highlighted.'),
   linkPrefix: PropTypes.string.describe('Link prefix used to generate link path.'),
-};
-
-CategoryList.contextTypes = {
-  generatePath: PropTypes.func
 };

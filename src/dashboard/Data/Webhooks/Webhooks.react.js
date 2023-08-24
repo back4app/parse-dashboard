@@ -23,6 +23,7 @@ import TextInput                             from 'components/TextInput/TextInpu
 import Toolbar                               from 'components/Toolbar/Toolbar.react';
 import { ActionTypes as SchemaActionTypes }  from 'lib/stores/SchemaStore';
 import { ActionTypes as WebhookActionTypes } from 'lib/stores/WebhookStore';
+import styles                                from './Webhooks.scss'
 
 let TableWarning = ({ text }) => <div>
   <Icon name='warn-outline' fill='#343445' width={20} height={20}/><span style={{ position: 'relative', top: '2px' }}> {text}</span>
@@ -175,7 +176,7 @@ class Webhooks extends TableView {
       onClose={() => {
         this.setState({showNewWebhookModal: false});
       }}
-      submitText='Create Webhook'
+      submitText='Create'
       inProgressText={'Creating\u2026'}
       clearFields={this.clearFields.bind(this)}
       enabled={true /* TODO: do some validation here */}>
@@ -193,7 +194,7 @@ class Webhooks extends TableView {
       onClose={() => {
         this.setState({showEditWebhookModal: false});
       }}
-      submitText='Save Webhook'
+      submitText='Save'
       inProgressText={'Saving\u2026'}
       clearFields={this.clearFields.bind(this)}
       enabled={true /* TODO: do some validation here */}>
@@ -221,7 +222,7 @@ class Webhooks extends TableView {
       onClose={() => {
         this.setState({showDeleteWebhookModal: false});
       }}
-      submitText='Delete Webhook'
+      submitText='Delete'
       inProgressText={'Deleting\u2026'}
       clearFields={() => {
         this.setState({
@@ -260,9 +261,9 @@ class Webhooks extends TableView {
     let rowStyle = hook.url ? { cursor: 'pointer' } : {};
     let deleteColumnContents = null;
     if (hook.url) {
-      deleteColumnContents = <a role='button' href='javascript:;' onClick={showDelete}>
+      deleteColumnContents = <button type='button' onClick={showDelete} className={styles.deleteButton}>
         <Icon name='trash-outline' fill='#343445' width={20} height={20}/>
-      </a>;
+      </button>;
     } else {
       let isOverridden = !!this.tableData().find(otherHook => otherHook.url &&
         otherHook.functionName == hook.functionName &&

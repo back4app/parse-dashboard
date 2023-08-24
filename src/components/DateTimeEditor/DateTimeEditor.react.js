@@ -23,6 +23,8 @@ export default class DateTimeEditor extends React.Component {
 
     this.checkExternalClick = this.checkExternalClick.bind(this);
     this.handleKey = this.handleKey.bind(this);
+    this.inputRef = React.createRef();
+    this.editorRef = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -34,19 +36,27 @@ export default class DateTimeEditor extends React.Component {
 
   componentDidMount() {
     document.body.addEventListener('click', this.checkExternalClick);
+<<<<<<< HEAD
     this.refs.input.addEventListener('keypress', this.handleKey);
     this.props.setFocus && this.toggle();
 
+=======
+    this.inputRef.current.addEventListener('keypress', this.handleKey);
+>>>>>>> origin/upstream
   }
 
   componentWillUnmount() {
     document.body.removeEventListener('click', this.checkExternalClick);
+<<<<<<< HEAD
     this.refs.input.removeEventListener('keypress', this.handleKey);
 
+=======
+    this.inputRef.current.removeEventListener('keypress', this.handleKey);
+>>>>>>> origin/upstream
   }
 
   checkExternalClick(e) {
-    if (!hasAncestor(e.target, this.refs.editor)) {
+    if (!hasAncestor(e.target, this.editorRef.current)) {
       this.props.onCommit(this.state.value);
     }
   }
@@ -114,12 +124,16 @@ export default class DateTimeEditor extends React.Component {
     }
 
     return (
-      <div ref='editor' style={{ width: this.props.width }} className={styles.editor}>
+      <div ref={this.editorRef} style={{ width: this.props.width }} className={styles.editor}>
         <input
           autoFocus
           type='text'
+<<<<<<< HEAD
           ref='input'
           onFocus={e => e.target.select()}
+=======
+          ref={this.inputRef}
+>>>>>>> origin/upstream
           value={this.state.text}
           onFocus={e => e.target.select()}
           onClick={this.toggle.bind(this)}

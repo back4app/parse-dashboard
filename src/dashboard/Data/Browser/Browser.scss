@@ -16,6 +16,7 @@
   bottom: 0;
   overflow: auto;
   padding-top: 30px;
+<<<<<<< HEAD
   margin-top: $header-height;
   // fix for safari scrolling issue:
   // https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/
@@ -23,11 +24,17 @@
   &.safari {
     -webkit-transform: translate3d(0,0,0);
   }
+=======
+>>>>>>> origin/upstream
 }
 
 body:global(.expanded) {
   .browser {
+<<<<<<< HEAD
     left: 54px;
+=======
+    left: $sidebarCollapsedWidth;
+>>>>>>> origin/upstream
   }
 }
 
@@ -52,6 +59,7 @@ body:global(.expanded) {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+<<<<<<< HEAD
   height: 38px;
   width: 38px;
   margin: 0 6px;
@@ -61,6 +69,10 @@ body:global(.expanded) {
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
+=======
+  height: 14px;
+  padding: 0 12px;
+>>>>>>> origin/upstream
 
   svg {
     vertical-align: middle;

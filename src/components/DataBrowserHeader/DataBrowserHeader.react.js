@@ -8,7 +8,7 @@
 import PropTypes                  from 'lib/PropTypes';
 import React                      from 'react';
 import styles                     from 'components/DataBrowserHeader/DataBrowserHeader.scss';
-import { unselectable }           from 'stylesheets/base.scss';
+import baseStyles                 from 'stylesheets/base.scss';
 import { DragSource, DropTarget } from 'react-dnd';
 import Tooltip                    from 'components/Tooltip/PopperTooltip.react';
 import PopoverTooltip             from '../PopoverTooltip/PopoverTooltip.react';
@@ -65,8 +65,13 @@ class DataBrowserHeader extends React.Component {
   }
 
   render() {
+<<<<<<< HEAD
     let { connectDragSource, connectDropTarget, name, type, targetClass, order, style, isDragging, isOver, required } = this.props;
     let classes = [styles.header, unselectable];
+=======
+    let { connectDragSource, connectDropTarget, name, type, targetClass, order, style, isDragging, isOver } = this.props;
+    let classes = [styles.header, baseStyles.unselectable];
+>>>>>>> origin/upstream
     if (order) {
       classes.push(styles[order]);
     }

@@ -128,9 +128,13 @@
   margin-right: 15px;
   border-radius: 10px;
   overflow: hidden;
+<<<<<<< HEAD
   &.disabled {
     cursor: not-allowed;
   }
+=======
+  flex-shrink: 0;
+>>>>>>> origin/upstream
 }
 
 .appname {

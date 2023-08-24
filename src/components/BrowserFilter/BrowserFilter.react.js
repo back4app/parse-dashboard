@@ -13,7 +13,6 @@ import Icon          from 'components/Icon/Icon.react';
 import Popover       from 'components/Popover/Popover.react';
 import Position      from 'lib/Position';
 import React         from 'react';
-import ReactDOM      from 'react-dom';
 import styles        from 'components/BrowserFilter/BrowserFilter.scss';
 import { List, Map } from 'immutable';
 
@@ -29,10 +28,7 @@ export default class BrowserFilter extends React.Component {
       blacklistedFilters: Filters.BLACKLISTED_FILTERS.concat(props.blacklistedFilters)
     };
     this.toggle = this.toggle.bind(this);
-  }
-
-  componentDidMount() {
-    this.node = ReactDOM.findDOMNode(this);
+    this.wrapRef = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -78,6 +74,13 @@ export default class BrowserFilter extends React.Component {
       if (Filters.Constraints[filter.get('constraint')].hasOwnProperty('field')) {
         type = Filters.Constraints[filter.get('constraint')].field;
       }*/
+
+      // since we are preserving previous compareTo value
+      // remove compareTo for constraints which are not comparable
+      let isComparable = Filters.Constraints[filter.get('constraint')].comparable;
+      if (!isComparable) {
+        return filter.delete('compareTo')
+      }
       return filter;
     });
     this.props.onChange(formatted);
@@ -86,10 +89,14 @@ export default class BrowserFilter extends React.Component {
   render() {
     let popover = null;
     let buttonStyle = [styles.entry];
+<<<<<<< HEAD
     const wrapperStyle = [styles.wrap];
+=======
+    const node = this.wrapRef.current;
+>>>>>>> origin/upstream
 
     if (this.state.open) {
-      let position = Position.inDocument(this.node);
+      let position = Position.inDocument(node);
       let popoverStyle = [styles.popover];
       buttonStyle.push(styles.title);
 
@@ -103,13 +110,15 @@ export default class BrowserFilter extends React.Component {
       popover = (
         <Popover fixed={true} position={position} onExternalClick={this.toggle} contentId={POPOVER_CONTENT_ID}>
           <div className={popoverStyle.join(' ')} onClick={() => this.props.setCurrent(null)} id={POPOVER_CONTENT_ID}>
-            <div onClick={this.toggle} style={{ cursor: 'pointer', width: this.node.clientWidth, height: this.node.clientHeight }}></div>
+            <div onClick={this.toggle} style={{ cursor: 'pointer', width: node.clientWidth, height: node.clientHeight }}></div>
             <div className={styles.body}>
               <Filter
+                className={this.props.className}
                 blacklist={this.state.blacklistedFilters}
                 schema={this.props.schema}
                 filters={this.state.filters}
                 onChange={filters => this.setState({ filters: filters })}
+                onSearch={this.apply.bind(this)}
                 renderRow={props => (
                   <FilterRow {...props} active={this.props.filters.size > 0} parentContentId={POPOVER_CONTENT_ID} />
                 )}
@@ -148,11 +157,21 @@ export default class BrowserFilter extends React.Component {
     if (this.props.disabled) {
       buttonStyle.push(styles.disabled);
     }
+    if (this.props.disabled) {
+      buttonStyle.push(styles.disabled);
+    }
     return (
+<<<<<<< HEAD
       <div className={wrapperStyle.join(' ')}>
         <div className={buttonStyle.join(' ')} onClick={!this.props.disabled ? this.toggle : null}>
           <Icon name="filter-icon" width={24} height={24} />
           {/* <span>{this.props.filters.size ? 'Filtered' : 'Filter'}</span> */}
+=======
+      <div className={styles.wrap} ref={this.wrapRef}>
+        <div className={buttonStyle.join(' ')} onClick={this.toggle}>
+          <Icon name="filter-solid" width={14} height={14} />
+          <span>{this.props.filters.size ? 'Filtered' : 'Filter'}</span>
+>>>>>>> origin/upstream
         </div>
         {popover}
       </div>

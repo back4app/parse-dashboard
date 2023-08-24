@@ -25,7 +25,11 @@ import AttachSelectedRowsDialog           from 'dashboard/Data/Browser/AttachSel
 import CloneSelectedRowsDialog            from 'dashboard/Data/Browser/CloneSelectedRowsDialog.react';
 import EditRowDialog                      from 'dashboard/Data/Browser/EditRowDialog.react';
 import ExportSelectedRowsDialog           from 'dashboard/Data/Browser/ExportSelectedRowsDialog.react';
+<<<<<<< HEAD
 import history                            from 'dashboard/history';
+=======
+import ExportSchemaDialog                 from 'dashboard/Data/Browser/ExportSchemaDialog.react';
+>>>>>>> origin/upstream
 import { List, Map }                      from 'immutable';
 import Notification                       from 'dashboard/Data/Browser/Notification.react';
 import Parse                              from 'parse';
@@ -33,12 +37,17 @@ import prettyNumber                       from 'lib/prettyNumber';
 import queryFromFilters                   from 'lib/queryFromFilters';
 import React                              from 'react';
 import RemoveColumnDialog                 from 'dashboard/Data/Browser/RemoveColumnDialog.react';
+<<<<<<< HEAD
 import semver                             from 'semver/preload.js';
+=======
+import PointerKeyDialog                   from 'dashboard/Data/Browser/PointerKeyDialog.react';
+>>>>>>> origin/upstream
 import SidebarAction                      from 'components/Sidebar/SidebarAction';
 import stringCompare                      from 'lib/stringCompare';
 import styles                             from 'dashboard/Data/Browser/Browser.scss';
 import subscribeTo                        from 'lib/subscribeTo';
 import * as ColumnPreferences             from 'lib/ColumnPreferences';
+<<<<<<< HEAD
 import Tour                               from 'components/Tour/Tour.react';
 import { isMobile }                       from 'lib/browserUtils';
 import * as queryString                   from 'query-string';
@@ -54,6 +63,11 @@ import validateEntry                      from 'lib/validateCLPEntry.js';
 import PointerKeyDialog                   from 'dashboard/Data/Browser/PointerKeyDialog.react';
 import ConfirmDeleteColumnDialog          from './ConfirmDeleteColumnDialog.react';
 import { defaultCLPS, protectedCLPs } from '../../../lib/Constants';
+=======
+import { Helmet }                         from 'react-helmet';
+import generatePath from 'lib/generatePath';
+import { withRouter } from 'lib/withRouter';
+>>>>>>> origin/upstream
 
 // The initial and max amount of rows fetched by lazy loading
 const MAX_ROWS_FETCHED = 200;
@@ -67,8 +81,8 @@ const postgresqlAlert = {
   imageAlt: "Postgresql Image"
 };
 
-export default
 @subscribeTo('Schema', 'schema')
+@withRouter
 class Browser extends DashboardView {
   constructor() {
     super();
@@ -86,10 +100,15 @@ class Browser extends DashboardView {
       showImportDialog: false,
       showImportRelationDialog: false,
       showExportDialog: false,
+      showExportSchemaDialog: false,
       showAttachRowsDialog: false,
       showEditRowDialog: false,
+      showPointerKeyDialog: false,
       rowsToDelete: null,
+<<<<<<< HEAD
       columnToDelete: null,
+=======
+>>>>>>> origin/upstream
       rowsToExport: null,
 
       relation: null,
@@ -100,7 +119,12 @@ class Browser extends DashboardView {
       filters: new List(),
       ordering: '-createdAt',
       selection: {},
+<<<<<<< HEAD
       uniqueClassFields: new List(),
+=======
+      exporting: false,
+      exportingCount: 0,
+>>>>>>> origin/upstream
 
       data: null,
       lastMax: -1,
@@ -116,17 +140,24 @@ class Browser extends DashboardView {
       isUnique: false,
       uniqueField: null,
       keepAddingCols: false,
+<<<<<<< HEAD
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
       showPostgresqlModal: !!Cookies.get('isPostgresql'),
       openSecurityDialog: false,
 
       showPointerKeyDialog: false,
+=======
+>>>>>>> origin/upstream
       markRequiredFieldRow: 0,
       requiredColumnFields: [],
 
       useMasterKey: true,
+<<<<<<< HEAD
       currentUser: Parse.User.current()
+=======
+      currentUser: Parse.User.current(),
+>>>>>>> origin/upstream
     };
 
     this.prefetchData = this.prefetchData.bind(this);
@@ -140,8 +171,11 @@ class Browser extends DashboardView {
     this.showDeleteRows = this.showDeleteRows.bind(this);
     this.showDropClass = this.showDropClass.bind(this);
     this.showExport = this.showExport.bind(this);
+<<<<<<< HEAD
     this.showImport = this.showImport.bind(this);
     this.showImportRelation = this.showImportRelation.bind(this);
+=======
+>>>>>>> origin/upstream
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.toggleMasterKeyUsage = this.toggleMasterKeyUsage.bind(this);
@@ -155,6 +189,10 @@ class Browser extends DashboardView {
     this.confirmCloneSelectedRows = this.confirmCloneSelectedRows.bind(this);
     this.cancelCloneSelectedRows = this.cancelCloneSelectedRows.bind(this);
     this.showExportSelectedRowsDialog = this.showExportSelectedRowsDialog.bind(this);
+<<<<<<< HEAD
+=======
+    this.showExportSchemaDialog = this.showExportSchemaDialog.bind(this);
+>>>>>>> origin/upstream
     this.confirmExportSelectedRows = this.confirmExportSelectedRows.bind(this);
     this.cancelExportSelectedRows = this.cancelExportSelectedRows.bind(this);
     this.getClassRelationColumns = this.getClassRelationColumns.bind(this);
@@ -184,6 +222,7 @@ class Browser extends DashboardView {
     this.closeEditRowDialog = this.closeEditRowDialog.bind(this);
     this.handleShowAcl = this.handleShowAcl.bind(this);
     this.onDialogToggle = this.onDialogToggle.bind(this);
+<<<<<<< HEAD
     this.onClickSecurity = this.onClickSecurity.bind(this);
     this.showPointerKeyDialog = this.showPointerKeyDialog.bind(this);
     this.onChangeDefaultKey = this.onChangeDefaultKey.bind(this);
@@ -208,10 +247,29 @@ class Browser extends DashboardView {
     } else {
       this.setState({ renderFooterMenu: true });
     }
+=======
+    this.addEditCloneRows = this.addEditCloneRows.bind(this);
+    this.abortAddRow = this.abortAddRow.bind(this);
+    this.saveNewRow = this.saveNewRow.bind(this);
+    this.showPointerKeyDialog = this.showPointerKeyDialog.bind(this);
+    this.onChangeDefaultKey = this.onChangeDefaultKey.bind(this);
+    this.saveEditCloneRow = this.saveEditCloneRow.bind(this);
+    this.abortEditCloneRow = this.abortEditCloneRow.bind(this);
+    this.cancelPendingEditRows = this.cancelPendingEditRows.bind(this);
+    this.redirectToFirstClass = this.redirectToFirstClass.bind(this);
+
+    this.dataBrowserRef = React.createRef();
+
+    window.addEventListener('popstate', () => {
+      this.setState({
+        relation: null
+      })
+    });
+>>>>>>> origin/upstream
   }
 
   componentWillMount() {
-    const { currentApp } = this.context;
+    const currentApp = this.context;
     if (!currentApp.preventSchemaEdits) {
       this.action = new SidebarAction('Create a class', this.showCreateClass.bind(this));
     }
@@ -243,10 +301,13 @@ class Browser extends DashboardView {
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    if (this.context !== nextContext) {
+    if (this.props.params.appId !== nextProps.params.appId || this.props.params.className !== nextProps.params.className || this.props.location.search !== nextProps.location.search) {
       if (this.props.params.appId !== nextProps.params.appId || !this.props.params.className) {
         this.setState({ counts: {} });
         Parse.Object._clearAllState();
+
+        nextProps.schema.dispatch(ActionTypes.FETCH)
+          .then(() => this.handleFetchedSchema());
       }
 
       // check if the changes are in currentApp serverInfo status
@@ -266,11 +327,9 @@ class Browser extends DashboardView {
       }
 
       this.prefetchData(nextProps, nextContext);
-      nextProps.schema.dispatch(ActionTypes.FETCH)
-      .then(() => this.handleFetchedSchema());
     }
     if (!nextProps.params.className && nextProps.schema.data.get('classes')) {
-      this.redirectToFirstClass(nextProps.schema.data.get('classes'));
+      this.redirectToFirstClass(nextProps.schema.data.get('classes'), nextContext);
     }
   }
 
@@ -531,24 +590,33 @@ class Browser extends DashboardView {
       const parent = await parentObjectQuery.get(entityId, { useMasterKey });
       relation = parent.relation(relationName);
     }
-    await this.setState({
+    this.setState({
       data: null,
       newObject: null,
       lastMax: -1,
       ordering: ColumnPreferences.getColumnSort(
         false,
-        context.currentApp.applicationId,
+        context.applicationId,
         className,
       ),
       selection: {},
       relation: isRelationRoute ? relation : null,
+    }, () => {
+      if (isRelationRoute) {
+        this.fetchRelation(relation, filters);
+      } else if (className) {
+        this.fetchData(className, filters);
+      }
     });
+<<<<<<< HEAD
     if (isRelationRoute) {
       this.fetchRelation(relation, filters);
     } else if (className) {
       this.fetchData(className, filters);
       this.fetchClassIndexes(className);
     }
+=======
+>>>>>>> origin/upstream
   }
 
   extractFiltersFromQuery(props) {
@@ -557,15 +625,15 @@ class Browser extends DashboardView {
     if (!props || !props.location || !props.location.search) {
       return filters;
     }
-    const query = queryString.parse(props.location.search);
-    if (query.filters) {
-      const queryFilters = JSON.parse(query.filters);
+    const query = new URLSearchParams(props.location.search);
+    if (query.has('filters')) {
+      const queryFilters = JSON.parse(query.get('filters'));
       queryFilters.forEach((filter) => filters = filters.push(new Map(filter)));
     }
     return filters;
   }
 
-  redirectToFirstClass(classList) {
+  redirectToFirstClass(classList, context) {
     if (!classList.isEmpty()) {
       classList = Object.keys(classList.toObject());
       let classes = classList.filter(className => className !== '_Role' && className !== '_User' && className !== '_Installation');
@@ -578,6 +646,7 @@ class Browser extends DashboardView {
         }
         return a.toUpperCase() < b.toUpperCase() ? -1 : 1;
       });
+<<<<<<< HEAD
       if (classes[0]) {
         history.replace(this.context.generatePath(`browser/${classes[0]}`));
       } else {
@@ -587,6 +656,9 @@ class Browser extends DashboardView {
           history.replace(this.context.generatePath(`browser/${classList[0]}`));
         }
       }
+=======
+      this.props.navigate(generatePath(context || this.context, 'browser/' + classes[0]), { replace: true });
+>>>>>>> origin/upstream
     }
   }
 
@@ -648,6 +720,7 @@ class Browser extends DashboardView {
     this.setState({ useMasterKey: !useMasterKey }, () => this.refresh());
   }
 
+<<<<<<< HEAD
   createClass(className, isProtected, shouldContinue = false) {
     let clp = isProtected ? protectedCLPs : defaultCLPS;
     if (semver.lte(this.context.currentApp.serverInfo.parseServerVersion, '3.1.1')) {
@@ -665,6 +738,12 @@ class Browser extends DashboardView {
       if (error.code === 403) errorDeletingNote = error.message;
 
       this.showNote(errorDeletingNote, true);
+=======
+  createClass(className) {
+    this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className }).then(() => {
+      this.state.counts[className] = 0;
+      this.props.navigate(generatePath(this.context, 'browser/' + className));
+>>>>>>> origin/upstream
     }).finally(() => {
       this.setState({ showCreateClassDialog: false });
     });
@@ -674,7 +753,7 @@ class Browser extends DashboardView {
     this.props.schema.dispatch(ActionTypes.DROP_CLASS, { className }).then(() => {
       this.setState({showDropClassDialog: false });
       delete this.state.counts[className];
-      history.push(this.context.generatePath('browser'));
+      this.props.navigate(generatePath(this.context, 'browser'));
     }, (error) => {
       let msg = typeof error === 'string' ? error : error.message;
       if (msg) {
@@ -715,17 +794,63 @@ class Browser extends DashboardView {
   }
 
   exportClass(className) {
-    this.context.currentApp.exportClass(className).finally(() => {
+    this.context.exportClass(className).finally(() => {
       this.setState({ showExportDialog: false });
     });
   }
 
+<<<<<<< HEAD
   newColumn(payload) {
     return this.props.schema.dispatch(ActionTypes.ADD_COLUMN, payload).catch(err => {
         let errorDeletingNote = 'Internal server error';
         if (err.code === 403) errorDeletingNote = err.message;
 
         this.showNote(errorDeletingNote, true);
+=======
+  async exportSchema(className, all) {
+    try {
+      this.showNote('Exporting schema...');
+      this.setState({ showExportSchemaDialog: false });
+      let schema = [];
+      if (all) {
+        schema = await Parse.Schema.all();
+      } else {
+        schema = await new Parse.Schema(className).get();
+      }
+      const element = document.createElement('a');
+      const file = new Blob(
+        [
+          JSON.stringify(
+            schema,
+            null,
+            2,
+          ),
+        ],
+        { type: 'application/json' }
+      );
+      element.href = URL.createObjectURL(file);
+      element.download = `${all ? 'schema' : className}.json`;
+      document.body.appendChild(element); // Required for this to work in FireFox
+      element.click();
+      document.body.removeChild(element);
+    } catch (msg) {
+      this.showNote(msg, true);
+    }
+  }
+
+  newColumn(payload, required) {
+    return this.props.schema.dispatch(ActionTypes.ADD_COLUMN, payload)
+      .then(() => {
+        if (required) {
+          let requiredCols = [...this.state.requiredColumnFields, name];
+          this.setState({
+            requiredColumnFields: requiredCols
+          });
+        }
+      })
+      .catch((err) => {
+        this.showNote(err.message, true);
+>>>>>>> origin/upstream
       });
   }
 
@@ -738,7 +863,11 @@ class Browser extends DashboardView {
       required,
       defaultValue
     };
+<<<<<<< HEAD
     this.newColumn(payload).finally(() => {
+=======
+    this.newColumn(payload, required).finally(() => {
+>>>>>>> origin/upstream
       this.setState({ showAddColumnDialog: false, keepAddingCols: false });
     });
   }
@@ -752,7 +881,11 @@ class Browser extends DashboardView {
       required,
       defaultValue
     };
+<<<<<<< HEAD
     this.newColumn(payload).finally(() => {
+=======
+    this.newColumn(payload, required).finally(() => {
+>>>>>>> origin/upstream
       this.setState({ showAddColumnDialog: false, keepAddingCols: false });
       this.setState({ showAddColumnDialog: true, keepAddingCols: true });
     });
@@ -769,6 +902,7 @@ class Browser extends DashboardView {
     }
   }
 
+<<<<<<< HEAD
   abortEditCloneRows(){
     if (this.state.editCloneRows) {
       this.setState({
@@ -777,6 +911,8 @@ class Browser extends DashboardView {
     }
   }
 
+=======
+>>>>>>> origin/upstream
   abortAddRow(){
     if(this.state.newObject){
       this.setState({
@@ -796,17 +932,29 @@ class Browser extends DashboardView {
     if (!obj) {
       return;
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/upstream
     // check if required fields are missing
     const className = this.state.newObject.className;
     let requiredCols = [];
     if (className) {
       let classColumns = this.props.schema.data.get('classes').get(className);
+<<<<<<< HEAD
       classColumns.forEach(({ required, defaultValue }, name) => {
           if (name === 'objectId' || this.state.isUnique && name !== this.state.uniqueField) {
             return;
           }
           // if field is requried & deafultValue is not given to the field
           if (!!required && defaultValue === undefined) {
+=======
+      classColumns.forEach(({ required }, name) => {
+          if (name === 'objectId' || this.state.isUnique && name !== this.state.uniqueField) {
+            return;
+          }
+          if (required) {
+>>>>>>> origin/upstream
             requiredCols.push(name);
           }
           if (className === '_User' && (name === 'username' || name === 'password')) {
@@ -822,8 +970,13 @@ class Browser extends DashboardView {
     if (requiredCols.length) {
       for (let idx = 0; idx < requiredCols.length; idx++) {
         const name = requiredCols[idx];
+<<<<<<< HEAD
         if (!obj.get(name)) {
           this.showNote("Please enter all required fields", true);
+=======
+        if (obj.get(name) == null) {
+          this.showNote('Please enter all required fields', true);
+>>>>>>> origin/upstream
           this.setState({
             markRequiredFieldRow: -1
           });
@@ -861,11 +1014,19 @@ class Browser extends DashboardView {
               });
             },
             error => {
+<<<<<<< HEAD
               let msg = typeof error === "string" ? error : error.message;
               if (msg) {
                 msg = msg[0].toUpperCase() + msg.substr(1);
               }
               obj.set(attr, prev);
+=======
+              let msg = typeof error === 'string' ? error : error.message;
+              if (msg) {
+                msg = msg[0].toUpperCase() + msg.substr(1);
+              }
+              obj.revert();
+>>>>>>> origin/upstream
               this.setState({ data: this.state.data });
               this.showNote(msg, true);
             }
@@ -881,7 +1042,11 @@ class Browser extends DashboardView {
         this.setState(state);
       },
       error => {
+<<<<<<< HEAD
         let msg = typeof error === "string" ? error : error.message;
+=======
+        let msg = typeof error === 'string' ? error : error.message;
+>>>>>>> origin/upstream
         if (msg) {
           msg = msg[0].toUpperCase() + msg.substr(1);
         }
@@ -906,12 +1071,20 @@ class Browser extends DashboardView {
     let requiredCols = [];
     if (className) {
       let classColumns = this.props.schema.data.get('classes').get(className);
+<<<<<<< HEAD
       classColumns.forEach(({ required, defaultValue }, name) => {
           if (name === 'objectId' || this.state.isUnique && name !== this.state.uniqueField) {
             return;
           }
           // if field is requried & deafultValue is not given to the field
           if (!!required && defaultValue === undefined) {
+=======
+      classColumns.forEach(({ required }, name) => {
+          if (name === 'objectId' || this.state.isUnique && name !== this.state.uniqueField) {
+            return;
+          }
+          if (required) {
+>>>>>>> origin/upstream
             requiredCols.push(name);
           }
           if (className === '_User' && (name === 'username' || name === 'password')) {
@@ -927,8 +1100,13 @@ class Browser extends DashboardView {
     if (requiredCols.length) {
       for (let idx = 0; idx < requiredCols.length; idx++) {
         const name = requiredCols[idx];
+<<<<<<< HEAD
         if (!obj.get(name)) {
           this.showNote("Please enter all required fields", true);
+=======
+        if (obj.get(name) == null) {
+          this.showNote('Please enter all required fields', true);
+>>>>>>> origin/upstream
           this.setState({
             markRequiredFieldRow: rowIndex
           });
@@ -1002,7 +1180,11 @@ class Browser extends DashboardView {
     });
   }
 
+<<<<<<< HEAD
   removeColumn(name, selectedColumn = false) {
+=======
+  removeColumn(name) {
+>>>>>>> origin/upstream
     let payload = {
       className: this.props.params.className,
       name: name
@@ -1032,7 +1214,11 @@ class Browser extends DashboardView {
       this.setState({ computingClassCounts: true });
       for (const parseClass of this.props.schema.data.get('classes')) {
         const [className] = parseClass;
+<<<<<<< HEAD
         counts[className] = await this.context.currentApp.getClassCount(className);
+=======
+        counts[className] = await this.context.getClassCount(className);
+>>>>>>> origin/upstream
       }
 
       this.setState({
@@ -1051,14 +1237,18 @@ class Browser extends DashboardView {
       newObject: null,
       lastMax: -1,
       selection: {},
+<<<<<<< HEAD
       relation: null,
       editCloneRows: null
+=======
+      editCloneRows: null,
+>>>>>>> origin/upstream
     };
     if (relation) {
-      await this.setState(initialState);
-      await this.setRelation(relation, prevFilters);
+      this.setState(initialState);
+      this.setRelation(relation, prevFilters);
     } else {
-      await this.setState({
+      this.setState({
         ...initialState,
         relation: null,
       });
@@ -1102,8 +1292,12 @@ class Browser extends DashboardView {
     }
 
     query.limit(MAX_ROWS_FETCHED);
+<<<<<<< HEAD
     semver.gt(this.context.currentApp.serverInfo.parseServerVersion, '3.6.0') &&
       this.excludeFields(query, source);
+=======
+    this.excludeFields(query, source);
+>>>>>>> origin/upstream
 
     let promise = query.find({ useMasterKey });
     let isUnique = false;
@@ -1116,20 +1310,28 @@ class Browser extends DashboardView {
         uniqueField = field;
       }
     });
-    await this.setState({ isUnique, uniqueField });
+    this.setState({ isUnique, uniqueField });
 
     const data = await promise;
     return data;
   }
 
   excludeFields(query, className) {
+<<<<<<< HEAD
     let columns = ColumnPreferences.getPreferences(this.context.currentApp.applicationId, className);
+=======
+    let columns = ColumnPreferences.getPreferences(this.context.applicationId, className);
+>>>>>>> origin/upstream
     if (columns) {
       columns = columns.filter(clmn => !clmn.visible).map(clmn => clmn.name);
       for (let columnsKey in columns) {
         query.exclude(columns[columnsKey]);
       }
+<<<<<<< HEAD
       ColumnPreferences.updateCachedColumns(this.context.currentApp.applicationId, className);
+=======
+      ColumnPreferences.updateCachedColumns(this.context.applicationId, className);
+>>>>>>> origin/upstream
     }
   }
 
@@ -1163,7 +1365,7 @@ class Browser extends DashboardView {
   async fetchRelation(relation, filters = new List()) {
     const data = await this.fetchParseData(relation, filters);
     const relationCount = await this.fetchRelationCount(relation);
-    await this.setState({
+    this.setState({
       relation,
       relationCount,
       selection: {},
@@ -1174,7 +1376,7 @@ class Browser extends DashboardView {
   }
 
   async fetchRelationCount(relation) {
-    return await this.context.currentApp.getRelationCount(relation);
+    return await this.context.getRelationCount(relation);
   }
 
   async fetchClassIndexes(className){
@@ -1235,8 +1437,12 @@ class Browser extends DashboardView {
       query.addDescending('createdAt');
     }
     query.limit(MAX_ROWS_FETCHED);
+<<<<<<< HEAD
     semver.gt(this.context.currentApp.serverInfo.parseServerVersion, '3.6.0') &&
       this.excludeFields(query, source);
+=======
+    this.excludeFields(query, source);
+>>>>>>> origin/upstream
 
     const { useMasterKey } = this.state;
     query.find({ useMasterKey }).then((nextPage) => {
@@ -1259,7 +1465,7 @@ class Browser extends DashboardView {
       const _filters = JSON.stringify(filters.toJSON());
       const url = `browser/${source}${(filters.size === 0 ? '' : `?filters=${(encodeURIComponent(_filters))}`)}`;
       // filters param change is making the fetch call
-      history.push(this.context.generatePath(url));
+      this.props.navigate(generatePath(this.context, url));
     }
   }
 
@@ -1271,7 +1477,7 @@ class Browser extends DashboardView {
     }, () => this.fetchData(source, this.state.filters));
     ColumnPreferences.getColumnSort(
       ordering,
-      this.context.currentApp.applicationId,
+      this.context.applicationId,
       this.props.params.className
     );
   }
@@ -1281,7 +1487,7 @@ class Browser extends DashboardView {
     const className = this.props.params.className;
     const entityId = relation.parent.id;
     const relationName = relation.key;
-    return this.context.generatePath(`browser/${className}/${entityId}/${relationName}`);
+    return generatePath(this.context, `browser/${className}/${entityId}/${relationName}`);
   }
 
   setRelation(relation, filters) {
@@ -1294,8 +1500,9 @@ class Browser extends DashboardView {
         filterQueryString = encodeURIComponent(JSON.stringify(filters.toJSON()));
       }
       const url = `${this.getRelationURL()}${filterQueryString ? `?filters=${filterQueryString}` : ''}`;
-      history.push(url);
+      this.props.navigate(url);
     });
+    this.fetchRelation(relation, filters);
   }
 
   handlePointerCmdClick({ className, id, field = 'objectId' }) {
@@ -1313,7 +1520,16 @@ class Browser extends DashboardView {
         constraint: 'eq',
         compareTo: id
     }]);
-    history.push(this.context.generatePath(`browser/${className}?filters=${encodeURIComponent(filters)}`));
+    this.props.navigate(generatePath(this.context, `browser/${className}?filters=${encodeURIComponent(filters)}`));
+  }
+
+  handlePointerCmdClick({ className, id, field = 'objectId' }) {
+    let filters = JSON.stringify([{
+      field,
+      constraint: 'eq',
+      compareTo: id
+    }]);
+    window.open(generatePath(this.context, `browser/${className}?filters=${encodeURIComponent(filters)}`),'_blank');
   }
 
   handleCLPChange(clp) {
@@ -1338,10 +1554,13 @@ class Browser extends DashboardView {
     let isNewObject = row === -1;
     let isEditCloneObj = row < -1;
     let obj = isNewObject ? this.state.newObject : this.state.data[row];
+<<<<<<< HEAD
     if (!obj && isNewObject) {
       obj = this.getLastCreatedObject(this.state.data)
       isNewObject = false
     }
+=======
+>>>>>>> origin/upstream
     if(isEditCloneObj){
       obj = this.state.editCloneRows[row + (this.state.editCloneRows.length + 1)];
     }
@@ -1447,7 +1666,7 @@ class Browser extends DashboardView {
     this.setState({ rowsToDelete: null, selection: {} });
     let className = this.props.params.className;
     if (!this.state.relation && rows['*']) {
-      this.context.currentApp.clearCollection(className).then(() => {
+      this.context.clearCollection(className).then(() => {
         if (this.props.params.className === className) {
           this.state.counts[className] = 0;
           this.setState({
@@ -1563,6 +1782,7 @@ class Browser extends DashboardView {
       this.state.showImportDialog ||
       this.state.showImportRelationDialog ||
       this.state.showExportDialog ||
+      this.state.showExportSchema ||
       this.state.rowsToDelete ||
       this.state.showAttachRowsDialog ||
       this.state.showAttachSelectedRowsDialog ||
@@ -1723,12 +1943,22 @@ class Browser extends DashboardView {
     });
   }
 
+<<<<<<< HEAD
+=======
+  showExportSchemaDialog() {
+    this.setState({
+      showExportSchemaDialog: true
+    })
+  }
+
+>>>>>>> origin/upstream
   cancelExportSelectedRows() {
     this.setState({
       rowsToExport: null
     });
   }
 
+<<<<<<< HEAD
   async confirmExportSelectedRows(rows) {
     this.setState({ rowsToExport: null });
     const className = this.props.params.className;
@@ -1738,12 +1968,21 @@ class Browser extends DashboardView {
       // Export all
       query.limit(10000);
     } else {
+=======
+  async confirmExportSelectedRows(rows, type, indentation) {
+    this.setState({ rowsToExport: null, exporting: true, exportingCount: 0 });
+    const className = this.props.params.className;
+    const query = new Parse.Query(className);
+
+    if (!rows['*']) {
+>>>>>>> origin/upstream
       // Export selected
       const objectIds = [];
       for (const objectId in this.state.rowsToExport) {
         objectIds.push(objectId);
       }
       query.containedIn('objectId', objectIds);
+<<<<<<< HEAD
     }
 
     const classColumns = this.getClassColumns(className, false);
@@ -1815,6 +2054,141 @@ class Browser extends DashboardView {
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
     document.body.removeChild(element);
+=======
+      query.limit(objectIds.length);
+    }
+
+    const processObjects = (objects) => {
+      const classColumns = this.getClassColumns(className, false);
+      // create object with classColumns as property keys needed for ColumnPreferences.getOrder function
+      const columnsObject = {};
+      classColumns.forEach((column) => {
+        columnsObject[column.name] = column;
+      });
+      // get ordered list of class columns
+      const columns = ColumnPreferences.getOrder(
+        columnsObject,
+        this.context.applicationId,
+        className
+      ).filter((column) => column.visible);
+
+      if (type === '.json') {
+        const element = document.createElement('a');
+        const file = new Blob(
+          [
+            JSON.stringify(
+              objects.map((obj) => {
+                const json = obj._toFullJSON();
+                delete json.__type;
+                return json;
+              }),
+              null,
+              indentation ? 2 : null,
+            ),
+          ],
+          { type: 'application/json' }
+        );
+        element.href = URL.createObjectURL(file);
+        element.download = `${className}.json`;
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+        document.body.removeChild(element);
+        return;
+      }
+
+      let csvString = columns.map((column) => column.name).join(',') + '\n';
+      for (const object of objects) {
+        const row = columns
+          .map((column) => {
+            const type = columnsObject[column.name].type;
+            if (column.name === 'objectId') {
+              return object.id;
+            } else if (type === 'Relation' || type === 'Pointer') {
+              if (object.get(column.name)) {
+                return object.get(column.name).id;
+              } else {
+                return '';
+              }
+            } else {
+              let colValue;
+              if (column.name === 'ACL') {
+                colValue = object.getACL();
+              } else {
+                colValue = object.get(column.name);
+              }
+              // Stringify objects and arrays
+              if (
+                Object.prototype.toString.call(colValue) ===
+                  '[object Object]' ||
+                Object.prototype.toString.call(colValue) === '[object Array]'
+              ) {
+                colValue = JSON.stringify(colValue);
+              }
+              if (typeof colValue === 'string') {
+                if (colValue.includes('"')) {
+                  // Has quote in data, escape and quote
+                  // If the value contains both a quote and delimiter, adding quotes and escaping will take care of both scenarios
+                  colValue = colValue.split('"').join('""');
+                  return `"${colValue}"`;
+                } else if (colValue.includes(',')) {
+                  // Has delimiter in data, surround with quote (which the value doesn't already contain)
+                  return `"${colValue}"`;
+                } else {
+                  // No quote or delimiter, just include plainly
+                  return `${colValue}`;
+                }
+              } else if (colValue === undefined) {
+                // Export as empty CSV field
+                return '';
+              } else {
+                return `${colValue}`;
+              }
+            }
+          })
+          .join(',');
+        csvString += row + '\n';
+      }
+
+      // Deliver to browser to download file
+      const element = document.createElement('a');
+      const file = new Blob([csvString], { type: 'text/csv' });
+      element.href = URL.createObjectURL(file);
+      element.download = `${className}.csv`;
+      document.body.appendChild(element); // Required for this to work in FireFox
+      element.click();
+      document.body.removeChild(element);
+    };
+
+    if (!rows['*']) {
+      const objects = await query.find({ useMasterKey: true });
+      processObjects(objects);
+      this.setState({ exporting: false, exportingCount: objects.length });
+    } else {
+      let batch = [];
+      query.eachBatch(
+        (obj) => {
+          batch.push(...obj);
+          if (batch.length % 10 === 0) {
+            this.setState({ exportingCount: batch.length });
+          }
+          const one_gigabyte = Math.pow(2, 30);
+          const size =
+            new TextEncoder().encode(JSON.stringify(batch)).length /
+            one_gigabyte;
+          if (size.length > 1) {
+            processObjects(batch);
+            batch = [];
+          }
+          if (obj.length !== 100) {
+            processObjects(batch);
+            batch = [];
+            this.setState({ exporting: false, exportingCount: 0 });
+          }
+        },
+        { useMasterKey: true }
+      );
+    }
+>>>>>>> origin/upstream
   }
 
   getClassRelationColumns(className) {
@@ -1862,14 +2236,17 @@ class Browser extends DashboardView {
       } else if (count >= 1000) {
         count = prettyNumber(count);
       }
-      if (SpecialClasses[key]) {
-        special.push({ name: SpecialClasses[key], id: key, count: count });
+      if (SpecialClasses.includes(key)) {
+        special.push({ name: key, id: key, count: count });
       } else {
         categories.push({ name: key, count: count });
       }
     });
     special.sort((a, b) => stringCompare(a.name, b.name));
     categories.sort((a, b) => stringCompare(a.name, b.name));
+    if (special.length > 0 && categories.length > 0) {
+      special.push({ type: 'separator', id: 'classSeparator' })
+    }
     return (
       <CategoryList
         current={current}
@@ -1922,6 +2299,10 @@ class Browser extends DashboardView {
     });
   }
 
+  showPointerKeyDialog() {
+    this.setState({ showPointerKeyDialog: true });
+  }
+
   closeEditRowDialog() {
     this.setState({
       showEditRowDialog: false,
@@ -1929,8 +2310,8 @@ class Browser extends DashboardView {
   }
 
   handleShowAcl(row, col){
-    this.refs.dataBrowser.setEditing(true);
-    this.refs.dataBrowser.setCurrent({ row, col });
+    this.dataBrowserRef.current.setEditing(true);
+    this.dataBrowserRef.current.setCurrent({ row, col });
   }
 
   showPointerKeyDialog() {
@@ -1950,6 +2331,16 @@ class Browser extends DashboardView {
   onDialogToggle(opened){
     this.setState({showPermissionsDialog: opened});
   }
+
+  async onChangeDefaultKey (name) {
+    ColumnPreferences.setPointerDefaultKey(
+      this.context.applicationId,
+      this.props.params.className,
+      name
+      );
+    this.setState({ showPointerKeyDialog: false });
+  }
+
 
   renderContent() {
     let browser = null;
@@ -1978,11 +2369,19 @@ class Browser extends DashboardView {
         if (this.state.isUnique) {
           columns = {};
         }
+<<<<<<< HEAD
         classes.get(className).forEach(({ type, targetClass, required, defaultValue }, name) => {
           if (name === 'objectId' || this.state.isUnique && name !== this.state.uniqueField) {
             return;
           }
           const info = { type, required: !!required, defaultValue };
+=======
+        classes.get(className).forEach(({ type, targetClass, required }, name) => {
+          if (name === 'objectId' || this.state.isUnique && name !== this.state.uniqueField) {
+            return;
+          }
+          const info = { type, required: !!required };
+>>>>>>> origin/upstream
           if (className === '_User' && (name === 'username' || name === 'password' || name === 'authData')) {
             info.required = true;
           }
@@ -2007,6 +2406,11 @@ class Browser extends DashboardView {
         }
         browser = (
           <DataBrowser
+<<<<<<< HEAD
+=======
+            app={this.context}
+            ref={this.dataBrowserRef}
+>>>>>>> origin/upstream
             isUnique={this.state.isUnique}
             uniqueField={this.state.uniqueField}
             count={count}
@@ -2029,10 +2433,18 @@ class Browser extends DashboardView {
             onCloneSelectedRows={this.showCloneSelectedRowsDialog}
             onEditSelectedRow={this.showEditRowDialog}
             onEditPermissions={this.onDialogToggle}
+<<<<<<< HEAD
             onShowPointerKey={this.showPointerKeyDialog}
             onExportSelectedRows={this.showExportSelectedRowsDialog}
 
             onSaveNewRow={this.saveNewRow}
+=======
+            onExportSelectedRows={this.showExportSelectedRowsDialog}
+            onExportSchema={this.showExportSchemaDialog}
+
+            onSaveNewRow={this.saveNewRow}
+            onShowPointerKey={this.showPointerKeyDialog}
+>>>>>>> origin/upstream
             onAbortAddRow={this.abortAddRow}
             onSaveEditCloneRow={this.saveEditCloneRow}
             onAbortEditCloneRow={this.abortEditCloneRow}
@@ -2054,6 +2466,7 @@ class Browser extends DashboardView {
             data={this.state.data}
             ordering={this.state.ordering}
             newObject={this.state.newObject}
+            editCloneRows={this.state.editCloneRows}
             relation={this.state.relation}
             disableKeyControls={this.hasExtras()}
             updateRow={this.updateRow}
@@ -2063,6 +2476,7 @@ class Browser extends DashboardView {
             setRelation={this.setRelation}
             onAddColumn={this.showAddColumn}
             onAddRow={this.addRow}
+            onAbortAddRow={this.abortAddRow}
             onAddRowWithModal={this.addRowWithModal}
             onAddClass={this.showCreateClass}
             onAbortEditCloneRows={this.abortEditCloneRows}
@@ -2079,18 +2493,29 @@ class Browser extends DashboardView {
       let currentColumns = this.getClassColumns(className).map(column => column.name);
       extras = (
         <PointerKeyDialog
+<<<<<<< HEAD
           app={this.context.currentApp}
+=======
+          app={this.context}
+>>>>>>> origin/upstream
           className={className}
           currentColumns={currentColumns}
           onCancel={() => this.setState({ showPointerKeyDialog: false })}
           onConfirm={this.onChangeDefaultKey} />
       );
     }
+<<<<<<< HEAD
     if (this.state.showCreateClassDialog) {
       const { currentApp = {} } = this.context;
       extras = (
         <CreateClassDialog
           currentAppSlug={this.context.currentApp.slug}
+=======
+    else if (this.state.showCreateClassDialog) {
+      extras = (
+        <CreateClassDialog
+          currentAppSlug={this.context.slug}
+>>>>>>> origin/upstream
           onAddColumn={this.showAddColumn}
           currentClasses={this.props.schema.data.get('classes').keySeq().toArray()}
           parseServerVersion={currentApp.serverInfo && currentApp.serverInfo.parseServerVersion}
@@ -2098,7 +2523,7 @@ class Browser extends DashboardView {
           onConfirm={this.createClass} />
       );
     } else if (this.state.showAddColumnDialog) {
-      const { currentApp = {} } = this.context;
+      const currentApp = this.context || {};
       let currentColumns = [];
       classes.get(className).forEach((field, name) => {
         currentColumns.push(name);
@@ -2106,7 +2531,10 @@ class Browser extends DashboardView {
       extras = (
         <AddColumnDialog
           onAddColumn={this.showAddColumn}
+<<<<<<< HEAD
           app={this.context.currentApp}
+=======
+>>>>>>> origin/upstream
           currentColumns={currentColumns}
           classes={this.props.schema.data.get('classes').keySeq().toArray()}
           onCancel={() => this.setState({ showAddColumnDialog: false })}
@@ -2126,7 +2554,7 @@ class Browser extends DashboardView {
     } else if (this.state.rowsToDelete) {
       extras = (
         <DeleteRowsDialog
-          className={SpecialClasses[className] || className}
+          className={className}
           selection={this.state.rowsToDelete}
           relation={this.state.relation}
           onCancel={() => this.setState({ rowsToDelete: null })}
@@ -2164,6 +2592,14 @@ class Browser extends DashboardView {
           onCancel={() => this.setState({ showExportDialog: false })}
           onConfirm={() => this.exportClass(className)} />
       );
+    } else if (this.state.showExportSchemaDialog) {
+      extras = (
+        <ExportSchemaDialog
+          className={className}
+          schema={this.props.schema.data.get('classes')}
+          onCancel={() => this.setState({ showExportSchemaDialog: false })}
+          onConfirm={(...args) => this.exportSchema(...args)} />
+      );
     } else if (this.state.showAttachRowsDialog) {
       extras = (
         <AttachRowsDialog
@@ -2199,10 +2635,10 @@ class Browser extends DashboardView {
         columnsObject[column.name] = column
       });
       // get ordered list of class columns
-      const columnPreferences = this.context.currentApp.columnPreference || {}
+      const columnPreferences = this.context.columnPreference || {}
       const columns = ColumnPreferences.getOrder(
         columnsObject,
-        this.context.currentApp.applicationId,
+        this.context.applicationId,
         className,
         columnPreferences[className]
       );
@@ -2254,6 +2690,7 @@ class Browser extends DashboardView {
           useMasterKey={this.state.useMasterKey}
         />
       )
+<<<<<<< HEAD
     } else if (this.state.openSecurityDialog) {
       let parseServerSupportsPointerPermissions = this.context.currentApp
         .serverInfo.features.schemas.editClassLevelPermissions;
@@ -2329,6 +2766,17 @@ class Browser extends DashboardView {
           selection={this.state.rowsToExport}
           onCancel={this.cancelExportSelectedRows}
           onConfirm={() => this.confirmExportSelectedRows(this.state.rowsToExport)}
+=======
+    } else if (this.state.rowsToExport) {
+      extras = (
+        <ExportSelectedRowsDialog
+          className={className}
+          selection={this.state.rowsToExport}
+          count={this.state.counts[className]}
+          data={this.state.data}
+          onCancel={this.cancelExportSelectedRows}
+          onConfirm={(type, indentation) => this.confirmExportSelectedRows(this.state.rowsToExport, type, indentation)}
+>>>>>>> origin/upstream
         />
       );
     }
@@ -2345,6 +2793,7 @@ class Browser extends DashboardView {
         <Notification note={this.state.lastNote} isErrorNote={false}/>
       );
     }
+<<<<<<< HEAD
 
     let tour = null;
     if (this.state.showTour) {
@@ -2352,6 +2801,13 @@ class Browser extends DashboardView {
       tour = <Tour {...tourConfig} />;
     }
 
+=======
+    else if (this.state.exporting) {
+      notification = (
+        <Notification note={`Exporting ${this.state.exportingCount}+ objects...`} isErrorNote={false}/>
+      );
+    }
+>>>>>>> origin/upstream
     return (
       <div>
         <Helmet>
@@ -2366,6 +2822,4 @@ class Browser extends DashboardView {
   }
 }
 
-Browser.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};
+export default Browser;

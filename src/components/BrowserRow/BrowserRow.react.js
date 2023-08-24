@@ -19,11 +19,19 @@ export default class BrowserRow extends Component {
   }
 
   render() {
+<<<<<<< HEAD
     const { className, columns, currentCol, isUnique, obj, onPointerClick, onPointerCmdClick, order, readOnlyFields, row, rowWidth, selection, selectRow, setCopyableValue, setCurrent, setEditing, setRelation, onEditSelectedRow, setContextMenu, onFilterChange, markRequiredFieldRow, onAddRow, onAddColumn, onDeleteRows, onDeleteSelectedColumn } = this.props;
     let attributes = obj.attributes;
     let requiredCols = [];
     Object.entries(columns).reduce((acc, cur) => {
       if (cur[1].required && cur[1].defaultValue === undefined) {
+=======
+    const { className, columns, currentCol, isUnique, obj, onPointerClick, onPointerCmdClick, order, readOnlyFields, row, rowWidth, selection, selectRow, setCopyableValue, setCurrent, setEditing, setRelation, onEditSelectedRow, setContextMenu, onFilterChange, markRequiredFieldRow } = this.props;
+    let attributes = obj.attributes;
+    let requiredCols = [];
+    Object.entries(columns).reduce((acc, cur) => {
+      if (cur[1].required) {
+>>>>>>> origin/upstream
         acc.push(cur[0]);
       }
       return acc;
@@ -72,6 +80,7 @@ export default class BrowserRow extends Component {
               hidden = true;
             }
           }
+<<<<<<< HEAD
           let readOnly = isUnique || readOnlyFields.indexOf(name) > -1;
           if(name === 'expiresAt' && className === '_Session'){
             readOnly = true;
@@ -82,6 +91,8 @@ export default class BrowserRow extends Component {
             }
           }
 
+=======
+>>>>>>> origin/upstream
           let isRequired = requiredCols.includes(name);
           return (
             <BrowserCell

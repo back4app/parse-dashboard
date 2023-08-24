@@ -5,7 +5,6 @@ import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Option from 'components/Dropdown/Option.react';
-import { SpecialClasses } from 'lib/Constants';
 
 export default class AttachSelectedRowsDialog extends React.Component {
   constructor(props) {
@@ -129,7 +128,7 @@ export default class AttachSelectedRowsDialog extends React.Component {
         iconSize={40}
         title="Attach Selected Rows to Relation"
         submitText="Attach"
-        inProgressText="Attaching ..."
+        inProgressText={'Attaching\u2026'}
         onClose={this.props.onCancel}
         onSubmit={this.handleConfirm}
       >
@@ -147,7 +146,7 @@ export default class AttachSelectedRowsDialog extends React.Component {
             >
               {classes.map(className => (
                 <Option key={className} value={className}>
-                  {SpecialClasses[className] || className}
+                  {className}
                 </Option>
               ))}
             </Dropdown>

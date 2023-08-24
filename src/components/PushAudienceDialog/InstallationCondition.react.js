@@ -14,7 +14,6 @@ import { List }        from 'immutable';
 import Option          from 'components/Dropdown/Option.react';
 import Parse           from 'parse';
 import React           from 'react';
-import ReactDOM        from 'react-dom';
 import styles          from 'components/PushAudienceDialog/InstallationCondition.scss';
 import TextInput       from 'components/TextInput/TextInput.react';
 import validateNumeric from 'lib/validateNumeric';
@@ -26,7 +25,7 @@ for (let c in Constraints) {
 
 let setFocus = (input) => {
   if (input !== null) {
-    ReactDOM.findDOMNode(input).focus();
+    input.focus();
   }
 }
 
@@ -115,15 +114,13 @@ export default class InstallationCondition extends React.Component {
       </div>
     );
 
-    //TODO Shoulse use <Button> and have a link type style without border.
     let labelDescription = (
-      <a
-        href='javascript:;'
-        role='button'
+      <button
+        type='button'
         className={styles.description}
         onClick={this.props.onDeleteRow}>
         Remove
-      </a>
+      </button>
     );
 
     return (

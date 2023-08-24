@@ -7,7 +7,6 @@
  */
 import AppsManager   from 'lib/AppsManager';
 import FlowFooter    from 'components/FlowFooter/FlowFooter.react';
-import history       from 'dashboard/history';
 import html          from 'lib/htmlString';
 import Icon          from 'components/Icon/Icon.react';
 import joinWithFinal from 'lib/joinWithFinal';
@@ -15,10 +14,15 @@ import LiveReload    from 'components/LiveReload/LiveReload.react';
 import prettyNumber  from 'lib/prettyNumber';
 import React         from 'react';
 import styles        from 'dashboard/Apps/AppsIndex.scss';
-import { center }    from 'stylesheets/base.scss';
+import baseStyles    from 'stylesheets/base.scss';
 import AppBadge      from 'components/AppBadge/AppBadge.react';
+<<<<<<< HEAD
 import EmptyState from '../../components/EmptyState/EmptyState.react';
 import loadingImg from './loadingIcon.png';
+=======
+import { withRouter } from 'lib/withRouter';
+import { useNavigate } from 'react-router-dom';
+>>>>>>> origin/upstream
 
 function dash(value, content) {
   if (value === undefined) {
@@ -66,7 +70,8 @@ let AppCard = ({
   app,
   icon,
 }) => {
-  let canBrowse = app.serverInfo.error ? null : () => history.push(html`/apps/${app.slug}/browser`);
+  const navigate = useNavigate();
+  let canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/browser`);
   let versionMessage = app.serverInfo.error ?
     <div className={styles.serverVersion}>Server not reachable: <span className={styles.ago}>{app.serverInfo.error.toString()}</span></div>:
     <div className={styles.serverVersion}>
@@ -105,11 +110,13 @@ let AppCard = ({
   </li>
 }
 
-export default class AppsIndex extends React.Component {
+@withRouter
+class AppsIndex extends React.Component {
   constructor() {
     super();
     this.state = { search: '' };
     this.focusField = this.focusField.bind(this);
+<<<<<<< HEAD
     this.getAppsIndexStats = this.getAppsIndexStats.bind(this);
   }
 
@@ -125,6 +132,15 @@ export default class AppsIndex extends React.Component {
     if (nextProps.apps.length === 1 && nextProps.apps[0].serverInfo === 'SUCCESS') {
       const [app] = nextProps.apps;
       history.push(`/apps/${app.slug}/browser`);
+=======
+    this.searchRef = React.createRef();
+  }
+
+  componentWillMount() {
+    if (AppsManager.apps().length === 1) {
+      const [app] = AppsManager.apps();
+      this.props.navigate(`/apps/${app.slug}/browser`);
+>>>>>>> origin/upstream
       return;
     }
     // compare nextProps with prevProps to know for which app's serverInfo changed
@@ -160,8 +176,8 @@ export default class AppsIndex extends React.Component {
   }
 
   focusField() {
-    if (this.refs.search) {
-      this.refs.search.focus();
+    if (this.searchRef.current) {
+      this.searchRef.current.focus();
     }
   }
 
@@ -175,6 +191,7 @@ export default class AppsIndex extends React.Component {
     if (apps.length === 0) {
       return (
         <div className={styles.empty}>
+<<<<<<< HEAD
           <EmptyState
             icon='cloud-surprise'
             fill="#1e3b4d"
@@ -185,6 +202,14 @@ export default class AppsIndex extends React.Component {
             action={() => window.location = `${b4aSettings.DASHBOARD_PATH}/apps/new`}
             secondaryCta="Go to database hub"
             secondaryAction={() => window.location = b4aSettings.HUB_URL} />
+=======
+          <div className={baseStyles.center}>
+            <div className={styles.cloud}>
+              <Icon width={110} height={110} name='cloud-surprise' fill='#1e3b4d' />
+            </div>
+            <div className={styles.alert}>You don't have any apps</div>
+          </div>
+>>>>>>> origin/upstream
         </div>
       );
     }
@@ -202,7 +227,7 @@ export default class AppsIndex extends React.Component {
         <div className={styles.header}>
           <Icon width={18} height={18} name='search-outline' fill='#788c97' />
           <input
-            ref='search'
+            ref={this.searchRef}
             className={styles.search}
             onChange={this.updateSearch.bind(this)}
             value={this.state.search}
@@ -221,3 +246,5 @@ export default class AppsIndex extends React.Component {
     );
   }
 }
+
+export default AppsIndex;

@@ -23,6 +23,12 @@
 }
 
 .entry {
+<<<<<<< HEAD
+=======
+  height: 30px;
+  padding: 8px;
+
+>>>>>>> origin/upstream
   svg {
     fill: white;
   }
@@ -37,10 +43,15 @@
   }
 
   &.active {
+<<<<<<< HEAD
     height: 100%;
     background: $orange;
     border-radius: 5px;
     padding-top: 3px;
+=======
+    background: $orange;
+    border-radius: 5px;
+>>>>>>> origin/upstream
 
     svg {
       fill: white;
@@ -66,12 +77,20 @@
 .entry, .title {
   @include NotoSansFont;
   position: relative;
+<<<<<<< HEAD
+=======
+  bottom: -4px;
+>>>>>>> origin/upstream
   font-size: 14px;
   color: #ffffff;
   cursor: pointer;
 
   svg {
     vertical-align: top;
+<<<<<<< HEAD
+=======
+    margin-right: 4px;
+>>>>>>> origin/upstream
   }
 
   span {
@@ -92,12 +111,15 @@
 }
 
 .item {
+<<<<<<< HEAD
   position: relative;
   padding: 6px 14px;
+=======
+  padding: 4px 14px;
+>>>>>>> origin/upstream
   white-space: nowrap;
   cursor: pointer;
   color: white;
-  height: 26px;
 
   &:hover {
     background: $blue;

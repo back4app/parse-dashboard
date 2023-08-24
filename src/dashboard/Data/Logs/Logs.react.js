@@ -18,7 +18,12 @@ import Icon            from 'components/Icon/Icon.react';
 import ServerLogsView  from '../../../components/ServerLogsView/ServerLogsView.react';
 import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
 
+<<<<<<< HEAD
 import styles          from 'dashboard/Data/Logs/Logs.scss';
+=======
+import styles        from 'dashboard/Data/Logs/Logs.scss';
+import { withRouter } from 'lib/withRouter';
+>>>>>>> origin/upstream
 
 let subsections = {
   access: 'Access',
@@ -27,7 +32,8 @@ let subsections = {
   system: 'System'
 };
 
-export default class Logs extends DashboardView {
+@withRouter
+class Logs extends DashboardView {
   constructor() {
     super();
     this.section = 'Cloud Code';
@@ -44,14 +50,14 @@ export default class Logs extends DashboardView {
   }
 
   componentDidMount() {
-    this.fetchLogs(this.context.currentApp, this.props.params.type);
-    // this.fetchRelease(this.context.currentApp);
+    this.fetchLogs(this.context, this.props.params.type);
+    // this.fetchRelease(this.context);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    if (this.context !== nextContext) {
-      this.fetchLogs(nextContext.currentApp, nextProps.params.type);
-      // this.fetchRelease(nextContext.currentApp);
+    if (this.props.params.type !== nextProps.params.type) {
+      this.fetchLogs(nextContext, nextProps.params.type);
+      // this.fetchRelease(nextContext);
     }
   }
 
@@ -174,3 +180,5 @@ export default class Logs extends DashboardView {
     );
   }
 }
+
+export default Logs;

@@ -10,13 +10,13 @@
 .class_list {
   position: relative;
   margin-bottom: 5px;
+  border-left: 1px solid #3e87b2;
 
   a {
     display: block;
     padding-left: 12px;
     height: 20px;
     line-height: 20px;
-    border-left: 1px solid #3e87b2;
     color: #8fb9cf;
     font-size: 12px;
 
@@ -116,6 +116,7 @@
   transition: top 0.2s cubic-bezier(1, 0, 0, 1);
 }
 
+<<<<<<< HEAD
 .category-action {
   @include DosisFont;
   position: absolute;
@@ -132,4 +133,11 @@
   &:hover {
     background: #094162;
   }
+=======
+.separator {
+  margin: 6px 0 6px 12px;
+  background-color: #3e87b2;
+  border: 0;
+  height: 1px;
+>>>>>>> origin/upstream
 }

@@ -15,7 +15,6 @@ import Field                  from 'components/Field/Field.react';
 import Fieldset               from 'components/Fieldset/Fieldset.react';
 import FieldStyles            from 'components/Field/Field.scss';
 import FlowView               from 'components/FlowView/FlowView.react';
-import history                from 'dashboard/history';
 import Label                  from 'components/Label/Label.react';
 import LoaderContainer        from 'components/LoaderContainer/LoaderContainer.react';
 import Parse                  from 'parse';
@@ -32,6 +31,8 @@ import Toolbar                from 'components/Toolbar/Toolbar.react';
 import { Directions }         from 'lib/Constants';
 import { Link }               from 'react-router-dom';
 import { tableInfoBuilder }   from 'lib/PushUtils';
+import generatePath from 'lib/generatePath';
+import { withRouter } from 'lib/withRouter';
 
 const EXP_STATS_URL = 'http://docs.parseplatform.org/ios/guide/#push-experiments';
 
@@ -177,9 +178,7 @@ let getExperimentPartial = (pushDetails, type, isMessageType, style) => {
   );
 }
 
-let getPushDetailUrl = (context, pushId) => {
-  return `/apps/${context.currentApp.slug}/push/${pushId}`;
-}
+let getPushDetailUrl = (context, pushId) => generatePath(context, `push/${pushId}`);
 
 let formatAnalyticsData = (data) => {
   if (!data) {
@@ -201,8 +200,8 @@ const COLOR_MAP = {
 const DROPDOWN_KEY_GROUP_A = 'Group A';
 const DROPDOWN_KEY_GROUP_B = 'Group B';
 
-export default
 @subscribeTo('Schema', 'schema')
+@withRouter
 class PushDetails extends DashboardView {
   constructor() {
     super();
@@ -224,7 +223,7 @@ class PushDetails extends DashboardView {
 
   componentWillMount() {
     this.props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
-    let promise = this.context.currentApp.fetchPushDetails(this.props.params.pushId);
+    let promise = this.context.fetchPushDetails(this.props.params.pushId);
     promise.then((pushDetails) => {
       if (!pushDetails) {
         return null;
@@ -266,11 +265,11 @@ class PushDetails extends DashboardView {
       let promiseList = [];
 
       if (pushDetails.is_exp) {
-        let abortableRequestA = this.context.currentApp.getAnalyticsTimeSeries({
+        let abortableRequestA = this.context.getAnalyticsTimeSeries({
           ...query,
           pushStatusID: pushStatusIDA,
         });
-        let abortableRequestB = this.context.currentApp.getAnalyticsTimeSeries({
+        let abortableRequestB = this.context.getAnalyticsTimeSeries({
           ...query,
           pushStatusID: pushStatusIDB,
         });
@@ -304,7 +303,7 @@ class PushDetails extends DashboardView {
           this.setState({ loading: false })
         });
       } else {
-        let { promise, xhr } = this.context.currentApp.getAnalyticsTimeSeries({
+        let { promise, xhr } = this.context.getAnalyticsTimeSeries({
           ...query,
           pushStatusID: pushStatusID,
         });
@@ -334,7 +333,7 @@ class PushDetails extends DashboardView {
   componentWillReceiveProps(nextProps) {
     if(this.props.params.pushId !== nextProps.params.pushId) {
       this.setState( {loading: true });
-      this.context.currentApp.fetchPushDetails(nextProps.params.pushId).then((pushDetails) => {
+      this.context.fetchPushDetails(nextProps.params.pushId).then((pushDetails) => {
         this.setState({ pushDetails });
       }).finally(() => {
         this.setState({ loading: false })
@@ -473,7 +472,7 @@ class PushDetails extends DashboardView {
       prevLaunchGroup = (
         <div className={styles.header}>
           <div className={styles.headline}>
-            This push is the Launch Group for a previous <Link to={{ pathname: getPushDetailUrl(this.context, pushDetails.experiment_push_id) }}>experiment</Link>.
+            This push is the Launch Group for a previous <Link to={getPushDetailUrl(this.context, pushDetails.experiment_push_id)}>experiment</Link>.
           </div>
         </div>
       );
@@ -582,12 +581,12 @@ class PushDetails extends DashboardView {
 
   handlePushSubmit(changes) {
     let promise = new Promise();
-    this.context.currentApp.launchExperiment(this.props.params.pushId, changes).then(({ error }) => {
+    this.context.launchExperiment(this.props.params.pushId, changes).then(({ error }) => {
       //navigate to push index page and clear cache once push store is created
       if (error) {
         promise.reject({ error });
       } else {
-        history.push(this.context.generatePath('push/activity'));
+        this.props.navigate(generatePath(this.context, 'push/activity'));
       }
     }, (error) => {
       promise.reject({ error });
@@ -745,3 +744,5 @@ class PushDetails extends DashboardView {
     );
   }
 }
+
+export default PushDetails;

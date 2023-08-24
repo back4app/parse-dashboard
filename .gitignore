@@ -15,5 +15,5 @@ npm-debug.log
 logs/
 test_logs
 
-.vscode/
-
+# visual studio code
+.vscode

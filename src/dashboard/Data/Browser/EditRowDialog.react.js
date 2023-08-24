@@ -1,8 +1,6 @@
 import React from 'react';
 import Parse from 'parse';
 import { dateStringUTC } from 'lib/DateUtils';
-import PropTypes from 'lib/PropTypes';
-import ParseApp from 'lib/ParseApp';
 import Modal from 'components/Modal/Modal.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
@@ -25,7 +23,11 @@ export default class EditRowDialog extends React.Component {
     const { currentObject, openObjectPickers, expandedTextAreas } = this.initializeState(
       selectedObject
     );
+<<<<<<< HEAD
     this.state = { currentObject, openObjectPickers, expandedTextAreas, showFileEditor: false };
+=======
+    this.state = { currentObject, openObjectPickers, expandedTextAreas, showFileEditor: null };
+>>>>>>> origin/upstream
 
     this.updateCurrentObject = this.updateCurrentObject.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -226,15 +228,25 @@ export default class EditRowDialog extends React.Component {
     this.setState({ expandedTextAreas });
   }
 
+<<<<<<< HEAD
   openFileEditor() {
     this.setState({
       showFileEditor: true
+=======
+  openFileEditor(column) {
+    this.setState({
+      showFileEditor: column
+>>>>>>> origin/upstream
     });
   }
 
   hideFileEditor() {
     this.setState({
+<<<<<<< HEAD
       showFileEditor: false
+=======
+      showFileEditor: null
+>>>>>>> origin/upstream
     });
   }
 
@@ -360,9 +372,15 @@ export default class EditRowDialog extends React.Component {
               <div style={{ cursor: 'pointer' }}>
                 <Pill
                   value={file ? 'Change file' : 'Select file'}
+<<<<<<< HEAD
                   onClick={() => this.openFileEditor()}
                 />
                 {this.state.showFileEditor && (
+=======
+                  onClick={() => this.openFileEditor(name)}
+                />
+                {this.state.showFileEditor === name && (
+>>>>>>> origin/upstream
                   <FileEditor
                     value={file}
                     onCancel={this.hideFileEditor}
@@ -527,7 +545,3 @@ export default class EditRowDialog extends React.Component {
     );
   }
 }
-
-EditRowDialog.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

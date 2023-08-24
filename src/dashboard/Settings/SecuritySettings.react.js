@@ -37,7 +37,7 @@ export default class SecuritySettings extends DashboardView {
   }
 
   renderForm({ fields, setField}) {
-    let currentApp = this.context.currentApp;
+    let currentApp = this.context;
     let resetDialog = <FormModal
       title='Reset Master Key'
       icon='keys-solid'
@@ -48,10 +48,10 @@ export default class SecuritySettings extends DashboardView {
       }
       open={this.state.showResetDialog}
       type={Modal.Types.DANGER}
-      submitText='Reset it'
+      submitText='Reset'
       inProgressText={'Resetting\u2026'}
       enabled={this.state.passwordInput.length > 0 || !AccountManager.currentUser().has_password}
-      onSubmit={() => this.context.currentApp.resetMasterKey(this.state.passwordInput)}
+      onSubmit={() => currentApp.resetMasterKey(this.state.passwordInput)}
       onClose={() => this.setState({showResetDialog: false})}
       clearFields={() => {this.setState({passwordInput: ''})}}
       buttonsInCenter={!AccountManager.currentUser().has_password}>

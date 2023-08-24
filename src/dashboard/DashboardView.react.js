@@ -5,6 +5,7 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+<<<<<<< HEAD
 import PropTypes     from 'lib/PropTypes';
 import ParseApp      from 'lib/ParseApp';
 import React         from 'react';
@@ -57,21 +58,59 @@ export default class DashboardView extends React.Component {
     }
   }
 
+=======
+import React          from 'react';
+import Sidebar        from 'components/Sidebar/Sidebar.react';
+import styles         from 'dashboard/Dashboard.scss';
+import Icon           from 'components/Icon/Icon.react';
+import baseStyles     from 'stylesheets/base.scss';
+import Button         from 'components/Button/Button.react';
+import { CurrentApp } from 'context/currentApp';
+
+export default class DashboardView extends React.Component {
+  static contextType = CurrentApp;
+>>>>>>> origin/upstream
   /* A DashboardView renders two pieces: the sidebar, and the app itself */
+
+  constructor() {
+    super();
+    this.state = {
+      route: '',
+    };
+  }
+
+  componentDidUpdate() {
+    this.onRouteChanged();
+  }
+  componentDidMount() {
+    this.onRouteChanged();
+  }
+
+  onRouteChanged() {
+    const path = this.props.location?.pathname ?? window.location.pathname;
+    const route = path.split('apps')[1].split('/')[2];
+    if (route !== this.state.route) {
+      this.setState({ route });
+    }
+  }
+
   render() {
     let sidebarChildren = null;
     if (typeof this.renderSidebar === 'function') {
       sidebarChildren = this.renderSidebar();
     }
-    let appSlug = (this.context.currentApp ? this.context.currentApp.slug : '');
+    let appSlug = this.context ? this.context.slug : '';
 
-    if (!this.context.currentApp.hasCheckedForMigraton) {
-      this.context.currentApp.getMigrations().promise
-        .then(() => this.forceUpdate(), () => {});
+    if (!this.context.hasCheckedForMigraton) {
+      this.context.getMigrations().promise.then(
+        () => this.forceUpdate(),
+        () => {}
+      );
     }
 
-    let features = this.context.currentApp.serverInfo.features;
+    let features = this.context.serverInfo.features;
 
+<<<<<<< HEAD
     const { showAdminPage } = this.context.currentApp.custom;
     const user = AccountManager.currentUser();
 
@@ -82,11 +121,23 @@ export default class DashboardView extends React.Component {
       features.schemas.addClass &&
       features.schemas.removeClass) {
       databaseSubsections.push({
+=======
+    let coreSubsections = [];
+    if (
+      features.schemas &&
+      features.schemas.addField &&
+      features.schemas.removeField &&
+      features.schemas.addClass &&
+      features.schemas.removeClass
+    ) {
+      coreSubsections.push({
+>>>>>>> origin/upstream
         name: 'Browser',
-        link: '/browser'
+        link: '/browser',
       });
     }
 
+<<<<<<< HEAD
     // coreSubsections.push({
     //   name: 'Connections',
     //   link: '/connections',
@@ -118,21 +169,52 @@ export default class DashboardView extends React.Component {
       link: '/cloud_code'
     });
     // }
+=======
+    if (features.cloudCode && features.cloudCode.viewCode) {
+      coreSubsections.push({
+        name: 'Cloud Code',
+        link: '/cloud_code',
+      });
+    }
+
+    //webhooks requires removal of heroku link code, then it should work.
+    if (
+      features.hooks &&
+      features.hooks.create &&
+      features.hooks.read &&
+      features.hooks.update &&
+      features.hooks.delete
+    ) {
+      coreSubsections.push({
+        name: 'Webhooks',
+        link: '/webhooks',
+      });
+    }
+>>>>>>> origin/upstream
 
     if (features.cloudCode && features.cloudCode.jobs) {
       cloudCodeSubSections.push({
         name: 'Jobs',
-        link: '/jobs'
+        link: '/jobs',
       });
     }
 
+<<<<<<< HEAD
     if (features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
       cloudCodeSubSections.push({
+=======
+    if (
+      features.logs &&
+      Object.keys(features.logs).some((key) => features.logs[key])
+    ) {
+      coreSubsections.push({
+>>>>>>> origin/upstream
         name: 'Logs',
-        link: '/logs'
+        link: '/logs',
       });
     }
 
+<<<<<<< HEAD
     let apiSubSections = [];
 
     apiSubSections.push({
@@ -157,16 +239,40 @@ export default class DashboardView extends React.Component {
       features.globalConfig.update &&
       features.globalConfig.delete) {
       moreSubSection.push({
+=======
+    if (
+      features.globalConfig &&
+      features.globalConfig.create &&
+      features.globalConfig.read &&
+      features.globalConfig.update &&
+      features.globalConfig.delete
+    ) {
+      coreSubsections.push({
+>>>>>>> origin/upstream
         name: 'Config',
-        link: '/config'
+        link: '/config',
       });
     }
 
+<<<<<<< HEAD
     //webhooks requires removal of heroku link code, then it should work.
     if (features.hooks && features.hooks.create && features.hooks.read && features.hooks.update && features.hooks.delete) {
       moreSubSection.push({
         name: 'Webhooks',
         link: '/webhooks'
+=======
+    if (!this.context.serverInfo.error) {
+      coreSubsections.push({
+        name: 'API Console',
+        link: '/api_console',
+      });
+    }
+
+    if (this.context.migration) {
+      coreSubsections.push({
+        name: 'Migration',
+        link: '/migration',
+>>>>>>> origin/upstream
       });
     }
 
@@ -223,6 +329,7 @@ export default class DashboardView extends React.Component {
 
     let pushSubsections = [];
 
+<<<<<<< HEAD
     // if (features.push && features.push.immediatePush) {
     //   pushSubsections.push({
     //     name: 'Send New Push',
@@ -243,6 +350,28 @@ export default class DashboardView extends React.Component {
     //     link: '/push/audiences'
     //   });
     // }
+=======
+    if (features.push && features.push.immediatePush) {
+      pushSubsections.push({
+        name: 'Send New Push',
+        link: '/push/new',
+      });
+    }
+
+    if (features.push && features.push.storedPushData) {
+      pushSubsections.push({
+        name: 'Past Pushes',
+        link: '/push/activity',
+      });
+    }
+
+    if (features.push && features.push.pushAudiences) {
+      pushSubsections.push({
+        name: 'Audiences',
+        link: '/push/audiences',
+      });
+    }
+>>>>>>> origin/upstream
 
     let analyticsSidebarSections = [];
 
@@ -326,7 +455,7 @@ export default class DashboardView extends React.Component {
       });
     }*/
 
-    let appSidebarSections = []
+    let appSidebarSections = [];
 
     if (databaseSubsections.length > 0) {
       appSidebarSections.push({
@@ -337,6 +466,7 @@ export default class DashboardView extends React.Component {
       });
     }
 
+<<<<<<< HEAD
     appSidebarSections.push({
       name: 'Cloud Code',
       icon: 'cloud-code',
@@ -350,13 +480,33 @@ export default class DashboardView extends React.Component {
       link: '/connect',
       subsections: apiSubSections
     })
+=======
+    if (pushSubsections.length > 0) {
+      appSidebarSections.push({
+        name: 'Push',
+        icon: 'push-outline',
+        link: '/push',
+        style: { paddingLeft: '16px' },
+        subsections: pushSubsections,
+      });
+    }
+
+    if (analyticsSidebarSections.length > 0) {
+      appSidebarSections.push({
+        name: 'Analytics',
+        icon: 'analytics-outline',
+        link: '/analytics',
+        subsections: analyticsSidebarSections,
+      });
+    }
+>>>>>>> origin/upstream
 
     if (settingsSections.length > 0) {
       appSidebarSections.push({
         name: 'App Settings',
         icon: 'gear-solid',
         link: '/settings',
-        subsections: settingsSections
+        subsections: settingsSections,
       });
     }
 
@@ -397,6 +547,7 @@ export default class DashboardView extends React.Component {
     // }
 
     let sidebar = (
+<<<<<<< HEAD
     <Sidebar
       showTour={this.state && this.state.showTour}
       sections={appSidebarSections}
@@ -408,22 +559,76 @@ export default class DashboardView extends React.Component {
       primaryBackgroundColor={this.context.currentApp.primaryBackgroundColor}
       secondaryBackgroundColor={this.context.currentApp.secondaryBackgroundColor}
       footerMenuButtons={this.getFooterMenuButtons && this.getFooterMenuButtons()}
+=======
+      <Sidebar
+        sections={appSidebarSections}
+        appSelector={true}
+        section={this.section}
+        subsection={this.subsection}
+        prefix={'/apps/' + appSlug}
+        action={this.action}
+        primaryBackgroundColor={this.context.primaryBackgroundColor}
+        secondaryBackgroundColor={this.context.secondaryBackgroundColor}
+>>>>>>> origin/upstream
       >
-      {sidebarChildren}
-    </Sidebar>);
+        {sidebarChildren}
+      </Sidebar>
+    );
+
+    let content = <div className={styles.content}>{this.renderContent()}</div>;
+    const canRoute = [...coreSubsections, ...pushSubsections]
+      .map(({ link }) => link.split('/')[1])
+      .includes(this.state.route);
+
+    if (!canRoute) {
+      content = (
+        <div className={styles.empty}>
+          <div className={baseStyles.center}>
+            <div className={styles.cloud}>
+              <Icon
+                width={110}
+                height={110}
+                name="cloud-surprise"
+                fill="#1e3b4d"
+              />
+            </div>
+            <div className={styles.loadingError}>Feature unavailable</div>
+          </div>
+        </div>
+      );
+    }
+
+    if (this.context.serverInfo.error) {
+      content = (
+        <div className={styles.empty}>
+          <div className={baseStyles.center}>
+            <div className={styles.cloud}>
+              <Icon
+                width={110}
+                height={110}
+                name="cloud-surprise"
+                fill="#1e3b4d"
+              />
+            </div>
+            <div className={styles.loadingError}>
+              {this.context.serverInfo.error.replace(/-/g, '\u2011')}
+            </div>
+            <Button
+              color="white"
+              value="Reload"
+              width="120px"
+              onClick={() => location.reload()}
+            />
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className={styles.dashboard}>
-        <div className={styles.content}>
-          {this.renderContent()}
-        </div>
+        {content}
         {sidebar}
       </div>
     );
   }
 }
-
-DashboardView.contextTypes = {
-  generatePath: PropTypes.func,
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

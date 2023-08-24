@@ -16,10 +16,9 @@ import ExplorerActiveChartButton from 'components/ExplorerActiveChartButton/Expl
 import LoaderContainer           from 'components/LoaderContainer/LoaderContainer.react';
 import Parse                     from 'parse';
 import React                     from 'react';
-import ReactDOM                  from 'react-dom';
 import styles                    from 'dashboard/Analytics/Performance/Performance.scss';
 import Toolbar                   from 'components/Toolbar/Toolbar.react';
-import { verticalCenter }        from 'stylesheets/base.scss';
+import baseStyles                from 'stylesheets/base.scss';
 
 const PERFORMANCE_QUERIES = [
   {
@@ -92,10 +91,11 @@ export default class Performance extends DashboardView {
       mutated: false
     };
     this.xhrHandles = [];
+    this.displayRef = React.createRef();
   }
 
   componentDidMount() {
-    let display = ReactDOM.findDOMNode(this.refs.display);
+    let display = this.displayRef;
     this.displaySize = {
       width: display.offsetWidth,
       height: display.offsetHeight
@@ -103,11 +103,15 @@ export default class Performance extends DashboardView {
   }
 
   componentWillMount() {
+<<<<<<< HEAD
     // Send track event
     if (typeof back4AppNavigation !== 'undefined' && typeof back4AppNavigation.atAnalyticsPerformanceEvent === 'function')
       back4AppNavigation.atAnalyticsPerformanceEvent()
 
     this.handleRunQuery(this.context.currentApp);
+=======
+    this.handleRunQuery(this.context);
+>>>>>>> origin/upstream
   }
 
   componentWillUnmount() {
@@ -116,6 +120,7 @@ export default class Performance extends DashboardView {
 
   componentWillReceiveProps(nextProps, nextContext) {
     if (this.context !== nextContext) {
+<<<<<<< HEAD
       // check if the changes are in currentApp serverInfo status
       // if not return without making any request
       if (this.props.apps !== nextProps.apps) {
@@ -125,6 +130,9 @@ export default class Performance extends DashboardView {
         if (!shouldUpdate) return;
       }
       this.handleRunQuery(nextContext.currentApp);
+=======
+      this.handleRunQuery(nextContext);
+>>>>>>> origin/upstream
     }
   }
 
@@ -202,7 +210,7 @@ export default class Performance extends DashboardView {
 
     let footer = (
       <div className={styles.footer}>
-        <div className={[styles.right, verticalCenter].join(' ')}>
+        <div className={[styles.right, baseStyles.verticalCenter].join(' ')}>
           <span style={{ marginRight: '10px' }}>
             <DateRange
               value={this.state.dateRange}
@@ -213,7 +221,7 @@ export default class Performance extends DashboardView {
           <Button
             primary={true}
             disabled={!this.state.mutated}
-            onClick={this.handleRunQuery.bind(this, this.context.currentApp)}
+            onClick={this.handleRunQuery.bind(this, this.context)}
             value='Run query' />
         </div>
       </div>
@@ -266,7 +274,7 @@ export default class Performance extends DashboardView {
     let content = (
       <LoaderContainer loading={this.state.loading} solid={false}>
         <div className={styles.content}>
-          <div ref='display' className={styles.display}>
+          <div ref={this.displayRef} className={styles.display}>
             {chart}
           </div>
           {header}

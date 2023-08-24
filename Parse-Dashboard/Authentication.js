@@ -30,7 +30,13 @@ function initialize(app, options) {
         otpCode: req.body.otpCode
       });
       if (!match.matchingUsername) {
-        return cb(null, false, { message: 'Invalid username or password' });
+        return cb(null, false, { message: JSON.stringify({ text: 'Invalid username or password' }) });
+      }
+      if (!match.otpValid) {
+        return cb(null, false, { message: JSON.stringify({ text: 'Invalid one-time password.', otpLength: match.otpMissingLength || 6}) });
+      }
+      if (match.otpMissingLength) {
+        return cb(null, false, { message: JSON.stringify({ text: 'Please enter your one-time password.', otpLength: match.otpMissingLength || 6 })});
       }
       if (match.otpMissing) {
         return cb(null, false, { message: 'Please enter your one-time password.' });
@@ -54,25 +60,30 @@ function initialize(app, options) {
   });
 
   var cookieSessionSecret = options.cookieSessionSecret || require('crypto').randomBytes(64).toString('hex');
+  const cookieSessionMaxAge = options.cookieSessionMaxAge;
   app.use(require('connect-flash')());
   app.use(require('body-parser').urlencoded({ extended: true }));
   app.use(require('cookie-session')({
     key    : 'parse_dash',
     secret : cookieSessionSecret,
-    cookie : {
-      maxAge: (2 * 7 * 24 * 60 * 60 * 1000) // 2 weeks
-    }
+    maxAge : cookieSessionMaxAge
   }));
   app.use(passport.initialize());
   app.use(passport.session());
 
   app.post('/login',
     csrf(),
-    passport.authenticate('local', {
-      successRedirect: `${self.mountPath}apps`,
-      failureRedirect: `${self.mountPath}login`,
-      failureFlash : true
-    })
+      (req,res,next) => {
+        let redirect = 'apps';
+        if (req.body.redirect) {
+          redirect = req.body.redirect.charAt(0) === '/' ? req.body.redirect.substring(1) : req.body.redirect
+        }
+        return passport.authenticate('local', {
+          successRedirect: `${self.mountPath}${redirect}`,
+          failureRedirect: `${self.mountPath}login${req.body.redirect ? `?redirect=${req.body.redirect}` : ''}`,
+          failureFlash : true
+        })(req, res, next)
+    },
   );
 
   app.get('/logout', function(req, res){
@@ -91,7 +102,7 @@ function authenticate(userToTest, usernameOnly) {
   let appsUserHasAccessTo = null;
   let matchingUsername = null;
   let isReadOnly = false;
-  let otpMissing = false;
+  let otpMissingLength = false;
   let otpValid = true;
 
   //they provided auth
@@ -104,17 +115,20 @@ function authenticate(userToTest, usernameOnly) {
       let usernameMatches = userToTest.name == user.user;
       if (usernameMatches && user.mfa && !usernameOnly) {
         if (!userToTest.otpCode) {
-          otpMissing = true;
+          otpMissingLength = user.mfaDigits || 6;
         } else {
           const totp = new OTPAuth.TOTP({
             algorithm: user.mfaAlgorithm || 'SHA1',
-            secret: OTPAuth.Secret.fromBase32(user.mfa)
+            secret: OTPAuth.Secret.fromBase32(user.mfa),
+            digits: user.mfaDigits,
+            period: user.mfaPeriod,
           });
           const valid = totp.validate({
             token: userToTest.otpCode
           });
           if (valid === null) {
             otpValid = false;
+            otpMissingLength = user.mfaDigits || 6;
           }
         }
       }
@@ -132,7 +146,7 @@ function authenticate(userToTest, usernameOnly) {
   return {
     isAuthenticated,
     matchingUsername,
-    otpMissing,
+    otpMissingLength,
     otpValid,
     appsUserHasAccessTo,
     isReadOnly,

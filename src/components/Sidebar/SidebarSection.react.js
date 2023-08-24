@@ -10,11 +10,15 @@ import { Link } from 'react-router-dom';
 import React    from 'react';
 import styles   from 'components/Sidebar/Sidebar.scss';
 
+<<<<<<< HEAD
 const sendEvent = () => {
   back4AppNavigation && back4AppNavigation.atApiReferenceIntroEvent && back4AppNavigation.atApiReferenceIntroEvent()
 }
 
 let SidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge }) => {
+=======
+let SidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed }) => {
+>>>>>>> origin/upstream
   let classes = [styles.section];
   if (active) {
     classes.push(styles.active);
@@ -22,6 +26,24 @@ let SidebarSection = ({ active, children, name, link, icon, style, primaryBackgr
   if (isCollapsed) {
     classes.push(styles.collapsed);
   }
+<<<<<<< HEAD
+=======
+  if (isCollapsed) {
+    classes.push(styles.collapsed);
+    return (
+      <div className={classes.join(' ')}>
+        <div style={style} className={styles.section_header} style={{ background: primaryBackgroundColor}}>
+          {iconContent}
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className={classes.join(' ')}>
+      {active ?
+        <div style={style} className={styles.section_header} style={{ background: primaryBackgroundColor }}>{iconContent}<span>{name}</span></div> :
+        <Link style={style} className={styles.section_header} to={{ pathname: link || '' }}>{iconContent}<span>{name}</span></Link>}
+>>>>>>> origin/upstream
 
   const iconContent = icon && <Icon width={25} height={25} name={icon} fill='#ffffff' />;
   const textContent = !isCollapsed && <span>{name}</span>;

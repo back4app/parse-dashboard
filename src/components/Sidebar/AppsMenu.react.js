@@ -11,11 +11,18 @@ import html             from 'lib/htmlString';
 import { Link }         from 'react-router-dom';
 import React            from 'react';
 import styles           from 'components/Sidebar/Sidebar.scss';
+<<<<<<< HEAD
 import { unselectable } from 'stylesheets/base.scss';
 import Icon             from 'components/Icon/Icon.react';
 
 const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
   <div style={{ height }} className={[styles.appsMenu, unselectable].join(' ')}>
+=======
+import baseStyles       from 'stylesheets/base.scss';
+
+const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
+  <div style={{ height }} className={[styles.appsMenu, baseStyles.unselectable].join(' ')}>
+>>>>>>> origin/upstream
     <AppName name={current.name} onClick={onSelect.bind(null, current.slug)} onPinClick={onPinClick} />
     <div className={styles.menuSection}>All Apps</div>
     <div className={styles.appsList}>
@@ -29,7 +36,11 @@ const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
           classes.push(styles.disabledLink);
         }
         return (
+<<<<<<< HEAD
           <Link to={{ pathname: html`/apps/${app.slug}/browser` }} key={app.slug} className={classes.join(' ')} onClick={onSelect.bind(null, current.slug)}>
+=======
+          <Link to={html`/apps/${app.slug}/browser`} key={app.slug} className={styles.menuRow} onClick={onSelect.bind(null, current.slug)}>
+>>>>>>> origin/upstream
             <span>{app.name}</span>
             <AppBadge production={app.production} />
             {app.serverInfo.error && <span className={styles.appStatus}><Icon name='exclaimation-circle' width={20} height={20} fill='#eb445b' /></span>}

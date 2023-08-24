@@ -11,11 +11,13 @@ import B4ABrowserToolbar      from 'dashboard/Data/Browser/B4ABrowserToolbar.rea
 import BrowserToolbar         from 'dashboard/Data/Browser/BrowserToolbar.react';
 import ContextMenu            from 'components/ContextMenu/ContextMenu.react';
 import * as ColumnPreferences from 'lib/ColumnPreferences';
-import ParseApp               from 'lib/ParseApp';
 import React                  from 'react';
+<<<<<<< HEAD
 import PropTypes              from 'lib/PropTypes';
 import { SpecialClasses }     from 'lib/Constants';
 import Button                       from 'components/Button/Button.react';
+=======
+>>>>>>> origin/upstream
 
 /**
  * DataBrowser renders the browser toolbar and data table
@@ -26,13 +28,13 @@ import Button                       from 'components/Button/Button.react';
 const READ_ONLY = [ 'objectId', 'createdAt', 'updatedAt', 'sessionToken' ];
 
 export default class DataBrowser extends React.Component {
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
 
-    const columnPreferences = context.currentApp.columnPreference || {}
+    const columnPreferences = props.app.columnPreference || {}
     let order = ColumnPreferences.getOrder(
       props.columns,
-      context.currentApp.applicationId,
+      props.app.applicationId,
       props.className,
       columnPreferences[props.className]
     );
@@ -57,12 +59,12 @@ export default class DataBrowser extends React.Component {
     this.saveOrderTimeout = null;
   }
 
-  componentWillReceiveProps(props, context) {
+  componentWillReceiveProps(props) {
     if (props.className !== this.props.className) {
-      const columnPreferences = context.currentApp.columnPreference || {}
+      const columnPreferences = props.app.columnPreference || {}
       let order = ColumnPreferences.getOrder(
         props.columns,
-        context.currentApp.applicationId,
+        props.app.applicationId,
         props.className,
         columnPreferences[props.className]
       );
@@ -73,11 +75,11 @@ export default class DataBrowser extends React.Component {
         simplifiedSchema: this.getSimplifiedSchema(props.schema, props.className)
       });
     } else if (Object.keys(props.columns).length !== Object.keys(this.props.columns).length
-           || (props.isUnique && props.uniqueField !== this.props.uniqueField)) {
-      const columnPreferences = context.currentApp.columnPreference || {}
+      || (props.isUnique && props.uniqueField !== this.props.uniqueField)) {
+      const columnPreferences = props.app.columnPreference || {}
       let order = ColumnPreferences.getOrder(
         props.columns,
-        context.currentApp.applicationId,
+        props.app.applicationId,
         props.className,
         columnPreferences[props.className]
       );
@@ -99,7 +101,7 @@ export default class DataBrowser extends React.Component {
     if (this.saveOrderTimeout) {
       clearTimeout(this.saveOrderTimeout);
     }
-    let appId = this.context.currentApp.applicationId;
+    let appId = this.props.app.applicationId;
     let className = this.props.className;
     this.saveOrderTimeout = setTimeout(() => {
       ColumnPreferences.updatePreferences(order, appId, className)
@@ -135,7 +137,7 @@ export default class DataBrowser extends React.Component {
    * @param  {Number} hoverIndex - index of headerbar moved to left of
    */
   handleHeaderDragDrop(dragIndex, hoverIndex) {
-    const newOrder = [ ...this.state.order ];
+    const newOrder = [...this.state.order];
     const movedIndex = newOrder.splice(dragIndex, 1);
     newOrder.splice(hoverIndex, 0, movedIndex[0]);
     this.setState({ order: newOrder }, () => {
@@ -163,9 +165,15 @@ export default class DataBrowser extends React.Component {
       }
       return;
     }
+<<<<<<< HEAD
     if(!this.state.editing && this.props.newObject){
       // if user is not editing any row but there's new row
       if(e.keyCode === 27){
+=======
+    if (!this.state.editing && this.props.newObject) {
+      // if user is not editing any row but there's new row
+      if (e.keyCode === 27) {
+>>>>>>> origin/upstream
         this.props.onAbortAddRow();
         e.preventDefault();
       }
@@ -185,6 +193,14 @@ export default class DataBrowser extends React.Component {
     if (!this.state.current) {
       return;
     }
+
+    const visibleColumnIndexes = [];
+    this.state.order.forEach((column, index) => {
+      column.visible && visibleColumnIndexes.push(index);
+    })
+    const firstVisibleColumnIndex = Math.min(...visibleColumnIndexes);
+    const lastVisibleColumnIndex = Math.max(...visibleColumnIndexes);
+
     switch (e.keyCode) {
       case 8:
       case 46:
@@ -200,6 +216,7 @@ export default class DataBrowser extends React.Component {
         }
         e.preventDefault();
         break;
+<<<<<<< HEAD
       case 37: // Left
         row = this.state.current.row
         col = Math.max(this.state.current.col - 1, 0)
@@ -208,10 +225,21 @@ export default class DataBrowser extends React.Component {
           current: {
             row,
             col
+=======
+      case 37:
+        // Left - standalone (move to the next visible column on the left)
+        // or with ctrl/meta (excel style - move to the first visible column)
+        this.setState({
+          current: {
+            row: this.state.current.row,
+            col: (e.ctrlKey || e.metaKey) ? firstVisibleColumnIndex :
+              this.getNextVisibleColumnIndex(-1, firstVisibleColumnIndex, lastVisibleColumnIndex)
+>>>>>>> origin/upstream
           }
         });
         e.preventDefault();
         break;
+<<<<<<< HEAD
       case 38: // Up
         row = Math.max(this.state.current.row - 1, 0)
         col = this.state.current.col
@@ -220,10 +248,20 @@ export default class DataBrowser extends React.Component {
           current: {
             row,
             col
+=======
+      case 38:
+        // Up - standalone (move to the previous row)
+        // or with ctrl/meta (excel style - move to the first row)
+        this.setState({
+          current: {
+            row: (e.ctrlKey || e.metaKey) ? 0 : Math.max(this.state.current.row - 1, 0),
+            col: this.state.current.col
+>>>>>>> origin/upstream
           }
         });
         e.preventDefault();
         break;
+<<<<<<< HEAD
       case 39: // Right
         row = this.state.current.row
         col = Math.min(this.state.current.col + 1, this.state.order.length - 1)
@@ -232,10 +270,21 @@ export default class DataBrowser extends React.Component {
           current: {
             row,
             col
+=======
+      case 39:
+        // Right - standalone (move to the next visible column on the right)
+        // or with ctrl/meta (excel style - move to the last visible column)
+        this.setState({
+          current: {
+            row: this.state.current.row,
+            col: (e.ctrlKey || e.metaKey) ? lastVisibleColumnIndex :
+              this.getNextVisibleColumnIndex(1, firstVisibleColumnIndex, lastVisibleColumnIndex)
+>>>>>>> origin/upstream
           }
         });
         e.preventDefault();
         break;
+<<<<<<< HEAD
       case 40: // Down
         row = Math.min(this.state.current.row + 1, this.props.data.length - 1)
         col = this.state.current.col
@@ -244,6 +293,15 @@ export default class DataBrowser extends React.Component {
           current: {
             row,
             col
+=======
+      case 40:
+        // Down - standalone (move to the next row)
+        // or with ctrl/meta (excel style - move to the last row)
+        this.setState({
+          current: {
+            row: (e.ctrlKey || e.metaKey) ? this.props.data.length - 1 : Math.min(this.state.current.row + 1, this.props.data.length - 1),
+            col: this.state.current.col
+>>>>>>> origin/upstream
           }
         });
         e.preventDefault();
@@ -285,6 +343,18 @@ export default class DataBrowser extends React.Component {
     }
   }
 
+  getNextVisibleColumnIndex(distance = 1, min = 0, max = 0) {
+    if (distance === 0) { return this.state.current.col; }
+    let newIndex = this.state.current.col + distance;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (this.state.order[newIndex]?.visible) { return newIndex; }
+      if (newIndex <= min) { return min; }
+      if (newIndex >= max) { return max; }
+      newIndex += distance;
+    }
+  }
+
   setEditing(editing) {
     if (this.props.updateRow) {
       if (this.state.editing !== editing) {
@@ -310,14 +380,23 @@ export default class DataBrowser extends React.Component {
   }
 
   handleColumnsOrder(order, shouldReload) {
+<<<<<<< HEAD
     this.setState({ order: [ ...order ] }, () => {
+=======
+    this.setState({ order: [...order] }, () => {
+>>>>>>> origin/upstream
       this.updatePreferences(order, shouldReload);
     });
   }
 
   render() {
+<<<<<<< HEAD
     let { className, count, disableSecurityDialog, onCancelPendingEditRows, editCloneRows, ...other } = this.props;
     const { applicationId, preventSchemaEdits } = this.context.currentApp;
+=======
+    let { className, count, disableSecurityDialog, onCancelPendingEditRows, editCloneRows, app, ...other } = this.props;
+    const { preventSchemaEdits, applicationId } = app;
+>>>>>>> origin/upstream
     return (
       <div>
         <BrowserTable
@@ -340,13 +419,19 @@ export default class DataBrowser extends React.Component {
         <B4ABrowserToolbar
           count={count}
           hidePerms={className === '_Installation'}
-          className={SpecialClasses[className] || className}
+          className={className}
           classNameForEditors={className}
           setCurrent={this.setCurrent}
+<<<<<<< HEAD
           enableDeleteAllRows={this.context.currentApp.serverInfo.features.schemas.clearAllDataFromClass && !preventSchemaEdits}
           enableExportClass={this.context.currentApp.serverInfo.features.schemas.exportClass && !preventSchemaEdits}
           enableImport={this.context.currentApp.serverInfo.features.schemas.import}
           enableSecurityDialog={this.context.currentApp.serverInfo.features.schemas.editClassLevelPermissions && !disableSecurityDialog && !preventSchemaEdits}
+=======
+          enableDeleteAllRows={app.serverInfo.features.schemas.clearAllDataFromClass && !preventSchemaEdits}
+          enableExportClass={app.serverInfo.features.schemas.exportClass && !preventSchemaEdits}
+          enableSecurityDialog={app.serverInfo.features.schemas.editClassLevelPermissions && !disableSecurityDialog && !preventSchemaEdits}
+>>>>>>> origin/upstream
           enableColumnManipulation={!preventSchemaEdits}
           enableClassManipulation={!preventSchemaEdits}
           applicationId={applicationId}
@@ -368,7 +453,3 @@ export default class DataBrowser extends React.Component {
     );
   }
 }
-
-DataBrowser.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

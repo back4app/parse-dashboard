@@ -58,9 +58,9 @@ export default class InlineSubmitInput extends React.Component {
          
         </div>
         { this.state.showButton ?
-          <a href='javascript:;' role='button' className={styles.button} onClick={this.handleSubmit.bind(this)}>
+          <button type='button' className={styles.button} onClick={this.handleSubmit.bind(this)}>
             <span>{this.props.submitButtonText}</span>
-          </a>
+          </button>
           : null
         }
       </div>

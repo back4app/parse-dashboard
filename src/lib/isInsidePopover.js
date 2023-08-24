@@ -9,4 +9,8 @@ export default function isInsidePopover(node) {
       cur = cur.parentNode;
   }
   return false;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/upstream

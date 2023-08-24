@@ -31,6 +31,17 @@
     & svg  {
       transform: rotate(316deg);
     }
+<<<<<<< HEAD
+=======
+  }
+  & .pillText {
+    position: absolute;
+    left: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 75%;
+>>>>>>> origin/upstream
   }
 }
 

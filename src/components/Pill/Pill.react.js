@@ -7,18 +7,32 @@
  */
 import React  from 'react';
 import styles from 'components/Pill/Pill.scss';
+<<<<<<< HEAD
 import Icon from "components/Icon/Icon.react";
 
 //TODO: refactor, may want to move onClick outside or need to make onClick able to handle link/button a11y
 let Pill = ({ value, onClick, fileDownloadLink, followClick = false }) => (
+=======
+import Icon from 'components/Icon/Icon.react';
+
+//TODO: refactor, may want to move onClick outside or need to make onClick able to handle link/button a11y
+let Pill = ({ value, onClick, fileDownloadLink, followClick = false, shrinkablePill = false }) => (
+>>>>>>> origin/upstream
   <span
     className={[
       styles.pill,
       !followClick && onClick ? styles.action : void 0
+<<<<<<< HEAD
     ].join(" ")}
     onClick={!followClick && onClick ? onClick : null}
   >
     <span className={!followClick && fileDownloadLink ? styles.content : ''}>{value}</span>
+=======
+    ].join(' ')}
+    onClick={!followClick && onClick ? onClick : null}
+  >
+    <span className={!followClick && fileDownloadLink ? styles.content : shrinkablePill ? styles.pillText : ''}>{value}</span>
+>>>>>>> origin/upstream
     {followClick && (
       <a onClick={e => !e.metaKey && onClick()}>
         <Icon name="right-outline" width={20} height={20} fill="#1669a1" />

@@ -13,10 +13,15 @@ import Parse                     from 'parse';
 import Pill                      from 'components/Pill/Pill.react';
 import React, { Component }      from 'react';
 import styles                    from 'components/BrowserCell/BrowserCell.scss';
+<<<<<<< HEAD
 import { unselectable }          from 'stylesheets/base.scss';
 import Tooltip                   from '../Tooltip/PopperTooltip.react';
 import * as ColumnPreferences    from 'lib/ColumnPreferences';
 import PropTypes                 from 'prop-types';
+=======
+import baseStyles                from 'stylesheets/base.scss';
+import * as ColumnPreferences    from 'lib/ColumnPreferences';
+>>>>>>> origin/upstream
 
 class BrowserCell extends Component {
   constructor() {
@@ -31,11 +36,19 @@ class BrowserCell extends Component {
     };
   }
 
+<<<<<<< HEAD
   async renderCellContent() {
     let content = this.props.value;
     let isNewRow = this.props.row < 0;
     this.copyableValue = content;
     let classes = [styles.cell, unselectable];
+=======
+  renderCellContent() {
+    let content = this.props.value;
+    let isNewRow = this.props.row < 0;
+    this.copyableValue = content;
+    let classes = [styles.cell, baseStyles.unselectable];
+>>>>>>> origin/upstream
     if (this.props.hidden) {
       content = this.props.value !== undefined || !isNewRow ? '(hidden)' : this.props.isRequired ? '(required)' : '(undefined)';
       classes.push(styles.empty);
@@ -54,7 +67,11 @@ class BrowserCell extends Component {
       content = <span>&nbsp;</span>;
       classes.push(styles.empty);
     } else if (this.props.type === 'Pointer') {
+<<<<<<< HEAD
       const defaultPointerKey = await ColumnPreferences.getPointerDefaultKey(this.props.appId, this.props.value.className);
+=======
+      const defaultPointerKey = ColumnPreferences.getPointerDefaultKey(this.props.appId, this.props.value.className);
+>>>>>>> origin/upstream
       let dataValue = this.props.value.id;
       if( defaultPointerKey !== 'objectId' ) {
         dataValue = this.props.value.get(defaultPointerKey);
@@ -86,7 +103,11 @@ class BrowserCell extends Component {
       }
 
       content = this.props.onPointerClick ? (
+<<<<<<< HEAD
         <Pill value={ dataValue } onClick={this.props.onPointerClick.bind(undefined, this.props.value)} followClick={true} />
+=======
+        <Pill value={ dataValue } onClick={this.props.onPointerClick.bind(undefined, this.props.value)} followClick={true} shrinkablePill />
+>>>>>>> origin/upstream
       ) : (
         dataValue
       );
@@ -103,7 +124,11 @@ class BrowserCell extends Component {
           const object = new Parse.Object(v.className);
           object.id = v.objectId;
           array.push(
+<<<<<<< HEAD
               <Pill key={i} value={v.objectId} onClick={this.props.onPointerClick.bind(undefined, object)} followClick={true} />
+=======
+              <Pill key={i} value={v.objectId} onClick={this.props.onPointerClick.bind(undefined, object)} followClick={true} shrinkablePill />
+>>>>>>> origin/upstream
             );
         });
         this.copyableValue = content = <ul>
@@ -130,7 +155,11 @@ class BrowserCell extends Component {
       this.copyableValue = content = JSON.stringify(this.props.value);
     } else if (this.props.type === 'File') {
       const fileName = this.props.value.url() ? getFileName(this.props.value) : 'Uploading\u2026';
+<<<<<<< HEAD
       content = <Pill value={fileName} fileDownloadLink={this.props.value.url()} />;
+=======
+      content = <Pill value={fileName} fileDownloadLink={this.props.value.url()} shrinkablePill />;
+>>>>>>> origin/upstream
       this.copyableValue = fileName;
     } else if (this.props.type === 'ACL') {
       let pieces = [];
@@ -160,7 +189,11 @@ class BrowserCell extends Component {
     } else if (this.props.type === 'Relation') {
       content = this.props.setRelation ? (
         <div style={{ textAlign: 'center' }}>
+<<<<<<< HEAD
           <Pill onClick={() => this.props.setRelation(this.props.value)} value='View relation' followClick={true} />
+=======
+          <Pill onClick={() => this.props.setRelation(this.props.value)} value='View relation' followClick={true} shrinkablePill />
+>>>>>>> origin/upstream
         </div>
       ) : (
           'Relation'
@@ -169,16 +202,26 @@ class BrowserCell extends Component {
     }
     this.onContextMenu = this.onContextMenu.bind(this);
 
+<<<<<<< HEAD
     if (this.props.markRequiredField && this.props.isRequired && !this.props.value) {
+=======
+    if (this.props.markRequiredField && this.props.isRequired && this.props.value == null) {
+>>>>>>> origin/upstream
       classes.push(styles.required);
     }
 
     this.setState({ ...this.state, content, classes })
   }
 
+<<<<<<< HEAD
   async componentDidUpdate(prevProps) {
     if ( this.props.value !== prevProps.value ) {
       await this.renderCellContent();
+=======
+  componentDidUpdate(prevProps) {
+    if ( this.props.value !== prevProps.value ) {
+      this.renderCellContent();
+>>>>>>> origin/upstream
     }
     if (this.props.current) {
       const node = this.cellRef.current;
@@ -286,10 +329,24 @@ class BrowserCell extends Component {
       return {
         text: 'Set filter...', items: constraints.map(constraint => {
           const definition = Filters.Constraints[constraint];
+<<<<<<< HEAD
           // Smart ellipsis for value - if it's long trim it in the middle: Lorem ipsum dolor si... aliqua
           const value = this.copyableValue.length < 30 ? this.copyableValue :
             `${this.copyableValue.substr(0, 20)}...${this.copyableValue.substr(this.copyableValue.length - 7)}`;
           const text = `${this.props.field} ${definition.name}${definition.comparable ? (' ' + value) : ''}`;
+=======
+          const copyableValue = String(this.copyableValue);
+          // Smart ellipsis for value - if it's long trim it in the middle: Lorem ipsum dolor si... aliqua
+          const value =
+            copyableValue.length < 30
+              ? copyableValue
+              : `${copyableValue.substr(0, 20)}...${copyableValue.substr(
+                  copyableValue.length - 7
+                )}`;
+          const text = `${this.props.field} ${definition.name}${
+            definition.comparable ? ' ' + value : ''
+          }`;
+>>>>>>> origin/upstream
           return {
             text,
             callback: this.pickFilter.bind(this, constraint)
@@ -329,7 +386,7 @@ class BrowserCell extends Component {
         cl.forEach((column, field) => {
           if (column.targetClass !== pointerClassName) { return; }
           relatedRecordsMenuItem.items.push({
-            text: className, callback: () => {
+            text: `${className}`, subtext: `${field}`, callback: () => {
               let relatedObject = value;
               if (this.props.field === 'objectId') {
                 relatedObject = new Parse.Object(pointerClassName);
@@ -382,14 +439,19 @@ class BrowserCell extends Component {
   //#endregion
 
   render() {
+<<<<<<< HEAD
     let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, onPointerCmdClick, row, col, field, onEditSelectedRow, readonly, isRequired, markRequiredFieldRow } = this.props;
     let isNewRow = row < 0;
+=======
+    let { type, value, hidden, width, current, onSelect, onEditChange, setCopyableValue, onPointerCmdClick, row, col, field, onEditSelectedRow, isRequired, markRequiredFieldRow } = this.props;
+>>>>>>> origin/upstream
 
     let classes = [...this.state.classes];
 
     if ( current ) {
       classes.push(styles.current);
     }
+<<<<<<< HEAD
     if (markRequiredFieldRow === row && isRequired && !value) {
       classes.push(styles.required);
     }
@@ -457,6 +519,44 @@ class BrowserCell extends Component {
           {this.state.content}
         </span>
     );
+=======
+    if (markRequiredFieldRow === row && isRequired && value == null) {
+      classes.push(styles.required);
+    }
+
+    return <span
+      ref={this.cellRef}
+      className={classes.join(' ')}
+      style={{ width }}
+      onClick={(e) => {
+        if (e.metaKey === true && type === 'Pointer') {
+          onPointerCmdClick(value);
+        }
+        else {
+          onSelect({ row, col });
+          setCopyableValue(hidden ? undefined : this.copyableValue);
+        }
+      }}
+      onDoubleClick={() => {
+        // Since objectId can't be edited, double click event opens edit row dialog
+        if (field === 'objectId' && onEditSelectedRow) {
+          onEditSelectedRow(true, value);
+        } else if (type !== 'Relation') {
+          onEditChange(true)
+        }
+      }}
+      onTouchEnd={e => {
+        if (current && type !== 'Relation') {
+          // The touch event may trigger an unwanted change in the column value
+          if (['ACL', 'Boolean', 'File'].includes(type)) {
+            e.preventDefault();
+          }
+        }}}
+      onContextMenu={this.onContextMenu.bind(this)}
+      >
+        {this.state.content}
+    </span>
+>>>>>>> origin/upstream
   }
 }
 

@@ -5,13 +5,16 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+<<<<<<< HEAD
 import PropTypes         from 'lib/PropTypes'; 
 import Icon              from 'components/Icon/Icon.react';
+=======
+>>>>>>> origin/upstream
 import Parse             from 'parse'
-import ParseApp          from 'lib/ParseApp';
 import PermissionsDialog from 'components/PermissionsDialog/PermissionsDialog.react';
 import React             from 'react';
 import styles            from 'dashboard/Data/Browser/Browser.scss';
+import { CurrentApp }    from 'context/currentApp';
 
 const pointerPrefix = 'userField:';
 
@@ -87,6 +90,7 @@ function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
 }
 
 export default class SecurityDialog extends React.Component {
+  static contextType = CurrentApp;
   constructor() {
     super();
 
@@ -111,7 +115,7 @@ export default class SecurityDialog extends React.Component {
 
   render() {
     let dialog = null;
-    let parseServerSupportsPointerPermissions = this.context.currentApp.serverInfo.features.schemas.editClassLevelPermissions;
+    let parseServerSupportsPointerPermissions = this.context.serverInfo.features.schemas.editClassLevelPermissions;
     if (this.props.perms && this.state.open) {
       dialog = (
         <PermissionsDialog
@@ -123,11 +127,15 @@ export default class SecurityDialog extends React.Component {
           details={<a target="_blank" href='http://docs.parseplatform.org/ios/guide/#security'>Learn more about CLPs and app security</a>}
           permissions={this.props.perms}
           userPointers={this.props.userPointers}
-          validateEntry={entry => 
+          validateEntry={entry =>
             validateEntry(this.props.userPointers, entry, parseServerSupportsPointerPermissions)}
           onCancel={this.handleClose}
+<<<<<<< HEAD
           parseVersion={this.context.currentApp.serverInfo}
           onConfirm={perms => 
+=======
+          onConfirm={perms =>
+>>>>>>> origin/upstream
             this.props.onChangeCLP(perms).then(this.handleClose)}
         />
       );
@@ -136,6 +144,7 @@ export default class SecurityDialog extends React.Component {
     if (this.props.disabled) {
       classes.push(styles.toolbarButtonDisabled);
     }
+<<<<<<< HEAD
     let onClick = null;
     if (!this.props.disabled) {
       onClick = () => {
@@ -149,9 +158,9 @@ export default class SecurityDialog extends React.Component {
         {dialog}
       </div>
     );
+=======
+
+    return dialog;
+>>>>>>> origin/upstream
   }
 }
-
-SecurityDialog.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

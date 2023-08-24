@@ -16,23 +16,71 @@ export default class Login extends React.Component {
     super();
 
     let errorDiv = document.getElementById('login_errors');
+    let otpLength = 6;
     if (errorDiv) {
       this.errors = errorDiv.innerHTML;
+      try {
+        const json = JSON.parse(this.errors)
+        this.errors = json.text
+        otpLength = json.otpLength;
+      } catch (e) {
+        this.errors = this.errors ?? `Error: ${JSON.stringify(e)}`;
+      }
     }
 
+    const url = new URL(window.location);
+    const redirect = url.searchParams.get('redirect');
     this.state = {
       forgot: false,
       username: sessionStorage.getItem('username') || '',
+<<<<<<< HEAD
       password: sessionStorage.getItem('password') || ''
+=======
+      password: sessionStorage.getItem('password') || '',
+      redirect: redirect !== '/' ? redirect : undefined
+>>>>>>> origin/upstream
     };
     sessionStorage.clear();
     setBasePath(props.path);
+    this.inputRefUser = React.createRef();
+    this.inputRefPass = React.createRef();
+    this.inputRefMfa = React.createRef();
+    this.otpLength = otpLength;
+  }
+
+  componentDidMount() {
+    if (this.errors) {
+      const e = this.errors.toLowerCase();
+      if (e.includes('missing credentials') || e.includes('invalid username or password')) {
+        if (this.inputRefUser.current.value.length < 1) {
+          this.inputRefUser.current.focus();
+        } else {
+          this.inputRefPass.current.focus();
+        }
+      } else if (e.includes('one-time')) {
+        this.inputRefMfa.current.focus();
+      }
+    } else {
+      this.inputRefUser.current.focus();
+    }
   }
 
   render() {
     const {path} = this.props;
     const updateField  = (field, e) => {
       this.setState({[field]: e.target.value});
+<<<<<<< HEAD
+=======
+      if (field === 'otp' && e.target.value.length >= this.otpLength) {
+        const input = document.querySelectorAll('input');
+        for (const field of input) {
+          if (field.type === 'submit') {
+            field.click();
+            break;
+          }
+        }
+      }
+>>>>>>> origin/upstream
     }
     const formSubmit = () => {
       sessionStorage.setItem('username', this.state.username);
@@ -54,7 +102,11 @@ export default class Login extends React.Component {
               type='username'
               value={this.state.username}
               onChange={e => updateField('username', e)}
+<<<<<<< HEAD
               autoFocus
+=======
+              ref={this.inputRefUser}
+>>>>>>> origin/upstream
             />
           } />
         <LoginRow
@@ -65,6 +117,7 @@ export default class Login extends React.Component {
               type='password'
               value={this.state.password}
               onChange={e => updateField('password', e)}
+<<<<<<< HEAD
             />
           } />
         {
@@ -72,6 +125,31 @@ export default class Login extends React.Component {
           <LoginRow
           label='OTP'
           input={<input name='otpCode' type='number' />} />
+=======
+              ref={this.inputRefPass}
+            />
+          } />
+          {this.state.redirect && <input
+              name='redirect'
+              type='hidden'
+              value={this.state.redirect}
+            />}
+        {
+          this.errors && this.errors.includes('one-time') ?
+          <LoginRow
+            label='OTP'
+            input={
+              <input
+                name='otpCode'
+                type='text'
+                inputMode="numeric"
+                autoComplete='one-time-code'
+                pattern="[0-9]*"
+                onChange={e => updateField('otp', e)}
+                ref={this.inputRefMfa}
+              />
+            } />
+>>>>>>> origin/upstream
           : null
         }
         {this.errors ?

@@ -15,13 +15,18 @@ import semver             from 'semver/preload.js';
 import { SpecialClasses } from 'lib/Constants';
 import styles             from './Browser.scss';
 import TextInput          from 'components/TextInput/TextInput.react';
+<<<<<<< HEAD
 import history            from 'dashboard/history';
+=======
+import { withRouter } from 'lib/withRouter';
+>>>>>>> origin/upstream
 
 function validClassName(name) {
   return !!name.match(/^[a-zA-Z][_a-zA-Z0-9]*$/);
 }
 
-export default class CreateClassDialog extends React.Component {
+@withRouter
+class CreateClassDialog extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -49,9 +54,15 @@ export default class CreateClassDialog extends React.Component {
 
   render() {
     let availableClasses = ['Custom'];
+<<<<<<< HEAD
     for (let raw in SpecialClasses) {
       if (raw !== '_Session' && raw !== '_PushStatus' && this.props.currentClasses.indexOf(raw) < 0) {
         availableClasses.push(SpecialClasses[raw]);
+=======
+    for (let raw of SpecialClasses) {
+      if (raw !== '_Session' && !this.props.currentClasses.includes(raw)) {
+        availableClasses.push(raw);
+>>>>>>> origin/upstream
       }
     }
 
@@ -68,9 +79,10 @@ export default class CreateClassDialog extends React.Component {
         type={Modal.Types.INFO}
         icon='plus'
         iconSize={40}
-        title='Add a new class'
-        subtitle='Create a new collection of objects.'
+        title='Create a new class?'
+        subtitle='This creates a new class to hold objects.'
         disabled={!this.valid()}
+<<<<<<< HEAD
         confirmText='Create class'
         cancelText={'Cancel'}
         continueText={'Create class & add columns'}
@@ -99,6 +111,25 @@ export default class CreateClassDialog extends React.Component {
           />
         )}  
         
+=======
+        confirmText='Create'
+        cancelText='Cancel'
+        continueText={'Create & add columns'}
+        onCancel={this.props.onCancel}
+        showContinue={true}
+        onContinue={async () => {
+          let type = this.state.type;
+          let className = type === 'Custom' ? this.state.name : type;
+          await this.props.onConfirm(className);
+          this.props.navigate(`/apps/${this.props.currentAppSlug}/browser/${className}`);
+          this.props.onAddColumn();
+        }}
+        onConfirm={() => {
+          let type = this.state.type;
+          let className = type === 'Custom' ? this.state.name : type;
+          this.props.onConfirm(className);
+        }}>
+>>>>>>> origin/upstream
         {availableClasses.length > 1 ?
           <Field
           label={
@@ -150,3 +181,5 @@ export default class CreateClassDialog extends React.Component {
     );
   }
 }
+
+export default CreateClassDialog;

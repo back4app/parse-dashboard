@@ -10,7 +10,6 @@ import Icon         from 'components/Icon/Icon.react';
 import Position     from 'lib/Position';
 import PropTypes    from 'lib/PropTypes';
 import React        from 'react';
-import ReactDOM     from 'react-dom';
 import styles       from 'components/BrowserMenu/BrowserMenu.scss';
 
 export default class BrowserMenu extends React.Component {
@@ -18,27 +17,37 @@ export default class BrowserMenu extends React.Component {
     super();
 
     this.state = { open: false };
-  }
-
-  componentDidMount() {
-    this.node = ReactDOM.findDOMNode(this);
+    this.wrapRef = React.createRef();
   }
 
   render() {
     let menu = null;
     if (this.state.open) {
+<<<<<<< HEAD
       let position = Position.inDocument(this.node);
       let titleStyle = [styles.title];
       // if (this.props.active && !this.state.open) {
       //   titleStyle.push(styles.active);
       // }
+=======
+      let position = Position.inDocument(this.wrapRef.current);
+      let titleStyle = [styles.title];
+      if (this.props.active) {
+        titleStyle.push(styles.active);
+      }
+>>>>>>> origin/upstream
       menu = (
         <Popover fixed={true} position={position} onExternalClick={() => this.setState({ open: false })}>
           <div className={styles.menu}>
             <div className={titleStyle.join(' ')} onClick={() => this.setState({ open: false })}>
+<<<<<<< HEAD
               <Icon name={this.props.icon} width={35} height={24} />
+=======
+              <Icon name={this.props.icon} width={14} height={14} />
+              <span>{this.props.title}</span>
+>>>>>>> origin/upstream
             </div>
-            <div className={styles.body} style={{ minWidth: this.node.clientWidth }}>
+            <div className={styles.body} style={{ minWidth: this.wrapRef.current.clientWidth }}>
               {React.Children.map(this.props.children, (child) => (
                 React.cloneElement(child, { ...child.props, 
                   onClose: () => this.setState({ open: false }), 
@@ -54,7 +63,11 @@ export default class BrowserMenu extends React.Component {
       );
     }
     const classes = [styles.entry];
+<<<<<<< HEAD
     if (this.props.active && !this.state.open) {
+=======
+    if (this.props.active) {
+>>>>>>> origin/upstream
       classes.push(styles.active);
     }
     if (this.props.disabled) {
@@ -68,9 +81,16 @@ export default class BrowserMenu extends React.Component {
       };
     }
     return (
+<<<<<<< HEAD
       <div className={styles.wrap}>
         <div className={classes.join(' ')} onClick={onClick} title={this.props.title}>
           <Icon name={this.props.icon} width={35} height={24} />
+=======
+      <div className={styles.wrap} ref={this.wrapRef}>
+        <div className={classes.join(' ')} onClick={onClick}>
+          <Icon name={this.props.icon} width={14} height={14} />
+          <span>{this.props.title}</span>
+>>>>>>> origin/upstream
         </div>
         {menu}
       </div>

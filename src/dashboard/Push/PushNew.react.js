@@ -18,7 +18,6 @@ import Field                   from 'components/Field/Field.react';
 import Fieldset                from 'components/Fieldset/Fieldset.react';
 import FieldStyles             from 'components/Field/Field.scss';
 import FlowView                from 'components/FlowView/FlowView.react';
-import history                 from 'dashboard/history';
 import joinWithFinal           from 'lib/joinWithFinal';
 import Label                   from 'components/Label/Label.react';
 import Option                  from 'components/Dropdown/Option.react';
@@ -37,7 +36,8 @@ import Toggle                  from 'components/Toggle/Toggle.react';
 import Toolbar                 from 'components/Toolbar/Toolbar.react';
 import { Directions }          from 'lib/Constants';
 import { extractExpiration, extractPushTime } from 'lib/extractTime';
-import * as queryString        from 'query-string';
+import generatePath from 'lib/generatePath';
+import { withRouter } from 'lib/withRouter';
 
 const PARSE_SERVER_SUPPORTS_AB_TESTING = false;
 
@@ -77,7 +77,7 @@ let LocalizedMessageField = ({
     <div className={styles.localeContainer}>
       <div className={styles.localeTitle}>
         <span>Localized message</span>
-        <a href='javascript:;' role='button' className={styles.localeRemoveButton} onClick={onClickRemove.bind(undefined, id, currentLocaleOption)}>REMOVE</a>
+        <button type='button' className={styles.localeRemoveButton} onClick={onClickRemove.bind(undefined, id, currentLocaleOption)}>REMOVE</button>
       </div>
       <Field
         key={`message1_${id}`}
@@ -122,9 +122,9 @@ let LocalizedMessageField = ({
 
 const XHR_KEY = 'PushNew';
 
-export default
 @subscribeTo('Schema', 'schema')
 @subscribeTo('PushAudiences', 'pushaudiences')
+@withRouter
 class PushNew extends DashboardView {
   constructor() {
     super();
@@ -149,20 +149,20 @@ class PushNew extends DashboardView {
   componentWillMount() {
     this.props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
     let options = { xhrKey: XHR_KEY };
-    const query = queryString.parse(this.props.location.search);
-    if (query.audienceId) {
+    const query = new URLSearchParams(this.props.location.search);
+    if (query.has('audienceId')) {
       options.limit = PushConstants.SHOW_MORE_LIMIT;
       options.min = PushConstants.INITIAL_PAGE_SIZE;
-      this.setState({ initialAudienceId: query.audienceId });
+      this.setState({ initialAudienceId: query.get('audienceId') });
     }
     this.props.pushaudiences.dispatch(PushAudiencesStore.ActionTypes.FETCH,
       options).then(() => {
       this.setState({ pushAudiencesFetched :true });
     });
 
-    const available = this.context.currentApp.isLocalizationAvailable();
+    const available = this.context.isLocalizationAvailable();
     if (available) {
-      const locales = this.context.currentApp.fetchPushLocales();
+      const locales = this.context.fetchPushLocales();
       const filteredLocales = locales.filter((locale) => !(locale === '' || locale === undefined));
       this.setState({
         isLocalizationAvailable: true,
@@ -243,7 +243,7 @@ class PushNew extends DashboardView {
         //TODO: global success message banner for passing successful creation - store should also be cleared
         const PARSE_SERVER_SUPPORTS_PUSH_INDEX = false;
         if (PARSE_SERVER_SUPPORTS_PUSH_INDEX) {
-          history.push(this.context.generatePath('push/activity'));
+          this.props.navigate(generatePath(this.context, 'push/activity'));
         } else {
           return;
         }
@@ -594,7 +594,7 @@ class PushNew extends DashboardView {
                     availableLocales.unshift(prevLocale);
                     setField(`translation[${prevLocale}]`, null);
 
-                    let {xhr, promise} = this.context.currentApp.fetchPushLocaleDeviceCount(fields.audience_id, fields.target, this.state.locales);
+                    let {xhr, promise} = this.context.fetchPushLocaleDeviceCount(fields.audience_id, fields.target, this.state.locales);
                     promise.then((localeDeviceCountMap) => {
                       this.setState({ localeDeviceCountMap })
                     });
@@ -610,8 +610,17 @@ class PushNew extends DashboardView {
               })}
             </div>
             { !this.state.loadingLocale && this.state.locales.length === 0 ?
+<<<<<<< HEAD
               <a href="javascript:$zopim.livechat.window.show();" style={{ color: '#169CEE'}} >
                 Please contact our support to enable the push locales feature
+=======
+              <a
+                href="https://github.com/parse-community/parse-dashboard#configuring-localized-push-notifications"
+                style={{ color: '#169CEE'}}
+                target='_blank'
+              >
+                Please follow this guide to setup the push locales feature
+>>>>>>> origin/upstream
               </a> :
                 !this.state.loadingLocale && this.state.availableLocales.length === 0 ? null :
               <Button
@@ -626,7 +635,7 @@ class PushNew extends DashboardView {
                     }]),
                     availableLocales: this.state.availableLocales.slice(1)
                   }, () => {
-                    let {xhr, promise} = this.context.currentApp.fetchPushLocaleDeviceCount(fields.audience_id, fields.target, this.state.locales);
+                    let {xhr, promise} = this.context.fetchPushLocaleDeviceCount(fields.audience_id, fields.target, this.state.locales);
                     promise.then((localeDeviceCountMap) => {
                       this.setState({ localeDeviceCountMap })
                     });
@@ -671,7 +680,7 @@ class PushNew extends DashboardView {
         label={<Label text='Use A/B Testing' />}
         input={<Toggle value={fields.exp_enable} onChange={(value) => {
           if (!this.state.audienceSizeSuggestion) {
-            this.context.currentApp.fetchPushAudienceSizeSuggestion().then(({ audience_size }) => {
+            this.context.fetchPushAudienceSizeSuggestion().then(({ audience_size }) => {
               this.setState({
                 audienceSizeSuggestion: audience_size
               });
@@ -690,7 +699,7 @@ class PushNew extends DashboardView {
       {this.renderExperimentContent(fields, setField)}
     </Fieldset> : null;
 
-    const {push} = this.context.currentApp.serverInfo.features;
+    const {push} = this.context.serverInfo.features;
     const hasScheduledPushSupport = push && push.scheduledPush;
 
     const timeFieldsLegend = hasScheduledPushSupport ?
@@ -905,3 +914,5 @@ class PushNew extends DashboardView {
       }}/>;
   }
 }
+
+export default PushNew;

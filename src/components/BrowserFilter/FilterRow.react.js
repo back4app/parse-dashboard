@@ -12,7 +12,6 @@ import Icon            from 'components/Icon/Icon.react';
 import Parse           from 'parse';
 import PropTypes       from 'lib/PropTypes';
 import React           from 'react';
-import ReactDOM        from 'react-dom';
 import styles          from 'components/BrowserFilter/BrowserFilter.scss';
 import validateNumeric from 'lib/validateNumeric';
 
@@ -23,17 +22,21 @@ for (let c in Constraints) {
 
 let setFocus = (input) => {
   if (input !== null) {
-    ReactDOM.findDOMNode(input).focus();
+    input.focus();
   }
 }
 
+<<<<<<< HEAD
 function compareValue(info, value, onChangeCompareTo, active, parentContentId) {
+=======
+function compareValue(info, value, onChangeCompareTo, onKeyDown, active, parentContentId) {
+>>>>>>> origin/upstream
   switch (info.type) {
     case null:
       return null;
     case 'Object':
     case 'String':
-      return <input type='text' value={value} onChange={(e) => onChangeCompareTo(e.target.value)} ref={setFocus}/>;
+      return <input type='text' value={value} onChange={(e) => onChangeCompareTo(e.target.value)} onKeyDown={onKeyDown} ref={setFocus}/>;
     case 'Pointer':
       return (
         <input
@@ -61,7 +64,9 @@ function compareValue(info, value, onChangeCompareTo, active, parentContentId) {
               val = parseFloat(e.target.value);
             }
             onChangeCompareTo(val);
-          }} />
+          }}
+          onKeyDown={onKeyDown}
+          />
       );
     case 'Date':
       return (
@@ -86,6 +91,7 @@ let FilterRow = ({
     onChangeField,
     onChangeConstraint,
     onChangeCompareTo,
+    onKeyDown,
     onDeleteRow,
     active,
     parentContentId,
@@ -101,9 +107,15 @@ let FilterRow = ({
       color={active ? 'blue' : 'purple'}
       value={Constraints[currentConstraint].name}
       options={constraints.map((c) => Constraints[c].name)}
+<<<<<<< HEAD
       onChange={(c) => onChangeConstraint(constraintLookup[c])} />
     {compareValue(compareInfo, compareTo, onChangeCompareTo, active, parentContentId)}
     <a role='button' href='javascript:;' className={styles.remove} onClick={onDeleteRow}><Icon name='minus-solid' width={14} height={14} fill='rgba(0,0,0,0.4)' /></a>
+=======
+      onChange={(c) => onChangeConstraint(constraintLookup[c], compareTo)} />
+    {compareValue(compareInfo, compareTo, onChangeCompareTo, onKeyDown, active, parentContentId)}
+    <button type='button' className={styles.remove} onClick={onDeleteRow}><Icon name='minus-solid' width={14} height={14} fill='rgba(0,0,0,0.4)' /></button>
+>>>>>>> origin/upstream
   </div>
 );
 

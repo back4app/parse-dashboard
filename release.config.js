@@ -26,7 +26,6 @@ async function config() {
   // Get branch
   const branch = ref.split('/').pop();
   console.log(`Running on branch: ${branch}`);
-  
   // Set changelog file
   const changelogFile = `./changelogs/CHANGELOG_${branch}.md`;
   console.log(`Changelog file output to: ${changelogFile}`);
@@ -36,17 +35,15 @@ async function config() {
 
   const config = {
     branches: [
-      'master',
+      'release',
       { name: 'alpha', prerelease: true },
       { name: 'beta', prerelease: true },
       'next-major',
       // Long-Term-Support branches
-      // { name: '1.x', range: '1.x.x', channel: '1.x' },
-      // { name: '2.x', range: '2.x.x', channel: '2.x' },
-      // { name: '3.x', range: '3.x.x', channel: '3.x' },
-      // { name: '4.x', range: '4.x.x', channel: '4.x' },
-      // { name: '5.x', range: '5.x.x', channel: '5.x' },
-      // { name: '6.x', range: '6.x.x', channel: '6.x' },
+      // { name: 'release-1', range: '1.x.x', channel: '1.x' },
+      // { name: 'release-2', range: '2.x.x', channel: '2.x' },
+      // { name: 'release-3', range: '3.x.x', channel: '3.x' },
+      // { name: 'release-4', range: '4.x.x', channel: '4.x' },
     ],
     dryRun: false,
     debug: true,
@@ -57,7 +54,6 @@ async function config() {
         preset: 'angular',
         releaseRules: [
           { type: 'docs', scope: 'README', release: 'patch' },
-          { type: 'refactor', release: 'patch' },
           { scope: 'no-release', release: false },
         ],
         parserOpts: {
@@ -88,7 +84,18 @@ async function config() {
       }],
       ['@semantic-release/github', {
         successComment: getReleaseComment(),
+        labels: ['type:ci'],
+        releasedLabels: ['state:released<%= nextRelease.channel ? `-${nextRelease.channel}` : "" %>']
       }],
+      [
+        '@saithodev/semantic-release-backmerge',
+        {
+          'branches': [
+            { from: 'beta', to: 'alpha' },
+            { from: 'release', to: 'beta' },
+          ]
+        }
+      ],
     ],
   };
 
@@ -108,7 +115,7 @@ async function readFile(filePath) {
 
 function getReleaseComment() {
   const url = repositoryUrl + '/releases/tag/${nextRelease.gitTag}';
-  let comment = '🎉 This pull request has been released in version [${nextRelease.version}](' + url + ')';
+  let comment = '🎉 This change has been released in version [${nextRelease.version}](' + url + ')';
   return comment;
 }
 

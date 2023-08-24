@@ -17,13 +17,8 @@ export default class SidebarHeader extends React.Component {
     super();
     this.state = { };
   }
-  componentWillMount() {
-    let mountPath = window.PARSE_DASHBOARD_PATH;
-    fetch(mountPath).then(response => {
-      this.setState({ dashboardUser: response.headers.get('username') });
-    });
-  }
   render() {
+<<<<<<< HEAD
     return (
       <div className={styles.header}>
         {/*<Link className={styles.logo} to={{ pathname: '/apps' }}>*/}
@@ -42,6 +37,35 @@ export default class SidebarHeader extends React.Component {
             </div>
           </div>
         {/*</Link>*/}
+=======
+    const { isCollapsed = false, dashboardUser } = this.props;
+    const headerContent = isCollapsed
+      ? (
+        <div className={styles.logo}>
+          <Icon width={28} height={28} name='infinity' fill={'#ffffff'} />
+        </div>
+      )
+      : (
+        <>
+          <Link className={styles.logo} to={{ pathname: '/apps' }}>
+            <Icon width={28} height={28} name='infinity' fill={'#ffffff'} />
+          </Link>
+          <Link to='/apps'>
+            <div className={styles.version}>
+              <div>
+                Parse Dashboard {version}
+                <div>
+                  {dashboardUser}
+                </div>
+              </div>
+            </div>
+          </Link>
+        </>
+      )
+    return (
+      <div className={styles.header}>
+        {headerContent}
+>>>>>>> origin/upstream
       </div>
     );
   }

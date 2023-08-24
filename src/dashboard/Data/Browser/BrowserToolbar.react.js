@@ -42,6 +42,10 @@ let BrowserToolbar = ({
   onImportRelation,
   onCloneSelectedRows,
   onExportSelectedRows,
+<<<<<<< HEAD
+=======
+  onExportSchema,
+>>>>>>> origin/upstream
   onExport,
   onRemoveColumn,
   onDeleteRows,
@@ -65,6 +69,10 @@ let BrowserToolbar = ({
   enableSecurityDialog,
   enableColumnManipulation,
   enableClassManipulation,
+<<<<<<< HEAD
+=======
+  onShowPointerKey,
+>>>>>>> origin/upstream
 
   currentUser,
   useMasterKey,
@@ -261,6 +269,13 @@ let BrowserToolbar = ({
             text={'Export all rows'}
             onClick={() => onExportSelectedRows({ '*': true })}
           />
+<<<<<<< HEAD
+=======
+          <MenuItem
+            text={'Export schema'}
+            onClick={() => onExportSchema()}
+          />
+>>>>>>> origin/upstream
         </BrowserMenu>
       )}
       {onAddRow && <div className={styles.toolbarSeparator} />}
@@ -330,12 +345,20 @@ let BrowserToolbar = ({
       {editCloneRows && editCloneRows.length > 0 && (
         <BrowserMenu title="Clone" icon="clone-icon">
           <MenuItem
+<<<<<<< HEAD
             text={"Cancel all pending rows"}
+=======
+            text={'Cancel all pending rows'}
+>>>>>>> origin/upstream
             onClick={onCancelPendingEditRows}
           />
         </BrowserMenu>
       )}
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> origin/upstream
     </Toolbar>
   );
 };

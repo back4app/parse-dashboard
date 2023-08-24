@@ -11,7 +11,7 @@ import PropTypes    from 'lib/PropTypes';
 import React        from 'react';
 import styles       from 'components/EmptyState/EmptyState.scss';
 import stylesButton from 'components/Button/Button.scss';
-import { center }   from 'stylesheets/base.scss';
+import baseStyles   from 'stylesheets/base.scss';
 
 let ctaButton = (cta, action) => {
   if (cta) {
@@ -46,8 +46,13 @@ let EmptyState = ({
   background,
   fill = '#343445'
 }) => (
+<<<<<<< HEAD
   <div className={center}>
     <div className={styles.icon} style={background ? { background } : undefined}>
+=======
+  <div className={baseStyles.center}>
+    <div className={styles.icon}>
+>>>>>>> origin/upstream
       <Icon
         width={80}
         height={80}

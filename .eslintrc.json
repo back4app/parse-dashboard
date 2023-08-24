@@ -1,41 +1,23 @@
 {
+  "root": true,
   "env": {
     "es6": true,
     "node": true,
     "browser": true
   },
-  "parser": "babel-eslint",
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "parser": "@babel/eslint-parser",
+  "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true,
-      "jsx": true
-    },
-    "parser": "babel-eslint",
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true,
-            "jsx": true
-        },
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "rules": {
-      "react/prop-types": "warn",
-      "react/jsx-uses-vars": 1,
-      "react/jsx-uses-react": 1,
-      "react/react-in-jsx-scope": 1,
-      "no-console": 1,
-      "no-case-declarations": 1,
-      "quotes": ["warning", "single"]
-    }
+    "sourceType": "module"
   },
-  "globals": {
-    "b4aSettings": true,
-    "createSoluCXWidget": true,
-    "back4AppNavigation": true
+  "plugins": ["react"],
+  "rules": {
+    "react/jsx-uses-vars": 1,
+    "react/jsx-uses-react": 1,
+    "react/react-in-jsx-scope": 1,
+    "no-console": 0,
+    "no-case-declarations": 0,
+    "quotes": ["error", "single"],
+    "eol-last": ["error", "always"]
   }
 }

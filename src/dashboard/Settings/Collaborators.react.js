@@ -12,15 +12,18 @@ import FormTableCollab           from 'components/FormTableCollab/FormTableColla
 import FormNote            from 'components/FormNote/FormNote.react';
 import InlineSubmitInput   from 'components/InlineSubmitInput/InlineSubmitInput.react';
 import Label               from 'components/Label/Label.react';
-import ParseApp            from 'lib/ParseApp';
 import PropTypes           from 'lib/PropTypes';
 import React               from 'react';
 import TextInput           from 'components/TextInput/TextInput.react';
 import validateEmailFormat from 'lib/validateEmailFormat';
+<<<<<<< HEAD
 import PermissionsCollaboratorDialog from 'components/PermissionsCollaboratorDialog/PermissionsCollaboratorDialog.react';
 import Swal                from 'sweetalert2'
 
 import lodash from 'lodash'
+=======
+import { CurrentApp }      from 'context/currentApp';
+>>>>>>> origin/upstream
 
 // Component for displaying and modifying an app's collaborator emails.
 // There is a single input field for new collaborator emails. As soon as the
@@ -33,6 +36,7 @@ import lodash from 'lodash'
 // The parent also is responsible for passing onRemove, which is called when the
 // users removes a collaborator.
 export default class Collaborators extends React.Component {
+  static contextType = CurrentApp;
   constructor() {
     super();
 
@@ -79,8 +83,12 @@ export default class Collaborators extends React.Component {
   handleAdd() {
     //TODO: Show some in-progress thing while the collaborator is being validated, or maybe have some sort of
     //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
+<<<<<<< HEAD
     this.setState({lastError: '', lastSuccess: '', showBtnCollaborator: false });
     return this.context.currentApp.validateCollaborator(this.state.currentEmail).then((response) => {
+=======
+    return this.context.validateCollaborator(newEmail).then((response) => {
+>>>>>>> origin/upstream
       // lastError logic assumes we only have 1 input field
       if (response.success) {
         this.setState({
@@ -434,10 +442,6 @@ export default class Collaborators extends React.Component {
     )
   }
 }
-
-Collaborators.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};
 
 Collaborators.propTypes = {
   legend: PropTypes.string.isRequired.describe(

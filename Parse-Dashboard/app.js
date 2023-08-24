@@ -15,13 +15,18 @@ const redirectURLsToAPI = [
 
 
 var newFeaturesInLatestVersion = [];
-packageJson('parse-dashboard', 'latest').then(latestPackage => {
-  if (latestPackage.parseDashboardFeatures instanceof Array) {
-    newFeaturesInLatestVersion = latestPackage.parseDashboardFeatures.filter(feature => {
-      return currentVersionFeatures.indexOf(feature) === -1;
-    });
-  }
-});
+packageJson('parse-dashboard', { version: 'latest', fullMetadata: true })
+  .then(latestPackage => {
+    if (latestPackage.parseDashboardFeatures instanceof Array) {
+      newFeaturesInLatestVersion = latestPackage.parseDashboardFeatures.filter(feature => {
+        return currentVersionFeatures.indexOf(feature) === -1;
+      });
+    }
+  })
+  .catch(() => {
+    // In case of a failure make sure the final value is an empty array
+    newFeaturesInLatestVersion = [];
+  });
 
 function getMount(mountPath) {
   mountPath = mountPath || '';
@@ -78,7 +83,7 @@ module.exports = function(config, options) {
     const users = config.users;
     const useEncryptedPasswords = !!config.useEncryptedPasswords;
     const authInstance = new Authentication(users, useEncryptedPasswords, mountPath);
-    authInstance.initialize(app, { cookieSessionSecret: options.cookieSessionSecret });
+    authInstance.initialize(app, { cookieSessionSecret: options.cookieSessionSecret, cookieSessionMaxAge: options.cookieSessionMaxAge });
 
     // CSRF error handler
     app.use(function (err, req, res, next) {
@@ -184,8 +189,9 @@ module.exports = function(config, options) {
     }
 
     app.get('/login', csrf(), function(req, res) {
+      const redirectURL = req.url.includes('?redirect=') && req.url.split('?redirect=')[1].length > 1 && req.url.split('?redirect=')[1];
       if (!users || (req.user && req.user.isAuthenticated)) {
-        return res.redirect(`${mountPath}apps`);
+        return res.redirect(`${mountPath}${redirectURL || 'apps'}`);
       }
 
       let errors = req.flash('error');
@@ -195,23 +201,22 @@ module.exports = function(config, options) {
         </div>`
       }
       res.send(`<!DOCTYPE html>
+      <html>
         <head>
           <link rel="shortcut icon" type="image/x-icon" href="${mountPath}favicon.ico" />
           <base href="${mountPath}"/>
           <script>
             PARSE_DASHBOARD_PATH = "${mountPath}";
           </script>
-        </head>
-        <html>
           <title>Parse Dashboard</title>
-          <body>
-            <div id="login_mount"></div>
-            ${errors}
-            <script id="csrf" type="application/json">"${req.csrfToken()}"</script>
-            <script src="${mountPath}bundles/${loginUrl}"></script>
-            <script src="${settings.BACK4APP_NAVIGATION_PATH}/back4app-navigation.bundle.js"></script>
-          </body>
-        </html>
+        </head>
+        <body>
+          <div id="login_mount"></div>
+          ${errors}
+          <script id="csrf" type="application/json">"${req.csrfToken()}"</script>
+          <script src="${mountPath}bundles/login.bundle.js"></script>
+        </body>
+      </html>
       `);
     });
 
@@ -224,31 +229,30 @@ module.exports = function(config, options) {
     // For every other request, go to index.html. Let client-side handle the rest.
     app.get('/*', function(req, res) {
       if (users && (!req.user || !req.user.isAuthenticated)) {
+        const redirect = req.url.replace('/login', '');
+        if (redirect.length > 1) {
+          return res.redirect(`${mountPath}login?redirect=${redirect}`);
+        }
         return res.redirect(`${mountPath}login`);
       }
       if (users && req.user && req.user.matchingUsername ) {
         res.append('username', req.user.matchingUsername);
       }
       res.send(`<!DOCTYPE html>
+      <html>
         <head>
           <link rel="shortcut icon" type="image/x-icon" href="${mountPath}favicon.ico" />
           <base href="${mountPath}"/>
           <script>
             PARSE_DASHBOARD_PATH = "${mountPath}";
           </script>
-        </head>
-        <html>
           <title>Parse Dashboard</title>
-          <body>
-            <div id="browser_mount"></div>
-            <script src="${mountPath}bundles/${dashboardUrl}"></script>
-            <script src="${settings.BACK4APP_NAVIGATION_PATH}/back4app-navigation.bundle.js"></script>
-            <!--Start of Zopim Live Chat Script-->
-            <script async>/*<![CDATA[*/top.location.href && (window.zEmbed || function (e, t) { var n, o, d, i, s, a = [], r = document.createElement("iframe"); window.zEmbed = function () { a.push(arguments) }, window.zE = window.zE || window.zEmbed, r.src = "javascript:false", r.title = "", r.role = "presentation", (r.frameElement || r).style.cssText = "display: none", d = document.getElementsByTagName("script"), d = d[d.length - 1], d.parentNode.insertBefore(r, d), i = r.contentWindow, s = i.document; try { o = s } catch (e) { n = document.domain, r.src = 'javascript:var d=document.open();d.domain="' + n + '";void(0);', o = s } o.open()._l = function () { var e = this.createElement("script"); n && (this.domain = n), e.id = "js-iframe-async", e.src = "https://assets.zendesk.com/embeddable_framework/main.js", this.t = +new Date, this.zendeskHost = "back4app.zendesk.com", this.zEQueue = a, this.body.appendChild(e) }, o.write('<body onload="document._l();">'), o.close() }());/*]]>*/</script>
-            <!--End of Zopim Live Chat Script-->
-            <script src="https://survey.solucx.com.br/widget.js"></script>
-          </body>
-        </html>
+        </head>
+        <body>
+          <div id="browser_mount"></div>
+          <script src="${mountPath}bundles/dashboard.bundle.js"></script>
+        </body>
+      </html>
       `);
     });
   });

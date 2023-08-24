@@ -5,17 +5,50 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+<<<<<<< HEAD
 @import 'stylesheets/back4app.scss';
 
 .content {
   margin-left: 300px;
   // margin-top: $header-height;
   max-height: $content-max-height;
+=======
+@import 'stylesheets/globals.scss';
+
+.content {
+  margin-left: 300px;
+>>>>>>> origin/upstream
   overflow: auto;
 }
 
 body:global(.expanded) {
   .content {
+<<<<<<< HEAD
     margin-left: 54px;
   }
+=======
+    margin-left: $sidebarCollapsedWidth;
+  }
+}
+
+.loadingError {
+  font-size: 58px;
+  color: #ffffff;
+}
+
+.empty {
+  position: relative;
+  background: #1e3b4d;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.cloud {
+  width: 170px;
+  height: 170px;
+  border-radius: 100%;
+  padding-top: 30px;
+  background: #3E5566;
+  margin: 0 auto 14px auto;
+>>>>>>> origin/upstream
 }

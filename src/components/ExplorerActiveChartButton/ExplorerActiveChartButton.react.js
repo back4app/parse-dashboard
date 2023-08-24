@@ -12,9 +12,8 @@ import Popover               from 'components/Popover/Popover.react';
 import Position              from 'lib/Position';
 import PropTypes             from 'lib/PropTypes';
 import React                 from 'react';
-import ReactDOM              from 'react-dom';
 import styles                from 'components/ExplorerActiveChartButton/ExplorerActiveChartButton.scss';
-import { verticalCenter }    from 'stylesheets/base.scss';
+import baseStyles            from 'stylesheets/base.scss';
 
 export default class ExplorerActiveChartButton extends React.Component {
   constructor() {
@@ -26,10 +25,8 @@ export default class ExplorerActiveChartButton extends React.Component {
       active: true,
       align: Directions.LEFT
     }
-  }
 
-  componentDidMount() {
-    this.node = ReactDOM.findDOMNode(this);
+    this.wrapRef = React.createRef();
   }
 
   componentWillMount() {
@@ -107,15 +104,32 @@ export default class ExplorerActiveChartButton extends React.Component {
     if (!this.props.disableDropdown) {
       dropdown = (
         <div
+<<<<<<< HEAD
           className={[styles.rightArrow, verticalCenter].join(' ')}
           onClick={this.handleOpenPopover.bind(this)} />
+=======
+          className={[styles.rightArrow, baseStyles.verticalCenter].join(' ')}
+          onClick={() => {
+            let position = Position.inDocument(this.wrapRef.current);
+            let align = Directions.LEFT;
+            if (position.x > 700) {
+              position.x += this.wrapRef.current.clientWidth;
+              align = Directions.RIGHT;
+            }
+            this.setState({
+              open: !this.state.open,
+              position,
+              align
+            });
+          }} />
+>>>>>>> origin/upstream
       );
     }
 
     return (
       <div className={styles.button}>
         <div
-          className={[styles.checkbox, verticalCenter].join(' ')}
+          className={[styles.checkbox, baseStyles.verticalCenter].join(' ')}
           onClick={this.handleCheckbox.bind(this)}
           style={{
             backgroundColor: this.state.active ? this.props.color : null,
@@ -172,7 +186,7 @@ export default class ExplorerActiveChartButton extends React.Component {
     }
 
     return (
-      <div className={styles.wrap}>
+      <div className={styles.wrap} ref={this.wrapRef}>
         {content}
         {popover}
       </div>

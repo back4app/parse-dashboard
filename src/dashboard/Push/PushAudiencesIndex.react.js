@@ -14,7 +14,6 @@ import CategoryList             from 'components/CategoryList/CategoryList.react
 import DashboardView            from 'dashboard/DashboardView.react';
 import EmptyState               from 'components/EmptyState/EmptyState.react';
 import FormModal                from 'components/FormModal/FormModal.react';
-import history                  from 'dashboard/history';
 import LoaderContainer          from 'components/LoaderContainer/LoaderContainer.react';
 import Modal                    from 'components/Modal/Modal.react';
 import PushAudienceDialog       from 'components/PushAudienceDialog/PushAudienceDialog.react';
@@ -28,12 +27,14 @@ import TableHeader              from 'components/Table/TableHeader.react';
 import Toolbar                  from 'components/Toolbar/Toolbar.react';
 import { formatAudienceSchema } from 'lib/PushUtils';
 import { List }                 from 'immutable';
+import generatePath from 'lib/generatePath';
+import { withRouter } from 'lib/withRouter';
 
 const XHR_KEY = 'PushAudiencesIndex';
 
-export default
 @subscribeTo('Schema', 'schema')
 @subscribeTo('PushAudiences', 'pushaudiences')
+@withRouter
 class PushAudiencesIndex extends DashboardView {
   constructor() {
     super();
@@ -90,7 +91,7 @@ class PushAudiencesIndex extends DashboardView {
     }).finally(() => {
       this.setState({ loading: false });
     });
-    this.context.currentApp.fetchAvailableDevices().then(({ available_devices }) => {
+    this.context.fetchAvailableDevices().then(({ available_devices }) => {
       this.setState({
         availableDevices: available_devices
       });
@@ -139,7 +140,7 @@ class PushAudiencesIndex extends DashboardView {
   }
 
   handleSendPush(objectId) {
-    history.push(this.context.generatePath(`push/new?audienceId=${objectId}`));
+    this.props.navigate(generatePath(this.context, `push/new?audienceId=${objectId}`));
   }
 
   renderRow(audience) {
@@ -282,7 +283,7 @@ class PushAudiencesIndex extends DashboardView {
       }}>
     </FormModal>
 
-    if (typeof(data) !== undefined) {
+    if (typeof data !== 'undefined') {
       if (data.size === 0) {
         content = <div className={stylesTable.empty}>{this.renderEmpty()}</div>;
       } else {
@@ -313,3 +314,5 @@ class PushAudiencesIndex extends DashboardView {
     );
   }
 }
+
+export default PushAudiencesIndex;

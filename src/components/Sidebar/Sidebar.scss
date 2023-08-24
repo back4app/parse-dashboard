@@ -16,13 +16,18 @@
   bottom: 0;
   background: #0c5582;
   color: #fff;
+<<<<<<< HEAD
   transition: left 0.5s ease-in;
   z-index: 0;
+=======
+  z-index: 100;
+>>>>>>> origin/upstream
 
   &.collapsed {
     left: 0;
     width: 54px;
 
+<<<<<<< HEAD
     .pinContainer {
       height: 48px;
       display: flex;
@@ -49,6 +54,14 @@
 
     .content {
       bottom: 48px;
+=======
+    .section_header > svg {
+      margin: 0;
+    }
+
+    .pinContainer > svg {
+      fill: white;
+>>>>>>> origin/upstream
     }
   }
 }
@@ -65,10 +78,15 @@
 .footer {
   @include NotoSansFont;
   position: absolute;
+<<<<<<< HEAD
   background: #094162;
   height: 61px;
   line-height: 18px;
   padding: 10px;
+=======
+  background: #05283c;
+  padding: 9px 0;
+>>>>>>> origin/upstream
   text-align: center;
   bottom: 0;
   left: 0;
@@ -85,15 +103,21 @@
     color: white;
     text-decoration: none;
     border-right: 1px solid #385261;
+<<<<<<< HEAD
     height: 29px;
     line-height: 18px;
     font-size: 12px;
     margin-left: 7px;
+=======
+    font-size: 13px;
+    padding: 0 12px;
+>>>>>>> origin/upstream
     vertical-align: top;
     font-family: inherit;
     font-weight: bold;
     border-radius: 5px;
     padding: 0;
+
 
     &:first-child {
       padding-left: 0;
@@ -102,10 +126,6 @@
       padding-right: 0;
       border: none;
     }
-  }
-
-  svg {
-    margin-top: -2px;
   }
 }
 
@@ -137,12 +157,15 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 30px;
+<<<<<<< HEAD
 }
 
 .currentAppNameGroup {
   display: flex;
   align-items: center;
   cursor: pointer;
+=======
+>>>>>>> origin/upstream
 }
 
 .menuRow {
@@ -181,10 +204,28 @@
   justify-content: space-between;
   align-items: center;
 
-  &:hover{
+  .appNameContainer {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .currentAppName {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 215px;
+    }
+
+    &:after {
+      @include arrow('down', 10px, 7px, #132B39);
+      content: '';
+      margin-left: 10px;
+    }
+
+    &:hover {
       &:after {
         border-top-color: white;
       }
+<<<<<<< HEAD
   }
 
   .currentAppName {
@@ -192,8 +233,12 @@
     text-overflow: ellipsis;
     max-width: 215px;
     cursor: pointer;
+=======
+    }
+>>>>>>> origin/upstream
   }
 
+<<<<<<< HEAD
   .appsSelectorArrow {
     @include arrow('down', 10px, 7px, #fff);
     margin-left: 8px;
@@ -218,6 +263,13 @@
       transform: rotate(180deg);
     }
   }
+=======
+.sidebarPin {
+  cursor: pointer;
+  height: 30px;
+  width: 30px;
+  padding: 6px;
+>>>>>>> origin/upstream
 }
 
 .appsMenu {
@@ -229,6 +281,7 @@
     background: #0c5582;
   }
 
+<<<<<<< HEAD
   .appsList {
     overflow: auto;
     height: calc(100vh - 183px);
@@ -236,6 +289,25 @@
 
   .currentApp .appsSelectorArrow {
     @include arrow('up', 10px, 7px, #ffffff);
+=======
+  .currentApp {
+    .currentAppName {
+      &:after {
+        @include arrow('up', 10px, 7px, #132B39);
+      }
+
+      &:hover {
+        &:after {
+          border-bottom-color: white;
+        }
+      }
+    }
+  }
+
+  .appListContainer {
+    overflow-y: auto;
+    height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
+>>>>>>> origin/upstream
   }
 }
 
@@ -373,6 +445,8 @@ a.subitem {
   width: 75px;
   height: 100%;
   font-size: 10px;
+  display: flex;
+  align-items: center;
   float: left;
   margin-left: 6px;
   white-space: nowrap;
@@ -381,21 +455,24 @@ a.subitem {
   > *:first-child {
     position: absolute;
     letter-spacing: 2px;
-    line-height: 10px;
+    line-height: 12px;
     text-transform: uppercase;
   }
 
   > *:first-child {
-    top: 10px;
     transition: all 0.4s 0.16s cubic-bezier(0.77, 0, 0.175, 1);
   }
 }
 
 .more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   svg {
     fill: $white;
     transform: rotate(90deg);
     transition: fill 0.2s ease-in;
+    margin-right: 4px;
   }
 
   &:hover {
@@ -418,16 +495,16 @@ a.subitem {
     content: '';
     position: absolute;
     bottom: -6px;
-    right: 11px;
+    right: 94px;
   }
 
   a {
     @include NotoSansFont;
     display: block;
-    height: 30px;
-    line-height: 31px;
+    height: 40px;
+    line-height: 41px;
     font-size: 13px;
-    text-align: right;
+    text-align: center;
     border-bottom: 1px solid #e0e0ea;
     border-radius: 5px;
     color: $mainTextColor;
@@ -436,6 +513,7 @@ a.subitem {
       background-color: darken(white,4%)
     }
 
+<<<<<<< HEAD
     // &:first-child {
     //   border-radius: 5px 5px 0 0;
     // }
@@ -444,10 +522,40 @@ a.subitem {
     //   border-bottom: 0;
     //   border-radius: 0 0 5px 5px;
     // }
+=======
+    &:first-child {
+      border-radius: 5px 5px 5px 5px;
+    }
+
+    &:last-child {
+      border-bottom: 0;
+      border-radius: 5px 5px 5px 5px;
+    }
+>>>>>>> origin/upstream
 
     .emoji{
       padding-left: 4px;
       padding-right: 2px;
+    }
+  }
+}
+
+.pinContainer {
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #094162;
+
+  svg {
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    padding: 10px 10px 10px 10px;
+    fill: #132B39;
+
+    &:hover {
+      fill: white;
     }
   }
 }

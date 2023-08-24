@@ -91,7 +91,7 @@ class SlowQueries extends TableView {
 
   componentWillMount() {
     this.fetchDropdownData(this.props);
-    this.fetchSlowQueries(this.context.currentApp);
+    this.fetchSlowQueries(this.context);
   }
 
   componentWillUnmount() {
@@ -109,7 +109,7 @@ class SlowQueries extends TableView {
         if (!shouldUpdate) return;
       }
       this.fetchDropdownData(nextProps);
-      this.fetchSlowQueries(nextContext.currentApp);
+      this.fetchSlowQueries(nextContext);
     }
   }
 
@@ -216,14 +216,13 @@ class SlowQueries extends TableView {
               ...newValue,
               mutated: true
             })} />
-          <a
-            href='javascript:;'
-            role='button'
+          <button
+            type='button'
             onClick={this.handleDownload.bind(this)}
             className={styles.toolbarAction}>
             <Icon name='download' width={14} height={14} fill='#66637a' />
             Download
-          </a>
+          </button>
         </div>
       );
     }
@@ -284,7 +283,7 @@ class SlowQueries extends TableView {
           <Button
             primary={true}
             disabled={!this.state.mutated}
-            onClick={this.fetchSlowQueries.bind(this, this.context.currentApp)}
+            onClick={this.fetchSlowQueries.bind(this, this.context)}
             value='Run query' />
         )}
         />

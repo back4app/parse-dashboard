@@ -9,17 +9,21 @@ import PropTypes from 'lib/PropTypes';
 import React     from 'react';
 import Icon      from 'components/Icon/Icon.react';
 import styles    from 'components/Toolbar/Toolbar.scss';
-import history   from 'dashboard/history';
-
-const goBack = () => history.goBack();
+import { useNavigate, useNavigationType, NavigationType } from 'react-router-dom';
 
 let Toolbar = (props) => {
+  const action = useNavigationType();
+  const navigate = useNavigate();
   let backButton;
+<<<<<<< HEAD
   if ((props.relation || (props.filters && props.filters.size)) &&  history.action !== 'POP') {
+=======
+  if ((props.relation || (props.filters && props.filters.size)) && action !== NavigationType.Pop) {
+>>>>>>> origin/upstream
     backButton = (
       <a
         className={styles.iconButton}
-        onClick={goBack}
+        onClick={() => navigate(-1)}
       >
         <Icon
           width={32}

@@ -74,8 +74,32 @@ export function getColumnSort(sortBy, appId, className) {
 export function getOrder(cols, appId, className, defaultPrefs) {
 
   let prefs = getPreferences(appId, className) || [ { name: 'objectId', width: DEFAULT_WIDTH, visible: true, cached: true } ];
+<<<<<<< HEAD
+=======
+  
+>>>>>>> origin/upstream
   if (defaultPrefs) {
-    prefs = defaultPrefs;
+
+    // Check that every default pref is in the prefs array.
+    defaultPrefs.forEach(defaultPrefsItem => {
+      // If the default pref is not in the prefs: Add it.
+      if (!prefs.find(prefsItem => defaultPrefsItem.name === prefsItem.name)) {
+        prefs.push(defaultPrefsItem);
+      }
+    });
+
+    // Iterate over the current prefs 
+    prefs = prefs.map((prefsItem) => {
+      // Get the default prefs item.
+      const defaultPrefsItem = defaultPrefs.find(defaultPrefsItem => defaultPrefsItem.name === prefsItem.name) || {};
+      // The values from the prefsItem object will overwrite those from the defaultPrefsItem object.
+      return {
+        // Set default width if not given.
+        width: DEFAULT_WIDTH,
+        ...defaultPrefsItem,
+        ...prefsItem,
+      }
+    });
   }
   let order = [].concat(prefs);
   let seen = {};
@@ -103,6 +127,18 @@ export function getOrder(cols, appId, className, defaultPrefs) {
       order[i].cached = visible;
       updated = true;
       order[i].cached = visible;
+    }
+
+    // If "cached" attribute is not defined, set it to visible attr
+    // and updates the cached preferences.
+    if (typeof cached === 'undefined') {
+      order[i].cached = order[i].visible;
+      updated = true;
+    }
+
+    // If "required" attribute is not defined, set it to false
+    if (typeof required === 'undefined') {
+      order[i].required = false;
     }
 
     // If "cached" attribute is not defined, set it to visible attr
@@ -146,11 +182,19 @@ export function setPointerDefaultKey( appId, className, name ) {
   localStorage.removeItem(className);
 }
 
+<<<<<<< HEAD
 export async function getPointerDefaultKey( appId, className ) {
   let pointerKey = await localStorage.getItem(pointerKeyPath(appId, className));
   if ( !pointerKey ) {
     // old pointer key.
     pointerKey = await localStorage.getItem(className) || 'objectId';
+=======
+export function getPointerDefaultKey( appId, className ) {
+  let pointerKey = localStorage.getItem(pointerKeyPath(appId, className));
+  if ( !pointerKey ) {
+    // old pointer key.
+    pointerKey = localStorage.getItem(className) || 'objectId';
+>>>>>>> origin/upstream
   }
   return pointerKey;
 }
@@ -162,4 +206,7 @@ function path(appId, className) {
 function pointerKeyPath( appId, className ) {
   return `ParseDashboard:${VERSION}:${appId}:${className}::defaultPointerKey`;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/upstream

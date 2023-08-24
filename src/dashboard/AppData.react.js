@@ -5,20 +5,14 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React       from 'react';
-import PropTypes   from 'lib/PropTypes';
-import AppSelector from 'dashboard/AppSelector.react';
-import AppsManager from 'lib/AppsManager';
-import history     from 'dashboard/history';
-import ParseApp    from 'lib/ParseApp';
-import createClass from 'create-react-class';
+import React          from 'react';
+import AppSelector    from 'dashboard/AppSelector.react';
+import AppsManager    from 'lib/AppsManager';
+import { CurrentApp } from 'context/currentApp';
+import { Outlet, useNavigate , useParams} from 'react-router-dom';
 
-let AppData = createClass({
-  childContextTypes: {
-    generatePath: PropTypes.func,
-    currentApp: PropTypes.instanceOf(ParseApp)
-  },
 
+<<<<<<< HEAD
   getChildContext() {
     return {
       generatePath: this.generatePath,
@@ -47,7 +41,31 @@ let AppData = createClass({
         {this.props.children}
       </div>
     );
+=======
+function AppData() {
+  const navigate = useNavigate();
+  const params = useParams();
+
+  if (params.appId === '_') {
+    return <AppSelector />;
+>>>>>>> origin/upstream
   }
-});
+
+  // Find by name to catch edge cases around escaping apostrophes in URLs
+  let current = AppsManager.findAppBySlugOrName(params.appId);
+
+  if (current) {
+    current.setParseKeys();
+  } else {
+    navigate('/apps', { replace: true });
+    return <div />;
+  }
+
+  return (
+    <CurrentApp.Provider value={current}>
+      <Outlet />
+    </CurrentApp.Provider>
+  );
+}
 
 export default AppData;

@@ -23,12 +23,12 @@ import LoaderContainer           from 'components/LoaderContainer/LoaderContaine
 import Parse                     from 'parse';
 import prettyNumber              from 'lib/prettyNumber';
 import React                     from 'react';
-import ReactDOM                  from 'react-dom';
 import styles                    from 'dashboard/Analytics/Explorer/Explorer.scss';
 import stylesTable               from 'components/Table/Table.scss';
 import subscribeTo               from 'lib/subscribeTo';
 import Toolbar                   from 'components/Toolbar/Toolbar.react';
-import { verticalCenter }        from 'stylesheets/base.scss';
+import baseStyles                from 'stylesheets/base.scss';
+import { withRouter } from 'lib/withRouter';
 
 let currentCustomQueryIndex = 1
 
@@ -42,6 +42,7 @@ let buildFriendlyName = (query) => {
   return name.join(' ');
 };
 
+<<<<<<< HEAD
 let inverseMatrix = (matrix) => {
   let matrixInverted = [[]];
   matrix.forEach(
@@ -57,7 +58,10 @@ let inverseMatrix = (matrix) => {
 }
 
 export default
+=======
+>>>>>>> origin/upstream
 @subscribeTo('AnalyticsQuery', 'customQueries')
+@withRouter
 class Explorer extends DashboardView {
   constructor() {
     super();
@@ -83,11 +87,16 @@ class Explorer extends DashboardView {
       mutated: false
     };
     this.xhrHandles = [];
+    this.displayRef = React.createRef();
   }
 
   componentDidMount() {
+<<<<<<< HEAD
     back4AppNavigation && back4AppNavigation.atExplorerReportEvent()
     let display = ReactDOM.findDOMNode(this.refs.display);
+=======
+    let display = this.displayRef.current;
+>>>>>>> origin/upstream
     this.displaySize = {
       width: display.offsetWidth,
       height: display.offsetHeight
@@ -103,6 +112,7 @@ class Explorer extends DashboardView {
     this.xhrHandles.forEach(xhr => xhr && xhr.abort());
   }
 
+<<<<<<< HEAD
   componentWillReceiveProps(nextProps, nextContext) {
     if (this.context !== nextContext) {
       // check if the changes are in currentApp serverInfo status
@@ -116,6 +126,11 @@ class Explorer extends DashboardView {
       if (this.props.params.displayType !== nextProps.params.displayType) {
         this.setState({ activeQueries: [], mutated: false });
       }
+=======
+  componentWillReceiveProps(nextProps) {
+    if (this.props.params.displayType !== nextProps.params.displayType) {
+      this.setState({ activeQueries: [], mutated: false });
+>>>>>>> origin/upstream
       nextProps.customQueries.dispatch(ActionTypes.LIST);
       //nextProps.customQueries.dispatch(ActionTypes.LIST_RECENT);
     }
@@ -160,6 +175,7 @@ class Explorer extends DashboardView {
       activeQueries[existingQueryIndex] = query;
     }
 
+<<<<<<< HEAD
     // save query
     if (saveOnDatabase) {
       query.isSaved = true
@@ -169,6 +185,8 @@ class Explorer extends DashboardView {
       })
     }
 
+=======
+>>>>>>> origin/upstream
     // Update the state to trigger rendering pipeline.
     this.setState({
       activeQueries,
@@ -210,7 +228,7 @@ class Explorer extends DashboardView {
           to: this.state.dateRange.end.getTime() / 1000
         };
 
-        let abortableRequest = this.context.currentApp.getAnalyticsTimeSeries(payload);
+        let abortableRequest = this.context.getAnalyticsTimeSeries(payload);
         promise = abortableRequest.promise.then((result) => {
           let activeQueries = this.state.activeQueries
           activeQueries[i].result = result.map((point) => (
@@ -419,23 +437,27 @@ class Explorer extends DashboardView {
       <Toolbar
         section='Analytics'
         subsection='Explorer'>
+<<<<<<< HEAD
         <a
           href='javascript:;'
           role='button'
           onClick={() => window.open('https://www.back4app.com/docs/parse-dashboard/analytics/mobile-app-analytics', '_blank') }
+=======
+        <button
+          type='button'
+>>>>>>> origin/upstream
           className={styles.toolbarAction}
           style={{ borderRight: '1px solid #66637a' }}>
           <Icon name='question-solid' width={14} height={14} fill='#66637a' />
           FAQ
-        </a>
-        <a
-          href='javascript:;'
-          role='button'
+        </button>
+        <button
+          type='button'
           onClick={this.handleDownload.bind(this)}
           className={styles.toolbarAction}>
           <Icon name='download' width={14} height={14} fill='#66637a' />
           Download
-        </a>
+        </button>
       </Toolbar>
     );
 
@@ -478,7 +500,7 @@ class Explorer extends DashboardView {
 
     let footer = (
       <div className={styles.footer}>
-        <div className={[styles.right, verticalCenter].join(' ')}>
+        <div className={[styles.right, baseStyles.verticalCenter].join(' ')}>
           <span style={{ marginRight: '10px' }}>
             <DateRange
               value={this.state.dateRange}
@@ -629,7 +651,7 @@ class Explorer extends DashboardView {
 
     let content = (
       <div className={styles.content}>
-        <div ref='display' className={styles.display}>
+        <div ref={this.displayRef} className={styles.display}>
           {currentDisplay}
         </div>
         {header}
@@ -647,3 +669,5 @@ class Explorer extends DashboardView {
     );
   }
 }
+
+export default Explorer;

@@ -9,16 +9,18 @@ import CodeSnippet   from 'components/CodeSnippet/CodeSnippet.react';
 import DashboardView from 'dashboard/DashboardView.react';
 import EmptyState    from 'components/EmptyState/EmptyState.react';
 import FileTree      from 'components/FileTree/FileTree.react';
-import history       from 'dashboard/history';
 import React         from 'react';
 import styles        from 'dashboard/Data/CloudCode/CloudCode.scss';
 import Toolbar       from 'components/Toolbar/Toolbar.react';
+import generatePath from 'lib/generatePath';
+import { withRouter } from 'lib/withRouter';
 
 function getPath(params) {
   return params.splat;
 }
 
-export default class CloudCode extends DashboardView {
+@withRouter
+class CloudCode extends DashboardView {
   constructor() {
     super();
     this.section = 'Cloud Code';
@@ -31,11 +33,12 @@ export default class CloudCode extends DashboardView {
   }
 
   componentWillMount() {
-    this.fetchSource(this.context.currentApp, getPath(this.props.params));
+    this.fetchSource(this.context, getPath(this.props.params));
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
     if (this.context !== nextContext) {
+<<<<<<< HEAD
       // check if the changes are in currentApp serverInfo status
       // if not return without making any request
       if (this.props.apps !== nextProps.apps) {
@@ -52,6 +55,9 @@ export default class CloudCode extends DashboardView {
         if (!shouldUpdate) return;
       }
       this.fetchSource(nextContext.currentApp, getPath(nextProps.params));
+=======
+      this.fetchSource(nextContext, getPath(nextProps.params));
+>>>>>>> origin/upstream
     }
   }
 
@@ -67,7 +73,7 @@ export default class CloudCode extends DashboardView {
 
         if (!fileName || release.files[fileName] === undefined) {
           // Means we're still in /cloud_code/. Let's redirect to /cloud_code/main.js
-          history.replace(this.context.generatePath('cloud_code/main.js'))
+          this.props.navigate(generatePath(this.context, 'cloud_code/main.js'), { replace: true });
         } else {
           // Means we can load /cloud_code/<fileName>
           app.getSource(fileName).then(
@@ -94,7 +100,7 @@ export default class CloudCode extends DashboardView {
       <div style={{ overflowX: 'auto' }}>
         <div style={{ borderLeft: '1px solid #3e87b2' }}>
           <FileTree
-            linkPrefix={this.context.generatePath('cloud_code/')}
+            linkPrefix={generatePath(this.context, 'cloud_code/')}
             current={current}
             files={paths} />
         </div>
@@ -143,3 +149,5 @@ export default class CloudCode extends DashboardView {
     );
   }
 }
+
+export default CloudCode;

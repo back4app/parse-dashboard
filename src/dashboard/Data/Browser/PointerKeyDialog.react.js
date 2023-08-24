@@ -8,7 +8,11 @@
 import Button                 from 'components/Button/Button.react';
 import Dropdown               from 'components/Dropdown/Dropdown.react';
 import Field                  from 'components/Field/Field.react';
+<<<<<<< HEAD
 import { footer }             from 'components/Modal/Modal.scss';
+=======
+import modalStyles            from 'components/Modal/Modal.scss';
+>>>>>>> origin/upstream
 import Label                  from 'components/Label/Label.react';
 import Modal                  from 'components/Modal/Modal.react';
 import Option                 from 'components/Dropdown/Option.react';
@@ -23,8 +27,13 @@ export default class PointerKeyDialog extends React.Component {
     };
   }
 
+<<<<<<< HEAD
   async componentDidMount() {
     const pointerKey = await ColumnPreferences.getPointerDefaultKey(this.props.app.applicationId, this.props.className);
+=======
+  componentDidMount() {
+    const pointerKey = ColumnPreferences.getPointerDefaultKey(this.props.app.applicationId, this.props.className);
+>>>>>>> origin/upstream
     this.setState({ name: pointerKey });
   }
 
@@ -52,17 +61,28 @@ export default class PointerKeyDialog extends React.Component {
     return (
       <Modal
         type={Modal.Types.INFO}
+<<<<<<< HEAD
         title={'Change pointer key'}
         subtitle={hasColumns ? `The selected column will be used to represent a pointer for class "${this.props.className}"` : `There are no columns that can be set to represent a pointer for class "${this.props.className}"`}
         confirmText='Set pointer key'
         cancelText={'Never mind, don\u2019t.'}
+=======
+        title={'Change pointer key?'}
+        subtitle={hasColumns ? `The selected column will be used to represent a pointer for class "${this.props.className}"` : `There are no columns that can be set to represent a pointer for class "${this.props.className}"`}
+        confirmText='Change'
+        cancelText='Cancel'
+>>>>>>> origin/upstream
         onCancel={this.props.onCancel}
         disabled={!this.state.name}
         onConfirm={() => {
           this.props.onConfirm(this.state.name);
         }}
         customFooter={hasColumns ? null :
+<<<<<<< HEAD
           <div className={footer}>
+=======
+          <div className={modalStyles.footer}>
+>>>>>>> origin/upstream
             <Button value='Okay, go back.' onClick={this.props.onCancel} />
           </div>
         }>

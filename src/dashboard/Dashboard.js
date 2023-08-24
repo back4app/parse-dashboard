@@ -20,7 +20,6 @@ import Explorer           from './Analytics/Explorer/Explorer.react';
 import FourOhFour         from 'components/FourOhFour/FourOhFour.react';
 import GeneralSettings    from './Settings/GeneralSettings.react';
 import GraphQLConsole     from './Data/ApiConsole/GraphQLConsole.react';
-import history            from 'dashboard/history';
 import HostingSettings    from './Settings/HostingSettings.react';
 import HubConnections     from './Hub/HubConnections.react';
 import Icon               from 'components/Icon/Icon.react';
@@ -55,9 +54,10 @@ import B4aHubPublishPage       from './B4aHubPublishPage/B4aHubPublishPage.react
 import B4aAdminPage       from './B4aAdminPage/B4aAdminPage.react';
 import B4aAppTemplates    from './B4aAppTemplates/B4aAppTemplates.react';
 import { AsyncStatus }    from 'lib/Constants';
-import { center }         from 'stylesheets/base.scss';
+import baseStyles         from 'stylesheets/base.scss';
 import { get }            from 'lib/AJAX';
 import { setBasePath }    from 'lib/AJAX';
+<<<<<<< HEAD
 import ServerSettings     from 'dashboard/ServerSettings/ServerSettings.react';
 import {
   Router,
@@ -65,6 +65,9 @@ import {
 } from 'react-router';
 import { Route, Redirect } from 'react-router-dom';
 import createClass from 'create-react-class';
+=======
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+>>>>>>> origin/upstream
 import { Helmet } from 'react-helmet';
 import Playground from './Data/Playground/Playground.react';
 import axios from "lib/axios";
@@ -75,11 +78,11 @@ import BlockchainPage from './BlockchainPage/BlockChainPage.react';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
-let Empty = createClass({
+class Empty extends React.Component {
   render() {
     return <div>Not yet implemented</div>;
   }
-});
+}
 
 const AccountSettingsPage = () => (
     <AccountView section='Account Settings'>
@@ -160,7 +163,10 @@ export default class Dashboard extends React.Component {
     };
     // eslint-disable-next-line react/prop-types
     setBasePath(props.path);
+<<<<<<< HEAD
     this.updateApp = this.updateApp.bind(this);
+=======
+>>>>>>> origin/upstream
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('password');
   }
@@ -238,23 +244,38 @@ export default class Dashboard extends React.Component {
             if (error.code === 100) {
               app.serverInfo = {
                 error: 'unable to connect to server',
+<<<<<<< HEAD
                 enabledFeatures: {},
                 parseServerVersion: 'unknown',
                 status: 'ERROR'
+=======
+                features: {},
+                parseServerVersion: 'unknown'
+>>>>>>> origin/upstream
               }
             } else if (error.code === 107) {
               app.serverInfo = {
                 error: 'server version too low',
+<<<<<<< HEAD
                 enabledFeatures: {},
                 parseServerVersion: 'unknown',
                 status: 'ERROR'
+=======
+                features: {},
+                parseServerVersion: 'unknown'
+>>>>>>> origin/upstream
               }
             } else {
               app.serverInfo = {
                 error: error.message || 'unknown error',
+<<<<<<< HEAD
                 enabledFeatures: {},
                 parseServerVersion: 'unknown',
                 status: 'ERROR'
+=======
+                features: {},
+                parseServerVersion: 'unknown'
+>>>>>>> origin/upstream
               }
             }
             updatedApp = AppsManager.updateApp(app);
@@ -282,12 +303,12 @@ export default class Dashboard extends React.Component {
 
   render() {
     if (this.state.configLoadingState === AsyncStatus.PROGRESS) {
-      return <div className={center}><Loader/></div>;
+      return <div className={baseStyles.center}><Loader/></div>;
     }
 
     if (this.state.configLoadingError && this.state.configLoadingError.length > 0) {
       return <div className={styles.empty}>
-        <div className={center}>
+        <div className={baseStyles.center}>
           <div className={styles.cloud}>
             <Icon width={110} height={110} name='cloud-surprise' fill='#1e3b4d' />
           </div>
@@ -303,6 +324,7 @@ export default class Dashboard extends React.Component {
       </AccountView>
     );
 
+<<<<<<< HEAD
     const SettingsRoute = ({ match }) => (
       <SettingsData params={ match.params } apps={this.state.apps}>
         {settingsDataProps => (
@@ -490,8 +512,110 @@ export default class Dashboard extends React.Component {
           <Route path='/apps/:appId' render={AppRoute} />
         </Switch>
       </div>
+=======
+    const SettingsRoute = (
+      <Route element={<SettingsData />}>
+        <Route path='general' element={<GeneralSettings />} />
+        <Route path='keys' element={<SecuritySettings />} />
+        <Route path='users' element={<UsersSettings />} />
+        <Route path='push' element={<PushSettings />} />
+        <Route path='hosting' element={<HostingSettings />} />
+        <Route index element={<Navigate replace to='general' />} />
+      </Route>
     )
+
+    const JobsRoute = (
+      <Route element={<JobsData />}>
+        <Route path='new' element={<JobEdit />} />
+        <Route path='edit/:jobId' element={<JobEdit />} />
+        <Route path=':section' element={<Jobs />} />
+        <Route index element={<Navigate replace to='all' />} />
+      </Route>
+    )
+
+    const AnalyticsRoute = (
+      <Route>
+        <Route path='overview' element={<AnalyticsOverview />} />
+        <Route path='explorer/:displayType' element={<Explorer />} />
+        <Route path='retention' element={<Retention />} />
+        <Route path='performance' element={<Performance />} />
+        <Route path='slow_queries' element={<SlowQueries />} />
+        <Route index element={<Navigate replace to='overview' />} />
+        <Route path='explorer' element={<Navigate replace to='chart' />} />
+      </Route>
+    )
+
+    const BrowserRoute = ShowSchemaOverview ? SchemaOverview : Browser;
+
+    const ApiConsoleRoute = (
+      <Route element={<ApiConsole />}>
+        <Route path='rest' element={<RestConsole />} />
+        <Route path='graphql' element={<GraphQLConsole />} />
+        <Route path='js_console' element={<Playground />} />
+        <Route index element={<Navigate replace to='rest' />} />
+      </Route>
+    )
+
+    const AppRoute = (
+      <Route element={<AppData />}>
+        <Route index element={<Navigate replace to='browser' />} />
+
+        <Route path='getting_started' element={<Empty />} />
+
+        <Route path='browser/:className/:entityId/:relationName' element={<BrowserRoute />} />
+        <Route path='browser/:className' element={<BrowserRoute />} />
+        <Route path='browser' element={<BrowserRoute />} />
+
+        <Route path='cloud_code' element={<CloudCode />} />
+        <Route path='cloud_code/*' element={<CloudCode />} />
+        <Route path='webhooks' element={<Webhooks />} />
+
+        <Route path='jobs'>
+          {JobsRoute}
+        </Route>
+
+        <Route path='logs/:type' element={<Logs />} />
+        <Route path='logs' element={<Navigate replace to='info' />} />
+
+        <Route path='config' element={<Config />} />
+
+        <Route path='api_console'>
+          {ApiConsoleRoute}
+        </Route>
+
+        <Route path='migration' element={<Migration />} />
+
+        <Route path='push' element={<Navigate replace to='new' />} />
+        <Route path='push/activity' element={<Navigate replace to='all' />} />
+
+        <Route path='push/activity/:category' element={<PushIndex />} />
+        <Route path='push/audiences' element={<PushAudiencesIndex />} />
+        <Route path='push/new' element={<PushNew />} />
+        <Route path='push/:pushId' element={<PushDetails />} />
+
+        {/* Unused routes... */}
+        <Route path='analytics'>
+          {AnalyticsRoute}
+        </Route>
+
+        <Route path='settings'>
+          {SettingsRoute}
+        </Route>
+      </Route>
+>>>>>>> origin/upstream
+    )
+
+    const Index = (
+      <Route>
+        <Route index element={<AppsIndexPage />} />
+        <Route path=':appId'>
+          {AppRoute}
+        </Route>
+      </Route>
+    )
+
     return (
+<<<<<<< HEAD
       <Router history={history}>
         <div>
           <Helmet>
@@ -506,6 +630,22 @@ export default class Dashboard extends React.Component {
           </Switch>
         </div>
       </Router>
+=======
+      <BrowserRouter basename={window.PARSE_DASHBOARD_PATH || '/'}>
+        <Helmet>
+          <title>Parse Dashboard</title>
+        </Helmet>
+        <Routes>
+          <Route path='/apps'>
+            {Index}
+          </Route>
+          <Route path='account/overview' element={<AccountSettingsPage />} />
+          <Route path='account' element={<Navigate replace to='overview' />} />
+          <Route index element={<Navigate replace to='/apps' />} />
+          <Route path='*' element={<FourOhFour />} />
+        </Routes>
+      </BrowserRouter>
+>>>>>>> origin/upstream
     );
   }
 }

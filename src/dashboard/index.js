@@ -5,15 +5,19 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import Immutable       from 'immutable';
 import installDevTools from 'immutable-devtools';
 import React           from 'react';
 import ReactDOM        from 'react-dom';
 import Dashboard       from './Dashboard';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 
 require('stylesheets/fonts.scss');
+<<<<<<< HEAD
+=======
+require('graphiql/graphiql.min.css')
+>>>>>>> origin/upstream
 installDevTools(Immutable);
 
 var path = window.PARSE_DASHBOARD_PATH || '/';

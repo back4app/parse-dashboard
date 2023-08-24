@@ -18,7 +18,6 @@ import Popover                          from 'components/Popover/Popover.react';
 import Position                         from 'lib/Position';
 import PropTypes                        from 'lib/PropTypes';
 import React                            from 'react';
-import ReactDOM                         from 'react-dom';
 import styles                           from 'components/DateRange/DateRange.scss';
 
 export default class DateRange extends React.Component {
@@ -34,10 +33,8 @@ export default class DateRange extends React.Component {
       end: val.end || new Date(),
       maxRange: props.maxRange,
     };
-  }
 
-  componentDidMount() {
-    this.node = ReactDOM.findDOMNode(this);
+    this.wrapRef = React.createRef();
   }
 
   toggle() {
@@ -45,9 +42,9 @@ export default class DateRange extends React.Component {
       if (this.state.open) {
         return { open: false };
       }
-      let pos = Position.inWindow(this.node);
+      let pos = Position.inWindow(this.wrapRef.current);
       if (this.props.align === Directions.RIGHT) {
-        pos.x += this.node.clientWidth;
+        pos.x += this.wrapRef.current.clientWidth;
       }
       return {
         open: true,
@@ -129,7 +126,7 @@ export default class DateRange extends React.Component {
     }
 
     return (
-      <div className={styles.wrap} onClick={this.toggle.bind(this)}>
+      <div className={styles.wrap} onClick={this.toggle.bind(this)} ref={this.wrapRef}>
         {content}
         {popover}
       </div>
