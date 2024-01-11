@@ -440,7 +440,8 @@ export default class ParseApp {
 
   createApp(appName, parseVersion, originalAppId = null) {
     const path = '/parse-app';
-    return AJAX.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false })
+    
+    return axios.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false }, { timeout: 120000} )
   }
 
   initializeDb(appId, parseVersion) {
