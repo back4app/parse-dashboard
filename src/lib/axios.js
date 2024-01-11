@@ -4,7 +4,8 @@ import * as AJAX  from './AJAX';
 
 const baseURL = process.env.BACKEND_URL;
 const instance = axios.create({
-  baseURL: baseURL
+  baseURL: baseURL,
+  timeout: 120000
 });
 
 const checkCurrentUser = async() =>{

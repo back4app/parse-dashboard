@@ -396,7 +396,7 @@ export default class ParseApp {
 
   createApp(appName, parseVersion, originalAppId = null) {
     let path = `/parse-app`;
-    return axios.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false }, { timeout: 120000} )  }
+    return axios.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false } )  }
 
   initializeDb(appId, parseVersion) {
     let path = `/parse-app/${appId}/database`;
