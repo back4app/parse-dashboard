@@ -13,18 +13,19 @@ export default class StringEditor extends React.Component {
     super();
 
     this.state = {
-      value: props.value || ''
+      value: props.value || '',
     };
 
     this.checkExternalClick = this.checkExternalClick.bind(this);
     this.handleKey = this.handleKey.bind(this);
+    this.inputRef = React.createRef();
   }
 
   componentDidMount() {
-    this.refs.input.setSelectionRange(0, this.state.value.length);
+    this.inputRef.current.setSelectionRange(0, this.state.value.length);
     document.body.addEventListener('click', this.checkExternalClick);
     document.body.addEventListener('keypress', this.handleKey);
-    this.props.setFocus && this.refs.input.focus();
+    this.props.setFocus && this.inputRef.current.focus();
   }
 
   componentWillUnmount() {
@@ -33,7 +34,7 @@ export default class StringEditor extends React.Component {
   }
 
   checkExternalClick(e) {
-    if (e.target !== this.refs.input) {
+    if (e.target !== this.inputRef.current) {
       this.props.onCommit(this.state.value);
     }
   }
@@ -49,28 +50,36 @@ export default class StringEditor extends React.Component {
   }
 
   render() {
-    let onChange = this.props.readonly ? () => {} : (e) => this.setState({ value: e.target.value });
+    const classes = [styles.editor];
+    const onChange = this.props.readonly ? () => {} : e => this.setState({ value: e.target.value });
+    if (this.props.readonly) {
+      classes.push(styles.readonly);
+    }
+
     if (this.props.multiline) {
-      var style = { minWidth: this.props.minWidth };
+      const style = { minWidth: this.props.minWidth };
       if (this.props.resizable) {
         style.resize = 'both';
       }
       return (
         <div className={styles.editor}>
           <textarea
-            ref='input'
+            ref={this.inputRef}
             value={this.state.value}
             onChange={onChange}
-            style={style} />
+            style={style}
+          />
         </div>
       );
     }
     return (
-      <div style={{ width: this.props.width }} className={styles.editor}>
+      <div style={{ width: this.props.width }} className={classes.join(' ')}>
         <input
-          ref='input'
+          ref={this.inputRef}
           value={this.state.value}
-          onChange={onChange} />
+          onChange={onChange}
+          disabled={this.props.readonly}
+        />
       </div>
     );
   }

@@ -5,22 +5,20 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import PropTypes   from 'lib/PropTypes';
-import AppsManager    from 'lib/AppsManager';
+import AppsManager from 'lib/AppsManager';
 import FooterMenu from 'components/Sidebar/FooterMenu.react';
-import React          from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 // import SidebarHeader  from 'components/Sidebar/SidebarHeader.react';
 import SidebarSection from 'components/Sidebar/SidebarSection.react';
 import SidebarSubItem from 'components/Sidebar/SidebarSubItem.react';
-import styles         from 'components/Sidebar/Sidebar.scss';
-import zendeskSettings from 'components/Sidebar/zendeskSettings'
-import Button         from 'components/Button/Button.react'
-import Icon           from 'components/Icon/Icon.react';
-import { isMobile }   from 'lib/browserUtils';
-import B4aBadge       from 'components/B4aBadge/B4aBadge.react';
-import ParseApp       from 'lib/ParseApp';
-import AppsMenu       from 'components/Sidebar/AppsMenu.react';
-import AppName        from 'components/Sidebar/AppName.react';
+import styles from 'components/Sidebar/Sidebar.scss';
+import Button from 'components/Button/Button.react'
+import Icon from 'components/Icon/Icon.react';
+import { isMobile } from 'lib/browserUtils';
+import B4aBadge from 'components/B4aBadge/B4aBadge.react';
+import AppsMenu from 'components/Sidebar/AppsMenu.react';
+import AppName from 'components/Sidebar/AppName.react';
+import { CurrentApp } from 'context/currentApp';
 
 const isInsidePopover = node => {
   let cur = node.parentNode;
@@ -38,281 +36,280 @@ const isInsidePopover = node => {
 let isSidebarFixed = !isMobile();
 let isSidebarCollapsed = !isSidebarFixed;
 
-class Sidebar extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      collapsed: isSidebarCollapsed,
-      fixed: isSidebarFixed,
-      mobileFriendly: isMobile(),
-      appsMenuOpen: false
-    };
-    this.windowResizeHandler = this.windowResizeHandler.bind(this);
-    this.checkExternalClick = this.checkExternalClick.bind(this);
-    this.toggleAppsMenu = this.toggleAppsMenu.bind(this);
-  }
+const Sidebar = ({
+  showTour,
+  prefix,
+  action,
+  actionHandler,
+  children,
+  subsection,
+  sections,
+  section,
+  appSelector,
+  contentStyle,
+  primaryBackgroundColor,
+  secondaryBackgroundColor,
+  footerMenuButtons
+}) => {
+  const currentApp = useContext(CurrentApp);
+  const [appsMenuOpen, setAppsMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => isSidebarCollapsed);
+  const [fixed, setFixed] = useState(() => isSidebarFixed);
+  const [mobileFriendly, setMobileFriendly] = useState(() => isMobile());
+  const prevShowTour = useRef(showTour);
 
-  componentWillMount() {
-    window.addEventListener('resize', this.windowResizeHandler);
-    document.body.addEventListener('click', this.checkExternalClick);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.windowResizeHandler);
-    document.body.removeEventListener('click', this.checkExternalClick);
-    isSidebarFixed = this.state.fixed;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!!nextProps.showTour && this.state.collapsed) {
-      // if showing tour then open sidebar
-      this.setState({
-        mobileFriendly: false,
-        collapsed: false,
-        fixed: true
-      });
-    }
-
-    if (this.props.showTour && !nextProps.showTour && isMobile()) {
-      // Tour is over and on mobile device
-      this.setState({
-        mobileFriendly: true,
-        collapsed: true,
-        fixed: false
-      });
-    }
-  }
-
-  windowResizeHandler() {
+  const windowResizeHandler = () => {
     if (isMobile()) {
       if (document.body.className.indexOf(' expanded') === -1) {
         document.body.className += ' expanded';
       }
-      this.setState({
-        collapsed: true,
-        fixed: false,
-        mobileFriendly: true
-      });
+      setMobileFriendly(true);
+      setCollapsed(true);
+      setFixed(false);
     } else {
       document.body.className = document.body.className.replace(' expanded', '');
-      this.setState({
-        collapsed: false,
-        fixed: true,
-        mobileFriendly: false
-      });
+      setMobileFriendly(false);
+      setCollapsed(false);
+      setFixed(true);
     }
   }
 
-  checkExternalClick({ target }) {
-    if (this.state.mobileFriendly && !this.state.isCollapsed) {
+  const checkExternalClick = ({ target }) => {
+    if (mobileFriendly && !collapsed) {
       for (let current = target; current && current.id !== 'browser_mount'; current = current.parentNode) {
         if (/^sidebar/g.test(current.className) || /^introjs-tooltipReferenceLayer/g.test(current.className) || /^fixed_wrapper/g.test(current.id)) {
           return;
         }
       }
-      this.setState({ collapsed: true });
+      setCollapsed(true);
     }
   }
 
-  toggleAppsMenu() {
-    this.setState({
-      appsMenuOpen: !this.state.appsMenuOpen
-    });
+  useEffect(() => {
+    window.addEventListener('resize', windowResizeHandler);
+    document.body.addEventListener('click', checkExternalClick);
+
+    return () => {
+      window.removeEventListener('resize', windowResizeHandler);
+      document.body.removeEventListener('click', checkExternalClick);
+      isSidebarFixed = fixed;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!!showTour && collapsed) {
+      // if showing tour then open sidebar
+      setMobileFriendly(false);
+      setCollapsed(false);
+      setFixed(true);
+    }
+
+    if (prevShowTour.current && !showTour && isMobile()) {
+      // Tour is over and on mobile device
+      setMobileFriendly(true);
+      setCollapsed(true);
+      setFixed(false);
+    }
+  }, [showTour]);
+
+  const sidebarClasses = [styles.sidebar];
+
+  if (!fixed && collapsed) {
+    sidebarClasses.push(styles.collapsed);
+    if (document.body.className.indexOf(' expanded') === -1) {
+      document.body.className += ' expanded';
+    }
+
+    return <div className={sidebarClasses.join(' ')} onMouseEnter={!mobileFriendly ? (() => setCollapsed(false)) : undefined}>
+      <div className={styles.pinContainer} onClick={mobileFriendly ? (() => setCollapsed(false)) : undefined}>
+        <Icon className={styles.sidebarPin}
+          name={mobileFriendly ? 'expand' : 'pin'}
+          width={20}
+          height={20}
+          fill={mobileFriendly ? 'white' : 'lightgrey'} />
+      </div>
+      <div className={styles.content} style={contentStyle}>
+        {sections.map(({
+          name,
+          icon,
+          style,
+          link,
+        }) => {
+          const active = name === section;
+          // If link points to another component, adds the prefix
+          link = link.startsWith('/') ? prefix + link : link;
+          return (
+            <SidebarSection
+              key={name}
+              name={name}
+              link={link}
+              icon={icon}
+              style={style}
+              active={active}
+              primaryBackgroundColor={primaryBackgroundColor}
+              isCollapsed={true}
+              onClick={active
+                ? (() => setCollapsed(false))
+                : (() => isSidebarCollapsed = false)}>
+            </SidebarSection>
+          );
+        })}
+      </div>
+      <div className={styles.footer} onClick={() => setCollapsed(false)}>
+        <Icon height={18} width={18} name='ellipses' fill='white' />
+      </div>
+    </div>
   }
 
-  render () {
-    const {
-      prefix,
-      action,
-      actionHandler,
-      children,
-      subsection,
-      sections,
-      section,
-      appSelector,
-      contentStyle,
-      primaryBackgroundColor,
-      secondaryBackgroundColor,
-      footerMenuButtons
-    } = this.props;
+  if (fixed) {
+    document.body.className = document.body.className.replace(' expanded', '');
+  }
 
-    const sidebarClasses = [styles.sidebar];
+  const _subMenu = subsections => {
+    if (!subsections) {
+      return null;
+    }
+    return (
+      <div className={styles.submenu}>
+        {subsections.map(({name, link, badge}) => {
+          const active = subsection === name;
+          // If link points to another component, adds the prefix
+          link = link.startsWith('/') ? prefix + link : link;
+          return (
+            <SidebarSubItem
+              key={name}
+              name={name}
+              link={link}
+              action={action || null}
+              actionHandler={active ? actionHandler : null}
+              active={active}
+              badge={badge}
+            >
+              {active ? children : null}
+            </SidebarSubItem>
+          );
+        })}
+      </div>
+    );
+  }
 
-    if (!this.state.fixed && this.state.collapsed) {
-      sidebarClasses.push(styles.collapsed);
-      if (document.body.className.indexOf(' expanded') === -1) {
-        document.body.className += ' expanded';
+  const apps = [].concat(AppsManager.apps()).sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0)));
+  const footerButtons = [
+    <Button value='Support'
+      primary={true}
+      width='75px'
+      // eslint-disable-next-line no-undef
+      onClick={() => zE && zE.activate()}
+      key={0}
+    />
+  ];
+  if (footerMenuButtons) {
+    footerButtons.push(<FooterMenu key={1}>{footerMenuButtons}</FooterMenu>);
+  }
+
+  const onMouseLeave = (!mobileFriendly && !collapsed && !fixed && (
+    e => {
+      if (!isInsidePopover(e.relatedTarget)) {
+        setCollapsed(true);
       }
+    }
+  )) || undefined;
 
-      return <div className={sidebarClasses.join(' ')} onMouseEnter={!this.state.mobileFriendly ? (() => this.setState({ collapsed: false })) : undefined}>
-        <div className={styles.pinContainer} onClick={this.state.mobileFriendly && (() => this.setState({ collapsed: false }))}>
-          <Icon className={styles.sidebarPin}
-            name={this.state.mobileFriendly ? 'expand' : 'pin'}
-            width={20}
-            height={20}
-            fill={this.state.mobileFriendly ? 'white' : 'lightgrey'} />
-        </div>
+  const pinClasses = [styles.sidebarPin];
+  if (fixed) {
+    pinClasses.push(styles.fixed);
+  }
+
+  let onPinClick;
+  if (mobileFriendly) {
+    pinClasses.push(styles.inverseIcon);
+    onPinClick = () => {
+      if (collapsed) {
+        setCollapsed(false);
+        setFixed(true);
+      } else {
+        setCollapsed(true);
+        setFixed(false);
+      }
+    };
+  } else {
+    onPinClick = () => {
+      if (fixed) {
+        setFixed(false);
+        setCollapsed(true);
+        setAppsMenuOpen(false);
+      } else {
+        setFixed(true);
+        setCollapsed(false);
+      }
+    };
+  }
+
+  const pin = <Icon className={pinClasses.join(' ')} name={mobileFriendly ? 'expand' : 'pin'} width={20} height={20} onClick={onPinClick} />;
+
+  let sidebarContent;
+  if (appsMenuOpen) {
+    sidebarContent = (
+      <AppsMenu
+        apps={apps}
+        current={currentApp}
+        onPinClick={onPinClick}
+        onSelect={() => setAppsMenuOpen(false)}
+      />
+    );
+  } else {
+    sidebarContent = (
+      <>
+        {appSelector && (
+          <div className={styles.apps}>
+            <AppName
+              name={currentApp.name}
+              onClick={() => setAppsMenuOpen(true)}
+              pin={pin}
+              onPinClick={onPinClick}
+            />
+          </div>
+        )}
         <div className={styles.content} style={contentStyle}>
           {sections.map(({
             name,
             icon,
             style,
             link,
+            subsections,
+            badgeParams
           }) => {
             const active = name === section;
+            const badge = badgeParams && <B4aBadge {...badgeParams} /> || ''
             // If link points to another component, adds the prefix
             link = link.startsWith('/') ? prefix + link : link;
             return (
               <SidebarSection
                 key={name}
                 name={name}
-                link={link}
                 icon={icon}
                 style={style}
+                link={link}
                 active={active}
                 primaryBackgroundColor={primaryBackgroundColor}
-                isCollapsed={true}
-                onClick={active
-                  ? (() => this.setState({ collapsed: false }))
-                  : (() => isSidebarCollapsed = false)}>
+                secondaryBackgroundColor={secondaryBackgroundColor}
+                badge={badge}
+              >
+                {active ? _subMenu(subsections) : null}
               </SidebarSection>
             );
           })}
         </div>
-        <div className={styles.footer} onClick={() => this.setState({ collapsed: false })}>
-          <Icon height={18} width={18} name='ellipses' fill='white' />
-        </div>
-      </div>
-    }
-
-    if (this.state.fixed) {
-      document.body.className = document.body.className.replace(' expanded', '');
-    }
-    const _subMenu = subsections => {
-      if (!subsections) {
-        return null;
-      }
-      return (
-        <div className={styles.submenu}>
-          {subsections.map(({name, link, badge}) => {
-            const active = subsection === name;
-            // If link points to another component, adds the prefix
-            link = link.startsWith('/') ? prefix + link : link;
-            return (
-              <SidebarSubItem
-                key={name}
-                name={name}
-                link={link}
-                action={action || null}
-                actionHandler={active ? actionHandler : null}
-                active={active}
-                badge={badge}
-                >
-                {active ? children : null}
-              </SidebarSubItem>
-            );
-          })}
-        </div>
-      );
-    }
-
-    const apps = [].concat(AppsManager.apps()).sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0)));
-    let footerButtons = [
-      <Button value='Support'
-        primary={true}
-        width='75px'
-        onClick={() => zE && zE.activate()}
-        key={0}
-      />
-    ];
-    if (footerMenuButtons) {
-      footerButtons.push(<FooterMenu key={1}>{footerMenuButtons}</FooterMenu>);
-    }
-
-    const onMouseLeave = (!this.state.mobileFriendly && !this.state.collapsed && !this.state.fixed && (
-      e => {
-        if (!isInsidePopover(e.relatedTarget)) {
-          this.setState({ collapsed: true });
-        }
-      }
-    )) || undefined;
-
-    const pinClasses = [styles.sidebarPin];
-    if (this.state.fixed) {
-      pinClasses.push(styles.fixed);
-    }
-    let onPinClick;
-    if (this.state.mobileFriendly) {
-      pinClasses.push(styles.inverseIcon)
-      onPinClick = () => this.setState({ collapsed: !this.state.collapsed })
-    } else {
-      onPinClick = () => this.setState({ collapsed: this.state.fixed, fixed: !this.state.fixed });
-    }
-    const pin = <Icon className={pinClasses.join(' ')} name={this.state.mobileFriendly ? 'expand' : 'pin'} width={18} height={18} onClick={onPinClick} />;
-
-    let sidebarContent;
-    if (this.state.appsMenuOpen) {
-      sidebarContent = (
-        <AppsMenu
-          apps={apps}
-          current={this.context.currentApp}
-          onSelect={this.toggleAppsMenu}
-          pin={pin} />
-      );
-    } else {
-      sidebarContent = (
-        <>
-          {appSelector && (
-            <div className={styles.apps}>
-              <AppName name={this.context.currentApp.name} pin={pin} onClick={this.toggleAppsMenu} />
-            </div>
-          )}
-          <div className={styles.content} style={contentStyle}>
-            {sections.map(({
-              name,
-              icon,
-              style,
-              link,
-              subsections,
-              badgeParams
-            }) => {
-              const active = name === section;
-              const badge = badgeParams && <B4aBadge {...badgeParams} /> || ''
-              // If link points to another component, adds the prefix
-              link = link.startsWith('/') ? prefix + link : link;
-              return (
-                <SidebarSection
-                  key={name}
-                  name={name}
-                  icon={icon}
-                  style={style}
-                  link={link}
-                  active={active}
-                  primaryBackgroundColor={primaryBackgroundColor}
-                  secondaryBackgroundColor={secondaryBackgroundColor}
-                  badge={badge}
-                  >
-                  {active ? _subMenu(subsections) : null}
-                </SidebarSection>
-              );
-            })}
-          </div>
-        </>
-      )
-    }
-
-    return <div className={sidebarClasses.join(' ')} onMouseLeave={onMouseLeave}>
-      {sidebarContent}
-      <div className={styles.help}>
-        {/* div to add the zendesk help widget*/}
-      </div>
-      <div className={styles.footer}>{footerButtons}</div>
-    </div>
+      </>
+    )
   }
-}
 
-Sidebar.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};
+  return <div className={sidebarClasses.join(' ')} onMouseLeave={onMouseLeave} id="sidebar">
+    {sidebarContent}
+    <div className={styles.help}></div>
+    <div className={styles.footer + ' footer'}>{footerButtons}</div>
+  </div>
+
+}
 
 export default Sidebar;

@@ -10,7 +10,7 @@ open={state.showDeleteAppModal}
 submitText='Permanently delete this app'
 inProgressText={'Deleting\u2026'}
 enabled={state.password.length > 0}
-onSubmit={() => AppsManager.deleteApp(context.currentApp.slug, state.password)}
+onSubmit={() => AppsManager.deleteApp(context.slug, state.password)}
 onSuccess={() => history.push('/apps')}
 onClose={() => setState({showDeleteAppModal: false})}
 clearFields={() => setState({password: ''})}>

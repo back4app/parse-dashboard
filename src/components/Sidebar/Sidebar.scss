@@ -17,7 +17,7 @@
   background: #0c5582;
   color: #fff;
   transition: left 0.5s ease-in;
-  z-index: 0;
+  z-index: 100;
 
   &.collapsed {
     left: 0;
@@ -30,7 +30,7 @@
       align-items: center;
       background-color: #094162;
       cursor: pointer;
-      padding: 18px;
+      // padding: 18px;
 
       &:hover {
         background-color: #1184ca;
@@ -49,6 +49,14 @@
 
     .content {
       bottom: 48px;
+    }
+
+    .section_header > svg {
+      margin: 0;
+    }
+
+    .pinContainer > svg {
+      fill: white;
     }
   }
 }
@@ -77,35 +85,16 @@
   justify-content: flex-end;
   align-items: center;
 
-  a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    color: white;
-    text-decoration: none;
-    border-right: 1px solid #385261;
-    height: 29px;
-    line-height: 18px;
-    font-size: 12px;
-    margin-left: 7px;
-    vertical-align: top;
-    font-family: inherit;
-    font-weight: bold;
-    border-radius: 5px;
+  button {
+    display: block;
     padding: 0;
-
-    &:first-child {
-      padding-left: 0;
-    }
-    &:last-child {
-      padding-right: 0;
-      border: none;
-    }
+    font-size: 12px;
+    font-weight: bold;
   }
 
-  svg {
-    margin-top: -2px;
+  a {
+    margin-right: 0;
+    margin-left: 10px;
   }
 }
 
@@ -181,11 +170,28 @@
   justify-content: space-between;
   align-items: center;
 
-  &:hover{
-      &:after {
-        border-top-color: white;
-      }
-  }
+  .appNameContainer {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .currentAppName {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 215px;
+    }
+
+    // &:after {
+    //   @include arrow('down', 10px, 7px, #132B39);
+    //   content: '';
+    //   margin-left: 10px;
+    // }
+
+    // &:hover {
+    //   &:after {
+    //     border-top-color: white;
+    //   }
+    // }
 
   .currentAppName {
     overflow: hidden;
@@ -218,6 +224,26 @@
       transform: rotate(180deg);
     }
   }
+  }
+}
+.sidebarPin {
+  cursor: pointer;
+  height: 30px;
+  width: 30px;
+  padding: 6px;
+  fill: lightgrey;
+
+  &:hover {
+    fill: white;
+  }
+
+  &.fixed {
+    fill: white;
+  }
+
+  &.inverseIcon {
+    transform: rotate(180deg);
+  }
 }
 
 .appsMenu {
@@ -236,6 +262,25 @@
 
   .currentApp .appsSelectorArrow {
     @include arrow('up', 10px, 7px, #ffffff);
+  }
+
+  .currentApp {
+    .currentAppName {
+      &:after {
+        @include arrow('up', 10px, 7px, #132B39);
+      }
+
+      &:hover {
+        &:after {
+          border-bottom-color: white;
+        }
+      }
+    }
+  }
+
+  .appListContainer {
+    overflow-y: auto;
+    // height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
   }
 }
 
@@ -373,6 +418,8 @@ a.subitem {
   width: 75px;
   height: 100%;
   font-size: 10px;
+  display: flex;
+  align-items: center;
   float: left;
   margin-left: 6px;
   white-space: nowrap;
@@ -381,21 +428,24 @@ a.subitem {
   > *:first-child {
     position: absolute;
     letter-spacing: 2px;
-    line-height: 10px;
+    line-height: 12px;
     text-transform: uppercase;
   }
 
   > *:first-child {
-    top: 10px;
     transition: all 0.4s 0.16s cubic-bezier(0.77, 0, 0.175, 1);
   }
 }
 
 .more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   svg {
     fill: $white;
     transform: rotate(90deg);
     transition: fill 0.2s ease-in;
+    margin-right: 4px;
   }
 
   &:hover {
@@ -418,14 +468,14 @@ a.subitem {
     content: '';
     position: absolute;
     bottom: -6px;
-    right: 11px;
+    right: 10px;
   }
 
   a {
     @include NotoSansFont;
     display: block;
     height: 30px;
-    line-height: 31px;
+    line-height: 30px;
     font-size: 13px;
     text-align: right;
     border-bottom: 1px solid #e0e0ea;
@@ -449,5 +499,20 @@ a.subitem {
       padding-left: 4px;
       padding-right: 2px;
     }
+  }
+}
+
+.pinContainer {
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #094162;
+
+  svg {
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    fill: white;
   }
 }

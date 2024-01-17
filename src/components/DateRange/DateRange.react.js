@@ -5,27 +5,21 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import Calendar                         from 'components/Calendar/Calendar.react';
-import { Directions }                   from 'lib/Constants';
-import Icon                             from 'components/Icon/Icon.react';
-import {
-  monthDayStringUTC,
-  monthsFrom,
-  daysFrom,
-  daysToMilli
-}                                       from 'lib/DateUtils';
-import Popover                          from 'components/Popover/Popover.react';
-import Position                         from 'lib/Position';
-import PropTypes                        from 'lib/PropTypes';
-import React                            from 'react';
-import ReactDOM                         from 'react-dom';
-import styles                           from 'components/DateRange/DateRange.scss';
+import Calendar from 'components/Calendar/Calendar.react';
+import { Directions } from 'lib/Constants';
+import Icon from 'components/Icon/Icon.react';
+import { monthDayStringUTC, monthsFrom, daysFrom, daysToMilli } from 'lib/DateUtils';
+import Popover from 'components/Popover/Popover.react';
+import Position from 'lib/Position';
+import PropTypes from 'lib/PropTypes';
+import React from 'react';
+import styles from 'components/DateRange/DateRange.scss';
 
 export default class DateRange extends React.Component {
   constructor(props) {
     super();
 
-    let val = props.value || {};
+    const val = props.value || {};
 
     this.state = {
       open: false,
@@ -34,10 +28,8 @@ export default class DateRange extends React.Component {
       end: val.end || new Date(),
       maxRange: props.maxRange,
     };
-  }
 
-  componentDidMount() {
-    this.node = ReactDOM.findDOMNode(this);
+    this.wrapRef = React.createRef();
   }
 
   toggle() {
@@ -45,13 +37,13 @@ export default class DateRange extends React.Component {
       if (this.state.open) {
         return { open: false };
       }
-      let pos = Position.inWindow(this.node);
+      const pos = Position.inWindow(this.wrapRef.current);
       if (this.props.align === Directions.RIGHT) {
-        pos.x += this.node.clientWidth;
+        pos.x += this.wrapRef.current.clientWidth;
       }
       return {
         open: true,
-        position: pos
+        position: pos,
       };
     });
   }
@@ -76,45 +68,48 @@ export default class DateRange extends React.Component {
 
   close() {
     this.setState({
-      open: false
+      open: false,
     });
     this.props.onChange({ start: this.state.start, end: this.state.end });
   }
 
   rangeString() {
-    return (
-      `${monthDayStringUTC(this.state.start)} - ${monthDayStringUTC(this.state.end)}`
-    );
+    return `${monthDayStringUTC(this.state.start)} - ${monthDayStringUTC(this.state.end)}`;
   }
 
   render() {
     let popover = null;
     let content = null;
     if (this.state.open) {
-      let classes = [styles.open];
+      const classes = [styles.open];
       if (this.props.align === Directions.RIGHT) {
         classes.push(styles.right);
       }
-      let renderShade = (
+      const renderShade =
         this.state.start.getFullYear() < this.state.end.getFullYear() ||
-        this.state.start.getMonth() !== this.state.end.getMonth()
-      );
+        this.state.start.getMonth() !== this.state.end.getMonth();
       popover = (
-        <Popover fixed={true} position={this.state.position} onExternalClick={this.close.bind(this)}>
+        <Popover
+          fixed={true}
+          position={this.state.position}
+          onExternalClick={this.close.bind(this)}
+        >
           <div className={classes.join(' ')}>
             <div className={styles.calendars} onClick={(e) => e.stopPropagation()} >
               <Calendar
                 value={this.state.start}
-                onChange={(start) => this.setStart(start)}
-                shadeAfter={renderShade} />
+                onChange={start => this.setStart(start)}
+                shadeAfter={renderShade}
+              />
               <Calendar
                 value={this.state.end}
-                onChange={(end) => this.setEnd(end)}
-                shadeBefore={renderShade} />
+                onChange={end => this.setEnd(end)}
+                shadeBefore={renderShade}
+              />
             </div>
             <div className={styles.range} onClick={this.close.bind(this)}>
               <span>{this.rangeString()}</span>
-              <Icon width={18} height={18} name='calendar-solid' fill='#169CEE' />
+              <Icon width={18} height={18} name="calendar-solid" fill="#169CEE" />
             </div>
           </div>
         </Popover>
@@ -123,13 +118,13 @@ export default class DateRange extends React.Component {
       content = (
         <div className={styles.range}>
           <span>{this.rangeString()}</span>
-          <Icon width={18} height={18} name='calendar-solid' fill='#169CEE' />
+          <Icon width={18} height={18} name="calendar-solid" fill="#169CEE" />
         </div>
       );
     }
 
     return (
-      <div className={styles.wrap} onClick={this.toggle.bind(this)}>
+      <div className={styles.wrap} onClick={this.toggle.bind(this)} ref={this.wrapRef}>
         {content}
         {popover}
       </div>

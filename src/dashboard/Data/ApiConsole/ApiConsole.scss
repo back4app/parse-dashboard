@@ -24,8 +24,9 @@
 
 .content {
   position: relative;
-  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  height: calc(#{$content-max-height} - #{$toolbar-height});
   margin-top: $toolbar-height;
+  overflow: hidden;
 }
 
 .playgroundContainer {

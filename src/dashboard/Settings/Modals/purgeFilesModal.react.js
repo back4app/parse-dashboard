@@ -11,7 +11,7 @@ export const PurgeFilesModal = ({ context, setParentState }) => <Modal
   cancelText='Cancel'
   buttonsInCenter={true}
   onCancel={() => setParentState({ showPurgeFilesModal: false })}
-  onConfirm={() => context.currentApp.cleanUpFiles().then(() => {
+  onConfirm={() => context.cleanUpFiles().then(() => {
     setParentState({
       cleanupFilesMessage: 'All set! You\'ll receive an email when the process is over.',
       cleanupNoteColor: 'orange',

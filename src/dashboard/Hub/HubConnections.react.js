@@ -1,5 +1,4 @@
 import AccountManager from 'lib/AccountManager';
-import PropTypes from 'prop-types'
 import React from 'react'
 import Swal from 'sweetalert2'
 import Button from 'components/Button/Button.react';
@@ -8,10 +7,13 @@ import EmptyState from 'components/EmptyState/EmptyState.react'
 import Icon from 'components/Icon/Icon.react'
 import DashboardView from 'dashboard/DashboardView.react'
 import HubDisconnectionDialog from 'dashboard/Hub/HubDisconnectionDialog.react'
-import ParseApp from 'lib/ParseApp'
 import styles from './HubConnections.scss'
+import { CurrentApp } from 'context/currentApp';
+import { withRouter } from 'lib/withRouter';
 
+@withRouter
 class HubConnections extends DashboardView {
+  static contextType = CurrentApp;
   constructor(props, context) {
     super(props, context);
 
@@ -29,13 +31,13 @@ class HubConnections extends DashboardView {
   }
 
   async componentDidMount() {
-    const data = await this.context.currentApp.fetchHubConnections();
+    const data = await this.context.fetchHubConnections();
     this.setState({ data });
   }
 
   renderSidebar() {
-    const { path } = this.props.match;
-    const current = path.substr(path.lastIndexOf("/") + 1, path.length - 1);
+    const { pathname } = this.props.location;
+    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
     const categories = [
       { name: 'Connections', id: 'connections' },
     ];
@@ -95,35 +97,35 @@ class HubConnections extends DashboardView {
         </div>
         {!this.state.data || this.state.data.length === 0
           ? <EmptyState
-              cta='Go to Database Hub'
-              action={b4aSettings.HUB_URL}
-              description='Check the Database Hub and connect to public databases'
-              icon='devices-solid'
-              title='No connections were found'
-            />
+            cta='Go to Database Hub'
+            action={b4aSettings.HUB_URL}
+            description='Check the Database Hub and connect to public databases'
+            icon='devices-solid'
+            title='No connections were found'
+          />
           : <>
-              <div className={styles.connectionsTableContainer}>
-                <table className={styles.connectionsTable}>
-                  <thead>
-                    <tr>
-                      <th>Namespace</th>
-                      <th>Public database</th>
-                      <th>Database Hub Link</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.renderRows()}
-                  </tbody>
-                </table>
-              </div>
-              {this.state.showDisconnectDialog &&
+            <div className={styles.connectionsTableContainer}>
+              <table className={styles.connectionsTable}>
+                <thead>
+                  <tr>
+                    <th>Namespace</th>
+                    <th>Public database</th>
+                    <th>Database Hub Link</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.renderRows()}
+                </tbody>
+              </table>
+            </div>
+            {this.state.showDisconnectDialog &&
                 <HubDisconnectionDialog
                   namespace={this.state.namespaceBeingDisconnected}
                   onConfirm={async () => {
                     await this.setState({ isDisconnecting: true });
                     try {
-                      await this.context.currentApp.disconnectHubDatabase(this.state.namespaceBeingDisconnected);
+                      await this.context.disconnectHubDatabase(this.state.namespaceBeingDisconnected);
                       window.location.reload(false);
                     } catch (err) {
                       this.setState({ isDisconnecting: false });
@@ -136,16 +138,12 @@ class HubConnections extends DashboardView {
                   }}
                   onCancel={() => this.setState({ isDisconnecting: false, showDisconnectDialog: false })}
                   isDisconnecting={this.state.isDisconnecting} />
-              }
-            </>
+            }
+          </>
         }
       </div>
     )
   }
-}
-
-HubConnections.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
 }
 
 export default HubConnections

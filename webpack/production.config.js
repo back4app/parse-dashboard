@@ -5,9 +5,9 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-var configuration = require('./base.config.js');
-var HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-var settings = require('@back4app/back4app-settings');
+const configuration = require('./base.config.js');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+const settings = require('@back4app/back4app-settings');
 
 configuration.mode = 'production';
 configuration.entry = {

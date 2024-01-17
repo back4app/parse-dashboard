@@ -404,3 +404,17 @@ body:global(.expanded) {
   text-align: left !important;
   padding-left: 5px;
 }
+
+.editRowDialogFileCell {
+  max-width: 100%;
+  padding: 25px;
+  span {
+    display: flex;
+    span {
+      width: 90%;
+    }
+    & a {
+      position: relative;
+    }
+  }
+} 

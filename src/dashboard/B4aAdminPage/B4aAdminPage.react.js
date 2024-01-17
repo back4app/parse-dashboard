@@ -17,7 +17,7 @@ import Toolbar          from 'components/Toolbar/Toolbar.react';
 import Icon             from 'components/Icon/Icon.react';
 import ReactPlayer      from 'react-player';
 
-const EMAIL_VERIFICATION_URL = `${b4aSettings.BACK4APP_API_PATH}/email-verification`;
+// const EMAIL_VERIFICATION_URL = `${b4aSettings.BACK4APP_API_PATH}/email-verification`;
 
 @subscribeTo('Schema', 'schema')
 class B4aAdminPage extends DashboardView {
@@ -43,16 +43,17 @@ class B4aAdminPage extends DashboardView {
   }
 
   async componentDidMount() {
-    const adminParams = B4aAdminParams({ appName: this.context.currentApp.name })
+    const adminParams = B4aAdminParams({ appName: this.context.name })
     await this.setState({ adminParams })
 
-    const adminHost = await this.context.currentApp.getAdminHost()
+    const adminHost = await this.context.getAdminHost()
     const adminURL = adminHost ? this.protocol + adminHost : ''
     const isRoleCreated = await this.checkRole()
     this.setState({ isRoleCreated, adminHost, adminURL, loading: false })
 
-    if (typeof back4AppNavigation !== 'undefined' && typeof back4AppNavigation.atAdminPageEvent === 'function')
+    if (typeof back4AppNavigation !== 'undefined' && typeof back4AppNavigation.atAdminPageEvent === 'function') {
       back4AppNavigation.atAdminPageEvent()
+    }
   }
 
   displayMessage(colorNotification, message) {
@@ -64,7 +65,7 @@ class B4aAdminPage extends DashboardView {
           {message}
           {this.state.inviteCollab ?
             <span> -&nbsp;
-            <a onClick={() => {this.setState({showDialog: true})}} style={{ fontWeight: "bold" }}>Send Invite</a>
+              <a onClick={() => {this.setState({showDialog: true})}} style={{ fontWeight: 'bold' }}>Send Invite</a>
             </span>
             : null}
         </div>
@@ -85,19 +86,19 @@ class B4aAdminPage extends DashboardView {
     const { host } = this.state
 
     // Create admin host
-    await this.context.currentApp.addAdminHost(host + this.adminDomain)
+    await this.context.addAdminHost(host + this.adminDomain)
     return this.protocol + host + this.adminDomain
   }
 
   async createAdmin() {
     const { username, password } = this.state
-    await this.context.currentApp.addAdminUser({ username, password })
+    await this.context.addAdminUser({ username, password })
 
     await this.setState({ isRoleCreated: true })
   }
 
   async createTextIndexes() {
-    await this.context.currentApp.createTextIndexes()
+    await this.context.createTextIndexes()
   }
 
   async renderModal() {
@@ -111,18 +112,18 @@ class B4aAdminPage extends DashboardView {
     })
 
     if (typeof back4AppNavigation !== 'undefined' && typeof back4AppNavigation.onShowAdminModalEvent === 'function')
-      back4AppNavigation.onShowAdminModalEvent()
+    {back4AppNavigation.onShowAdminModalEvent()}
   }
 
   renderButtonToEnable(){
     return (
       <div>
-        <div className={styles["enable-feature-block"]}>
+        <div className={styles['enable-feature-block']}>
           <Button value='Enable Admin App'
             onClick={this.renderModal.bind(this)}
             primary={true}
             className={styles['input-child']}/>
-          </div>
+        </div>
       </div>
     )
   }
@@ -143,21 +144,21 @@ class B4aAdminPage extends DashboardView {
         controls
         width="650px"
         style={{
-          border: "1px solid #000",
-          borderRadius: "4px",
-          marginBottom: "20"
+          border: '1px solid #000',
+          borderRadius: '4px',
+          marginBottom: '20'
         }} />
       <Field
         height='120px'
         textAlign='center'
         label={<Label text='Is Enabled?' description="Enabling will automatically add three new classes, new indexes and a new role to your application’s schema." />}
-        input={<div 
-          style={{display: "flex", alignItems: "center", justifyContent: "center"}}
+        input={<div
+          style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}
           className={styles['input']}>
           {
             isAdminHostEnabled
               ? <Icon name='admin-app-check' width={50} height={50}
-                      fill='#4CAF50' className={styles['input-child']}></Icon>
+                fill='#4CAF50' className={styles['input-child']}></Icon>
               : this.renderButtonToEnable()
           }
         </div>
@@ -165,13 +166,13 @@ class B4aAdminPage extends DashboardView {
       </Field>
       {
         isAdminHostEnabled
-        ? <Field
+          ? <Field
             height='120px'
             textAlign='center'
             label={<Label text='Admin App URL' description='Use this address to share your Admin App with trusted users. Only users with the B4aAdminUser role will be allowed to log in.' />}
             input={<div className={styles['input']}><a target='_blank' href={adminURL} className={styles['input-child']}>{adminURL}</a></div>}>
           </Field>
-        : ''
+          : ''
       }
     </Fieldset>
 

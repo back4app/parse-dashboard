@@ -37,26 +37,26 @@ const sortClasses = (classes) => {
   })
 }
 
-@subscribeTo("Schema", "schema")
+@subscribeTo('Schema', 'schema')
 class BlockChainPage extends DashboardView {
   constructor() {
     super();
-    this.section = "Database";
-    this.subsection = "Blockchain";
+    this.section = 'Database';
+    this.subsection = 'Blockchain';
 
     this.state = {
       loading: true,
       appBalanceLoading: true,
       blockChainClassesLoading: true,
       classes: [],
-      appBalance: "",
+      appBalance: '',
       blockChainClasses: [],
-      selectedClass: "",
+      selectedClass: '',
       showAddClassModal: false,
       showRemoveClassModal: false,
       inProgress: false,
-      lastError: "",
-      lastNote: "",
+      lastError: '',
+      lastNote: '',
     };
     this.moveClassToBlockChain = this.moveClassToBlockChain.bind(this);
     this.removeClassFromBlockChain = this.removeClassFromBlockChain.bind(this);
@@ -65,17 +65,17 @@ class BlockChainPage extends DashboardView {
 
   componentWillMount() {
     this.props.schema.dispatch(ActionTypes.FETCH).then(() => {
-      if (this.props.schema.data.get("classes")) {
-        let classes = this.props.schema.data.get("classes").keySeq().toArray();
+      if (this.props.schema.data.get('classes')) {
+        const classes = this.props.schema.data.get('classes').keySeq().toArray();
         this.setState({ loading: false, classes: sortClasses(classes) });
       }
     });
 
-    this.context.currentApp.getAppBalance().then(({ balance }) => {
+    this.context.getAppBalance().then(({ balance }) => {
       this.setState({ appBalanceLoading: false, appBalance: balance });
     });
 
-    this.context.currentApp.getBlockchainClassNames().then(({ classNames }) => {
+    this.context.getBlockchainClassNames().then(({ classNames }) => {
       this.setState({
         blockChainClassesLoading: false,
         blockChainClasses: sortClasses(classNames),
@@ -102,14 +102,14 @@ class BlockChainPage extends DashboardView {
   }
 
   moveClassToBlockChain() {
-    let selectedClassName = this.state.selectedClass;
+    const selectedClassName = this.state.selectedClass;
     this.setState({
       inProgress: true,
     });
-    this.context.currentApp
+    this.context
       .moveClassToBlockchain(selectedClassName)
       .then(() => {
-        let newClassArray = [ ...this.state.blockChainClasses, selectedClassName ];
+        const newClassArray = [ ...this.state.blockChainClasses, selectedClassName ];
         this.setState({
           blockChainClasses: sortClasses(newClassArray),
           classes: this.state.classes.filter(name => name !== selectedClassName)
@@ -129,11 +129,11 @@ class BlockChainPage extends DashboardView {
   }
 
   removeClassFromBlockChain() {
-    let selectedClassName = this.state.selectedClass;
+    const selectedClassName = this.state.selectedClass;
     this.setState({
       inProgress: true,
     });
-    this.context.currentApp
+    this.context
       .removeFromBlockchain(selectedClassName)
       .then(() => {
         this.setState({
@@ -186,7 +186,7 @@ class BlockChainPage extends DashboardView {
   renderForm() {
     const classes = this.state.classes.filter(name => !this.state.blockChainClasses.includes(name));
     let formattedBalance;
-    if ( BigInt ) {
+    if (BigInt) {
       formattedBalance = (
         Number(BigInt(this.state.appBalance) / BigInt(1000000000)) / 1000000000
       ).toFixed(9)
@@ -274,7 +274,7 @@ class BlockChainPage extends DashboardView {
           className={this.state.selectedClass}
           onConfirm={this.moveClassToBlockChain}
           onCancel={() =>
-            this.setState({ selectedClass: "", showAddClassModal: false })
+            this.setState({ selectedClass: '', showAddClassModal: false })
           }
           progress={this.state.inProgress}
         />
@@ -285,7 +285,7 @@ class BlockChainPage extends DashboardView {
           className={this.state.selectedClass}
           onConfirm={this.removeClassFromBlockChain}
           onCancel={() =>
-            this.setState({ selectedClass: "", showRemoveClassModal: false })
+            this.setState({ selectedClass: '', showRemoveClassModal: false })
           }
           progress={this.state.inProgress}
         />

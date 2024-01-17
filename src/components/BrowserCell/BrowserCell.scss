@@ -36,10 +36,10 @@
   }
 }
 
-.readonly {
-  color: #353446;
-  opacity: .9;
-}
+// .readonly {
+//   color: #353446;
+//   opacity: .9;
+// }
 
 .hasMore{
   height: auto;
@@ -78,4 +78,13 @@
     right: 0;
     bottom: 0;
   }
+}
+
+.readonly {
+  color: #04263bd1;
+}
+
+.action {
+  padding: 28px;
+  border-style: solid;
 }

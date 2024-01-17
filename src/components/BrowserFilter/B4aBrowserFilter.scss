@@ -1,0 +1,158 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 38px;
+  width: 38px;
+  padding: 4px;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &.active {
+    background: $blue;
+  }
+}
+
+.entry {
+  svg {
+    fill: white;
+  }
+  
+  &.disabled {
+    cursor: not-allowed;
+    color: #bbbbbb;
+
+    svg {
+      fill: #bbbbbb;
+    }
+
+    &:hover svg {
+      fill: #9593a1;
+    }
+  }
+}
+
+.entry.active {
+  border-radius: 5px;
+
+  svg {
+    fill: white;
+  }
+}
+
+.active .title, .active .body {
+  background: $blue;
+}
+
+.title {
+  background: #797691;
+  padding: 7px 3px;
+  border-radius: 5px 5px 0 0;
+
+  svg {
+    fill: white;
+  }
+}
+
+.entry, .title {
+  @include NotoSansFont;
+  position: relative;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+
+  svg {
+    vertical-align: top;
+  }
+
+  span {
+    display: inline-block;
+    vertical-align: top;
+    height: 14px;
+    line-height: 14px;
+  }
+}
+
+.objectPickerContent {
+  .entry svg {
+    fill: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.body {
+  position: absolute;
+  top: 31px;
+  right: 0;
+  border-radius: 5px 0 5px 5px;
+  background: #797691;
+  width: 535px;
+  font-size: 14px;
+}
+
+.footer {
+  background: rgba(0,0,0,0.2);
+  padding: 11px 0;
+  text-align: center;
+
+  > button {
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.row {
+  padding: 8px 15px;
+
+  > * {
+    margin-right: 10px;
+
+    &:nth-last-child(2) {
+      margin-right: 0;
+    }
+  }
+
+  input {
+    @include MonospaceFont;
+    height: 30px;
+    width: 140px;
+    background: #343445;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    vertical-align: top;
+    padding: 0 8px;
+    color: white;
+    font-size: 14px;
+  }
+}
+
+.active .row input {
+  background: #0E69A1;
+}
+
+.remove {
+  display: inline-block;
+  height: 14px;
+  margin: 8px;
+}
+
+.date {
+  display: inline-block;
+  vertical-align: top;
+}

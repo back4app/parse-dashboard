@@ -6,13 +6,18 @@
  * the root directory of this source tree.
  */
 import PropTypes from 'lib/PropTypes';
-import React     from 'react';
-import Prism     from 'prismjs';
+import React from 'react';
+import Prism from 'prismjs';
 
 import './CodeSnippet.css';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 export default class CodeSnippet extends React.Component {
+  constructor() {
+    super();
+    this.codeRef = React.createRef();
+  }
+
   componentDidMount() {
     this._highlight();
   }
@@ -22,19 +27,21 @@ export default class CodeSnippet extends React.Component {
   }
 
   _highlight() {
-    Prism.highlightElement(this.refs.code);
+    Prism.highlightElement(this.codeRef.current);
   }
 
   render() {
-    let { fullPage = true, lineNumbers = true } = this.props;
-    let classes = ['language-' + this.props.language];
+    const { fullPage = true, lineNumbers = true } = this.props;
+    const classes = ['language-' + this.props.language];
     if (lineNumbers) {
       classes.push('line-numbers');
     }
-    let pageStyle = fullPage ? { minHeight: 'calc(100vh - 96px)'} : {};
+    const pageStyle = fullPage ? { minHeight: 'calc(100vh - 96px)' } : {};
     return (
-      <pre style={{ margin: 0, ...pageStyle}} className={classes.join(' ')}>
-        <code style={pageStyle} ref='code'>{this.props.source}</code>
+      <pre style={{ margin: 0, ...pageStyle }} className={classes.join(' ')}>
+        <code style={pageStyle} ref={this.codeRef}>
+          {this.props.source}
+        </code>
       </pre>
     );
   }
@@ -44,13 +51,11 @@ CodeSnippet.propTypes = {
   source: PropTypes.string.isRequired.describe(
     'The source code to be rendered with syntax-highlighting.'
   ),
-  language: PropTypes.string.describe(
-    'The programming language of the snippet.'
-  ),
+  language: PropTypes.string.describe('The programming language of the snippet.'),
   fullPage: PropTypes.bool.describe(
     'Pass false if this component doesn\'t need to fill the whole page.'
   ),
   lineNumbers: PropTypes.bool.describe(
     'Pass false if this component doesn\'t need to print line numbers.'
-  )
+  ),
 };

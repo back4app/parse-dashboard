@@ -9,22 +9,20 @@ import PropTypes from 'lib/PropTypes';
 import React, { useState, useEffect, useRef } from 'react';
 import styles from 'components/ContextMenu/ContextMenu.scss';
 
-const getPositionToFitVisibleScreen = (ref) => {
+const getPositionToFitVisibleScreen = ref => {
   if (ref.current) {
-
     const elBox = ref.current.getBoundingClientRect();
-    const y = (elBox.y + elBox.height) < window.innerHeight ?
-      0 : (window.innerHeight - (elBox.y + elBox.height));
+    const y = elBox.y + elBox.height < window.innerHeight ? 0 : 0 - elBox.y + 100;
 
     // If there's a previous element show current next to it.
     // Try on right side first, then on left if there's no place.
     const prevEl = ref.current.previousSibling;
     if (prevEl) {
       const prevElBox = prevEl.getBoundingClientRect();
-      const showOnRight = (prevElBox.x + prevElBox.width + elBox.width) < window.innerWidth;
+      const showOnRight = prevElBox.x + prevElBox.width + elBox.width < window.innerWidth;
       return {
         x: showOnRight ? prevElBox.width : -elBox.width,
-        y
+        y,
       };
     }
 
@@ -33,7 +31,6 @@ const getPositionToFitVisibleScreen = (ref) => {
 };
 
 const MenuSection = ({ level, items, path, setPath, hide }) => {
-
   const sectionRef = useRef(null);
   const [position, setPosition] = useState();
 
@@ -42,39 +39,63 @@ const MenuSection = ({ level, items, path, setPath, hide }) => {
     newPosition && setPosition(newPosition);
   }, [sectionRef]);
 
-  const style = position ? {
-    left: position.x,
-    top: position.y,
-    opacity: 1
-  } : {};
+  const style = position
+    ? {
+      left: position.x,
+      top: position.y,
+      maxHeight: '80vh',
+      overflowY: 'scroll',
+      opacity: 1,
+    }
+    : {};
 
-  return (<ul ref={sectionRef} className={styles.category} style={style}>
-    {items.map((item, index) => {
-      if (item.items) {
-        return (<li className={styles.item} onMouseEnter={() => {
-          const newPath = path.slice(0, level + 1);
-          newPath.push(index);
-          setPath(newPath);
-        }}>{item.text}</li>);
-      }
-      return (<li className={styles.option} onClick={() => {
-        item.callback && item.callback();
-        hide();
-      }}>{item.text}</li>);
-    })}
-  </ul>);
-}
+  return (
+    <ul ref={sectionRef} className={styles.category} style={style}>
+      {items.map((item, index) => {
+        if (item.items) {
+          return (
+            <li
+              key={`menu-section-${level}-${index}`}
+              className={styles.item}
+              onMouseEnter={() => {
+                const newPath = path.slice(0, level + 1);
+                newPath.push(index);
+                setPath(newPath);
+              }}
+            >
+              {item.text}
+            </li>
+          );
+        }
+        return (
+          <li
+            key={`menu-section-${level}-${index}`}
+            className={styles.option}
+            onClick={() => {
+              item.callback && item.callback();
+              hide();
+            }}
+          >
+            {item.text}
+            {item.subtext && <span> - {item.subtext}</span>}
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
 
-let ContextMenu = ({ x, y, items }) => {
-
+const ContextMenu = ({ x, y, items }) => {
   const [path, setPath] = useState([0]);
   const [visible, setVisible] = useState(true);
-  useEffect(() => { setVisible(true); }, [items]);
+  useEffect(() => {
+    setVisible(true);
+  }, [items]);
 
   const hide = () => {
     setVisible(false);
     setPath([0]);
-  }
+  };
 
   //#region Closing menu after clicking outside it
 
@@ -95,38 +116,49 @@ let ContextMenu = ({ x, y, items }) => {
 
   //#endregion
 
-  if (!visible) { return null; }
+  if (!visible) {
+    return null;
+  }
 
-  const getItemsFromLevel = (level) => {
+  const getItemsFromLevel = level => {
     let result = items;
     for (let index = 1; index <= level; index++) {
       result = result[path[index]].items;
     }
     return result;
-  }
+  };
 
   return (
-    <div className={styles.menu} ref={menuRef} style={{
-      left: x, top: y
-    }}>
+    <div
+      className={styles.menu}
+      ref={menuRef}
+      style={{
+        left: x,
+        top: y,
+      }}
+    >
       {path.map((position, level) => {
-        return <MenuSection
-          key={`section-${position}-${level}`}
-          path={path}
-          setPath={setPath}
-          level={level}
-          items={getItemsFromLevel(level)}
-          hide={hide}
-        />
+        return (
+          <MenuSection
+            key={`section-${position}-${level}`}
+            path={path}
+            setPath={setPath}
+            level={level}
+            items={getItemsFromLevel(level)}
+            hide={hide}
+          />
+        );
       })}
     </div>
   );
-}
+};
 
 ContextMenu.propTypes = {
   x: PropTypes.number.isRequired.describe('X context menu position.'),
   y: PropTypes.number.isRequired.describe('Y context menu position.'),
-  items: PropTypes.array.isRequired.describe('Array with tree representation of context menu items.'),
-}
+  items: PropTypes.array.isRequired.describe(
+    'Array with tree representation of context menu items.'
+  ),
+};
 
 export default ContextMenu;

@@ -1,4 +1,4 @@
-import BrowserFilter        from 'components/BrowserFilter/BrowserFilter.react';
+import B4aBrowserFilter        from 'components/BrowserFilter/B4aBrowserFilter.react';
 import BrowserMenu          from 'components/BrowserMenu/BrowserMenu.react';
 import Icon                 from 'components/Icon/Icon.react';
 import LoginDialog          from 'dashboard/Data/Browser/LoginDialog.react';
@@ -14,7 +14,7 @@ import Toggle               from 'components/Toggle/Toggle.react';
 import Button               from 'components/Button/Button.react'
 import VideoTutorialButton  from 'components/VideoTutorialButton/VideoTutorialButton.react';
 import ColumnsConfiguration
-                      from 'components/ColumnsConfiguration/ColumnsConfiguration.react';
+  from 'components/ColumnsConfiguration/ColumnsConfiguration.react';
 import SubMenuItem from '../../../components/BrowserMenu/SubMenuItem.react';
 
 const apiDocsButtonStyle = {
@@ -34,63 +34,68 @@ const apiDocsButtonStyle = {
   'marginBottom': '4px',
 }
 
-let B4ABrowserToolbar = ({
-    className,
-    classNameForEditors,
-    count,
-    editCloneRows,
-    perms,
-    schema,
-    filters,
-    selection,
-    relation,
-    setCurrent,
-    onFilterChange,
-    onAbortAddRow,
-    onAddColumn,
-    onAddRow,
-    onAddClass,
-    onAttachRows,
-    onAttachSelectedRows,
-    onCancelPendingEditRows,
-    onExportSelectedRows,
-    onImport,
-    onImportRelation,
-    onCloneSelectedRows,
-    onExport,
-    onRemoveColumn,
-    onDeleteRows,
-    onDropClass,
-    onChangeCLP,
-    onEditPermissions,
-    onRefresh,
-    hidePerms,
-    isUnique,
-    uniqueField,
-    handleColumnDragDrop,
-    handleColumnsOrder,
-    order,
-    enableDeleteAllRows,
-    enableImport,
-    enableExportClass,
-    enableSecurityDialog,
-    enableColumnManipulation,
-    enableClassManipulation,
-    applicationId,
-    onClickIndexManager,
-    onClickSecurity,
-    columns,
-    onShowPointerKey,
-    
-    currentUser,
-    useMasterKey,
-    login,
-    logout,
-    toggleMasterKeyUsage,
-  }) => {
-  let selectionLength = Object.keys(selection).length;
-  let isPendingEditCloneRows = editCloneRows && editCloneRows.length > 0;
-  let details = [], lockIcon = false;
+const B4ABrowserToolbar = ({
+  className,
+  classNameForEditors,
+  count,
+  editCloneRows,
+  perms,
+  schema,
+  filters,
+  selection,
+  relation,
+  setCurrent,
+  onFilterChange,
+  onAddColumn,
+  onAddRow,
+  onAddClass,
+  onAttachRows,
+  onAttachSelectedRows,
+  onCancelPendingEditRows,
+  onExportSelectedRows,
+  onImport,
+  onImportRelation,
+  onCloneSelectedRows,
+  onExport,
+  onRemoveColumn,
+  onDeleteRows,
+  onDropClass,
+  onChangeCLP,
+  onEditPermissions,
+  onRefresh,
+  hidePerms,
+  isUnique,
+  uniqueField,
+  handleColumnDragDrop,
+  handleColumnsOrder,
+  order,
+  enableDeleteAllRows,
+  enableImport,
+  enableExportClass,
+  enableSecurityDialog,
+  enableColumnManipulation,
+  enableClassManipulation,
+  applicationId,
+  onClickIndexManager,
+  onClickSecurity,
+  columns,
+  onShowPointerKey,
+
+  currentUser,
+  useMasterKey,
+  login,
+  logout,
+  toggleMasterKeyUsage,
+
+  onAddRowWithModal,
+  onEditSelectedRow,
+  onExportSchema,
+  onFilterSave,
+}) => {
+  const selectionLength = Object.keys(selection).length;
+  const isPendingEditCloneRows = editCloneRows && editCloneRows.length > 0;
+  const details = [];
+  let lockIcon = false;
   if (count !== undefined) {
     if (count === 1) {
       details.push('1 object');
@@ -102,8 +107,8 @@ let B4ABrowserToolbar = ({
   let readWritePermissions = '';
   if (!relation && !isUnique) {
     if (perms && !hidePerms) {
-      let read = perms.get && perms.find && perms.get['*'] && perms.find['*'];
-      let write = perms.create && perms.update && perms.delete && perms.create['*'] && perms.update['*'] && perms.delete['*'];
+      const read = perms.get && perms.find && perms.get['*'] && perms.find['*'];
+      const write = perms.create && perms.update && perms.delete && perms.create['*'] && perms.update['*'] && perms.delete['*'];
       if (read && write) {
         // details.push('Public Read and Write enabled');
         readWritePermissions = 'Public Read and Write enabled';
@@ -113,15 +118,15 @@ let B4ABrowserToolbar = ({
       } else if (write) {
         // details.push('Public Write enabled');
         readWritePermissions = 'Public Write enabled';
-      } else if ( !read && !write ) {
+      } else if (!read && !write) {
         readWritePermissions = 'Protected';
         lockIcon = true;
       }
     }
   }
 
-  let protectedDialogRef = useRef(null);
-  let loginDialogRef = useRef(null);
+  const protectedDialogRef = useRef(null);
+  const loginDialogRef = useRef(null);
 
   const showProtected = () => protectedDialogRef.current.handleOpen();
   const showLogin = () => loginDialogRef.current.handleOpen();
@@ -151,7 +156,7 @@ let B4ABrowserToolbar = ({
   } else {
     menu = (
       <BrowserMenu title='Edit' icon='more-icon' setCurrent={setCurrent} active={currentUser ? true : false} >
-        {isPendingEditCloneRows ? 
+        {isPendingEditCloneRows ?
           <>
             <MenuItem text="Cancel all pending rows" onClick={onCancelPendingEditRows} />
             <Separator />
@@ -172,14 +177,20 @@ let B4ABrowserToolbar = ({
             {currentUser ? <MenuItem text={<span>Stop browsing (<b>{currentUser.get('username')}</b>)</span>} onClick={logout} disabled={isPendingEditCloneRows} /> : <noscript />}
           </SubMenuItem>
         ) : (
-            <MenuItem text="Browser As User" onClick={showLogin} disabled={isPendingEditCloneRows} />
+          <MenuItem text="Browser As User" onClick={showLogin} disabled={isPendingEditCloneRows} />
         ))}
         <Separator />
         <MenuItem disabled={isPendingEditCloneRows} text='Add a row' onClick={onAddRow} />
+        {/* {onAddRowWithModal ? <MenuItem text="Add a row with modal" onClick={onAddRowWithModal} /> : null} */}
         {enableColumnManipulation ? <MenuItem disabled={isPendingEditCloneRows} text='Add a column' onClick={onAddColumn} /> : <noscript />}
         {enableClassManipulation ? <MenuItem disabled={isPendingEditCloneRows} text='Add a class' onClick={onAddClass} /> : <noscript />}
         <Separator />
         <MenuItem disabled={isPendingEditCloneRows} text='Change pointer key' onClick={onShowPointerKey} />
+        {/* <MenuItem
+          disabled={selectionLength !== 1}
+          text={'Edit this row with modal'}
+          onClick={onEditSelectedRow}
+        /> */}
         <MenuItem
           disabled={!selectionLength || isPendingEditCloneRows}
           text={`Attach ${selectionLength <= 1 ? 'this row' : 'these rows'} to relation`}
@@ -199,17 +210,17 @@ let B4ABrowserToolbar = ({
         {enableDeleteAllRows ? <MenuItem disabled={isPendingEditCloneRows} text='Delete all rows' onClick={() => onDeleteRows({ '*': true })} /> : <noscript />}
         {enableClassManipulation ? <MenuItem disabled={isPendingEditCloneRows} text='Delete this class' onClick={onDropClass} /> : <noscript />}
         {enableImport || enableExportClass ? <Separator /> : <noscript />}
-        {enableImport ? 
+        {enableImport ?
           <SubMenuItem title="Import" setCurrent={setCurrent} onClick={null} disabled={isPendingEditCloneRows} >
             <MenuItem disabled={isPendingEditCloneRows} text='Class data' onClick={onImport} />
             <MenuItem disabled={isPendingEditCloneRows} text='Relation data' onClick={onImportRelation} />
           </SubMenuItem>
-        : <noscript />}
-        {enableExportClass ? 
+          : <noscript />}
+        {enableExportClass ?
           <SubMenuItem title="Export" setCurrent={setCurrent} onClick={null} disabled={isPendingEditCloneRows} >
-            <MenuItem disabled={isPendingEditCloneRows} text='all rows as JSON' onClick={onExport} />
-            <MenuItem disabled={!selectionLength || isPendingEditCloneRows} text={`${selectionLength} selected ${selectionLength <= 1 ? 'row' : 'rows'} as CSV`} onClick={() => onExportSelectedRows(selection)} />
-            <MenuItem disabled={isPendingEditCloneRows} text='all rows as CSV' onClick={() => onExportSelectedRows({'*': true})} />
+            <MenuItem text={'Export all rows'} onClick={() => onExportSelectedRows({ '*': true })} />
+            <MenuItem disabled={!selectionLength || isPendingEditCloneRows} text={`Export ${selectionLength} selected ${selectionLength <= 1 ? 'row' : 'rows'}`} onClick={() => onExportSelectedRows(selection)} />
+            <MenuItem text={'Export schema'} onClick={() => onExportSchema()} />
           </SubMenuItem>
           : <noscript />}
         <Separator />
@@ -253,7 +264,7 @@ let B4ABrowserToolbar = ({
       if (col === 'objectId' || isUnique && col !== uniqueField) {
         return;
       }
-      if ((type ==='Pointer' && targetClass === '_User') || type === 'Array' ) {
+      if ((type === 'Pointer' && targetClass === '_User') || type === 'Array') {
         userPointers.push(col);
       }
     });
@@ -262,7 +273,7 @@ let B4ABrowserToolbar = ({
   // variables used to define an API reference button on browser toolbar
   let classApiId = ''
   let apiDocsButton = ''
-  let isCustomCLass = classNameForEditors && classNameForEditors.indexOf('_') === -1
+  const isCustomCLass = classNameForEditors && classNameForEditors.indexOf('_') === -1
 
   if (className && (className === 'User' || isCustomCLass)) {
     // set classApiId taking into count the User class special condition
@@ -285,6 +296,9 @@ let B4ABrowserToolbar = ({
       <VideoTutorialButton url={videoTutorialUrl} additionalStyles={ { marginLeft: '8px', marginBottom: '4px' } } />
     </span>
   );
+
+  const clpDialogRef = useRef(null);
+  const showCLP = () => clpDialogRef.current.handleOpen();
 
   return (
     <Toolbar
@@ -318,19 +332,38 @@ let B4ABrowserToolbar = ({
       <a className={styles.toolbarButton + ` ${isPendingEditCloneRows && styles.toolbarButtonDisabled}`} onClick={isPendingEditCloneRows ? null : onRefresh} title='Refresh'>
         <Icon name='refresh-icon' width={30} height={26} />
       </a>
-      <BrowserFilter
+      <B4aBrowserFilter
         setCurrent={setCurrent}
         schema={schemaSimplifiedData}
         filters={filters}
+        onChange={onFilterChange}
+        onSaveFilter={onFilterSave}
+        className={classNameForEditors}
+        blacklistedFilters={onAddRow ? [] : ['unique']}
         disabled={isPendingEditCloneRows}
-        onChange={onFilterChange} />
+      />
       <ColumnsConfiguration
         disabled={isPendingEditCloneRows}
         handleColumnsOrder={handleColumnsOrder}
         handleColumnDragDrop={handleColumnDragDrop}
         order={order}
-        className={classNameForEditors} />      
-      {menu}
+        className={classNameForEditors} />
+      {perms && enableSecurityDialog ? (
+        <SecurityDialog
+          ref={clpDialogRef}
+          disabled={!!relation || !!isUnique}
+          perms={perms}
+          columns={columns}
+          className={classNameForEditors}
+          onChangeCLP={onChangeCLP}
+          userPointers={userPointers}
+          title="ClassLevelPermissions"
+          icon="locked-solid"
+          onEditPermissions={onEditPermissions}
+        />
+      ) : (
+        <noscript />
+      )}
       <SecureFieldsDialog
         ref={protectedDialogRef}
         columns={columns}
@@ -343,6 +376,21 @@ let B4ABrowserToolbar = ({
         icon='locked-solid'
         onEditPermissions={onEditPermissions}
       />
+      {/* {enableSecurityDialog ? (
+        <BrowserMenu
+          setCurrent={setCurrent}
+          title="Security"
+          icon="locked-solid"
+          disabled={!!relation || !!isUnique || isPendingEditCloneRows}
+        >
+          <MenuItem text={'Class Level Permissions'} onClick={showCLP} />
+          <MenuItem text={'Protected Fields'} onClick={showProtected} />
+        </BrowserMenu>
+      ) : (
+        <noscript />
+      )} */}
+      {enableSecurityDialog ? <div className={styles.toolbarSeparator} /> : <noscript />}
+      {menu}
       {onAddRow && (
         <LoginDialog
           ref={loginDialogRef}

@@ -9,7 +9,8 @@
 import DashboardView from 'dashboard/DashboardView.react';
 import React from 'react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
-import styles from 'dashboard/ServerSettings/ServerSettings.scss'
+import styles from 'dashboard/ServerSettings/ServerSettings.scss';
+import { withRouter } from 'lib/withRouter';
 
 const handleMessage = ({ data }) => {
   // Reloads the page when receives a message with a string "reload"
@@ -18,6 +19,7 @@ const handleMessage = ({ data }) => {
   }
 }
 
+@withRouter
 export default class ServerSettings extends DashboardView {
   constructor () {
     super();

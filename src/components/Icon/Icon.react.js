@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import PropTypes from 'lib/PropTypes';
-import React     from 'react';
+import React from 'react';
 
 let Icon = ({ name, fill, width, height, className, onClick }) => {
   let props = {
@@ -19,7 +19,7 @@ let Icon = ({ name, fill, width, height, className, onClick }) => {
     props.fill = fill;
   }
   return (
-    <svg {...props} >
+    <svg {...props}>
       <use xlinkHref={`bundles/sprites.svg#${name}`} />
     </svg>
   );

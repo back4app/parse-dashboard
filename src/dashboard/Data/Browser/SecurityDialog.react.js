@@ -5,21 +5,17 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import PropTypes         from 'lib/PropTypes'; 
-import Icon              from 'components/Icon/Icon.react';
-import Parse             from 'parse'
-import ParseApp          from 'lib/ParseApp';
+import Parse from 'parse';
 import PermissionsDialog from 'components/PermissionsDialog/PermissionsDialog.react';
-import React             from 'react';
-import styles            from 'dashboard/Data/Browser/Browser.scss';
+import React from 'react';
+import styles from 'dashboard/Data/Browser/Browser.scss';
+import { CurrentApp } from 'context/currentApp';
 
 const pointerPrefix = 'userField:';
 
 function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
-   if (parseServerSupportsPointerPermissions) {
-    let fieldName = text.startsWith(pointerPrefix)
-      ? text.substring(pointerPrefix.length)
-      : text;
+  if (parseServerSupportsPointerPermissions) {
+    const fieldName = text.startsWith(pointerPrefix) ? text.substring(pointerPrefix.length) : text;
     if (pointers.includes(fieldName)) {
       return Promise.resolve({ entry: fieldName, type: 'pointer' });
     }
@@ -37,7 +33,7 @@ function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
   }
 
   if (text.startsWith('user:')) {
-    let user = text.substring(5);
+    const user = text.substring(5);
 
     userQuery = new Parse.Query.or(
       new Parse.Query(Parse.User).equalTo('username', user),
@@ -45,11 +41,10 @@ function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
     );
     // no need to query roles
     roleQuery = {
-      find: () => Promise.resolve([])
+      find: () => Promise.resolve([]),
     };
-
   } else if (text.startsWith('role:')) {
-    let role = text.substring(5);
+    const role = text.substring(5);
 
     roleQuery = new Parse.Query.or(
       new Parse.Query(Parse.Role).equalTo('name', role),
@@ -57,7 +52,7 @@ function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
     );
     // no need to query users
     userQuery = {
-      find: () => Promise.resolve([])
+      find: () => Promise.resolve([]),
     };
   } else {
     // query both
@@ -74,7 +69,7 @@ function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
 
   return Promise.all([
     userQuery.find({ useMasterKey: true }),
-    roleQuery.find({ useMasterKey: true })
+    roleQuery.find({ useMasterKey: true }),
   ]).then(([user, role]) => {
     if (user.length > 0) {
       return { entry: user[0], type: 'user' };
@@ -87,6 +82,7 @@ function validateEntry(pointers, text, parseServerSupportsPointerPermissions) {
 }
 
 export default class SecurityDialog extends React.Component {
+  static contextType = CurrentApp;
   constructor() {
     super();
 
@@ -106,52 +102,41 @@ export default class SecurityDialog extends React.Component {
   }
 
   handleClose() {
-    this.setState({ open: false },() => this.props.onEditPermissions(false));
+    this.setState({ open: false }, () => this.props.onEditPermissions(false));
   }
 
   render() {
     let dialog = null;
-    let parseServerSupportsPointerPermissions = this.context.currentApp.serverInfo.features.schemas.editClassLevelPermissions;
+    const parseServerSupportsPointerPermissions =
+      this.context.serverInfo.features.schemas.editClassLevelPermissions;
     if (this.props.perms && this.state.open) {
       dialog = (
         <PermissionsDialog
-          title='Edit Class Level Permissions'
+          title="Edit Class Level Permissions"
           enablePointerPermissions={parseServerSupportsPointerPermissions}
           advanced={true}
-          confirmText='Save CLP'
+          confirmText="Save CLP"
           columns={this.props.columns}
-          details={<a target="_blank" href='http://docs.parseplatform.org/ios/guide/#security'>Learn more about CLPs and app security</a>}
+          details={
+            <a target="_blank" href="http://docs.parseplatform.org/ios/guide/#security">
+              Learn more about CLPs and app security
+            </a>
+          }
           permissions={this.props.perms}
           userPointers={this.props.userPointers}
-          validateEntry={entry => 
-            validateEntry(this.props.userPointers, entry, parseServerSupportsPointerPermissions)}
+          validateEntry={entry =>
+            validateEntry(this.props.userPointers, entry, parseServerSupportsPointerPermissions)
+          }
           onCancel={this.handleClose}
-          parseVersion={this.context.currentApp.serverInfo}
-          onConfirm={perms => 
-            this.props.onChangeCLP(perms).then(this.handleClose)}
+          onConfirm={perms => this.props.onChangeCLP(perms).then(this.handleClose)}
         />
       );
     }
-    let classes = [styles.toolbarButton];
+    const classes = [styles.toolbarButton];
     if (this.props.disabled) {
       classes.push(styles.toolbarButtonDisabled);
     }
-    let onClick = null;
-    if (!this.props.disabled) {
-      onClick = () => {
-        this.setState({ open: true });
-        this.props.setCurrent(null);
-      };
-    }
-    return (
-      <div className={classes.join(' ')} title='Security'>
-        <Icon width={32} height={26} name='security' onClick={onClick} />
-        {dialog}
-      </div>
-    );
+
+    return dialog;
   }
 }
-
-SecurityDialog.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

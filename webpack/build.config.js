@@ -5,35 +5,36 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-var configuration = require('./base.config.js');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var CleanWebpackPlugin = require('clean-webpack-plugin');
-var path = require('path');
-var HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-var settings = require('@back4app/back4app-settings');
+const configuration = require('./base.config.js');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+const settings = require('@back4app/back4app-settings');
 
 configuration.mode = 'development';
 configuration.entry = {
   dashboard: './dashboard/index.js',
-  login: './login/index.js'
+  // login: './login/index.js',
 };
 configuration.output.path = path.resolve('./Parse-Dashboard/public/bundles');
-configuration.output.filename = "[name].[chunkhash].js";
+configuration.output.filename = '[name].[chunkhash].js';
 
 configuration.plugins.push(
-  new CleanWebpackPlugin(['bundles/dashboard*.js'], {
-    root: path.resolve('./Parse-Dashboard/public'),
-    watch: true
-  }),
   new HtmlWebpackPlugin({
     template: '../Parse-Dashboard/index.ejs',
-    filename: path.resolve('./Parse-Dashboard/public/index.html')
+    filename: path.resolve('./Parse-Dashboard/public/index.html'),
   }),
+  // new HtmlWebpackPlugin({
+  //   template: '../Parse-Dashboard/login.ejs',
+  //   filename: path.resolve('./Parse-Dashboard/public/login.html'),
+  // }),
   new HtmlWebpackExternalsPlugin({
-    externals: [{
-      module: '@back4app/back4app-navigation',
-      entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
-    }]
+    externals: [
+      {
+        module: '@back4app/back4app-navigation',
+        entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js',
+      },
+    ],
   })
 );
 

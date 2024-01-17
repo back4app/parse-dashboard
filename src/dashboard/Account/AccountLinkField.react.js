@@ -16,24 +16,38 @@ const DEFAULT_LABEL_WIDTH = 56;
 
 // We use refs, so can't be stateless component
 export class AccountLinkField extends React.Component {
+  constructor() {
+    super();
+    this.modifyRef = React.createRef();
+  }
   render() {
     return (
       <div>
-        <form ref='modify'
-              method='post'
-              action={this.props.metadata.linked ?
-                      this.props.metadata.deauthorize_url :
-                      this.props.metadata.authorize_url}>
+        <form
+          ref={this.modifyRef}
+          method="post"
+          action={
+            this.props.metadata.linked
+              ? this.props.metadata.deauthorize_url
+              : this.props.metadata.authorize_url
+          }
+        >
           <CSRFInput />
         </form>
         <Field
           labelWidth={DEFAULT_LABEL_WIDTH}
           label={<Label text={this.props.serviceName} />}
-          input={<FormButton
-          value={this.props.metadata.linked ?
-                 'Unlink ' + this.props.serviceName :
-                 'Connect ' + this.props.serviceName}
-          onClick={() => this.refs.modify.submit()} />}/>
+          input={
+            <FormButton
+              value={
+                this.props.metadata.linked
+                  ? 'Unlink ' + this.props.serviceName
+                  : 'Connect ' + this.props.serviceName
+              }
+              onClick={() => this.modifyRef.current.submit()}
+            />
+          }
+        />
       </div>
     );
   }
@@ -42,10 +56,8 @@ export class AccountLinkField extends React.Component {
 export default AccountLinkField;
 
 AccountLinkField.PropTypes = {
-  serviceName: PropTypes.string.isRequired.describe(
-    'Text to show on button'
-  ),
+  serviceName: PropTypes.string.isRequired.describe('Text to show on button'),
   metadata: PropTypes.object.isRequired.describe(
     'Data from server with keys: linked, authorize_url, and deauthorize_url'
-  )
+  ),
 };

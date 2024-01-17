@@ -28,7 +28,7 @@ return <Modal
   onConfirm={() => {
     if ( validateEmail(email) ){
       setProcessing(true);
-      context.currentApp.transferApp(email).then(() => {
+      context.transferApp(email).then(() => {
         setParentState({
           cleanupFilesMessage: 'Your app has been successfully transfered.',
           cleanupNoteColor: 'orange',

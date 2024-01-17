@@ -6,21 +6,20 @@
  * the root directory of this source tree.
  */
 import * as AnalyticsQueryStore from 'lib/stores/AnalyticsQueryStore';
-import * as SchemaStore         from 'lib/stores/SchemaStore';
-import Button                   from 'components/Button/Button.react';
-import CategoryList             from 'components/CategoryList/CategoryList.react';
-import DateRange                from 'components/DateRange/DateRange.react';
-import EmptyState               from 'components/EmptyState/EmptyState.react';
-import FlowFooter               from 'components/FlowFooter/FlowFooter.react';
-import Icon                     from 'components/Icon/Icon.react';
-import React                    from 'react';
-import SlowQueriesFilter        from 'components/SlowQueriesFilter/SlowQueriesFilter.react';
-import styles                   from 'dashboard/Analytics/SlowQueries/SlowQueries.scss';
-import subscribeTo              from 'lib/subscribeTo';
-import TableHeader              from 'components/Table/TableHeader.react';
-import TableView                from 'dashboard/TableView.react';
-import Toolbar                  from 'components/Toolbar/Toolbar.react';
-import { Directions }           from 'lib/Constants';
+import * as SchemaStore from 'lib/stores/SchemaStore';
+import Button from 'components/Button/Button.react';
+import CategoryList from 'components/CategoryList/CategoryList.react';
+import EmptyState from 'components/EmptyState/EmptyState.react';
+import FlowFooter from 'components/FlowFooter/FlowFooter.react';
+import Icon from 'components/Icon/Icon.react';
+import React from 'react';
+import SlowQueriesFilter from 'components/SlowQueriesFilter/SlowQueriesFilter.react';
+import styles from 'dashboard/Analytics/SlowQueries/SlowQueries.scss';
+import subscribeTo from 'lib/subscribeTo';
+import TableHeader from 'components/Table/TableHeader.react';
+import TableView from 'dashboard/TableView.react';
+import Toolbar from 'components/Toolbar/Toolbar.react';
+import { withRouter } from 'lib/withRouter';
 
 const SLOW_QUERIES_HEADERS = ['#', 'Date Time', 'Method', 'Path', 'Parameters', 'Resp. Status', 'Resp. Time (ms)'];
 const TABLE_WIDTH = [5, 17, 8, 25, 25, 10, 10];
@@ -30,23 +29,24 @@ const APP_VERSIONS_EXPLORER_QUERY = {
   limit: 1000,
   source: 'API Event',
   groups: ['OS', 'App Display Version'],
-  localId: 'slow_query_app_version_query'
+  localId: 'slow_query_app_version_query',
 };
 
-let formatQuery = (query) => {
+const formatQuery = query => {
   return query;
 };
 
 export default
 @subscribeTo('Schema', 'schema')
 @subscribeTo('AnalyticsQuery', 'customQueries')
+@withRouter
 class SlowQueries extends TableView {
   constructor() {
     super();
     this.section = 'More';
     this.subsection = 'Analytics';
 
-    let date = new Date();
+    const date = new Date();
     this.state = {
       slowQueries: [],
       pathOptions: [],
@@ -77,9 +77,9 @@ class SlowQueries extends TableView {
     this.xhrHandles = [];
   }
 
-    renderSidebar() {
-    const { path } = this.props.match;
-    const current = path.substr(path.lastIndexOf("/") + 1, path.length - 1);
+  renderSidebar() {
+    const { pathname } = this.props.location;
+    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
     return (
       <CategoryList current={current} linkPrefix={'analytics/'} categories={[
         { name: 'Explorer', id: 'explorer' },
@@ -91,7 +91,7 @@ class SlowQueries extends TableView {
 
   componentWillMount() {
     this.fetchDropdownData(this.props);
-    this.fetchSlowQueries(this.context.currentApp);
+    this.fetchSlowQueries(this.context);
   }
 
   componentWillUnmount() {
@@ -103,41 +103,41 @@ class SlowQueries extends TableView {
       // check if the changes are in currentApp serverInfo status
       // if not return without making any request
       if (this.props.apps !== nextProps.apps) {
-        let updatedCurrentApp = nextProps.apps.find(ap => ap.slug === this.props.match.params.appId);
-        let prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.match.params.appId);
+        const updatedCurrentApp = nextProps.apps.find(ap => ap.slug === this.props.match.params.appId);
+        const prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.match.params.appId);
         const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
-        if (!shouldUpdate) return;
+        if (!shouldUpdate) {return;}
       }
       this.fetchDropdownData(nextProps);
-      this.fetchSlowQueries(nextContext.currentApp);
+      this.fetchSlowQueries(nextContext);
     }
   }
 
   fetchDropdownData(props) {
     props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
-    let payload = {
+    const payload = {
       ...APP_VERSIONS_EXPLORER_QUERY,
       from: this.state.dateRange.start.getTime(),
-      to: this.state.dateRange.end.getTime()
+      to: this.state.dateRange.end.getTime(),
     };
     if (window.DEVELOPMENT) {
       payload.appID = 16155;
     }
     props.customQueries.dispatch(AnalyticsQueryStore.ActionTypes.FETCH, {
       query: {
-        ...payload
-      }
+        ...payload,
+      },
     });
   }
 
   fetchSlowQueries(app) {
-    let { path, method, respStatus, respTime, dateRange } = this.state;
+    const { path, method, respStatus, respTime, dateRange } = this.state;
 
     this.setState({ loading: true }, () => {
-      let { promise, xhr } = app.getAnalyticsSlowQueries({path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
-      let pathsResult = app.getAnalyticsSlowQueries({distinct: 'href', path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
-      let statusResult = app.getAnalyticsSlowQueries({distinct: 'statusCode', path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
-      let methodsResult = app.getAnalyticsSlowQueries({distinct: 'method', path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
+      const { promise, xhr } = app.getAnalyticsSlowQueries({path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
+      const pathsResult = app.getAnalyticsSlowQueries({distinct: 'href', path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
+      const statusResult = app.getAnalyticsSlowQueries({distinct: 'statusCode', path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
+      const methodsResult = app.getAnalyticsSlowQueries({distinct: 'method', path, method, respStatus, respTime, from: dateRange.start, to: dateRange.end});
       promise.then(
         (result) => this.setState({ slowQueries: result && result.concat([[],[]]) || [] }),
         () => this.setState({ slowQueries: [] })
@@ -163,39 +163,43 @@ class SlowQueries extends TableView {
   handleDownload() {
     const csvDeclaration = 'data:text/csv;charset=utf-8,';
     let csvRows = [SLOW_QUERIES_HEADERS];
-    csvRows[0][0] = 'Sno.'; // replace # 
+    csvRows[0][0] = 'Sno.'; // replace #
     csvRows = csvRows.concat(this.state.slowQueries);
-    let csvContent = csvRows.map(row => row.join(',')).join('\n');
+    const csvContent = csvRows.map(row => row.join(',')).join('\n');
 
     window.open(encodeURI(csvDeclaration + csvContent));
   }
 
   renderToolbar() {
     // Get app versions using Explorer endpoint
-    // let queries = this.props.customQueries.data.get('queries') || [];
-    // let appVersionExplorerQuery = queries.find((query) => query.localId === APP_VERSIONS_EXPLORER_QUERY.localId);
-    // let appVersions = {};
+    // const queries = this.props.customQueries.data.get('queries') || [];
+    // const appVersionExplorerQuery = queries.find(
+    //   query => query.localId === APP_VERSIONS_EXPLORER_QUERY.localId
+    // );
+    // const appVersions = {};
     // if (appVersionExplorerQuery && appVersionExplorerQuery.result) {
-    //   appVersionExplorerQuery.result.forEach((value) => {
-    //     let os = value['OS'];
-    //     let version = value['App Display Version'];
-    //     if (os === null || version === null) return;
-    //     if (appVersions.hasOwnProperty(os)) {
+    //   appVersionExplorerQuery.result.forEach(value => {
+    //     const os = value['OS'];
+    //     const version = value['App Display Version'];
+    //     if (os === null || version === null) {
+    //       return;
+    //     }
+    //     if (Object.prototype.hasOwnProperty.call(appVersions, os)) {
     //       appVersions[os].push(version);
     //     } else {
     //       appVersions[os] = [version];
     //     }
     //   });
     // }
-    //
+
     // let osOptions = ['OS'];
     // if (Object.keys(appVersions) && Object.keys(appVersions).length > 0) {
     //   osOptions = Object.keys(appVersions);
     // }
-    //
+
     // // Get class names using Schema endpoint
     // let classOptions = ['Class'];
-    // let classList = this.props.schema.data.get('classes');
+    // const classList = this.props.schema.data.get('classes');
     // if (classList && !classList.isEmpty()) {
     //   classOptions = Object.keys(classList.toObject());
     // }
@@ -216,22 +220,20 @@ class SlowQueries extends TableView {
               ...newValue,
               mutated: true
             })} />
-          <a
-            href='javascript:;'
-            role='button'
+          <button
+            type='button'
             onClick={this.handleDownload.bind(this)}
-            className={styles.toolbarAction}>
-            <Icon name='download' width={14} height={14} fill='#66637a' />
+            className={styles.toolbarAction}
+          >
+            <Icon name="download" width={14} height={14} fill="#66637a" />
             Download
-          </a>
+          </button>
         </div>
       );
     }
 
     return (
-       <Toolbar
-        section='Analytics'
-        subsection='Slow Requests'>
+      <Toolbar section="Analytics" subsection="Slow Queries">
         {actions}
       </Toolbar>
     );
@@ -239,7 +241,9 @@ class SlowQueries extends TableView {
 
   renderHeaders() {
     return SLOW_QUERIES_HEADERS.map((header, index) => (
-      <TableHeader key={header} width={TABLE_WIDTH[index]}>{header}</TableHeader>
+      <TableHeader key={header} width={TABLE_WIDTH[index]}>
+        {header}
+      </TableHeader>
     ));
   }
 
@@ -251,7 +255,9 @@ class SlowQueries extends TableView {
     return (
       <tr key={query[0]}>
         {TABLE_WIDTH.map((width, index) => (
-          <td key={'column_' + index} width={width + '%'}>{index === 1 ? formatQuery(query[index]) : query[index]}</td>
+          <td key={'column_' + index} width={width + '%'}>
+            {index === 1 ? formatQuery(query[index]) : query[index]}
+          </td>
         ))}
       </tr>
     );
@@ -260,11 +266,12 @@ class SlowQueries extends TableView {
   renderEmpty() {
     return (
       <EmptyState
-        title='Slow Requests'
+        title="Slow Queries"
         description={'You haven\'t executed any queries.'}
-        icon='gears'
-        cta='Get started with Query'
-        action={() => window.open('https://www.back4app.com/docs/parse-dashboard/analytics/slow-query-tool', '_blank') } />
+        icon="gears"
+        cta="Get started with Query"
+        action={() => window.open('https://www.back4app.com/docs/parse-dashboard/analytics/slow-query-tool', '_blank')}
+      />
     );
   }
 
@@ -280,14 +287,15 @@ class SlowQueries extends TableView {
         //       align={Directions.RIGHT} />
         //   </span>
         // )}
-        primary={(
+        primary={
           <Button
             primary={true}
             disabled={!this.state.mutated}
-            onClick={this.fetchSlowQueries.bind(this, this.context.currentApp)}
-            value='Run query' />
-        )}
-        />
+            onClick={this.fetchSlowQueries.bind(this, this.context)}
+            value="Run query"
+          />
+        }
+      />
     );
   }
 }

@@ -5,11 +5,12 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import PropTypes  from 'lib/PropTypes';
-import ParseApp   from 'lib/ParseApp';
-import React      from 'react';
+import React from 'react';
+import { CurrentApp } from 'context/currentApp';
+import { Outlet } from 'react-router-dom';
 
 export default class SettingsData extends React.Component {
+  static contextType = CurrentApp;
   constructor() {
     super();
 
@@ -20,7 +21,7 @@ export default class SettingsData extends React.Component {
   }
 
   componentDidMount() {
-    this.context.currentApp.fetchSettingsFields().then(({ fields }) => {
+    this.context.fetchSettingsFields().then(({ fields }) => {
       this.setState({ fields });
     });
   }
@@ -30,36 +31,35 @@ export default class SettingsData extends React.Component {
       // check if the changes are in currentApp serverInfo status
       // if not return without making any request
       if (this.props.apps !== nextProps.apps) {
-        let updatedCurrentApp = nextProps.apps.find(ap => ap.slug === this.props.params.appId);
-        let prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.params.appId);
+        const updatedCurrentApp = nextProps.apps.find(ap => ap.slug === this.props.params.appId);
+        const prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.params.appId);
         const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
-        if (!shouldUpdate) return;
+        if (!shouldUpdate) {return;}
       }
       this.setState({ fields: undefined });
-      nextContext.currentApp.fetchSettingsFields().then(({ fields }) => {
+      nextContext.fetchSettingsFields().then(({ fields }) => {
         this.setState({ fields });
       });
     }
   }
 
   saveChanges(changes) {
-    let promise = this.context.currentApp.saveSettingsFields(changes)
-    promise.then(({successes}) => {
-      let newFields = {...this.state.fields, ...successes};
-      this.setState({fields: newFields});
+    const promise = this.context.saveSettingsFields(changes);
+    promise.then(({ successes }) => {
+      const newFields = { ...this.state.fields, ...successes };
+      this.setState({ fields: newFields });
     });
     return promise;
   }
 
   render() {
-    return this.props.children({
-      initialFields: this.state.fields,
-      initialAppSettings: this.state.appSettings,
-      saveChanges: this.saveChanges.bind(this)
-    })
+    return (
+      <Outlet
+        context={{
+          initialFields: this.state.fields,
+          saveChanges: this.saveChanges.bind(this),
+        }}
+      />
+    );
   }
 }
-
-SettingsData.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

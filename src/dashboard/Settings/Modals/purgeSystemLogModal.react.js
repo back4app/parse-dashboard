@@ -11,7 +11,7 @@ confirmText='Purge System Log'
 cancelText='Cancel'
 buttonsInCenter={true}
 onCancel={() => setParentState({showPurgeSystemLogModal: false})}
-onConfirm={() => context.currentApp.cleanUpSystemLog().then(() => {
+onConfirm={() => context.cleanUpSystemLog().then(() => {
   setParentState({
     cleanupSystemLogMessage: 'Your System log was deleted.',
     cleanupNoteColor: 'orange',

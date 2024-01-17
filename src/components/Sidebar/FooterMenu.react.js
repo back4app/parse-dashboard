@@ -54,7 +54,7 @@ export default class FooterMenu extends React.Component {
       );
     }
     return (
-      <a onClick={this.toggle.bind(this)} ref='more' className={styles.more}>
+      <a onClick={this.toggle.bind(this)} ref='more' className={styles.more + ' more'}>
         <Icon height={18} width={18} name='ellipses' />
         {content}
       </a>

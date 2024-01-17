@@ -5,17 +5,18 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import Icon     from 'components/Icon/Icon.react';
+import Icon from 'components/Icon/Icon.react';
 import { Link } from 'react-router-dom';
-import React    from 'react';
-import styles   from 'components/Sidebar/Sidebar.scss';
+import React from 'react';
+import styles from 'components/Sidebar/Sidebar.scss';
 
 const sendEvent = () => {
+  // eslint-disable-next-line no-undef
   back4AppNavigation && back4AppNavigation.atApiReferenceIntroEvent && back4AppNavigation.atApiReferenceIntroEvent()
 }
 
-let SidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge }) => {
-  let classes = [styles.section];
+const SidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge }) => {
+  const classes = [styles.section, 'section']; // Adding 'section' for the Tour to be able to select
   if (active) {
     classes.push(styles.active);
   }
@@ -33,7 +34,7 @@ let SidebarSection = ({ active, children, name, link, icon, style, primaryBackgr
   return (
     <div className={classes.join(' ')} title={isCollapsed && name}>
       {sectionContent}
-      {!isCollapsed && children && <div className={styles.section_contents} style={{ background: secondaryBackgroundColor}}>{children}</div>}
+      {!isCollapsed && children && <div className={styles.section_contents} id="section_contents" style={{ background: secondaryBackgroundColor}}>{children}</div>}
     </div>
   );
 };

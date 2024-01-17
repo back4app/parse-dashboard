@@ -1,6 +1,4 @@
 import React from 'react';
-import ParseApp from 'lib/ParseApp';
-import PropTypes from 'prop-types';
 import Modal from 'components/Modal/Modal.react';
 import LoginRow from 'components/LoginRow/LoginRow.react';
 import Notification from 'dashboard/Data/Browser/Notification.react';
@@ -11,7 +9,7 @@ export default class LoginDialog extends React.Component {
     this.state = {
       open: false,
       username: '',
-      password: ''
+      password: '',
     };
 
     this.handleOpen = this.handleOpen.bind(this);
@@ -80,9 +78,7 @@ export default class LoginDialog extends React.Component {
             label="Username"
             input={
               <input
-                onChange={e =>
-                  this.setState({ username: e.nativeEvent.target.value })
-                }
+                onChange={e => this.setState({ username: e.nativeEvent.target.value })}
                 onKeyDown={this.handleKeyDown}
                 autoFocus
               />
@@ -92,9 +88,7 @@ export default class LoginDialog extends React.Component {
             label="Password"
             input={
               <input
-                onChange={e =>
-                  this.setState({ password: e.nativeEvent.target.value })
-                }
+                onChange={e => this.setState({ password: e.nativeEvent.target.value })}
                 type="password"
                 onKeyDown={this.handleKeyDown}
               />
@@ -106,7 +100,3 @@ export default class LoginDialog extends React.Component {
     );
   }
 }
-
-LoginDialog.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp)
-};

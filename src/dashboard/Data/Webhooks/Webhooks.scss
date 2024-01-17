@@ -5,8 +5,8 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+ @import 'stylesheets/globals.scss';
 
-import { createBrowserHistory } from 'history';
-
-const path = window.PARSE_DASHBOARD_PATH || '/';
-export default createBrowserHistory({ basename: path });
+.deleteButton {
+  @include buttonReset;
+}

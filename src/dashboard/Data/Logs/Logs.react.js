@@ -5,18 +5,18 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import CategoryList    from 'components/CategoryList/CategoryList.react';
-import DashboardView   from 'dashboard/DashboardView.react';
-import EmptyState      from 'components/EmptyState/EmptyState.react';
-import LogView         from 'components/LogView/LogView.react';
-import LogViewEntry    from 'components/LogView/LogViewEntry.react';
-import React           from 'react';
-import ReleaseInfo     from 'components/ReleaseInfo/ReleaseInfo';
-import Toolbar         from 'components/Toolbar/Toolbar.react';
+import CategoryList from 'components/CategoryList/CategoryList.react';
+import DashboardView from 'dashboard/DashboardView.react';
+import EmptyState from 'components/EmptyState/EmptyState.react';
+import LogView from 'components/LogView/LogView.react';
+import LogViewEntry from 'components/LogView/LogViewEntry.react';
+import React from 'react';
+import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
+import Toolbar from 'components/Toolbar/Toolbar.react';
 import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
-import Icon            from 'components/Icon/Icon.react';
-import ServerLogsView  from '../../../components/ServerLogsView/ServerLogsView.react';
-import B4AAlert        from 'components/B4AAlert/B4AAlert.react';
+import Icon from 'components/Icon/Icon.react';
+import ServerLogsView from '../../../components/ServerLogsView/ServerLogsView.react';
+// import B4AAlert from 'components/B4AAlert/B4AAlert.react';
 
 import styles          from 'dashboard/Data/Logs/Logs.scss';
 
@@ -27,7 +27,8 @@ let subsections = {
   system: 'System'
 };
 
-export default class Logs extends DashboardView {
+@withRouter
+class Logs extends DashboardView {
   constructor() {
     super();
     this.section = 'Cloud Code';
@@ -44,14 +45,14 @@ export default class Logs extends DashboardView {
   }
 
   componentDidMount() {
-    this.fetchLogs(this.context.currentApp, this.props.params.type);
-    // this.fetchRelease(this.context.currentApp);
+    this.fetchLogs(this.context, this.props.params.type);
+    // this.fetchRelease(this.context);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    if (this.context !== nextContext) {
-      this.fetchLogs(nextContext.currentApp, nextProps.params.type);
-      // this.fetchRelease(nextContext.currentApp);
+    if (this.props.params.type !== nextProps.params.type) {
+      this.fetchLogs(nextContext, nextProps.params.type);
+      // this.fetchRelease(nextContext);
     }
   }
 
@@ -83,7 +84,7 @@ export default class Logs extends DashboardView {
   refreshLogs(e) {
     e.preventDefault();
     this.setState({ logs: undefined });
-    this.fetchLogs(this.context.currentApp, this.props.params.type);
+    this.fetchLogs(this.context, this.props.params.type);
   }
 
   // As parse-server doesn't support (yet?) versioning, we are disabling
@@ -99,14 +100,18 @@ export default class Logs extends DashboardView {
   */
 
   renderSidebar() {
-    let current = this.props.params.type || '';
+    const current = this.props.params.type || '';
     return (
-      <CategoryList current={current} linkPrefix={'logs/'} categories={[
-        { name: 'System', id: 'system' },
-        { name: 'Info', id: 'info' },
-        { name: 'Error', id: 'error' },
-        { name: 'Access', id: 'access' },
-      ]} />
+      <CategoryList
+        current={current}
+        linkPrefix={'logs/'}
+        categories={[
+          { name: 'System', id: 'system' },
+          { name: 'Info', id: 'info' },
+          { name: 'Error', id: 'error' },
+          { name: 'Access', id: 'access' },
+        ]}
+      />
     );
   }
 
@@ -123,13 +128,13 @@ export default class Logs extends DashboardView {
     if (subsections[type]) {
       toolbar = (
         <Toolbar
-          section='Logs'
-          subsection={subsections[type]}
+          section="Logs"
+          subsection={subsections[this.props.params.type]}
           details={ReleaseInfo({ release: this.state.release })}
-          >
-          <a className={refreshIconStyles} onClick={this.refreshLogs} title='Refresh'>
-            <Icon name='refresh' width={30} height={26} />
-          </a>
+        >
+        <a className={refreshIconStyles} onClick={this.refreshLogs} title='Refresh'>
+          <Icon name='refresh' width={30} height={26} />
+        </a>
         </Toolbar>
       );
     }
@@ -174,3 +179,5 @@ export default class Logs extends DashboardView {
     );
   }
 }
+
+export default Logs;

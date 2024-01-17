@@ -6,8 +6,8 @@
  * the root directory of this source tree.
  */
 import PropTypes from 'lib/PropTypes';
-import React     from 'react';
-import styles    from 'components/Fieldset/Fieldset.scss';
+import React from 'react';
+import styles from 'components/Fieldset/Fieldset.scss';
 
 let Fieldset = ({ legend, description, children, width = '', error }) => (
   <div className={styles.fieldset}>

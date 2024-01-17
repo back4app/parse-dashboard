@@ -20,7 +20,7 @@ return <Modal
   onCancel={() => setParentState({ showRestartAppModal: false })}
   onConfirm={() => {
     setProcessing(true);
-    context.currentApp.restartApp().then(() => {
+    context.restartApp().then(() => {
       setParentState({
         cleanupFilesMessage: 'Your app has been restarted successfully.',
         cleanupNoteColor: 'orange',

@@ -15,63 +15,64 @@ export const PresetQueries = [
         query: {
           endpoint: 'audience',
           audienceType: 'daily_installations',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'Daily Users',
         query: {
           endpoint: 'audience',
           audienceType: 'daily_users',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'Weekly Installations',
         query: {
           endpoint: 'audience',
           audienceType: 'weekly_installations',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'Weekly Users',
         query: {
           endpoint: 'audience',
           audienceType: 'weekly_users',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'Monthly Installations',
         query: {
           endpoint: 'audience',
           audienceType: 'monthly_installations',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'Monthly Users',
         query: {
           endpoint: 'audience',
           audienceType: 'monthly_users',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
-      }
-    ]
-  }, {
+        nonComposable: true,
+      },
+    ],
+  },
+  {
     // TODO everything here should use real explorer instead.
     // But I'm not confident since the result of explorer != result of legacy endpoint.
     name: 'Events',
@@ -85,16 +86,16 @@ export const PresetQueries = [
           dots: '180'
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'Analytics Requests',
         query: {
           endpoint: 'analytics_request',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       // {
       //   name: 'File Requests',
@@ -109,19 +110,19 @@ export const PresetQueries = [
         name: 'Push Notifications',
         query: {
           endpoint: 'push',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       {
         name: 'App Opens',
         query: {
           endpoint: 'app_opened',
-          stride: 'day'
+          stride: 'day',
         },
         preset: true,
-        nonComposable: true
+        nonComposable: true,
       },
       // {
       //   name: 'Push Opens',

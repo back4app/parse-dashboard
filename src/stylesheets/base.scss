@@ -33,16 +33,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-::-moz-selection {
-  color: white;
-  background: $blue;
-}
-
-::selection {
-  color: white;
-  background: $blue;
-}
-
 a {
   color: $blue;
   cursor: pointer;
@@ -109,4 +99,12 @@ table {
 
 .progressText {
   color: $blue;
+}
+
+.pageCenter {
+  width: 100%;
+  height: $content-max-height;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -5,14 +5,16 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-var babel = require('@babel/core');
-var extractClassnames = require('./extractClassnames');
+const babel = require('@babel/core');
+const extractClassnames = require('./extractClassnames');
 
 module.exports = {
   process: function (src, filename) {
     if (filename.endsWith('.scss') || filename.endsWith('.css')) {
-      var matches = extractClassnames(src);
-      return 'module.exports = ' + JSON.stringify(matches);
+      const matches = extractClassnames(src);
+      return {
+        code: 'module.exports = ' + JSON.stringify(matches),
+      };
     }
 
     // Let Jest handle our custom module resolution
@@ -26,14 +28,14 @@ module.exports = {
       return babel.transform(src, {
         filename: filename,
         retainLines: true,
-        plugins: [['@babel/plugin-proposal-decorators', { 'legacy': true }], '@babel/transform-regenerator', '@babel/transform-runtime'],
-        presets: ['@babel/preset-react', '@babel/preset-env']
         // Remove propTypes for tests so we don't have to keep unmocking lib/PropTypes
         // Also it's more representative of the production environment
         //plugins: [ 'babel-plugin-remove-proptypes' ]
-      }).code;
+      });
     }
 
-    return src;
+    return {
+      code: src,
+    };
   }
 };

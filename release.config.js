@@ -26,7 +26,6 @@ async function config() {
   // Get branch
   const branch = ref.split('/').pop();
   console.log(`Running on branch: ${branch}`);
-  
   // Set changelog file
   const changelogFile = `./changelogs/CHANGELOG_${branch}.md`;
   console.log(`Changelog file output to: ${changelogFile}`);
@@ -57,7 +56,6 @@ async function config() {
         preset: 'angular',
         releaseRules: [
           { type: 'docs', scope: 'README', release: 'patch' },
-          { type: 'refactor', release: 'patch' },
           { scope: 'no-release', release: false },
         ],
         parserOpts: {
@@ -88,7 +86,18 @@ async function config() {
       }],
       ['@semantic-release/github', {
         successComment: getReleaseComment(),
+        labels: ['type:ci'],
+        releasedLabels: ['state:released<%= nextRelease.channel ? `-${nextRelease.channel}` : "" %>']
       }],
+      [
+        '@saithodev/semantic-release-backmerge',
+        {
+          'branches': [
+            { from: 'beta', to: 'alpha' },
+            { from: 'release', to: 'beta' },
+          ]
+        }
+      ],
     ],
   };
 
@@ -108,7 +117,7 @@ async function readFile(filePath) {
 
 function getReleaseComment() {
   const url = repositoryUrl + '/releases/tag/${nextRelease.gitTag}';
-  let comment = '🎉 This pull request has been released in version [${nextRelease.version}](' + url + ')';
+  const comment = '🎉 This change has been released in version [${nextRelease.version}](' + url + ')';
   return comment;
 }
 

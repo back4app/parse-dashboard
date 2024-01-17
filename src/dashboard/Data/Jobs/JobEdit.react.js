@@ -5,26 +5,25 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import PropTypes       from 'lib/PropTypes'; 
 import { ActionTypes } from 'lib/stores/JobsStore';
-import history         from 'dashboard/history';
-import JobsForm        from 'dashboard/Data/Jobs/JobsForm.react';
-import ParseApp        from 'lib/ParseApp';
-import React           from 'react';
-import subscribeTo     from 'lib/subscribeTo';
+import JobsForm from 'dashboard/Data/Jobs/JobsForm.react';
+import React from 'react';
+import subscribeTo from 'lib/subscribeTo';
+import generatePath from 'lib/generatePath';
+import { CurrentApp } from 'context/currentApp';
+import { withRouter } from 'lib/withRouter';
 
 @subscribeTo('Jobs', 'jobs')
+@withRouter
 class JobEdit extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
+  static contextType = CurrentApp;
 
   submitForm(changes) {
-    let schedule = {
+    const schedule = {
       job_schedule: {
         params: changes.parameter || '{}',
-        daysOfWeek: [1, 1, 1, 1, 1, 1, 1]
-      }
+        daysOfWeek: [1, 1, 1, 1, 1, 1, 1],
+      },
     };
     if (changes.description) {
       schedule.job_schedule.description = changes.description;
@@ -50,10 +49,15 @@ class JobEdit extends React.Component {
       schedule.job_schedule.repeatMinutes = interval;
     }
 
-    let promise = this.props.params.jobId ?
-      this.props.jobs.dispatch(ActionTypes.EDIT, { jobId: this.props.params.jobId, updates: schedule }) :
-      this.props.jobs.dispatch(ActionTypes.CREATE, { schedule });
-    promise.then(() => {history.push(this.context.generatePath('jobs/scheduled'))});
+    const promise = this.props.params.jobId
+      ? this.props.jobs.dispatch(ActionTypes.EDIT, {
+        jobId: this.props.params.jobId,
+        updates: schedule,
+      })
+      : this.props.jobs.dispatch(ActionTypes.CREATE, { schedule });
+    promise.then(() => {
+      this.props.navigate(generatePath(this.context, 'jobs/scheduled'));
+    });
     return promise;
   }
 
@@ -64,12 +68,15 @@ class JobEdit extends React.Component {
   render() {
     if (this.props.params.jobId) {
       if (this.props.jobs.data.get('jobs') && this.props.jobs.data.get('jobs').size) {
-        let data = this.props.jobs.data.get('jobs').filter((obj) => obj.objectId === this.props.params.jobId).first();
+        const data = this.props.jobs.data
+          .get('jobs')
+          .filter(obj => obj.objectId === this.props.params.jobId)
+          .first();
         if (data) {
-          let initialFields = {
+          const initialFields = {
             description: data.description,
             job: data.jobName,
-            parameter: data.params
+            parameter: data.params,
           };
           if (data.repeatMinutes) {
             initialFields.repeat = true;
@@ -90,7 +97,7 @@ class JobEdit extends React.Component {
             initialFields.runAt = new Date(data.startAfter);
           }
           if (data.timeOfDay) {
-            let split = data.timeOfDay.split(':');
+            const split = data.timeOfDay.split(':');
             initialFields.repeatStartHour = split[0] || '12';
             if (split[0][0] === '0') {
               initialFields.repeatStartHour = split[0].substr(1);
@@ -104,24 +111,15 @@ class JobEdit extends React.Component {
             <JobsForm
               {...this.props}
               submitForm={this.submitForm.bind(this)}
-              initialFields={initialFields} />
+              initialFields={initialFields}
+            />
           );
         }
       }
       return null;
     }
-    return (
-      <JobsForm
-        {...this.props}
-        submitForm={this.submitForm.bind(this)}
-        initialFields={{}} />
-    );
+    return <JobsForm {...this.props} submitForm={this.submitForm.bind(this)} initialFields={{}} />;
   }
 }
-
-JobEdit.original.contextTypes = {
-  currentApp: PropTypes.instanceOf(ParseApp),
-  generatePath: PropTypes.func,
-};
 
 export default JobEdit;

@@ -24,7 +24,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
 
   useEffect(() => {
     setProcessing(true);
-    context.currentApp.supportedParseServerVersions()
+    context.supportedParseServerVersions()
       .then((data) => {
         setParseVersions(data.results);
         setCloneParseVersion(data.results[0]);
@@ -49,13 +49,13 @@ export const CloneAppModal = ({ context, setParentState }) => {
         setNote('Validating app storage...');
         setNoteColor('blue');
 
-        await context.currentApp.checkStorage();
+        await context.checkStorage();
       }
 
       setNote('Creating a new parse app...');
       setNoteColor('blue');
 
-      newApp = await context.currentApp.createApp(cloneAppName, cloneParseVersion?.version, context.currentApp.applicationId);
+      newApp = await context.createApp(cloneAppName, cloneParseVersion?.version, context.applicationId);
 
       if ( !newApp || Object.keys(newApp).length <= 0 ) {
         throw new Error();
@@ -64,12 +64,12 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('Creating database for the new parse app...');
       setNoteColor('blue');
 
-      await context.currentApp.initializeDb(newApp._id, cloneParseVersion?.version);
+      await context.initializeDb(newApp._id, cloneParseVersion?.version);
 
       setNote('Cloning app...');
       setNoteColor('blue');
 
-      await context.currentApp.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneConfigs );
+      await context.cloneApp( newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneConfigs );
 
       setNote('App cloned successfully! Redirecting in 1 second');
       setNoteColor('green');
@@ -87,7 +87,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote(error);
       setNoteColor('red');  
       if ( newApp && newApp._id ) {
-        await context.currentApp.deleteApp( newApp._id );
+        await context.deleteApp( newApp._id );
       }
 
     } finally {

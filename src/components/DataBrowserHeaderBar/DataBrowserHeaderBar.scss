@@ -31,9 +31,8 @@
 }
 
 .addColumnButton {
-  @include DosisFont;
+  @include buttonReset($bg: #343445);
   display: inline-block;
-  background: #343445;
   height: 20px;
   width: 130px;
   text-align: center;
@@ -75,5 +74,34 @@
 .preventSort {
   :hover {
     cursor: not-allowed;
+  }
+}
+
+.skeleton {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 30px;
+}
+
+.skeletonRow {
+  border-top: 1px solid #e3e3ea;
+  border-bottom: 1px solid #e3e3ea;
+  height: 30px;
+  width:100%;
+  vertical-align: middle;
+  padding-left: 2px;
+  margin-top: 30px;
+  line-height: 31px;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+  
+@keyframes skeleton-loading {
+  0% {
+    background-color:#ffffff;
+  }
+  100% {
+    background-color: #e3e3ea;
+
   }
 }

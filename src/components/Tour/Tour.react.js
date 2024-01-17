@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import introJs from 'intro.js'
 import introStyle from 'stylesheets/introjs.css';
 
@@ -9,18 +9,19 @@ const getComponentReadyPromise = async conditionFn => {
     }
     await new Promise(resolve => setTimeout(resolve, i * 500));
   }
-  throw new Error("Component not ready");
+  throw new Error('Component not ready');
 };
 
-export default class Tour extends Component {
+export default class Tour extends React.Component {
   constructor () {
     super();
   }
 
   componentDidMount() {
-    const sidebarPromise = getComponentReadyPromise(() => document.querySelector("[class^='sidebar']"));
-    const toolbarPromise = getComponentReadyPromise(() => document.querySelector("[class^='toolbar']"));
-    const dataBrowserPromise = getComponentReadyPromise(() => document.querySelector("[class^='browser']"));
+    console.log('component DID MOUNT>>>>>>>>>');
+    const sidebarPromise = getComponentReadyPromise(() => document.querySelector('#sidebar'));
+    const toolbarPromise = getComponentReadyPromise(() => document.querySelector('#toolbar'));
+    const dataBrowserPromise = getComponentReadyPromise(() => document.querySelector('#browser'));
     Promise.all([sidebarPromise, toolbarPromise, dataBrowserPromise]).then(() => {
       const intro = introJs();
       intro.setOptions({
@@ -28,7 +29,8 @@ export default class Tour extends Component {
         prevLabel: 'Prev',
         skipLabel: 'Cancel',
         showBullets: false,
-        scrollToElement: false
+        scrollToElement: false,
+        showStepNumbers: true,
       });
       this.props.steps.forEach(step => {
         if (typeof step.element === 'function') {
@@ -37,18 +39,19 @@ export default class Tour extends Component {
       });
       intro.addSteps(this.props.steps);
 
-      const sidebar = document.querySelector("[class^='sidebar']");
+      const sidebar = document.querySelector('#sidebar');
       sidebar.style.position = 'absolute';
 
-      const toolbar = document.querySelector("[class^='toolbar']");
+      const toolbar = document.querySelector('#toolbar');
       toolbar.style.position = 'absolute';
 
-      const dataBrowser = document.querySelector("[class^='browser']");
+      const dataBrowser = document.querySelector('#browser');
       dataBrowser.style.position = 'absolute';
 
       const onExit = this.props.onExit;
       intro.onexit(function () {
         // Fires analytics event when tour finishes
+        // eslint-disable-next-line no-undef
         typeof back4AppNavigation === 'object' && back4AppNavigation.onFinishDatabaseBrowserTour && back4AppNavigation.onFinishDatabaseBrowserTour();
 
         sidebar.style.position = 'fixed';
@@ -67,11 +70,12 @@ export default class Tour extends Component {
       intro.start();
 
       // Fires analytics event when tour begins
+      // eslint-disable-next-line no-undef
       typeof back4AppNavigation === 'object' && back4AppNavigation.onStartDatabaseBrowserTour && back4AppNavigation.onStartDatabaseBrowserTour();
     });
   }
 
   render() {
-    return null;
+    return <div></div>;
   }
 }

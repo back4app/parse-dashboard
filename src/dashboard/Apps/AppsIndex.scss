@@ -131,6 +131,7 @@
   &.disabled {
     cursor: not-allowed;
   }
+  flex-shrink: 0;
 }
 
 .appname {
@@ -138,7 +139,7 @@
   width: 100%;
   display: inline-block;
   font-size: 22px;
-  color: white;
+  color: white !important;
   &.loading {
     color: #788c97 !important;
   }
