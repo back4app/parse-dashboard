@@ -212,7 +212,6 @@ class SlowQueries extends TableView {
             methodOptions={this.state.methodOptions}
             pathOptions={this.state.pathOptions}
             respStatusOptions={this.state.statusOptions}
-            onRunQuery={this.fetchSlowQueries.bind(this, this.context)}
             onChange={(newValue) => this.setState({
               ...newValue,
               mutated: true

@@ -17,27 +17,19 @@ export default class CodeEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { code: '', reset: false };
-  }
-
-  get value() {
-    return this.state.code || this.props.placeHolder;
-  }
-
-  set value(code) {
-    this.setState({ code });
+    this.state = { code: '', reset: false, fileName: '' };
   }
 
   componentWillReceiveProps(props){
-    if (this.state.code !== props.placeHolder && this.state.fileName !== props.fileName) {
-      this.setState({ code: props.placeHolder, fileName: props.fileName, reset: true });
+    if (this.state.code !== props.code && this.state.fileName !== props.fileName ) {
+      this.setState({ code: props.code, fileName: props.fileName, reset: true });
     }
     if (props.mode) {
       require(`ace-builds/src-noconflict/mode-${props.mode}`);
       require(`ace-builds/src-noconflict/snippets/${props.mode}`);
     }
+
     if (props.mode === 'javascript') {
-      // eslint-disable-next-line no-undef
       ace.config.setModuleUrl('ace/mode/javascript_worker', `${window.PARSE_DASHBOARD_PATH}/worker-javascript.js`);
     }
   }
@@ -59,17 +51,6 @@ export default class CodeEditor extends React.Component {
           });
           editor.on('change', () => {
             if ( this.state.reset ){
-              editor.session.getUndoManager().reset();
-              this.setState({ reset: false })
-            }
-          });
-        }}
-        onLoad={editor => {
-          editor.once('change', () => {
-            editor.session.getUndoManager().reset();
-          });
-          editor.on('change', () => {
-            if (this.state.reset){
               editor.session.getUndoManager().reset();
               this.setState({ reset: false })
             }

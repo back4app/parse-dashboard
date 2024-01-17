@@ -8,11 +8,6 @@
 @import 'stylesheets/globals.scss';
 @import 'stylesheets/back4app.scss';
 
-$headerHeight: 48px;
-$menuSectionHeight: 24px;
-$sidebarMenuItemHeight: 48px;
-$footerHeight: 61px;
-
 .sidebar {
   position: fixed;
   width: 300px;
@@ -242,25 +237,6 @@ $footerHeight: 61px;
   .currentApp .appsSelectorArrow {
     @include arrow('up', 10px, 7px, #ffffff);
   }
-  .currentApp {
-    .currentAppName {
-      &:after {
-        @include arrow('up', 10px, 7px, #132B39);
-      }
-
-      &:hover {
-        &:after {
-          border-bottom-color: white;
-        }
-      }
-    }
-  }
-
-  .appListContainer {
-    overflow-y: auto;
-    height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
-  }
-
 }
 
 .menuSection {
