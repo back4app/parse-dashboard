@@ -14,7 +14,7 @@ const parseDashboard = require('./app');
 
 module.exports = (options) => {
   const host = options.host || process.env.HOST || '0.0.0.0';
-  const port = options.port || process.env.PORT || 4040;
+  const port = options.port || process.env.PORT || 4041;
   const mountPath = options.mountPath || process.env.MOUNT_PATH || '/';
   const allowInsecureHTTP = options.allowInsecureHTTP || process.env.PARSE_DASHBOARD_ALLOW_INSECURE_HTTP;
   const cookieSessionSecret = options.cookieSessionSecret || process.env.PARSE_DASHBOARD_COOKIE_SESSION_SECRET;

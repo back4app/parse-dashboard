@@ -24,13 +24,13 @@ configuration.plugins.push(
   new HtmlWebpackPlugin({
     template: '../Parse-Dashboard/index.ejs',
     filename: path.resolve('./Parse-Dashboard/public/index.html')
-  }),
-  new HtmlWebpackExternalsPlugin({
-    externals: [{
-      module: '@back4app/back4app-navigation',
-      entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
-    }]
-  })
+  })//,
+  // new HtmlWebpackExternalsPlugin({
+  //   externals: [{
+  //     module: '@back4app/back4app-navigation',
+  //     entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
+  //   }]
+  // })
 );
 
 module.exports = configuration;

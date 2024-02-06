@@ -57,7 +57,7 @@ import PushDetails from './Push/PushDetails.react';
 import PushIndex from './Push/PushIndex.react';
 import PushNew from './Push/PushNew.react';
 import PushSettings from './Settings/PushSettings.react';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RestConsole from './Data/ApiConsole/RestConsole.react';
 import Retention from './Analytics/Retention/Retention.react';
 import SchemaOverview from './Data/Browser/SchemaOverview.react';
@@ -68,9 +68,11 @@ import styles from 'dashboard/Apps/AppsIndex.scss';
 import UsersSettings from './Settings/UsersSettings.react';
 import Webhooks from './Data/Webhooks/Webhooks.react';
 import baseStyles from 'stylesheets/base.scss';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
 import DashboardSettings from './Settings/DashboardSettings/DashboardSettings.react';
 import Security from './Settings/Security/Security.react';
+import { Navbar } from '@back4app2/react-components';
+import back4app2 from '../lib/back4app2';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -149,7 +151,7 @@ const waitForScriptToLoad = async conditionFn => {
   throw new Error('Script not loaded yet!');
 };
 
-export default class Dashboard extends React.Component {
+class Dashboard extends React.Component {
   constructor(props) {
     super();
     this.state = {
@@ -425,18 +427,125 @@ export default class Dashboard extends React.Component {
     );
 
     return (
-      <BrowserRouter basename={window.PARSE_DASHBOARD_PATH || '/'}>
-        <Helmet>
-          <title>Parse Dashboard</title>
-        </Helmet>
-        <Routes>
-          <Route path="/apps">{Index}</Route>
-          <Route path="account/overview" element={<AccountSettingsPage />} />
-          <Route path="account" element={<Navigate replace to="overview" />} />
-          <Route index element={<Navigate replace to="/apps" />} />
-          <Route path="*" element={<FourOhFour />} />
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/apps">{Index}</Route>
+        <Route path="account/overview" element={<AccountSettingsPage />} />
+        <Route path="account" element={<Navigate replace to="overview" />} />
+        <Route index element={<Navigate replace to="/apps" />} />
+        <Route path="*" element={<FourOhFour />} />
+      </Routes>
     );
   }
 }
+
+const parseHref = (href) => {
+  if (href.startsWith(window.location.origin)) {
+    return href.replace(window.location.origin, '');
+  } else {
+    return href;
+  }
+}
+
+const LinkImpl = ({ href, className, children }) => {
+  href = parseHref(href);
+  
+  if (href.startsWith('http')) {
+    return <a href={href} className={className}>
+      {children}
+    </a>;
+  } else {
+    return <Link to={href} className={className}>
+      {children}
+    </Link>;
+  }
+}
+
+const NavbarWrapper = () => {
+  const [user, setUser] = useState();
+  const [appsPlans, setAppsPlans] = useState();
+
+  useEffect(() => {
+    (async () => {
+      let user;
+
+      try {
+        user = await back4app2.me();
+      } catch (e) {
+        console.error('unexpected error when getting user', e);
+
+        window.location.replace(`${b4aSettings.BACK4APP_SITE_PATH}/login?return-url=${encodeURIComponent(window.location.href)}`);
+
+        return;
+      };
+
+      setUser(user);
+
+      let appsPlans;
+
+      try {
+        appsPlans = await back4app2.findAppsPlans();
+      } catch (e) {
+        console.error('unexpected error when finding apps plans', e);
+
+        return;
+      };
+
+      setAppsPlans(appsPlans);
+    })();
+  }, []);
+
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const navigate = useNavigate();
+  const push = useCallback((url) => {
+    url = parseHref(url);
+
+    if (url.startsWith('http')) {
+      window.location.assign(url);
+    } else {
+      navigate(url);
+    }
+  }, [navigate]);
+  const replace = useCallback((url) => {
+    url = parseHref(url);
+
+    if (url.startsWith('http')) {
+      window.location.replace(url);
+    } else {
+      navigate(url, { replace: true });
+    }
+  }, [navigate]);
+
+  const router = useMemo(() => ({
+    pathname,
+    push,
+    replace
+  }), [pathname, push, replace]);
+
+  return <Navbar
+    user={user}
+    overLimitAppsPlansCount={(appsPlans && appsPlans.filter(appPlan => appPlan.status === AppPlanStatus.OVER_LIMITS).length) || undefined}
+    router={router}
+    Link={LinkImpl}
+    parseDashboardURL={b4aSettings.PARSE_DASHBOARD_URL}
+    containersDashboardURL={b4aSettings.CONTAINERS_DASHBOARD_URL}
+    back4appDotComSiteURL={b4aSettings.BACK4APP_DOT_COM_SITE_URL}
+    back4appDotComOldSiteURL={b4aSettings.BACK4APP_DOT_COM_OLD_SITE_URL}
+    back4appDotComDashboardURL={b4aSettings.BACK4APP_DOT_COM_DASHBOARD_URL}
+  />
+}
+
+const DashboardWrapper = () => {
+  return (
+    <BrowserRouter basename={window.PARSE_DASHBOARD_PATH || '/'}>
+      <Helmet>
+        <title>Parse Dashboard</title>
+      </Helmet>
+      <NavbarWrapper />
+      <Dashboard />
+    </BrowserRouter>
+  );
+}
+
+export default DashboardWrapper;

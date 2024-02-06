@@ -17,8 +17,16 @@ body {
   @include NotoSansFont;
   box-sizing: border-box;
   color: $white;
-  padding-top: $header-height;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+header {
+  z-index: 1000 !important;
+}
+
+svg {
+  display: inline !important;
+  vertical-align: middle !important;
 }
 
 :global(#browser_mount) {
