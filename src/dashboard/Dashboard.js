@@ -401,8 +401,8 @@ class Dashboard extends React.Component {
         <Route path="push/:pushId" element={<PushDetails />} />
 
         <Route path="connect" element={<B4aConnectPage />} />
-        <Route path="admin" element={<B4aAdminPage />} />
-        <Route path="app-templates" element={<B4aAppTemplates />} />
+        {/* <Route path="admin" element={<B4aAdminPage />} /> */}
+        {/* <Route path="app-templates" element={<B4aAppTemplates />} /> */}
 
         <Route path="server-settings/" element={<ServerSettings />} />
         <Route path="server-settings/:targetPage" element={<ServerSettings />} />
@@ -410,10 +410,10 @@ class Dashboard extends React.Component {
         <Route path="index/:className" element={<IndexManager />} />
         <Route path="index" element={<IndexManager />} />
 
-        <Route path="blockchain" element={<BlockchainPage /> } />
+        {/* <Route path="blockchain" element={<BlockchainPage /> } /> */}
 
         <Route path="connections" element={<HubConnections />} />
-        <Route path="analytics">{AnalyticsRoute}</Route>
+        {/* <Route path="analytics">{AnalyticsRoute}</Route> */}
         <Route path="settings">{SettingsRoute}</Route>
         {/* {user.allowHubPublish && <Route path="hub-publish" element={<B4aHubPublishPage />} />} */}
       </Route>

@@ -126,14 +126,14 @@ export default class DashboardView extends React.Component {
       link: '/index'
     })
 
-    databaseSubsections.push({
-      name: 'Blockchain',
-      link: '/blockchain',
-      badge: {
-        label: 'NEW',
-        color: 'green'
-      }
-    })
+    // databaseSubsections.push({
+    //   name: 'Blockchain',
+    //   link: '/blockchain',
+    //   badge: {
+    //     label: 'NEW',
+    //     color: 'green'
+    //   }
+    // })
 
     const cloudCodeSubSections = [];
     // Show cloud code to all parse versions
@@ -203,25 +203,25 @@ export default class DashboardView extends React.Component {
       });
     }
 
-    moreSubSection.push({
-      name: 'Analytics',
-      link: '/analytics'
-    })
+    // moreSubSection.push({
+    //   name: 'Analytics',
+    //   link: '/analytics'
+    // })
 
     moreSubSection.push({
       name: 'Database HUB',
       link: '/connections'
     })
 
-    moreSubSection.push({
-      name: 'Admin App',
-      link: '/admin'
-    })
+    // moreSubSection.push({
+    //   name: 'Admin App',
+    //   link: '/admin'
+    // })
 
-    moreSubSection.push({
-      name: 'App Templates',
-      link: '/app-templates'
-    })
+    // moreSubSection.push({
+    //   name: 'App Templates',
+    //   link: '/app-templates'
+    // })
     // moreSubSection.push({
     //   name: 'Dashboard Settings',
     //   link: '/settings/dashboard'
