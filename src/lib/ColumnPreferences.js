@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 const VERSION = 'v1'; // In case we ever need to invalidate these
-const DEFAULT_WIDTH = 150;
+const DEFAULT_WIDTH = 200;
 const COLUMN_SORT = '__columnClassesSort'; // Used for storing classes sort field
 const DEFAULT_COLUMN_SORT = '-createdAt'; // Default column sorting
 const cache = {};

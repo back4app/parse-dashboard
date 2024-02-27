@@ -6,10 +6,11 @@
  * the root directory of this source tree.
  */
 @import "stylesheets/globals.scss";
+@import "stylesheets/back4app.scss";
 
 .dropdown {
   position: relative;
-  background: $inputBackgroundColor;
+  background: inherit;
   font-size: 16px;
   width: 100%;
   overflow: hidden;
@@ -24,9 +25,9 @@
 
 .menu {
   max-height: 200px;
-  border: 1px solid $blue;
-  background: white;
+  box-shadow: 0px 6px 16px 0px #0000001A;
   overflow: auto;
+  background: $white;
 
   > *:last-child .option {
     border-bottom: none;
@@ -34,35 +35,33 @@
 }
 
 .current {
-  text-align: center;
-  min-height: 80px;
   white-space: normal;
-  padding: 20px;
+  padding: 1rem;
   line-height: 40px;
 }
 
 .option {
   position: relative;
-  height: 48px;
+  height: 46px;
   line-height: 50px;
-  padding: 0 50px 0 14px;
-  color: $blue;
-  border-bottom: 1px solid $borderGrey;
+  padding: 13px 16px;
+  color: $old-blue;
+  border-bottom: 1px solid $light-grey;
   overflow: hidden;
   text-overflow: ellipsis;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba($light-grey, 0.03);
 
     .unchecked {
-      background: white;
+      background: $white;
     }
   }
 }
 
 .option.disabled {
   &:hover {
-    background: white;
+    background: $white;
     cursor: default;
   }
 }
@@ -70,38 +69,35 @@
 .checked,
 .unchecked {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 16px;
+  height: 16px;
   border-radius: 100%;
-  top: 8px;
+  top: 15px;
   right: 8px;
+  border: 1px solid $dark;
 }
 
 .unchecked {
-  background: #e0e0ea;
+  background: $white;
 }
 .checked {
-  background: #00dc7c;
-
-  svg {
+  &::after {
+    content: ' ';
     position: absolute;
-    top: 6px;
-    left: 6px;
+    width: 10px;
+    height: 10px;
+    background: $dark;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
   }
 }
 
 .current.placeholder {
-  color: $secondaryTextColor;
-  text-align: center;
+  color: rgba($dark-blue, 0.5);
 }
 
-.dropdown.dense {
-  background: none;
-}
-
-.dropdown.dense {
-  background: none;
-}
 .dense {
   .checked,
   .unchecked {
@@ -109,29 +105,31 @@
     width: 18px;
     height: 18px;
     border-radius: 100%;
-    top: 4px;
+    top: 15px;
     right: 4px;
+    border: 1px solid $dark;
   }
   .checked {
-    svg {
+    &::after {
+      content: ' ';
       position: absolute;
-      top: 2px;
-      left: 2px;
-      font-size: small;
+      width: 10px;
+      height: 10px;
+      background: $dark;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
     }
   }
 
   .current {
-    text-align: center;
-    min-height: 50px;
     height: 100%;
-    padding: 0px;
+    padding: 1rem;
     line-height: 48px;
   }
 
   .option {
-    height: 30px;
-    line-height: 32px;
     padding: 0 50px 0 14px;
   }
 }

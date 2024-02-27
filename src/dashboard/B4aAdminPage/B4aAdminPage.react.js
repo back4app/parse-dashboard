@@ -4,7 +4,7 @@ import Parse            from 'parse';
 import axios            from 'axios'
 import DashboardView    from 'dashboard/DashboardView.react';
 import subscribeTo      from 'lib/subscribeTo';
-import LoaderContainer  from 'components/LoaderContainer/LoaderContainer.react'
+import B4aLoaderContainer  from 'components/B4aLoaderContainer/B4aLoaderContainer.react'
 import Field            from 'components/Field/Field.react';
 import Fieldset         from 'components/Fieldset/Fieldset.react';
 import FormNote         from 'components/FormNote/FormNote.react';
@@ -177,12 +177,12 @@ class B4aAdminPage extends DashboardView {
     </Fieldset>
 
     return (
-      <LoaderContainer className={styles.loading} loading={this.state.loading} hideAnimation={false} solid={true}>
+      <B4aLoaderContainer className={styles.loading} loading={this.state.loading} hideAnimation={false} solid={true}>
         <div className={styles['admin-page']}>
           {toolbar}
           {fields}
         </div>
-      </LoaderContainer>
+      </B4aLoaderContainer>
     )
   }
 }

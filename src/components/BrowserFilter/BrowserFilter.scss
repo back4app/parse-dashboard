@@ -6,6 +6,7 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .wrap {
   display: flex;
@@ -58,7 +59,7 @@
   border-radius: 5px;
 
   svg {
-    fill: white;
+    fill: $white;
   }
 }
 
@@ -67,20 +68,27 @@
 }
 
 .title {
-  background: #797691;
-  padding: 7px 3px;
-  border-radius: 5px 5px 0 0;
+  background: $old-dark-blue;
+  // padding: 7px 3px;
+  border-radius: 0.25rem;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(249, 249, 249, 0.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
 
   svg {
-    fill: white;
+    fill: $white;
   }
 }
 
-.entry, .title {
+.entry {
   @include NotoSansFont;
   position: relative;
   font-size: 14px;
-  color: #ffffff;
+  color: $white;
   cursor: pointer;
 
   svg {
@@ -103,16 +111,17 @@
 
 .body {
   position: absolute;
-  top: 31px;
+  // top: 31px;
   right: 0;
-  border-radius: 5px 0 5px 5px;
-  background: #797691;
+  border-radius: 0.3125rem;
+  border: 1px solid rgba(249, 249, 249, 0.06);
+  background: $old-dark-blue;
   width: 535px;
   font-size: 14px;
 }
 
 .footer {
-  background: rgba(0,0,0,0.2);
+  // background: rgba(0,0,0,0.2);
   padding: 11px 0;
   text-align: center;
 
@@ -137,22 +146,22 @@
   }
 
   input {
-    @include MonospaceFont;
+    @include InterFont;
     height: 30px;
     width: 140px;
-    background: #343445;
-    border: none;
+    background: transparent;
+    border: 1px solid $light-blue;
     outline: none;
     border-radius: 5px;
     vertical-align: top;
     padding: 0 8px;
-    color: white;
+    color: $white;
     font-size: 14px;
   }
 }
 
 .active .row input {
-  background: #0E69A1;
+  background: $old-blue;
 }
 
 .remove {

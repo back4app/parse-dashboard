@@ -113,6 +113,7 @@ export default class B4aBrowserFilter extends React.Component {
       const position = Position.inDocument(this.node);
       const popoverStyle = [styles.popover];
       buttonStyle.push(styles.title);
+      buttonStyle.push(styles.activeMenu);
 
       if (this.props.filters.size) {
         popoverStyle.push(styles.active);
@@ -123,8 +124,13 @@ export default class B4aBrowserFilter extends React.Component {
       );
       popover = (
         <Popover fixed={true} position={position} onExternalClick={this.toggle} contentId={POPOVER_CONTENT_ID}>
-          <div className={popoverStyle.join(' ')} onClick={() => this.props.setCurrent(null)} id={POPOVER_CONTENT_ID}>
-            <div onClick={this.toggle} style={{ cursor: 'pointer', width: this.node.clientWidth, height: this.node.clientHeight }}></div>
+          <div className={popoverStyle.join(' ')} onClick={(e) => {
+            e.stopPropagation()
+            this.props.setCurrent(null)
+          }}
+          id={POPOVER_CONTENT_ID}
+          >
+            <Icon className={buttonStyle.join(' ')} name="b4a-browser-filter-icon" width={18} height={18} fill="#f9f9f9" onClick={this.toggle} />
             <div className={styles.body}>
               <Filter
                 blacklist={this.state.blacklistedFilters}
@@ -136,63 +142,79 @@ export default class B4aBrowserFilter extends React.Component {
                 )}
               />
               {this.state.confirmName && (
-                <Field
-                  label={<Label text="Filter view name" />}
-                  input={
-                    <TextInput
-                      placeholder="Give it a good name..."
-                      value={this.state.name}
-                      onChange={name => this.setState({ name })}
-                    />
-                  }
-                />
+                <div className={styles.saveFilterInputWrapper}>
+                  <Field
+                    label={<Label text="Filter view name" dark={true} />}
+                    input={
+                      <div style={{ width: '100%', padding: '0 1rem' }}>
+                        <TextInput
+                          placeholder="Give it a good name..."
+                          value={this.state.name}
+                          onChange={name => this.setState({ name })}
+                        />
+                      </div>
+                    }
+                    theme={Field.Theme.DARK}
+                  />
+                </div>
               )}
               {this.state.confirmName && (
                 <div className={styles.footer}>
-                  <Button
-                    color="white"
-                    value="Back"
-                    width="120px"
-                    onClick={() => this.setState({ confirmName: false })}
-                  />
-                  <Button
-                    color="white"
-                    value="Confirm"
-                    primary={true}
-                    width="120px"
-                    onClick={() => this.save()}
-                  />
+                  <div className=""></div>
+                  <div className="">
+                    <Button
+                      color="white"
+                      value="Cancel"
+                      width="auto"
+                      additionalStyles={{ color: '#f9f9f9' }}
+                      onClick={() => this.setState({ confirmName: false })}
+                    />
+                    <Button
+                      color="green"
+                      value="Confirm"
+                      disabled={!this.state.name.trim()}
+                      primary={true}
+                      onClick={() => this.save()}
+                    />
+                  </div>
                 </div>
               )}
               {!this.state.confirmName && (
                 <div className={styles.footer}>
-                  <Button
-                    color="white"
-                    value="Save"
-                    width="120px"
-                    onClick={() => this.setState({ confirmName: true })}
-                  />
-                  <Button
-                    color="white"
-                    value="Clear"
-                    disabled={this.state.filters.size === 0}
-                    width="120px"
-                    onClick={() => this.clear()}
-                  />
-                  <Button
-                    color="white"
-                    value="Add"
+                  <button
+                    className={styles.addFilterBtn}
                     disabled={Object.keys(available).length === 0}
-                    width="120px"
                     onClick={() => this.addRow()}
-                  />
-                  <Button
-                    color="white"
-                    primary={true}
-                    value="Apply"
-                    width="120px"
-                    onClick={() => this.apply()}
-                  />
+                  >
+                    <div>
+                      <Icon name="b4a-add-fill" width={16} height={16} fill="#27AE60" />
+                      Add Filter
+                    </div>
+                  </button>
+                  <div className="">
+                    <Button
+                      color="white"
+                      value="Save Filters"
+                      onClick={() => this.setState({ confirmName: true })}
+                      width="auto"
+                      additionalStyles={{ fontWeight: '500', color: '#ccc' }}
+                    />
+                    <Button
+                      color="white"
+                      value="Clear All"
+                      disabled={this.state.filters.size === 0}
+                      onClick={() => this.clear()}
+                      width="auto"
+                      additionalStyles={{ fontWeight: '500', color: '#ccc' }}
+                    />
+                    <Button
+                      primary={true}
+                      value="Apply Filter"
+                      onClick={() => this.apply()}
+                      width="auto"
+                      additionalStyles={{ border: 'none', backgroundColor: 'transparent !important' }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -207,11 +229,8 @@ export default class B4aBrowserFilter extends React.Component {
       buttonStyle.push(styles.disabled);
     }
     return (
-      <div className={wrapperStyle.join(' ')}>
-        <div className={buttonStyle.join(' ')} onClick={!this.props.disabled ? this.toggle : null}>
-          <Icon name="filter-icon" width={24} height={24} />
-          {/* <span>{this.props.filters.size ? 'Filtered' : 'Filter'}</span> */}
-        </div>
+      <div className={wrapperStyle.join(' ')} onClick={!this.props.disabled ? this.toggle : null}>
+        <Icon className={buttonStyle.join(' ')} name="b4a-browser-filter-icon" width={18} height={18} fill="#f9f9f9" />
         {popover}
       </div>
     );

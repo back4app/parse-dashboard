@@ -6,22 +6,23 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .row {
   display: inline-block;
   height: 24px;
 
   a {
-    @include DosisFont;
+    @include InterFont;
     display: inline-block;
     height: 24px;
     line-height: 24px;
     padding: 0 12px;
     font-size: 12px;
     border-style: solid;
-    border-color: $blue;
+    border-color: $cta-green;
     border-width: 1px 0 1px 1px;
-    color: $blue;
+    color: $cta-green;
 
     &:first-child {
       border-radius: 5px 0 0 5px;
@@ -32,7 +33,7 @@
     }
 
     &.current {
-      background: $blue;
+      background: $cta-green;
       color: white;
     }
   }

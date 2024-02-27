@@ -21,7 +21,7 @@
   min-height: $content-max-height;
 }
 
-body:global(.expanded) {
+body:global(.sidebarCollapsed) {
   .toolbar {
     left: 0px!important;
   }

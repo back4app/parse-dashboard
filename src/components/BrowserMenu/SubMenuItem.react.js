@@ -8,7 +8,7 @@
 import PropTypes    from 'lib/PropTypes';
 import React        from 'react';
 import ReactDOM     from 'react-dom';
-import styles       from 'components/BrowserMenu/BrowserMenu.scss';
+import styles       from 'components/BrowserMenu/B4aBrowserMenu.scss';
 
 export default class SubMenuItem extends React.Component {
   constructor() {

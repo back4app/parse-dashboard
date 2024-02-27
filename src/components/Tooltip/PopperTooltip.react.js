@@ -1,6 +1,6 @@
 import React from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
-import 'react-popper-tooltip/dist/styles.css';
+import 'components/Tooltip/PopperTooltip.css';
 
 const PopperTooltip = props => {
   const { children, tooltip, visible, placement } = props;

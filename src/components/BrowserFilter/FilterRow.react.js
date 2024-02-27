@@ -135,14 +135,14 @@ const FilterRow = ({
           maxHeight: '360px',
           overflowY: 'auto',
           fontSize: '14px',
-          background: '#343445',
+          background: '#114370',
           borderBottomLeftRadius: '5px',
           borderBottomRightRadius: '5px',
           color: 'white',
           cursor: 'pointer',
         }}
         suggestionsItemStyle={{
-          background: '#343445',
+          background: '#114370',
           color: 'white',
           height: '30px',
           lineHeight: '30px',
@@ -168,6 +168,7 @@ const FilterRow = ({
         value={Constraints[currentConstraint].name}
         options={constraints.map(c => Constraints[c].name)}
         onChange={c => onChangeConstraint(constraintLookup[c], compareTo)}
+        // styles={{ background: '#114370' }}
       />
       {compareValue(
         compareInfo,

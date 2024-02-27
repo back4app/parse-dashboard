@@ -20,7 +20,7 @@ export default class B4AAlert extends React.Component {
 
   componentWillMount() {
     if (typeof this.props.show !== 'undefined')
-      return this.setState({ show: this.props.show })
+    {return this.setState({ show: this.props.show })}
     this.setState({ show: true })
   }
 
@@ -30,7 +30,7 @@ export default class B4AAlert extends React.Component {
   }
 
   render() {
-    let padding = (this.props.padding || 20) + 'px';
+    const padding = (this.props.padding || 20) + 'px';
     return this.state.show && (
       <div
         className={styles.label}
@@ -39,7 +39,7 @@ export default class B4AAlert extends React.Component {
           className={styles.title} >
           {this.props.title}
           {
-          !this.props.hideClose &&
+            !this.props.hideClose &&
           <a
             className={`zmdi zmdi-close ${styles.close}`}
             onClick={this.onClose.bind(this)}>

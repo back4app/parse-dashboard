@@ -6,16 +6,31 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .bar {
   position: absolute;
   top: 0;
   left: 0;
-  height: 30px;
-  background-color: #66637a;
+  height: 46px;
   white-space: nowrap;
   display: inline-block;
   min-width: 100%;
+  background: rgba(193, 226, 255, 0.06);
+  box-shadow: 0px 1px 0px 0px rgba(193, 226, 255, 0.16);
+  padding: 0 1.5rem;
+  padding-right: 0;
+}
+
+.objectPickerContent {
+  .bar {
+    background: $dark-grey;
+    height: 36px;
+  }
+  .check {
+    line-height: 36px;
+    height: 36px;
+  }
 }
 
 .wrap {
@@ -25,19 +40,20 @@
 
 .addColumn {
   display: inline-block;
-  height: 30px;
+  height: 46px;
   vertical-align: top;
   padding: 0 25px;
 }
 
 .addColumnButton {
   @include buttonReset($bg: #343445);
+  background: $dark-grey !important;
   display: inline-block;
-  height: 20px;
+  height: 25px;
   width: 130px;
   text-align: center;
-  line-height: 20px;
-  margin-top: 5px;
+  line-height: 25px;
+  margin-top: 10px;
   color: white;
   border-radius: 5px;
   vertical-align: top;
@@ -46,20 +62,24 @@
 
 .check {
   display: inline-block;
-  line-height: 30px;
-  height: 30px;
+  line-height: 46px;
+  height: 46px;
   vertical-align: top;
   text-align: center;
   width: 30px;
-  background: rgba(224,224,234,0.10);
+  border-right: 1px solid rgba(249, 249, 249, 0.06);
+  padding-right: 1rem;
+  accent-color: $cta-green;
+  // background: rgba(224,224,234,0.10);
 }
 
 .handle {
   position: relative;
   display: inline-block;
-  width: 8px;
-  height: 30px;
-  margin: 0 -4px;
+  width: 1px;
+  background-color: rgba(249, 249, 249, 0.06);
+  height: 46px;
+  // margin: 0 1rem;
   cursor: ew-resize;
 }
 
@@ -81,14 +101,16 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  top: 30px;
+  top: 18px;
+  left: 0;
+  padding: 0 0.5rem;
 }
 
 .skeletonRow {
-  border-top: 1px solid #e3e3ea;
-  border-bottom: 1px solid #e3e3ea;
+  // border-top: 1px solid #d9d9d9;
+  // border-bottom: 1px solid #d9d9d9;
   height: 30px;
-  width:100%;
+  width: 100%;
   vertical-align: middle;
   padding-left: 2px;
   margin-top: 30px;
@@ -98,10 +120,9 @@
   
 @keyframes skeleton-loading {
   0% {
-    background-color:#ffffff;
+    background-color: rgba(217, 217, 217, 0.48);
   }
   100% {
-    background-color: #e3e3ea;
-
+    background-color: rgba(217, 217, 217, 0.24);
   }
 }

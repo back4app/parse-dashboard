@@ -20,14 +20,13 @@ import TableHeader from 'components/Table/TableHeader.react';
 import TableView from 'dashboard/TableView.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
-
 @subscribeTo('Config', 'config')
 class Config extends TableView {
   constructor() {
     super();
     this.section = 'More';
     this.subsection = 'Config';
-    this.action = new SidebarAction('Create a parameter', this.createParameter.bind(this));
+    this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" />Add parameter</span>, this.createParameter.bind(this));
     this.state = {
       modalOpen: false,
       showDeleteParameterDialog: false,
@@ -66,7 +65,7 @@ class Config extends TableView {
 
   renderToolbar() {
     return (
-      <Toolbar section="Core" subsection="Config">
+      <Toolbar section="Config" >
         <a className={browserStyles.toolbarButton} onClick={this.onRefresh.bind(this)}>
           <Icon name="refresh-solid" width={14} height={14} />
           <span>Refresh</span>

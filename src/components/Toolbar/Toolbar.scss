@@ -9,29 +9,32 @@
 @import 'stylesheets/back4app.scss';
 
 .toolbar {
+  @include SoraFont;
   position: fixed;
   top: 0;
   right: 0;
-  left: 300px;
-  background: #353446;
-  height: 48px;
-  color: white;
+  left: 360px;
+  background: $dark-grey;
+  padding: 0.5rem 1.5rem;
+  height: 64px;
+  color: $white;
   margin-top: $header-height;
   transition: left 0.5s ease-in;
   z-index: 0;
 }
 
-body:global(.expanded) {
+body:global(.sidebarCollapsed) {
   .toolbar {
-    left: 54px;
+    left: $b4aSidebarCollapsedWidth;
   }
 }
 
 .objectPickerContent {
   .toolbar {
-    background: #00db7c;
-    height: 80px;
-    right: 135px;
+    background: #f9f9f9;
+    // height: 80px;
+    right: 6px;
+    margin-top: 26px;
 
     .nav {
       display: none;
@@ -40,13 +43,19 @@ body:global(.expanded) {
     .titleText {
       display: none;
     }
+    .iconButton {
+      border: 1px solid $light-grey;
+      svg {
+        fill: $dark;
+      }
+    }
   }
 }
 
 .title {
   display: flex;
   align-items: center;
-  margin-left: 15px;
+  // margin-left: 15px;
   height: 100%;
 }
 
@@ -56,9 +65,18 @@ body:global(.expanded) {
 
 .iconButton {
   display: block;
-  padding-top: 10px;
-  padding-right: 10px;
+  margin-right: 40px;
   cursor: pointer;
+  background: rgba(249, 249, 249, 0.06);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    transform: rotate(-90deg);
+  }
 }
 
 .titleText {
@@ -75,25 +93,26 @@ body:global(.expanded) {
 }
 
 .section {
-  @include DosisFont;
-  color: #d9d9d9;
-  text-transform: uppercase;
-  font-size: 8px;
-  letter-spacing: 1.6px;
-  margin-right: 4px;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 140%;
 }
 
 .subsection {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   justify-content: center;
   align-items: flex-start;
 }
 
 .subsectionName {
-  font-size: 18px;
-  vertical-align: bottom;
-  margin-right: 10px;
+  @include InterFont;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  color: $light-grey;
 }
 
 .details {
@@ -111,21 +130,37 @@ body:global(.expanded) {
   display: flex;
   align-items: center;
   top: 0;
+  right: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  // gap: 4px;
 }
 
 .publicAccess {
   display: inline-flex;
-  // margin-left: 5px;
+  margin-left: 2.5rem;
   align-items: center;
-  cursor: pointer;
   .publicAccessIcon {
-    height: 15px;
-    width: 15px;
-    margin-right: 5px;
+    padding: 0 0.38rem;
+    width: 28px;
+    height: 28px;
+    background: rgba(249, 249, 249, 0.06);
+    border-radius: 1.25rem;
+  }
+  .publicAccessName {
+    @include InterFont;
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.5rem;
+    line-height: 140%;
+    span:nth-child(1) {
+      font-weight: 700;
+    }
+    span:nth-child(2){
+      font-size: 0.875rem;
+      color: #ccc;
+    }
   }
   .publicAccessLink {
     cursor: pointer;

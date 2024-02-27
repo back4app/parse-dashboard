@@ -1,7 +1,39 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+$consoleHeight: 40%;
+
 .playground-ctn {
-  padding-top: 48px;
-  background-color: #002b36;
-  height: calc(100vh - 48px);
+  padding-top: $toolbar-height;
+  height: calc(100vh - $toolbar-height - 1rem);
+  background: $dark;
+  overflow: hidden;
+}
+
+.playgroundEditor {
+  height: calc(100vh - $header-height - $toolbar-height - $consoleHeight);
+}
+
+.console {
+  height: $consoleHeight;
+  > div {
+    @include InterFont;
+    background: $dark-grey;
+    line-height: 140%;
+    padding: 0.625rem 1rem;
+    height: 42px;
+  }
+  > section {
+    padding: 0.625rem 1rem;
+    height: calc(100% - 42px);
+    overflow-y: auto;
+    background: #0A0B0C;
+    > span.null {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 300;
+    }
+  }
 }
 
 .console-ctn {
@@ -36,8 +68,16 @@
 .buttons-ctn {
   display: flex;
   justify-content: flex-end;
-  padding: 15px;
+  gap: 0.5rem;
   align-items: center;
+
+  .runBtn {
+    color: $white;
+    .icon {
+      margin-right: 4px;
+    }
+  }
+
 
   & > div {
     display: flex;

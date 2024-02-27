@@ -75,19 +75,19 @@ export default class ColumnsConfiguration extends React.Component {
     const { handleColumnDragDrop, handleColumnsOrder, order, disabled } = this.props;
     const title = (
       <div className={styles.title} onClick={this.toggle.bind(this)}>
-        <Icon name='visibility-icon' width={32} height={26} />
+        <Icon name='b4a-visibility-icon' width={24} height={24} />
       </div>
     );
 
     let entry = (
       <div className={`${styles.entry} ${styles.toolbarButton}`} onClick={this.toggle.bind(this)} ref={this.entryRef}>
-        <Icon name='visibility-icon' width={32} height={26} />
+        <Icon name='b4a-visibility-icon' width={24} height={24} />
       </div>
     );
 
     if (disabled) {
       entry = <div className={styles.toolbarButton + ' ' + styles.disabled} onClick={null}>
-        <Icon name='visibility-icon' width={32} height={26} />
+        <Icon name='b4a-visibility-icon' width={24} height={24} />
       </div>;
     }
 

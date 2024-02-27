@@ -1,0 +1,181 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import 'stylesheets/globals.scss';
+ @import 'stylesheets/back4app.scss';
+ 
+ .wrap {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+   height: 28px;
+   width: 30px;
+   padding: 4px;
+   border-radius: 5px;
+   border: 1px solid rgba($white, 0.06);
+ 
+   &:hover {
+     background-color: rgba(255, 255, 255, 0.2);
+   }
+ }
+ 
+ .entry {
+   svg {
+     fill: white;
+   }
+ 
+   &.disabled {
+     cursor: not-allowed;
+     color: #66637A;
+ 
+     &:hover svg {
+       fill: #66637A;
+     }
+   }
+ 
+   &.active {
+     height: 100%;
+     background: $cta-green;
+     border-radius: 5px;
+     padding-top: 3px;
+ 
+     svg {
+       fill: white;
+     }
+   }
+ }
+ 
+ .title {
+   background: $old-dark-blue;
+   // padding: 7px 2px 1px 2px;
+   height: 28px;
+   width: 30px;
+   margin-bottom: 5px;
+   border-radius: 0.25rem;
+   border: 1px solid rgba(249, 249, 249, 0.06);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ 
+   svg {
+     fill: $white;
+   }
+ 
+   &.active {
+     background: $cta-green;
+     border-radius: 5px;
+   }
+ }
+ 
+ .entry {
+   @include InterFont;
+   font-size: 0;
+   position: relative;
+   color: $white;
+   cursor: pointer;
+ 
+   svg {
+     vertical-align: top;
+   }
+ 
+   span {
+     vertical-align: top;
+     height: 14px;
+     line-height: 14px;
+   }
+ }
+ 
+ .body {
+   position: absolute;
+   // top: 31px;
+   right: 0;
+   border-radius: 0.25rem;
+   background: $old-dark-blue;
+   padding: 8px 0;
+   font-size: 14px;
+   border: 1px solid rgba(249, 249, 249, 0.06);
+ }
+ 
+ .item {
+   @include SoraFont;
+   position: relative;
+   padding: 8px 14px;
+   white-space: nowrap;
+   cursor: pointer;
+   color: $white;
+ 
+   &:hover {
+     background: $mid-blue;
+   }
+ 
+   &.open {
+     background: $mid-blue;
+   }
+ 
+   &.active {
+     background: $cta-green;
+     &:hover {
+       background: $cta-green !important;
+     }
+   }
+ 
+   &.disabled {
+     color: rgba(249, 249, 249, 0.3);
+     cursor: not-allowed;
+ 
+     &:hover {
+       background: none;
+     }
+   }
+ }
+ 
+ .separator {
+   background: rgba(249, 249, 249, 0.2);
+   height: 1px;
+   margin: 4px 0;
+ }
+ 
+ .subMenuBody {
+   position: absolute;
+   top: -6px;
+   left: -16px;
+   border-radius: 5px 0 0 5px;
+   border: 1px solid rgba(249, 249, 249, 0.06);
+   background: $old-dark-blue;
+   padding: 6px 0;
+   font-size: 14px;
+   & .item {
+     padding-left: 20px;
+   }
+ 
+   & .item.disabled::before {
+     background: rgba(249, 249, 249, 0.3);
+   }
+ }
+ 
+ .rightArrowIcon {
+   &::before {
+     content: '';
+     position: absolute;
+     @include arrow('right', 8px, 4px, $white);
+     top: 8px;
+     right: 10px;
+   }
+   &.open::before {
+     @include arrow('left', 8px, 4px, $white);
+   }
+ }
+ 
+ .objectPickerContent {
+  .wrap {
+    border-color: $light-grey;
+    svg {
+      fill: $dark;
+    }
+  }
+}

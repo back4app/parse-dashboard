@@ -7,10 +7,27 @@ $darkYellow: #f78400;
 $light-gray: #dfdfdf;
 $iosColor: #000000;
 $androidColor: #A4C639;
+
+$regal-blue: #34506F;
+$white: #F9F9F9;
+$error-red: #E85C3E;
+$error-log-red: #D86448;
+$cta-green: #27AE60;
+$light-blue: #C1E2FF;
+$old-blue: #15A9FF;
+$old-dark-blue: #114370;
+$dark-blue: #10203A;
+$alert-yellow: #FBFF3B;
+$light-grey: #CCCCCC;
+$dark-grey: #303338;
+$dark: #0F1C32;
+$mid-blue: #112C4D;
+
 // Back4App sizes
-$header-height: 51px;
-$toolbar-height: 48px;
+$header-height: 80px;
+$toolbar-height: 64px;
 $content-max-height: calc(100vh - #{$header-height});
+$b4aSidebarCollapsedWidth: 88px;
 
 .jstree-icon {
   background-size: contain;

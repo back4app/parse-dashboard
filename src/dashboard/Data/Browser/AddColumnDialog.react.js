@@ -12,10 +12,10 @@ import semver from 'semver/preload.js';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Option from 'components/Dropdown/Option.react';
 import TextInput from 'components/TextInput/TextInput.react';
-import Toggle from 'components/Toggle/Toggle.react';
+import B4aToggle from 'components/Toggle/B4aToggle.react';
 import DateTimeInput from 'components/DateTimeInput/DateTimeInput.react';
 import SegmentSelect from 'components/SegmentSelect/SegmentSelect.react';
 import FileInput from 'components/FileInput/FileInput.react';
@@ -175,6 +175,9 @@ export default class AddColumnDialog extends React.Component {
             placeholder="Set here a default value"
             multiline={true}
             onChange={async defaultValue => await this.handleDefaultValueChange(defaultValue)}
+            dark={false}
+            textAlign="left"
+            padding={0}
           />
         );
       case 'Number':
@@ -186,6 +189,9 @@ export default class AddColumnDialog extends React.Component {
               type === 'Pointer' ? 'Set a valid object ID here' : 'Set a default value here'
             }
             onChange={async defaultValue => await this.handleDefaultValueChange(defaultValue)}
+            dark={false}
+            textAlign="left"
+            padding={0}
           />
         );
       case 'Date':
@@ -197,6 +203,8 @@ export default class AddColumnDialog extends React.Component {
                 : undefined
             }
             onChange={async defaultValue => await this.handleDefaultValueChange(defaultValue)}
+            dark={false}
+            width={240}
           />
         );
       case 'Boolean':
@@ -248,17 +256,19 @@ export default class AddColumnDialog extends React.Component {
         }
       }).filter((t => t !== null))
     }
-    let typeDropdown = (
+    const typeDropdown = (
       <Dropdown
         value={this.state.type}
-        onChange={(type) => this.setState({ type: type, defaultValue: undefined, required: false })}>
+        onChange={(type) => this.setState({ type: type, defaultValue: undefined, required: false })}
+        dark={false}
+      >
         {renderOptions(this.props)}
       </Dropdown>
     );
     return (
-      <Modal
-        type={Modal.Types.INFO}
-        icon="ellipses"
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
+        // icon="ellipses"
         iconSize={30}
         title="Add a new column"
         subtitle="Store another type of data in this class."
@@ -266,6 +276,7 @@ export default class AddColumnDialog extends React.Component {
         confirmText="Add"
         cancelText="Cancel"
         onCancel={this.props.onCancel}
+        onClose={this.props.onCancel}
         continueText={'Add & continue'}
         showContinue={true}
         onContinue={() => {
@@ -275,73 +286,87 @@ export default class AddColumnDialog extends React.Component {
           this.props.onConfirm(this.state);
         }}
       >
-        <Field
-          label={<Label text="What type of data do you want to store?" />}
-          input={typeDropdown}
-        />
-        {this.state.type === 'Pointer' || this.state.type === 'Relation' ? (
-          <Field label={<Label text="Target class" />} input={this.renderClassDropdown()} />
-        ) : null}
-        <Field
-          label={
-            <Label
-              text="What should we call it?"
-              description={
-                'Don\u2019t use any special characters, and start your name with a letter.'
-              }
-            />
-          }
-          input={
-            <TextInput
-              placeholder="Give it a good name..."
-              value={this.state.name}
-              onChange={name => this.setState({ name })}
-            />
-          }
-        />
-        {
-          /*
-            Allow include require fields and default values if the parse-server
-            version is greater than or equal 3.7.0, that is the minimum version
-            support this feature and check if the field is not a relation
-          */
-          semver.valid(this.props.parseServerVersion) &&
-          semver.gte(this.props.parseServerVersion, '3.7.0') &&
-          this.state.type !== 'Relation' ? (
-              <>
-                <Field
-                  label={
-                    <Label
-                      text="What is the default value?"
-                      description="If no value is specified for this column, it will be filled with its default value."
-                    />
-                  }
-                  input={this.renderDefaultValueInput()}
-                  className={styles.addColumnToggleWrapper}
+        <div style={{ borderRadius: '4px', overflow: 'hidden' }}>
+          <Field
+            label={<Label text="What type of data do you want to store?" />}
+            theme={Field.Theme.LIGHT}
+            input={typeDropdown}
+          />
+          {this.state.type === 'Pointer' || this.state.type === 'Relation' ? (
+            <Field label={<Label text="Target class" />} input={this.renderClassDropdown()} />
+          ) : null}
+          <Field
+            label={
+              <Label
+                text="What should we call it?"
+                description={
+                  'Don\u2019t use any special characters, and start your name with a letter.'
+                }
+              />
+            }
+            input={
+              <div style={{ padding: '0 1rem' }}>
+                <TextInput
+                  placeholder="Give it a good name"
+                  value={this.state.name}
+                  onChange={name => this.setState({ name })}
+                  dark={false}
+                  textAlign="left"
+                  padding={0}
                 />
-                <Field
-                  label={
-                    <Label
-                      text="Is it a required field?"
-                      description={
-                        'When true this field must be filled when a new object is created.'
-                      }
-                    />
-                  }
-                  input={
-                    <Toggle
-                      value={this.state.required}
-                      type={Toggle.Types.YES_NO}
-                      onChange={required => this.setState({ required })}
-                      additionalStyles={{ margin: '0px' }}
-                    />
-                  }
-                  className={styles.addColumnToggleWrapper}
-                />
-              </>
-            ) : null
-        }
-      </Modal>
+              </div>
+            }
+            className={styles.addColumnToggleWrapper}
+          />
+          {
+            /*
+              Allow include require fields and default values if the parse-server
+              version is greater than or equal 3.7.0, that is the minimum version
+              support this feature and check if the field is not a relation
+            */
+            semver.valid(this.props.parseServerVersion) &&
+            semver.gte(this.props.parseServerVersion, '3.7.0') &&
+            this.state.type !== 'Relation' ? (
+                <>
+                  <Field
+                    label={
+                      <Label
+                        text="What is the default value?"
+                        description="If no value is specified for this column, it will be filled with its default value."
+                      />
+                    }
+                    input={<div style={{ padding: '0 1rem', width: '100%' }}>
+                      {this.renderDefaultValueInput()}
+                    </div>}
+                    className={styles.addColumnToggleWrapper}
+                  />
+                  <Field
+                    label={
+                      <Label
+                        text="Is it a required field?"
+                        description={
+                          'When true this field must be filled when a new object is created.'
+                        }
+                      />
+                    }
+                    input={
+                      <div style={{ padding: '0 1rem' }}>
+                        <B4aToggle
+                          value={this.state.required}
+                          type={B4aToggle.Types.YES_NO}
+                          onChange={required => this.setState({ required })}
+                          additionalStyles={{ margin: '0px' }}
+                          invertLabels={true}
+                        />
+                      </div>
+                    }
+                    className={styles.addColumnToggleWrapper}
+                  />
+                </>
+              ) : null
+          }
+        </div>
+      </B4aModal>
     );
   }
 }

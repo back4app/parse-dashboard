@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/back4app.scss';
+
+.cell {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+  color: $light-grey;
+  height: 36px;
+  line-height: 26px;
+  padding: 0.5rem 1rem;
+  // border-right: 1px solid rgba(249, 249, 249, 0.06);
+}
+
+
+.objectPickerContent {
+  .cell {
+    color: $regal-blue !important;
+  }
+}
+
+.empty {
+  color: #7D929F;
+}
+
+.current {
+  position: relative;
+
+  &:after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+    border: 1px solid $light-grey;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+// .readonly {
+//   color: #353446;
+//   opacity: .9;
+// }
+
+.hasMore{
+  height: auto;
+  max-height: 25px;
+  overflow-y: scroll;
+  padding-right: 2px;
+  & > li {
+    margin-bottom: 2px;
+  }
+}
+
+.removePadding {
+  padding-right: 3px !important;
+}
+
+.hasMore::-webkit-scrollbar {
+  -webkit-appearance: none!important;
+  width: 6px!important;
+}
+
+.hasMore::-webkit-scrollbar-thumb {
+  border-radius: 4px!important;
+  background-color: rgba(0, 0, 0, .5)!important;
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5)!important;
+}
+.required {
+  position: relative;
+
+  &:after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+    border: 2px solid #ff395e;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.readonly {
+  color: #04263bd1;
+}
+
+.action {
+  padding: 28px;
+  border-style: solid;
+}

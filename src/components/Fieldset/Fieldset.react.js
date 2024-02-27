@@ -7,7 +7,7 @@
  */
 import PropTypes from 'lib/PropTypes';
 import React from 'react';
-import styles from 'components/Fieldset/Fieldset.scss';
+import styles from 'components/Fieldset/B4aFieldset.scss';
 
 let Fieldset = ({ legend, description, children, width = '', error }) => (
   <div className={styles.fieldset}>

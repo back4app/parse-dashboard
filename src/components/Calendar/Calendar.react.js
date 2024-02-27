@@ -15,7 +15,7 @@ import {
 } from 'lib/DateUtils';
 import PropTypes from 'lib/PropTypes';
 import React from 'react';
-import styles from 'components/Calendar/Calendar.scss';
+import styles from 'components/Calendar/B4aCalendar.scss';
 
 export default class Calendar extends React.Component {
   constructor(props) {
@@ -121,7 +121,7 @@ export default class Calendar extends React.Component {
 
   render() {
     return (
-      <div className={styles.calendar}>
+      <div className={styles.calendar + (this.props.dark ? ` ${styles.dark}` : '')}>
         {this.renderMonth()}
         {this.renderWeekdays()}
         {this.renderDays()}
@@ -137,4 +137,9 @@ Calendar.propTypes = {
   ),
   shadeBefore: PropTypes.bool.describe('Whether to shade the dates before the current selection'),
   shadeAfter: PropTypes.bool.describe('Whether to shade the dates after the current selection'),
+  dark: PropTypes.bool.describe('Whether to use dark theme'),
 };
+
+Calendar.defaultProps = {
+  dark: true,
+}

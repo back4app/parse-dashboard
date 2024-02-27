@@ -9,7 +9,7 @@ import Button from 'components/Button/Button.react';
 import DashboardView from 'dashboard/DashboardView.react';
 import DonutChart from 'components/DonutChart/DonutChart.react';
 import Icon from 'components/Icon/Icon.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import prettyNumber from 'lib/prettyNumber';
 import React from 'react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -189,12 +189,12 @@ export default class Overview extends DashboardView {
 
         return (
           <div className={styles.activityInfo} key={meta.key}>
-            <LoaderContainer loading={loading} hideAnimation={true} solid={false}>
+            <B4aLoaderContainer loading={loading} hideAnimation={true} solid={false}>
               <div style={infoContainerStyle}>
                 {content}
                 <div className={styles.infoLabel}>{meta.label}</div>
               </div>
-            </LoaderContainer>
+            </B4aLoaderContainer>
           </div>
         );
       })
@@ -227,12 +227,12 @@ export default class Overview extends DashboardView {
 
       return (
         <div className={styles.billingInfo} key={meta.key}>
-          <LoaderContainer loading={loading} hideAnimation={true} solid={false}>
+          <B4aLoaderContainer loading={loading} hideAnimation={true} solid={false}>
             <div style={infoContainerStyle}>
               {content}
               <div className={styles.infoLabel}>{meta.label}</div>
             </div>
-          </LoaderContainer>
+          </B4aLoaderContainer>
         </div>
       );
     });

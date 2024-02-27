@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import Parse from 'parse';
-import PermissionsDialog from 'components/PermissionsDialog/PermissionsDialog.react';
+import B4aPermissionsDialog from 'components/PermissionsDialog/B4aPermissionsDialog.react';
 import React from 'react';
 import styles from 'dashboard/Data/Browser/Browser.scss';
 import { CurrentApp } from 'context/currentApp';
@@ -111,7 +111,7 @@ export default class SecurityDialog extends React.Component {
       this.context.serverInfo.features.schemas.editClassLevelPermissions;
     if (this.props.perms && this.state.open) {
       dialog = (
-        <PermissionsDialog
+        <B4aPermissionsDialog
           title="Edit Class Level Permissions"
           enablePointerPermissions={parseServerSupportsPointerPermissions}
           advanced={true}

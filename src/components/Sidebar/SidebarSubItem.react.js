@@ -7,7 +7,7 @@
  */
 import { Link } from "react-router-dom";
 import React from "react";
-import styles from "components/Sidebar/Sidebar.scss";
+import styles from "components/Sidebar/B4aSidebar.scss";
 import B4aBadge from "components/B4aBadge/B4aBadge.react";
 
 const sendEvent = () => {

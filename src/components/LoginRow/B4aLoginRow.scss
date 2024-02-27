@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.row {
+  display: block;
+  position: relative;
+  height: 50px;
+  border-bottom: 1px solid #CCCCCC;
+  color: $dark-blue;
+  height: 80px;
+  &:last-of-type{
+    border-bottom: none;
+  }
+}
+
+.label {
+  @include InterFont;
+  width: 50%;
+  background: rgba(51, 51, 51, 0.031);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 80px;
+  float: left;
+  padding: 0 0 0 16px;
+  text-align: left;
+  height: 100%;
+}
+
+.input {
+  @include InterFont;
+  margin-left: 50%;
+  background: #3333330F;
+  height: 100%;
+
+  input {
+    padding: 0 16px;
+    display: block;
+    border: none;
+    outline: none;
+    background: transparent;
+    height: 100%;
+    line-height: 100%;
+    width: 100%;
+    font-size: 13px;
+
+    &:focus {
+      background: rgba(6,40,61,0.1);
+    }
+  }
+}
+
+.extra {
+  position: absolute;
+  top: 0;
+  right: 0;
+}

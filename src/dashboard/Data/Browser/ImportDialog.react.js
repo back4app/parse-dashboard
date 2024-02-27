@@ -7,7 +7,7 @@
  */
 import React    from 'react';
 import ParseApp from 'lib/ParseApp';
-import Modal    from 'components/Modal/Modal.react';
+import B4aModal    from 'components/B4aModal/B4aModal.react';
 import Field    from 'components/Field/Field.react';
 import PropTypes from 'lib/PropTypes';
 import FileInput from 'components/FileInput/FileInput.react';
@@ -32,19 +32,16 @@ export default class ImportDialog extends React.Component {
 
   render() {
     return (
-      <Modal
-        type={Modal.Types.INFO}
-        icon='down-outline'
-        iconSize={40}
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
         title='Import data'
         subtitle={'You will receive an e-mail once your data is imported'}
         confirmText='Import'
         cancelText='Cancel'
         disabled={!this.valid()}
-        buttonsInCenter={true}
         onCancel={this.props.onCancel}
         onConfirm={() => {
-            this.props.onConfirm(this.state.file)
+          this.props.onConfirm(this.state.file)
             .then((res) => {
               if (res.error) {
                 this.setState({ errorMessage: res.message });
@@ -55,18 +52,21 @@ export default class ImportDialog extends React.Component {
         }}>
 
         <Field
-            label={
-                <Label
-                    text='Select a JSON or CSV file with your class data' />}
-            input={
-                <FileInput
-                    onChange={(file) => {this.setState({ file: file });}} />}
+          label={
+            <Label
+              text='Select a JSON or CSV file with your class data' />}
+          input={
+            <div style={{ padding: '0 1rem', width: '100%' }}>
+              <FileInput
+                onChange={(file) => {this.setState({ file: file });}} />
+            </div>
+          }
         />
         {this.state.startedImport ?
-          <div style={{ padding: 20 }}>We are importing your data. You will be notified by e-mail once it is completed.</div> : null }
+          <div style={{ padding: 20, color: '#0F1C32' }}>We are importing your data. You will be notified by e-mail once it is completed.</div> : null }
         {this.state.errorMessage ?
-          <div style={{ padding: 20, color: '#ff395e' }}>Import Request failed with the following error: "{ this.state.errorMessage }".</div> : null }
-      </Modal>
+          <div style={{ padding: 20, color: '#E85C3E' }}>Import Request failed with the following error: "{ this.state.errorMessage }".</div> : null }
+      </B4aModal>
 
     );
   }

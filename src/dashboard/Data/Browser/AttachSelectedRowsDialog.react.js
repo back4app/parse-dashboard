@@ -1,5 +1,5 @@
 import React from 'react';
-import FormModal from 'components/FormModal/FormModal.react';
+import B4aFormModal from 'components/FormModal/B4aFormModal.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
@@ -104,10 +104,8 @@ export default class AttachSelectedRowsDialog extends React.Component {
       );
     }
     return (
-      <FormModal
+      <B4aFormModal
         open
-        icon="plus"
-        iconSize={40}
         title="Attach Selected Rows to Relation"
         submitText="Attach"
         inProgressText={'Attaching\u2026'}
@@ -128,7 +126,7 @@ export default class AttachSelectedRowsDialog extends React.Component {
         />
         {targetRelationSelector}
         {targetEntityIdInsert}
-      </FormModal>
+      </B4aFormModal>
     );
   }
 }

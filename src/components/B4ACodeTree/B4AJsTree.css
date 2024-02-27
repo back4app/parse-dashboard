@@ -1,14 +1,14 @@
 @import url('https://static.back4app.com/fonts/fonts.css');
 
 .jstree-default {
-  font-family: Inconsolata;
-  font-size: 14px!important;
-  font-weight: normal;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px !important;
+  font-weight: 400;
   font-style: normal;
   font-stretch: normal;
-  line-height: 2;
+  line-height: 140%;
   letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.7);
+  color: #CCC;
 }
 
 .jstree-themeicon-custom {
@@ -30,4 +30,103 @@
 
 .jstree-themeicon-custom {
   background-size: contain!important;
+}
+
+.jstree-anchor > .jstree-themeicon {
+  margin-right: 8px;
+}
+
+.jstree-default .jstree-anchor {
+  display: inline-block;
+  line-height: 28px;
+  height: 28px;
+  margin-bottom: 8px;
+}
+
+.jstree-default .jstree-hovered {
+  background: #114370;
+  border-radius: 4px;
+}
+.jstree-default .jstree-context {
+  background: #114370;
+  border-radius: 4px;
+}
+.jstree-default .jstree-clicked {
+  background: #34506F;
+  border-radius: 4px;
+  box-shadow: inset 0 0 1px #999999;
+}
+
+.vakata-context, .vakata-context ul {
+  font-family: 'Sora', sans-serif;
+  padding: 0.5rem 0;
+  background: #303338;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  color: #f9f9f9 !important;
+  min-width: 150px;
+}
+
+.vakata-context li > a {
+  text-shadow: none;
+  border-radius: 0;
+  padding: 6px 16px;
+  color: #f9f9f9 !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
+  max-height: 30px;
+}
+
+.vakata-context .vakata-context-hover > a {
+  position: relative;
+  background-color: #F9F9F90F !important;
+  box-shadow: 0 0 2px #F9F9F90F !important;
+}
+
+.vakata-context li > a .vakata-contextmenu-sep {
+  display: none;
+}
+
+.vakata-context li.vakata-context-separator:last-of-type {
+  display: none;
+}
+
+.ace-solarized-dark {
+  font-family: 'Roboto Mono', monospace;
+  background: #111214;
+}
+.ace-solarized-dark .ace_gutter {
+  background: #0A0B0C;
+  color: #f9f9f980;
+}
+.ace-solarized-dark .ace_gutter-active-line {
+  background-color: rgba(17, 67, 112, 0.5);
+}
+
+.vakata-context .vakata-context-separator > a, .vakata-context .vakata-context-separator > a:hover {
+  background: #f9f9f90f;
+  border: 0;
+  border-top: none;
+  height: 1px;
+  min-height: 1px;
+  max-height: 1px;
+  padding: 0;
+  margin: 0;
+  border-left: none;
+  text-shadow: 0 0 0 transparent;
+  box-shadow: 0 0 0 transparent;
+  border-radius: 0;
+}
+
+.jstree-rename-input {
+  background: #303338 !important;
+  color: #f9f9f9;
+  outline: none;
+  border: 1px solid rgba(249, 249, 249, 0.059) !important;
+  border-radius: 4px;
+  padding: 2px 4px !important;
+  min-width: 80px;
+  max-height: 30px;
+  font-size: 14px !important;
 }

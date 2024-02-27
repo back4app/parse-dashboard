@@ -12,12 +12,12 @@ import getFileName from 'lib/getFileName';
 import Parse from 'parse';
 import Pill from 'components/Pill/Pill.react';
 import React, { Component } from 'react';
-import styles from 'components/BrowserCell/BrowserCell.scss';
+import styles from 'components/BrowserCell/B4aBrowserCell.scss';
 import baseStyles from 'stylesheets/base.scss';
 import * as ColumnPreferences from 'lib/ColumnPreferences';
 import labelStyles from 'components/Label/Label.scss';
 import Modal from 'components/Modal/Modal.react';
-// import Tooltip from '../Tooltip/PopperTooltip.react';
+import Tooltip from '../Tooltip/PopperTooltip.react';
 import PropTypes from 'prop-types';
 
 class BrowserCell extends Component {
@@ -538,7 +538,7 @@ class BrowserCell extends Component {
       onEditSelectedRow,
       isRequired,
       markRequiredFieldRow,
-      // readonly,
+      readonly,
     } = this.props;
 
     const classes = [...this.state.classes];
@@ -576,40 +576,47 @@ class BrowserCell extends Component {
       );
     }
 
+    const content = <span
+      ref={this.cellRef}
+      className={classes.join(' ')}
+      style={{ width }}
+      onClick={e => {
+        if (e.metaKey === true && type === 'Pointer') {
+          onPointerCmdClick(value);
+        } else {
+          onSelect({ row, col });
+          setCopyableValue(hidden ? undefined : this.copyableValue);
+        }
+      }}
+      onDoubleClick={() => {
+        // Since objectId can't be edited, double click event opens edit row dialog
+        if (field === 'objectId' && onEditSelectedRow) {
+          onEditSelectedRow(true, value);
+        } else if (type !== 'Relation' && !readonly) {
+          onEditChange(true);
+        } else if (readonly) {
+          this.setState({ showTooltip: true });
+          setTimeout(() => {
+            this.setState({ showTooltip: false });
+          }, 2000);
+        }
+      }}
+      onTouchEnd={e => {
+        if (current && type !== 'Relation') {
+          // The touch event may trigger an unwanted change in the column value
+          if (['ACL', 'Boolean', 'File'].includes(type)) {
+            e.preventDefault();
+          }
+        }
+      }}
+      onContextMenu={this.onContextMenu.bind(this)}
+    >
+      {this.state.content}
+      {extras}
+    </span>
+
     return (
-      <span
-        ref={this.cellRef}
-        className={classes.join(' ')}
-        style={{ width }}
-        onClick={e => {
-          if (e.metaKey === true && type === 'Pointer') {
-            onPointerCmdClick(value);
-          } else {
-            onSelect({ row, col });
-            setCopyableValue(hidden ? undefined : this.copyableValue);
-          }
-        }}
-        onDoubleClick={() => {
-          // Since objectId can't be edited, double click event opens edit row dialog
-          if (field === 'objectId' && onEditSelectedRow) {
-            onEditSelectedRow(true, value);
-          } else if (type !== 'Relation') {
-            onEditChange(true);
-          }
-        }}
-        onTouchEnd={e => {
-          if (current && type !== 'Relation') {
-            // The touch event may trigger an unwanted change in the column value
-            if (['ACL', 'Boolean', 'File'].includes(type)) {
-              e.preventDefault();
-            }
-          }
-        }}
-        onContextMenu={this.onContextMenu.bind(this)}
-      >
-        {this.state.content}
-        {extras}
-      </span>
+      readonly ? (<Tooltip placement='bottom' tooltip='Read only (CTRL+C to copy)' visible={this.state.showTooltip}>{content}</Tooltip>) : content
     );
   }
 }

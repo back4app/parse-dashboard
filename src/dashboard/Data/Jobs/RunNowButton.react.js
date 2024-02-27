@@ -65,6 +65,7 @@ export default class RunNowButton extends React.Component {
     }
     return (
       <Button
+        primary={true}
         ref={this.buttonRef}
         progress={this.state.progress}
         onClick={this.handleClick.bind(this)}

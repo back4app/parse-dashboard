@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import 'stylesheets/globals.scss';
+ @import 'stylesheets/back4app.scss';
+
+.input {
+  width: 100%;
+  height: 80px;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+ 
+.button {
+  @include InterFont;
+  position: relative;
+  display: block;
+  height: 30px;
+  margin-top: 25px;
+  overflow: hidden;
+  color: $dark-blue;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: 0;
+    left: -100px;
+    bottom: 0;
+    cursor: pointer;
+  }
+
+  .defaultLabel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: .15em solid $cta-green;
+  vertical-align: bottom;
+  border-right-color: transparent;
+  border-radius: 50%;
+  @include animation('spinner-border .75s linear infinite');
+}
+
+.disabled, .disabled:hover {
+  background: #e0e0ea;
+  border-color: #e0e0ea;
+  color: white;
+  
+  input {
+    cursor: default;
+  }
+}
+
+.withLabel {
+  float: left;
+  margin-right: 10px;
+}
+
+.label {
+  display: block;
+  line-height: 30px;
+  color: $mainTextColor;
+  margin-top: 25px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+a.label {
+  color: $cta-green;
+}
+
+@include keyframes(spinner-border) {
+  100% {
+    @include transform(rotate(360deg));
+  }
+}

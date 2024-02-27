@@ -6,13 +6,14 @@
  * the root directory of this source tree.
  */
 import { ActionTypes }            from 'lib/stores/SchemaStore';
+import B4aPageHeader              from 'components/B4aPageHeader/B4aPageHeader.react.js';
 import DashboardView              from 'dashboard/DashboardView.react';
 import Dropdown                   from 'components/Dropdown/Dropdown.react';
 import Field                      from 'components/Field/Field.react';
 import Fieldset                   from 'components/Fieldset/Fieldset.react';
 import Icon                       from 'components/Icon/Icon.react';
 import Label                      from 'components/Label/Label.react';
-import LoaderContainer            from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer            from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Option                     from 'components/Dropdown/Option.react';
 import ParseApp                   from 'lib/ParseApp';
 import PropTypes                  from 'lib/PropTypes';
@@ -196,14 +197,8 @@ class BlockChainPage extends DashboardView {
       ).toFixed(9)
     }
     return (
-      <div>
-        <div className={styles.fieldset}>
-          <div className={styles.legendText}>Blockchain Data Storage</div>
-          <div className={styles.descText}>
-            Save your App’s data on the Blockchain Network of your choice.
-            <br /> NOTE: This feature is on the alpha version.
-          </div>
-        </div>
+      <div className={styles.mainContent}>
+        <B4aPageHeader heading="Blockchain Data Storage" description="Save your App’s data on the Blockchain Network of your choice. NOTE: This feature is on the alpha version." />
         <Fieldset
           legend="Network"
           description="You can only connect to a private Ethereum compatible network in this alpha version. Use this network for development purposes at no cost."
@@ -211,12 +206,16 @@ class BlockChainPage extends DashboardView {
           <Field
             label={<Label text="Blockchain Network" />}
             input={
-              <TextInput
-                value="Back4App ETH Development"
-                disabled
-                onChange={() => {}}
-              />
+              <div style={{ padding: '0 1rem', width: '100%' }}>
+                <TextInput
+                  value="Back4App ETH Development"
+                  disabled
+                  onChange={() => {}}
+                  dark={true}
+                />
+              </div>
             }
+            theme={Field.Theme.DARK}
           />
           <Field
             label={<Label text="Balance (development eth)" />}
@@ -226,13 +225,16 @@ class BlockChainPage extends DashboardView {
                   <div className={styles.spinner}></div>
                 </div>
               ) : (
-                <TextInput
-                  value={formattedBalance}
-                  disabled
-                  onChange={() => {}}
-                />
+                <div style={{ padding: '0 1rem', width: '100%' }}>
+                  <TextInput
+                    value={formattedBalance}
+                    disabled
+                    onChange={() => {}}
+                  />
+                </div>
               )
             }
+            theme={Field.Theme.DARK}
           />
         </Fieldset>
         <Fieldset
@@ -251,6 +253,7 @@ class BlockChainPage extends DashboardView {
                   })
                 }
                 value={this.state.selectedClass}
+                dark={true}
               >
                 {classes.map((cls, idx) => (
                   <Option key={idx} value={cls}>
@@ -259,6 +262,7 @@ class BlockChainPage extends DashboardView {
                 ))}
               </Dropdown>
             }
+            theme={Field.Theme.BLUE}
           />
           {this.renderClassesAtBlockchain()}
         </Fieldset>
@@ -305,12 +309,12 @@ class BlockChainPage extends DashboardView {
 
     return (
       <div className={styles.content}>
-        <LoaderContainer loading={this.state.loading}>
+        <B4aLoaderContainer loading={this.state.loading}>
           {this.renderForm()}
           {extra}
           {notification}
-        </LoaderContainer>
-        <Toolbar subsection="Blockchain" />
+        </B4aLoaderContainer>
+        <Toolbar section="Database" subsection="Blockchain" />
       </div>
     );
   }

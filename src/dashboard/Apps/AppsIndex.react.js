@@ -10,13 +10,12 @@ import FlowFooter from 'components/FlowFooter/FlowFooter.react';
 import html from 'lib/htmlString';
 import Icon from 'components/Icon/Icon.react';
 import joinWithFinal from 'lib/joinWithFinal';
-import EmptyState from '../../components/EmptyState/EmptyState.react';
+import EmptyGhostState from '../../components/EmptyGhostState/EmptyGhostState.react';
 import loadingImg from './loadingIcon.png';
 import LiveReload from 'components/LiveReload/LiveReload.react';
 import prettyNumber from 'lib/prettyNumber';
 import React from 'react';
 import styles from 'dashboard/Apps/AppsIndex.scss';
-import AppBadge from 'components/AppBadge/AppBadge.react';
 import { withRouter } from 'lib/withRouter';
 import { useNavigate } from 'react-router-dom';
 
@@ -60,8 +59,8 @@ const CountsSection = ({ className, title, children }) => (
 const Metric = props => {
   return (
     <div className={styles.count}>
+      <div className={styles.label}>{props.label}: </div>
       <div className={styles.number}>{props.number}</div>
-      <div className={styles.label}>{props.label}</div>
     </div>
   );
 };
@@ -87,31 +86,25 @@ const AppCard = ({ app, icon }) => {
   }
 
   if (app.serverInfo.status === 'ERROR') {
-    appStatusIcon = <Icon name='warn-triangle-outline' fill='#F2C94C' width={18} height={18} />
+    appStatusIcon = <Icon name='warn-triangle-outline' fill='#FBFF3B' width={16} height={16} />
     appNameStyles.push(styles.disabled);
     appIconStyle.push(styles.disabled);
   }
 
   return (
     <li onClick={canBrowse} style={{ background: app.primaryBackgroundColor }}>
-      <a className={styles.icon}>
-        {icon ? (
-          <img src={'appicons/' + icon} width={56} height={56} />
-        ) : (
-          <Icon width={56} height={56} name="blank-app-outline" fill="#1E384D" />
-        )}
-      </a>
       <div className={styles.details}>
         <a className={styles.appname}>{app.name} {appStatusIcon}</a>
         {versionMessage}
       </div>
-      <CountsSection className={styles.glance} title="At a glance">
-        <AppBadge production={app.production} />
-        <Metric number={dash(app.users, prettyNumber(app.users))} label="total users" />
-        <Metric
-          number={dash(app.installations, prettyNumber(app.installations))}
-          label="total installations"
-        />
+      <CountsSection className={styles.glance} title="Stats">
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Metric number={dash(app.users, prettyNumber(app.users))} label="Total Users" />
+          <Metric
+            number={dash(app.installations, prettyNumber(app.installations))}
+            label="Installations"
+          />
+        </div>
       </CountsSection>
     </li>
   );
@@ -189,10 +182,7 @@ class AppsIndex extends React.Component {
     if (apps.length === 0) {
       return (
         <div className={styles.empty}>
-          <EmptyState
-            icon='cloud-surprise'
-            fill="#1e3b4d"
-            background="#364c61"
+          <EmptyGhostState
             title="You don't have any apps"
             description='Create a new app or clone a database from database hub'
             cta="Create a new app"
@@ -222,14 +212,20 @@ class AppsIndex extends React.Component {
     return (
       <div className={styles.index}>
         <div className={styles.header}>
-          <Icon width={18} height={18} name="search-outline" fill="#788c97" />
-          <input
-            ref={this.searchRef}
-            className={styles.search}
-            onChange={this.updateSearch.bind(this)}
-            value={this.state.search}
-            placeholder="Start typing to filter&hellip;"
-          />
+          <div className={styles.headingText}>
+            <Icon width={24} height={24} name="apps-icon" fill="#f9f9f9" />
+            <span>Backend Apps</span>
+          </div>
+          <div className={styles.searchInput}>
+            <Icon width={18} height={18} name="b4a-browser-filter-icon" fill="#f9f9f9" />
+            <input
+              ref={this.searchRef}
+              className={styles.search}
+              onChange={this.updateSearch.bind(this)}
+              value={this.state.search}
+              placeholder="Start typing to filter&hellip;"
+            />
+          </div>
         </div>
         <ul className={styles.apps}>
           {sortedApps.map(app =>

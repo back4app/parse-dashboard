@@ -59,7 +59,7 @@ export default class GraphQLConsole extends Component {
 
     return (
       <>
-        <Toolbar section="Core" subsection="GraphQL API Console" />
+        <Toolbar section="API" subsection="Console > GraphQL" />
         <div className={styles.content}>{content}</div>
       </>
     );

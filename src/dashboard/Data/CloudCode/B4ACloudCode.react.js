@@ -13,11 +13,11 @@ import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
 import { updateTreeContent } from 'components/B4ACodeTree/B4ATreeActions';
 import B4ACloudCodeToolbar from 'dashboard/Data/CloudCode/B4ACloudCodeToolbar.react';
 import CloudCode from 'dashboard/Data/CloudCode/CloudCode.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import LoaderDots from 'components/LoaderDots/LoaderDots.react';
 import styles from 'dashboard/Data/CloudCode/CloudCode.scss';
 import Icon from 'components/Icon/Icon.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import { withRouter } from 'lib/withRouter';
 
 @withRouter
@@ -64,8 +64,8 @@ class B4ACloudCode extends CloudCode {
   }
 
   blocker(tx) {
-    const warningModal = <Modal
-      type={Modal.Types.WARNING}
+    const warningModal = <B4aModal
+      type={B4aModal.Types.WARNING}
       icon='warn-triangle-solid'
       title="Undeployed changes!"
       buttonsInCenter={true}
@@ -75,7 +75,7 @@ class B4ACloudCode extends CloudCode {
         tx.retry();
       }}
       onCancel={() => { this.setState({ modal: null }); }}
-    >There are undeployed changes, if you leave the page you will lose it.</Modal>;
+    >There are undeployed changes, if you leave the page you will lose it.</B4aModal>;
     this.setState({ modal: warningModal });
   }
 
@@ -97,6 +97,7 @@ class B4ACloudCode extends CloudCode {
         this.blocker(autoUnblockingTx);
       } else {
         this.unblock();
+        tx.retry();
       }
     });
   }
@@ -109,7 +110,7 @@ class B4ACloudCode extends CloudCode {
         }
       }
     } else {
-      window.onbeforeunload = undefined;
+      window.removeEventListener('beforeunload', this.onBeforeUnloadSaveCode);
     }
   }
 
@@ -118,7 +119,7 @@ class B4ACloudCode extends CloudCode {
       this.unblock();
     }
     if (this.onBeforeUnloadSaveCode) {
-      window.removeEventListener('onbeforeunload',this.onBeforeUnloadSaveCode);
+      window.removeEventListener('beforeunload',this.onBeforeUnloadSaveCode);
     }
   }
 
@@ -147,8 +148,8 @@ class B4ACloudCode extends CloudCode {
     // Get current files on tree
     const currentCode = $('#tree').jstree().get_json();
     const missingFileModal = (
-      <Modal
-        type={Modal.Types.DANGER}
+      <B4aModal
+        type={B4aModal.Types.DANGER}
         icon='warn-triangle-solid'
         title='Missing required file'
         showCancel={false}
@@ -159,7 +160,7 @@ class B4ACloudCode extends CloudCode {
           this.setState({ modal: null });
         }}>
           The cloud folder must contain either main.js or app.js file, and must be placed on the root of the folder.
-      </Modal>
+      </B4aModal>
     );
 
     // get files in cloud folder
@@ -176,8 +177,8 @@ class B4ACloudCode extends CloudCode {
     }
 
     this.formatFiles(currentCode, tree);
-    const loadingModal = <Modal
-      type={Modal.Types.INFO}
+    const loadingModal = <B4aModal
+      type={B4aModal.Types.INFO}
       icon='files-outline'
       title='Deploying...'
       textModal={true}
@@ -188,7 +189,7 @@ class B4ACloudCode extends CloudCode {
             Please wait, deploying in progress...
         </div>
       </div>
-    </Modal>;
+    </B4aModal>;
     // show 'loading' modal
     this.setState({ modal: loadingModal });
     try{
@@ -202,8 +203,8 @@ class B4ACloudCode extends CloudCode {
       await this.fetchSource()
       // force jstree component to upload
       await updateTreeContent(this.state.files)
-      const successModal = <Modal
-        type={Modal.Types.VALID}
+      const successModal = <B4aModal
+        type={B4aModal.Types.VALID}
         icon='check'
         title='Success on deploying your changes!'
         showCancel={false}
@@ -215,8 +216,8 @@ class B4ACloudCode extends CloudCode {
       $('#tree').jstree(true).redraw(true);
       this.fetchSource();
     } catch (err) {
-      const errorModal = <Modal
-        type={Modal.Types.DANGER}
+      const errorModal = <B4aModal
+        type={B4aModal.Types.DANGER}
         icon='warn-triangle-solid'
         title='Something went wrong'
         showCancel={false}
@@ -227,7 +228,7 @@ class B4ACloudCode extends CloudCode {
           this.setState({ modal: null });
         }}>
           Please try to deploy your changes again.
-      </Modal>;
+      </B4aModal>;
       this.setState({
         modal: errorModal
       });
@@ -264,12 +265,34 @@ class B4ACloudCode extends CloudCode {
 
     // Show loading page before fetch data
     if (this.state.loading) {
-      content = <LoaderContainer loading={true} solid={false}>
+      content = <B4aLoaderContainer loading={true} solid={false}>
         <div className={styles.loading}></div>
-      </LoaderContainer>
+      </B4aLoaderContainer>
     } else { // render cloud code page
 
-      title = <B4ACloudCodeToolbar />
+      title = <B4ACloudCodeToolbar>
+        {
+          this.state.updatedFiles.length > 0 &&
+          <div className={styles.ccStatusIcon}>
+            <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" /> <small>Files pending deploy ({this.state.updatedFiles.length})</small>
+          </div>
+        }
+        <Button
+          onClick={this.onLogClick}
+          value="Logs"
+          width='20'
+          additionalStyles={{ minWidth: '70px', background: 'transparent', color: '#f9f9f9', marginRight: '20px', height: '40px', borderColor: 'rgba(249, 249, 249, 0.06)' }}
+        />
+        <Button
+          onClick={this.uploadCode.bind(this)}
+          value={
+            <div className={styles['b4a-cc-deploy-btn']}>Deploy</div>
+          }
+          primary={true}
+          width='20'
+          additionalStyles={{ height: '40px' }}
+        />
+      </B4ACloudCodeToolbar>
 
       content = <B4ACodeTree
         setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}
@@ -277,47 +300,12 @@ class B4ACloudCode extends CloudCode {
         parentState={this.setState.bind(this)}
         currentApp={this.context}
       />
-
-      footer = <div className={styles.footer}>
-        <div className={styles.footerContainer}>
-          {
-            this.state.updatedFiles.length > 0 &&
-            <div className={styles.ccStatusIcon}>
-              <span className={styles.undeployedCircle}></span> <small>Files pending deploy ({this.state.updatedFiles.length})</small>
-            </div>
-          }
-        </div>
-        <div className={styles.footerContainer}>
-          <Button
-            onClick={this.onLogClick}
-            value={
-              <div>
-                <span style={{ color: '#218BEC' }}>Logs</span>
-              </div>}
-            primary={true}
-            width='20'
-            additionalStyles={{ minWidth: '70px', background: 'transparent', color: 'dimgray!important', marginRight: '20px', height: '40px' }}
-          />
-          <Button
-            onClick={this.uploadCode.bind(this)}
-            value={
-              <div className={styles['b4a-cc-deploy-btn']}>
-                <Icon name='icon-deploy' fill='#fff' width={17} height={30} /> Deploy
-              </div>
-            }
-            primary={true}
-            width='20'
-            additionalStyles={{ height: '40px' }}
-          />
-        </div>
-      </div>
     }
 
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
         {title}
         {content}
-        {footer}
         {this.state.modal}
       </div>
     );

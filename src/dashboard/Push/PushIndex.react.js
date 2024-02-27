@@ -12,8 +12,9 @@ import CategoryList from 'components/CategoryList/CategoryList.react';
 import CategoryItemAction from 'components/CategoryList/CategoryItemAction.js';
 import DashboardView from 'dashboard/DashboardView.react';
 import EmptyState from 'components/EmptyState/EmptyState.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
-import LoaderDots from 'components/LoaderDots/LoaderDots.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+// import LoaderDots from 'components/LoaderDots/LoaderDots.react';
+import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 import React from 'react';
 // import SidebarAction from 'components/Sidebar/SidebarAction';
 import StatusIndicator from 'components/StatusIndicator/StatusIndicator.react';
@@ -115,7 +116,7 @@ const getPushTarget = (pushData, availableDevices) => {
     return 'Channels';
   }
   if (availableDevices === undefined) {
-    return <LoaderDots />;
+    return <B4aLoader />;
   }
 
   const query = JSON.parse(pushData.query);
@@ -467,12 +468,12 @@ class PushIndex extends DashboardView {
     const loading = this.state ? this.state.loading : false;
     return (
       <div>
-        <LoaderContainer loading={loading}>
+        <B4aLoaderContainer loading={loading}>
           <div className={stylesTable.content}>
             {content}
             {extras}
           </div>
-        </LoaderContainer>
+        </B4aLoaderContainer>
         {toolbar}
         <div className={stylesTable.headers}>{headers}</div>
       </div>

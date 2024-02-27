@@ -9,14 +9,14 @@
 @import 'stylesheets/globals.scss';
 
 .content {
-  margin-left: 300px;
+  margin-left: 360px;
   max-height: $content-max-height;
   overflow: auto;
 }
 
-body:global(.expanded) {
+body:global(.sidebarCollapsed) {
   .content {
-    margin-left: 54px;
+    margin-left: $b4aSidebarCollapsedWidth;
   }
 }
 

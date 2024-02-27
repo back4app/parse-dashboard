@@ -10,7 +10,7 @@ import styles from './Browser.scss';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Option from 'components/Dropdown/Option.react';
 import React from 'react';
 import { SpecialClasses } from 'lib/Constants';
@@ -65,10 +65,8 @@ class CreateClassDialog extends React.Component {
       </Dropdown>
     );
     return (
-      <Modal
-        type={Modal.Types.INFO}
-        icon="plus"
-        iconSize={40}
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
         title="Create a new class?"
         subtitle="This creates a new class to hold objects."
         disabled={!this.valid()}
@@ -105,11 +103,14 @@ class CreateClassDialog extends React.Component {
               />
             }
             input={
-              <TextInput
-                placeholder="Give it a good name..."
-                value={this.state.name}
-                onChange={name => this.setState({ name })}
-              />
+              <div style={{ padding: '0 1rem', width: '100%' }}>
+                <TextInput
+                  placeholder="Give it a good name..."
+                  value={this.state.name}
+                  onChange={name => this.setState({ name })}
+                  dark={false}
+                />
+              </div>
             }
           />
         ) : null}
@@ -147,12 +148,12 @@ class CreateClassDialog extends React.Component {
           )
           : null
         }
-        <div style={{ display: 'flex', flexDirection: 'column', padding: '1em', gap: '10px', borderBottom: '1px solid #e3e3e3' }}>
-          <div style={{ fontWeight: '600', color: '000000de' }} >Or find a public dataset to connect</div >
-          <span style={{ fontSize: '14px' }} >e.g. jobs, countries, industries, colors, zip codes and more...</span>
-          <a style={{ color: '#169cee', fontSize: '14px', textDecoration: 'underline' }} href={b4aSettings.HUB_URL} target="_blank">back4app.com/database</a>
+        <div style={{ padding: '1em', borderBottom: '1px solid #e3e3e3', color: '#10203A', fontSize: '12px', opacity: '0.7' }}>
+          <div style={{ fontWeight: '600' }} >Or find a public dataset to connect</div >
+          <div style={{ marginBottom: '6px' }}>e.g. jobs, countries, industries, colors, zip codes and more...</div>
+          <a style={{ color: '#15A9FF', textDecoration: 'underline' }} href={b4aSettings.HUB_URL} target="_blank">back4app.com/database</a>
         </div>
-      </Modal>
+      </B4aModal>
     );
   }
 }

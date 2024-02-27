@@ -1,0 +1,180 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.entry {
+  display: inline-block;
+  height: 14px;
+  padding: 0 8px;
+
+  svg {
+    fill: #66637A;
+  }
+
+  &:hover svg {
+    fill: white;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    color: #66637A;
+
+    &:hover svg {
+      fill: #66637A;
+    }
+  }
+}
+
+.title {
+  background: $old-dark-blue;
+  border-radius: 5px;
+  border: 1px solid rgba(249, 249, 249, 0.06);
+  height: 28px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: none!important;
+  }
+
+  svg {
+    fill: $white;
+  }
+}
+
+.entry {
+  color: $white;
+  height: 28px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.objectPickerContent {
+  .entry svg {
+    fill: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.body {
+  color: $white;
+  position: absolute;
+  right: 0;
+  border-radius: 4px;
+  border: 1px solid var(--Transparent-grey, rgba(249, 249, 249, 0.06));
+  background: $old-dark-blue;
+  width: 320px;
+  font-size: 14px;
+  padding: 1rem;
+
+  .columnConfigContainer {
+    max-height: calc(100vh - 180px);
+    overflow: auto;
+  }
+}
+
+.footer {
+  // padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  > a {
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  button {
+    @include InterFont;
+    outline: none;
+    border: 1px solid $light-grey;
+    border-radius: 5px;
+    cursor: pointer;
+    background: transparent;
+    color: $light-grey;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: 0.5s all ease;
+
+    &:hover {
+      color: $white;
+      background: $cta-green;
+      border-color: $white;
+      & > svg {
+        fill: $white;
+      }
+    }
+
+    & > svg {
+      fill: $light-grey;
+    }
+  }
+}
+
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 28px;
+  width: 30px;
+  padding: 4px 2px 4px;
+  border-radius: 5px;
+  border: 1px solid rgba($white, 0.06);
+  margin-right: 8px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  svg {
+    vertical-align: middle;
+    fill: $white;
+  }
+
+  span {
+    vertical-align: middle;
+    height: 14px;
+    line-height: 14px;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    color: #bbbbbb;
+
+    svg {
+      fill: #bbbbbb;
+    }
+
+    &:hover svg {
+      fill: #9593a1;
+    }
+  }
+
+}
+
+.objectPickerContent {
+  .toolbarButton {
+    border-color: $light-grey;
+    margin-right: 0;
+    svg {
+      fill: $dark;
+    }
+    &:hover {
+      background-color: rgba($dark, 0.03);
+    }
+  }
+}

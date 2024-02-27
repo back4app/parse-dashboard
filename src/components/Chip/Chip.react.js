@@ -12,7 +12,6 @@ import Icon from 'components/Icon/Icon.react';
 
 const Chip = ({ value, onClose }) => (
   <div className={[styles.chip].join(' ')}>
-    <div className={[styles.content].join(' ')}>{value}</div>
     <div
       onClick={e => {
         try {
@@ -25,8 +24,9 @@ const Chip = ({ value, onClose }) => (
         onClose(value);
       }}
     >
-      <Icon name="chip-close" viewBox="0 0 24 24" height={12} width={12} />
+      <Icon name="b4a-cross-filled" viewBox="0 0 24 24" height={16} width={16} />
     </div>
+    <div className={[styles.content].join(' ')}>{value}</div>
   </div>
 );
 

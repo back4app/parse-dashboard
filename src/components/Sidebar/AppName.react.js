@@ -1,18 +1,19 @@
 import React from 'react';
 import Pin from 'components/Sidebar/Pin.react';
 import Tooltip from 'components/Tooltip/SimpleTooltip.react';
-import styles from 'components/Sidebar/Sidebar.scss';
+import Icon from 'components/Icon/Icon.react';
+import styles from 'components/Sidebar/B4aSidebar.scss';
 
-const AppName = ({ name, onClick, pin, onPinClick }) => (
+const AppName = ({ name, onClick, onPinClick }) => (
   <div>
     <div className={styles.currentApp}>
       <div className={styles.appNameContainer} onClick={onClick}>
         <Tooltip className={styles.Tooltip} value={(<span>{name}</span>)}>
           <div className={styles.currentAppName}>{name}</div>
         </Tooltip>
-        <div className={styles.appsSelectorArrow}></div>
+        <Icon name="b4a-chevron-down" width={18} height={18} />
       </div>
-      {pin}
+      <Pin onClick={onPinClick} />
     </div>
   </div>
 );

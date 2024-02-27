@@ -13,7 +13,7 @@
 
 code[class*="language-"],
 pre[class*="language-"] {
-  color: #555572;
+  color: #f9f9f9;
   font-family: 'Source Code Pro', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
   font-size: 13px;
   direction: ltr;
@@ -66,7 +66,7 @@ pre[class*="language-"] {
 
 :not(pre) > code[class*="language-"],
 pre[class*="language-"] {
-  background: #FDFAFB;
+  background: #0f1c32;
   width: 100%;
 }
 
@@ -86,7 +86,7 @@ pre[class*="language-"] {
 }
 
 .token.punctuation {
-  color: #555572;
+  color: #f9f9f9;
 }
 
 .namespace {
@@ -117,7 +117,7 @@ pre[class*="language-"] {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #555572;
+  color: #f9f9f9;
 }
 
 .token.atrule,

@@ -6,13 +6,30 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .picker {
-  border: 1px solid $blue;
-  background: white;
+  background: $white;
+  &.dark {
+    background: $dark-grey;
+    > *:first-child {
+      background: $dark-grey;
+      color: $white;
+    }
+    .time {
+      border-top: 1px solid $light-grey;
+      input {
+        border: 1px solid rgba($white, 0.06);
+        color: $light-grey;
+      }
+    }
+  }
 
   > *:first-child {
-    margin: 10% auto 4% auto;
+    background: $white;
+    padding: 1rem;
+    width: 100%;
+    color: $dark;
   }
 }
 
@@ -28,15 +45,16 @@
   margin: 0;
   padding: 12px;
   color: $blue;
-  border-top: 1px solid $borderGrey;
+  border-top: 1px solid $light-grey;
   text-align: right;
 
   input {
     display: inline-block;
     width: 40px;
     height: 30px;
-    border: 1px solid $blue;
-    color: $blue;
+    background: transparent;
+    border: 1px solid rgba($dark, 0.07);
+    color: $dark;
     border-radius: 5px;
     outline: none;
     text-align: center;

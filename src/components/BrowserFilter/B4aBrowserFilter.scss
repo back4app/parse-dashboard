@@ -6,37 +6,57 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .wrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  height: 38px;
-  width: 38px;
+  height: 28px;
+  width: 30px;
   padding: 4px;
   border-radius: 5px;
+  border: 1px solid rgba($white, 0.06);
+  margin-right: 8px;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
 
   &.active {
-    background: $blue;
+    background: $old-blue;
+    > svg {
+      fill: $white;
+    }
+  }
+}
+
+.objectPickerContent {
+  .wrap {
+    border-color: $light-grey;
+    > svg {
+      fill: $dark;
+    }
+
+    &:hover {
+      background-color: rgba($dark, 0.03);
+    }
   }
 }
 
 .entry {
   svg {
-    fill: white;
+    fill: $white;
   }
   
   &.disabled {
     cursor: not-allowed;
-    color: #bbbbbb;
+    color: $light-grey;
 
     svg {
-      fill: #bbbbbb;
+      fill: $light-grey;
     }
 
     &:hover svg {
@@ -49,29 +69,61 @@
   border-radius: 5px;
 
   svg {
-    fill: white;
+    fill: $white;
   }
 }
 
-.active .title, .active .body {
-  background: $blue;
+.active .body {
+  border: 2px solid $old-blue;
+}
+
+.active .title {
+  background: $old-blue;
+  svg {
+    fill: $white !important;
+  }
+}
+
+.countFilter {
+  position: absolute;
+  display: inline-block;
+  border-radius: 50%;
+  background: $old-blue;
+  font-size: 10px;
+  top: -10px;
+  right: -6px;
+  padding: 0 5px;
+}
+
+.popover {
+  position: relative;
 }
 
 .title {
-  background: #797691;
+  background: $old-dark-blue;
   padding: 7px 3px;
   border-radius: 5px 5px 0 0;
 
   svg {
-    fill: white;
+    fill: $white;
   }
 }
 
+.activeMenu {
+  background: $old-dark-blue;
+  border: 1px solid #F9F9F90F;
+  background: linear-gradient(0deg, #114370, #114370), linear-gradient(0deg, rgba(249, 249, 249, 0.06), rgba(249, 249, 249, 0.06));
+  width: 30px;
+  height: 28px;
+  border-radius: 5px;
+  padding: 4px !important;
+}
+
 .entry, .title {
-  @include NotoSansFont;
+  @include InterFont;
   position: relative;
   font-size: 14px;
-  color: #ffffff;
+  color: $white;
   cursor: pointer;
 
   svg {
@@ -96,18 +148,21 @@
   position: absolute;
   top: 31px;
   right: 0;
-  border-radius: 5px 0 5px 5px;
-  background: #797691;
+  border-radius: 5px;
+  background: $old-dark-blue;
   width: 535px;
   font-size: 14px;
+  box-shadow: 0px 6px 16px 0px #0000001A;
+  border: 1px solid rgba($white, 0.06);
 }
 
 .footer {
-  background: rgba(0,0,0,0.2);
-  padding: 11px 0;
-  text-align: center;
+  padding: 11px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  > button {
+  > div > button {
     margin-right: 10px;
 
     &:last-child {
@@ -118,27 +173,23 @@
 
 .row {
   padding: 8px 15px;
-
-  > * {
-    margin-right: 10px;
-
-    &:nth-last-child(2) {
-      margin-right: 0;
-    }
-  }
+  display: flex;
+  gap: 10px;
+  align-items: center;
 
   input {
     @include MonospaceFont;
     height: 30px;
     width: 140px;
-    background: #343445;
+    background: transparent;
     border: none;
     outline: none;
     border-radius: 5px;
     vertical-align: top;
     padding: 0 8px;
-    color: white;
+    color: $white;
     font-size: 14px;
+    border: 1px solid $light-blue;
   }
 }
 
@@ -148,11 +199,55 @@
 
 .remove {
   display: inline-block;
-  height: 14px;
-  margin: 8px;
+  line-height: 14px;
+  & svg {
+    fill: $light-blue;
+  }
 }
 
 .date {
   display: inline-block;
   vertical-align: top;
+}
+
+.addFilterBtn {
+  @include InterFont;
+  outline: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: transparent;
+  transition: 0.5s ease-in-out all;
+  border-radius: 4px;
+  padding: 0 0.5rem;
+  height: 30px;
+
+  & div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  &:hover {
+    background-color: rgba($white, 0.03);
+  }
+
+  & svg {
+    margin-right: 10px;
+  }
+}
+
+.saveFilterInputWrapper {
+  margin: 1.5rem 1rem ; 
+  border-radius: 8px;
+  overflow: hidden;
+  & > div {
+    background: none !important;
+    & > div:first-of-type {
+      background: #405b78 !important;
+    }
+    & > div:last-of-type {
+      background: #344f6c !important;
+    }
+  }
 }

@@ -221,7 +221,7 @@ export default class ProtectedFieldsDialog extends React.Component {
         <MultiSelectOption key={`col-${field}`} value={field} dense={true}>
           {field}
           <span className={styles.pillType}>
-            <Pill value={pillText} />
+            {pillText}
           </span>
         </MultiSelectOption>
       );
@@ -240,7 +240,7 @@ export default class ProtectedFieldsDialog extends React.Component {
     const placeholder = 'All fields allowed.' + (noAvailableFields ? '' : ' Click to protect.');
 
     return (
-      <div className={(styles.second, styles.multiselect)}>
+      <div className={(styles.second, styles.multiselect, styles.content)}>
         <MultiSelect
           fixed={false}
           dense={true}
@@ -260,7 +260,7 @@ export default class ProtectedFieldsDialog extends React.Component {
   renderRow(key, columns, types) {
     const pill = text => (
       <span className={styles.pillType}>
-        <Pill value={text} />
+        {text}
       </span>
     );
 
@@ -347,16 +347,18 @@ export default class ProtectedFieldsDialog extends React.Component {
       trash = (
         <div className={styles.delete}>
           <button type="button" onClick={this.deleteRow.bind(this, key)}>
-            <Icon name="trash-solid" width={20} height={20} />
+            <Icon name="b4a-delete-icon" width={18} height={18} />
           </button>
         </div>
       );
     }
     return (
       <div key={key} className={styles.row}>
-        <div className={styles.label}>{label}</div>
+        <div className={styles.label}>
+          {label}
+          {trash}
+        </div>
         {content}
-        {trash}
       </div>
     );
   }
@@ -442,10 +444,10 @@ export default class ProtectedFieldsDialog extends React.Component {
         onExternalClick={this.close.bind(this)}
       >
         <div className={classes.join(' ')}>
+          <Icon onClick={this.props.onCancel} width={10} height={10} className={styles.closeIcon} name="close" fill="#10203A" />
           <div className={styles.header}>{this.props.title}</div>
           <div className={styles.tableWrap}>
             <div className={styles.table} ref={this.refTable}>
-              <div className={[styles.overlay, styles.second].join(' ')} />
               {this.state.keys.map(key =>
                 this.renderRow(key, this.state.columns, this.state.entryTypes)
               )}
@@ -459,13 +461,23 @@ export default class ProtectedFieldsDialog extends React.Component {
                   <Autocomplete
                     ref={this.refEntry}
                     inputStyle={{
-                      width: '400px',
-                      padding: '0 6px',
-                      margin: '10px 20px',
+                      width: '100%',
+                      border: 'none',
+                      background: 'transparent',
+                      marginTop: '20px',
+                      paddingLeft: '10px',
+                      color:'#10203A',
                     }}
                     suggestionsStyle={{
-                      margin: '-6px 0px 0px 20px',
-                      width: '400px',
+                      width: '900px',
+                      border: 'none',
+                      boxShadow: '0px 6px 16px 0px rgba(0, 0, 0, 0.10)',
+                    }}
+                    suggestionsItemStyle={{
+                      border: 'none',
+                      borderBottom: '1px solid #ccc',
+                      padding: '0.81rem 1rem',
+                      color: '#10203a99'
                     }}
                     onChange={e => this.onUserInput(e)}
                     onSubmit={this.checkEntry.bind(this)}
@@ -475,17 +487,18 @@ export default class ProtectedFieldsDialog extends React.Component {
                     error={this.state.entryError}
                   />
                 </TrackVisibility>
-
-                <div className={[styles.second, styles.error].join(' ')}>
+              </div>
+              {this.state.entryError ? (
+                <div className={[styles.error].join(' ')}>
                   {this.state.entryError}
                 </div>
-              </div>
+              ) : null}
             </div>
           </div>
           <div className={styles.footer}>
             <ScrollHint ref={this.refScrollIndicator} />
             <div className={styles.actions}>
-              <Button value="Cancel" onClick={this.props.onCancel} />
+              <Button value="Cancel" onClick={this.props.onCancel} width="auto" additionalStyles={{ color: '#303338 !important' }} />
               <Button
                 primary={true}
                 value={this.props.confirmText}

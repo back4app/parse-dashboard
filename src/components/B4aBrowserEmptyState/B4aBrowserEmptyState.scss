@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.title {
+  @include SoraFont;
+  font-size: 1.125rem;
+  line-height: 140%;
+  color: #f9f9f9;
+}
+
+.objectPickerContent {
+  .title {
+    color: $dark;
+  }
+  .description {
+    color: rgba($dark, 0.7);
+  }
+}
+
+.description {
+  @include InterFont;
+  font-size: 1rem;
+  line-height: 140%;
+  color: #ccc;
+}
+
+.actionBtns {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  align-items: center;
+
+  & button {
+    outline: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: #f9f9f9;
+  }
+  & .addBtn {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.3125rem 0.875rem;
+    border-radius: 0.3125rem;
+    border: 1px solid rgba(249, 249, 249, 0.06);
+    background: #303338;
+    & svg {
+      fill: #27ae60;
+      width: 18px;
+      height: 18px;
+    }
+  }
+  & .importFileBtn {
+    padding: 0.3125rem 0.875rem;
+    border-radius: 0.3125rem;
+    background: #27ae60;
+  }
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  padding: 0.75rem;
+  border-radius: 100%;
+  background: rgba(32, 138, 236, 0.3);
+  text-align: center;
+}

@@ -8,7 +8,7 @@
 import * as PushAudiencesStore from 'lib/stores/PushAudiencesStore';
 import * as PushConstants from './PushConstants';
 import Button from 'components/Button/Button.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import PushAudienceDialog from 'components/PushAudienceDialog/PushAudienceDialog.react';
 import PushAudiencesSelector from 'components/PushAudiencesSelector/PushAudiencesSelector.react';
 import queryFromFilters from 'lib/queryFromFilters';
@@ -267,7 +267,7 @@ export default class PushAudiencesData extends React.Component {
 
     return (
       <div className={styles.pushAudienceData}>
-        <LoaderContainer
+        <B4aLoaderContainer
           loading={this.state.loading}
           solid={false}
           className={styles.loadingContainer}
@@ -282,7 +282,7 @@ export default class PushAudiencesData extends React.Component {
           >
             {showMoreContent}
           </PushAudiencesSelector>
-        </LoaderContainer>
+        </B4aLoaderContainer>
         {createAudienceButton}
         {this.state.showEditModal ? editAudienceModal : null}
       </div>

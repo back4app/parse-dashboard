@@ -10,8 +10,8 @@
 @import "B4AButton.scss";
 
 .button {
-  @include DosisFont;
-  @include buttonReset($bg: none, $border: 1px solid $blue, $padding: 0 16px);
+  @include InterFont;
+  @include buttonReset($bg: none, $border: 1px solid $cta-green, $padding: 0 16px);
   display: inline-block;
   height: 30px;
   line-height: 28px;
@@ -19,84 +19,87 @@
   text-align: center;
   border-radius: 5px;
   font-size: 14px;
+  transition: all ease-in-out 0.5s;
+  color: $cta-green;
 
-  color: $blue;
-
-  &:hover, &:focus {
-    background-color: $blue;
-    color: white;
+  &:hover {
+    background-color: $cta-green;
+    color: $white;
   }
 }
 
 .primary {
-  background-color: $blue;
+  background-color: $cta-green !important;
+  font-weight: 600;
   color: $white;
 
-  &:hover, &:focus {
-    background-color: $darkBlue;
+  &:hover {
+    filter: drop-shadow(1px 1px 10px #92E1B4);
+    background-color: #13A39A!important;
   }
 }
 
 .green {
-  color: $green;
+  background-color: $cta-green !important;
+  color: $white;
   border-color: $green;
 
-  &:hover, &:focus {
-    background-color: $lightGreen;
+  &:hover {
+    background-color: #13A39A;
   }
 
   &.primary {
-    background-color: $green;
+    background-color: $cta-green;
     color: $white;
 
-    &:hover, &:focus {
-      background-color: $darkGreen;
+    &:hover {
+      background-color: #13A39A;
     }
   }
 }
 
 .red {
-  color: $red;
-  border-color: $red;
+  color: $error-red;
+  border-color: $error-red;
 
-  &:hover, &:focus {
-    background-color: $lightRed;
+  &:hover {
+    background-color: $error-log-red !important;
+    filter: drop-shadow(1px 1px 10px $error-log-red);
   }
 
   &.primary {
-    background-color: $red;
+    background-color: $error-log-red !important;
     color: $white;
 
-    &:hover, &:focus {
-      background-color: $darkRed;
+    &:hover {
+      background-color: $darkRed !important;
     }
   }
 }
 
 .white {
-  color: $white;
-  border-color: $white;
+  // color: $light-grey !important;
+  border-color: $light-grey;
   line-height: 28px;
 
-  &:hover, &:focus{
-    background-color: $white;
-    color: $blue;
+  &:hover{
+    background-color: rgba($light-grey, 0.06);
+    color: $white;
   }
 
   &.primary {
-    background-color: $white;
+    background-color: $light-grey;
     color: $blue;
 
-    &:hover, &:focus {
-      background-color: $blue;
-      border-color: $blue;
-      color: white;
+    &:hover {
+      background-color: rgba($light-grey, 0.06);
+      color: $white;
     }
   }
 
   &.disabled {
     background-color: transparent;
-    border-color: white;
+    border-color: $white;
     opacity: 0.2;
   }
 }
@@ -105,7 +108,7 @@
   color: $yellow;
   border-color: $yellow;
 
-  &:hover, &:focus {
+  &:hover {
     background-color: $lightYellow;
   }
 
@@ -113,7 +116,7 @@
     background-color: $yellow;
     color: $white;
 
-    &:hover, &:focus {
+    &:hover {
       background-color: $darkYellow;
     }
   }
@@ -128,14 +131,15 @@
 }
 
 .disabled, .disabled.primary {
-  background-color: #e0e0ea;
-  border-color: #e0e0ea;
-  color: white;
+  pointer-events: none;
+  font-weight: 600;
+  border-radius: 0.3125rem;
+  border: 1px solid $light-grey;
+  opacity: 0.5;
+  background: rgba(48, 51, 56, 0.50);
+  color: $light-grey;
   cursor: default;
   &:hover{
-    background-color: #e0e0ea;
-    border-color: #e0e0ea;
-    color: white;
     text-decoration: none!important;
   }
 }

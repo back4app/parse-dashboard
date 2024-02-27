@@ -8,21 +8,33 @@
 @import 'globals.scss';
 @import 'back4app.scss';
 
+html {
+  overflow-y: hidden;
+}
+
 html, body {
   min-height: $content-max-height;
-  background-color: #fdf9fb;
+  background-color: $dark;
 }
 
 body {
   @include NotoSansFont;
   box-sizing: border-box;
-  color: $mainTextColor;
-  padding-top: $header-height;
+  color: $white;
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+header {
+  z-index: 1000 !important;
+}
+
+svg {
+  display: inline !important;
+  vertical-align: middle !important;
+}
+
 :global(#browser_mount) {
-  background: #FDFAFB;
+  background: $dark;
 }
 
 * {
@@ -31,12 +43,6 @@ body {
   box-sizing: inherit;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: $blue;
-  cursor: pointer;
-  text-decoration: none;
 }
 
 span, div {
@@ -107,4 +113,9 @@ table {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: $dark;
+}
+
+label {
+  margin: 0;
 }

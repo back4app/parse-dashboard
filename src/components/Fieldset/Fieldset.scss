@@ -21,7 +21,7 @@
 }
 
 .description {
-  @include DosisFont;
+  @include InterFont;
   text-align: center;
   font-size: 14px;
   line-height: 16px;
@@ -31,7 +31,7 @@
 }
 
 .fields {
-  width: 650px;
+  width: 100%;
   margin: 0 auto;
 
   & > div:first-of-type {

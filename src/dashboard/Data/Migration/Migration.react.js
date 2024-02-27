@@ -11,7 +11,7 @@ import DashboardView from 'dashboard/DashboardView.react';
 import FormNote from 'components/FormNote/FormNote.react';
 import Icon from 'components/Icon/Icon.react';
 import LiveReload from 'components/LiveReload/LiveReload.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import MigrationStep from 'dashboard/Data/Migration/MigrationStep.react';
 import Modal from 'components/Modal/Modal.react';
 import prettyNumber from 'lib/prettyNumber';
@@ -145,9 +145,9 @@ export default class Migration extends DashboardView {
           render={migration => {
             if (migration === undefined) {
               return (
-                <LoaderContainer loading={true}>
+                <B4aLoaderContainer loading={true}>
                   <div style={{ minHeight: '100vh' }} className={styles.content} />
-                </LoaderContainer>
+                </B4aLoaderContainer>
               );
             }
             let moreDetails = null;

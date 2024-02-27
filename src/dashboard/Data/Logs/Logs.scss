@@ -14,8 +14,9 @@
 }
 
 .content {
-  padding: 75px 20px 0px 20px;
-  background: $logViewBackgroundColor;
+  margin-top: $toolbar-height;
+  padding: 2rem 1.5rem 1.5rem;
+  background: $dark-blue;
   min-height: $content-max-height;
 }
 

@@ -25,14 +25,15 @@ export default class Dropdown extends React.Component {
   }
 
   toggle() {
-    this.setState(() => {
-      if (this.state.open) {
+    this.setState((prevState) => {
+      if (prevState.open) {
         return { open: false };
       }
       let pos = Position.inDocument(this.dropdownRef.current);
       if (this.props.fixed) {
         pos = Position.inWindow(this.dropdownRef.current);
       }
+      pos.y += this.dropdownRef.current.clientHeight;
       return {
         open: true,
         position: pos,
@@ -40,10 +41,12 @@ export default class Dropdown extends React.Component {
     });
   }
 
-  close() {
-    this.setState({
-      open: false,
-    });
+  close(e) {
+    if (this.dropdownRef.current && !this.dropdownRef.current.contains(e.target)) {
+      this.setState({
+        open: false,
+      });
+    }
   }
 
   select(value) {
@@ -66,7 +69,7 @@ export default class Dropdown extends React.Component {
       const width = this.dropdownRef.current.clientWidth;
       const popoverChildren = (
         <SliderWrap direction={Directions.DOWN} expanded={true}>
-          <div style={{ width }} className={styles.menu}>
+          <div style={{ width }} className={styles.menu + ` ${this.props.dark ? styles.dark : ''}`}>
             {React.Children.map(this.props.children, c => (
               <button type="button" onClick={this.select.bind(this, c.props.value)}>
                 {c}
@@ -105,10 +108,13 @@ export default class Dropdown extends React.Component {
     if (this.props.disabled) {
       dropdownClasses.push(styles.disabled);
     }
+    if (this.props.dark) {
+      dropdownClasses.push(styles.dark);
+    }
     return (
       <div style={dropdownStyle} className={dropdownClasses.join(' ')} ref={this.dropdownRef}>
         <div
-          className={[styles.current, this.props.currentStyleClassName, this.props.hideArrow ? styles.hideArrow : ''].join(' ')}
+          className={[styles.current, this.props.currentStyleClassName, this.props.hideArrow ? styles.hideArrow : '', this.state.open ? styles.arrowUp : ''].join(' ')}
           onClick={this.toggle.bind(this)}
         >
           {content}

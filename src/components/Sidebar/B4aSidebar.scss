@@ -1,0 +1,516 @@
+/*
+* Copyright (c) 2016-present, Parse, LLC
+* All rights reserved.
+*
+* This source code is licensed under the license found in the LICENSE file in
+* the root directory of this source tree.
+*/
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.sidebar {
+  @include SoraFont;
+  position: fixed;
+  width: 360px;
+  top: $header-height;
+  left: 0;
+  bottom: 0;
+  color: $white;
+  transition: left 0.5s ease-in;
+  z-index: 100;
+  background: #112C4D;
+  transition: width 0.2s ease-in-out;
+
+  &.collapsed {
+    left: 0;
+    width: $b4aSidebarCollapsedWidth;
+
+    .footer {
+      height: 79px;
+      justify-content: center;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #1184ca;
+      }
+    }
+
+    .content {
+      bottom: 48px;
+    }
+
+    .section_header > svg {
+      margin: 0;
+    }
+
+    .pinContainer {
+      height: 79px;
+    }
+
+    .pinContainer > svg {
+      fill: $white;
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.content {
+  position: absolute;
+  overflow-y: auto;
+  top: 79px;
+  right: 0;
+  bottom: 61px;
+  left: 0;
+}
+
+.footer {
+  position: absolute;
+  background: rgba(249, 249, 249, 0.06);
+  // height: 61px;
+  line-height: 140%;
+  padding: 1rem 2rem;
+  // text-align: center;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .supportBtn {
+    color: $light-blue;
+    font-size: 1.125rem;
+    line-height: 140%;
+    outline: none;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-content: center;
+    gap: 0.5rem;
+
+    & svg {
+      fill: currentColor;
+    }
+  }
+}
+
+.help {
+  @extend .footer;
+  // height: 61px;
+}
+
+.header {
+  background: #05283c;
+  height: 79px;
+  padding: 10px 14px;
+
+  :global(.icon) {
+    width: 28px;
+    height: 28px;
+    float: left;
+  }
+}
+
+.currentApp, .menuRow {
+  @include ellipsis();
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #112C4D;
+  // height: 60px;
+  padding: 10px 14px;
+
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.currentAppNameGroup {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.menuRow {
+  cursor: pointer;
+  border-bottom: 1px solid #0c5582;
+
+  > *:first-child {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span.appStatus {
+    display: flex;
+    height: 26px;
+    line-height: 26px;
+    margin: 0 5px;
+    align-items: center;
+  }
+
+  > *:last-child {
+    float: right;
+  }
+}
+
+.disabledLink {
+  pointer-events: none;
+  color: #788C97;
+}
+
+.currentApp {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba($white, 0.06);
+
+  .appNameContainer {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 0.5rem;
+
+    svg {
+      fill: $white;
+    }
+
+    .currentAppName {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 215px;
+    }
+
+    .currentAppName {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 215px;
+      cursor: pointer;
+    }
+
+    .appsSelectorArrow {
+      @include arrow('down', 10px, 7px, #fff);
+      margin-left: 8px;
+    }
+  }
+}
+
+.appsMenu {
+  overflow: auto;
+  background: #094162;
+  width: 360px;
+
+  .menuRow:hover {
+    background: #0c5582;
+  }
+
+  .appsList {
+    overflow: auto;
+    height: calc(100vh - 183px);
+  }
+
+  .currentApp .appsSelectorArrow {
+    @include arrow('up', 10px, 7px, #ffffff);
+  }
+
+  .currentApp {
+    .currentAppName {
+      &:after {
+        @include arrow('up', 10px, 7px, #132B39);
+      }
+
+      &:hover {
+        &:after {
+          border-bottom-color: white;
+        }
+      }
+    }
+  }
+
+  .appListContainer {
+    overflow-y: auto;
+    // height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
+  }
+}
+
+.menuSection {
+  @include SoraFont;
+  height: 24px;
+  line-height: 24px;
+  background: #0c5582;
+  color: #84A5BC;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 8px;
+  padding: 0 14px;
+  border-bottom: 1px solid #094162;
+}
+
+.createApp {
+  @include SoraFont;
+  display: block;
+  background: $blue;
+  color: white;
+  width: 91%;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  text-align: center;
+  margin: 12px auto;
+  font-size: 12px;
+
+  &:hover {
+    background: #0c5582;
+  }
+}
+
+.section {
+  background: $mid-blue;
+
+  :global(.icon) {
+    margin-right: 14px;
+  }
+
+  &.collapsed {
+    cursor: pointer;
+
+    .section_header > svg {
+      margin: 0;
+      fill: $light-blue;
+    }
+  }
+}
+
+.active {
+  background: rgba(16, 32, 58, 0.6);
+
+  .section_header{
+    font-weight: 700;
+    padding: 1rem 2rem;
+    color: $white;
+    display: flex;
+    align-items: center;
+
+    &:hover{
+      background: rgba(16, 32, 58, 0.3);
+    }
+    & svg {
+      fill: currentColor;
+    }
+  }
+}
+
+.section_header {
+  display: block;
+  align-items: center;
+  // height: 65px;
+  font-size: 18px;
+  padding: 1rem 2rem;
+  color: $light-blue;
+
+  &:hover{
+    background: rgba(16, 32, 58, 0.3);
+    text-decoration: underline;
+    color: white;
+  }
+
+  > span {
+    vertical-align: top;
+  }
+
+  > svg {
+    margin-right: 14px;
+    fill: currentColor;
+  }
+}
+
+.section_contents {
+  // background: rgba(16, 32, 58, 0.60);
+  padding: 16px 32px 16px 50px;
+  & > div > div {
+  margin-bottom: 1rem;
+  }
+  & > div > div:last-child {
+  margin-bottom: 0;
+  }
+  &.popover {
+    padding: 24px;
+    min-width: 320px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+.subitem {
+  position: relative;
+  height: 28px;
+  line-height: 140%;
+  font-size: 1.125rem;
+  color: white;
+}
+
+a.subitem {
+  @include SoraFont;
+  color: $light-blue;
+  font-weight: 400;
+  font-size: 1.125rem;
+  display: inline-block;
+  width: 100%;
+
+  &:hover {
+    color: white;
+  }
+}
+
+.action {
+  @include InterFont;
+  position: absolute;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 6px;
+  line-height: 20px;
+  top: 0px;
+  right: 0px;
+  color: $cta-green;
+  border-radius: 5px;
+  border: 1px solid $cta-green;
+  cursor: pointer;
+  overflow: hidden;
+  text-transform: capitalize;
+
+  & svg {
+    fill: $cta-green;
+  }
+
+  & > span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background: rgba($cta-green, $alpha: 0.1);
+    // color: $white;
+    // & svg {
+    //   fill: $white;
+    // }
+  }
+}
+
+.logo {
+  float: left;
+}
+
+.version {
+  @include SoraFont;
+  position: relative;
+  width: 75px;
+  height: 100%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  float: left;
+  margin-left: 6px;
+  white-space: nowrap;
+  color: white;
+
+  > *:first-child {
+    position: absolute;
+    letter-spacing: 2px;
+    line-height: 12px;
+    text-transform: uppercase;
+  }
+
+  > *:first-child {
+    transition: all 0.4s 0.16s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    fill: $light-blue;
+    transform: rotate(90deg);
+    transition: fill 0.2s ease-in;
+  }
+
+  &:hover {
+    svg {
+      fill: $white;
+    }
+  }
+}
+
+.popup {
+  position: absolute;
+  bottom: 4px;
+  left: -183px;
+  background: white;
+  width: 200px;
+  border-radius: 5px;
+
+  &:after {
+    @include arrow('down', 12px, 6px, #ffffff);
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: 10px;
+  }
+
+  a {
+    @include NotoSansFont;
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    font-size: 13px;
+    text-align: right;
+    border-bottom: 1px solid #e0e0ea;
+    border-radius: 5px;
+    color: $mainTextColor;
+    padding-right: 8px;
+    &:hover{
+      background-color: darken(white,4%)
+    }
+
+    // &:first-child {
+    //   border-radius: 5px 5px 0 0;
+    // }
+
+    // &:last-child {
+    //   border-bottom: 0;
+    //   border-radius: 0 0 5px 5px;
+    // }
+
+    .emoji{
+      padding-left: 4px;
+      padding-right: 2px;
+    }
+  }
+}
+
+.pinContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  svg {
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    fill: $white;
+  }
+}

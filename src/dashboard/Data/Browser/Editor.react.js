@@ -112,7 +112,7 @@ const Editor = ({ top, left, type, targetClass, value, readonly, width, onCommit
   } else if (type === 'Number') {
     content = <NumberEditor value={value} width={width} onCommit={onCommit} setFocus={true} />;
   } else if (type === 'GeoPoint') {
-    content = <GeoPointEditor value={value} width={width} onCommit={onCommit} setFocus={true} />;
+    content = <GeoPointEditor value={value} width={width} onCommit={onCommit} setFocus={true} dark={true} />;
   } else if (type === 'File') {
     content = <FileEditor value={value} width={width} onCommit={onCommit} onCancel={onCancel} />;
   } else if (type === 'ACL') {

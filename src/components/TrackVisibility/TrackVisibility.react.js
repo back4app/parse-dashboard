@@ -17,5 +17,5 @@ export default function TrackVisibility(props) {
     };
   }, [props.observer]);
 
-  return <div ref={refContainer}>{props.children}</div>;
+  return <div ref={refContainer} style={{ width: '100%' }}>{props.children}</div>;
 }

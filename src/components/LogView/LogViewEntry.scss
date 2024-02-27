@@ -6,15 +6,16 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .entry {
-	@include MonospaceFont;
-  font-size: 14px;
+	@include CourierFont;
+  font-size: 0.875rem;
   list-style: none;
   margin-bottom: 15px;
 
   &.error {
-    color: red;
+    color: $error-red;
   }
 
   .content {
@@ -22,26 +23,30 @@
   }
 
   .time {
-    color: green;
+    color: $cta-green;
   }
 
   //TODO: handle keywords that should be highlighted - use global vars for colors
   .highlight {
 
     &.error {
-      color: red;
+      color: $error-log-red;
     }
 
     &.info {
-      color: purple;
+      color: $light-blue;
     }
 
     &.warning {
-      color: orange;
+      color: $alert-yellow;
     }
 
     &.success {
-      color: green;
+      color: $cta-green;
     }
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 }

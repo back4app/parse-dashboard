@@ -8,7 +8,7 @@
 import BrowserRow from 'components/BrowserRow/BrowserRow.react';
 import DataBrowserHeaderBar from 'components/DataBrowserHeaderBar/DataBrowserHeaderBar.react';
 import Editor from 'dashboard/Data/Browser/Editor.react';
-import EmptyState from 'components/EmptyState/EmptyState.react';
+import B4aBrowserEmptyState from 'components/B4aBrowserEmptyState/B4aBrowserEmptyState.react';
 import Icon from 'components/Icon/Icon.react';
 import Parse from 'parse';
 import encode from 'parse/lib/browser/encode';
@@ -16,10 +16,11 @@ import React from 'react';
 import styles from 'dashboard/Data/Browser/Browser.scss';
 import Button from 'components/Button/Button.react';
 import { CurrentApp } from 'context/currentApp';
+import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 const MAX_ROWS = 200; // Number of rows to render at any time
 const ROWS_OFFSET = 160;
-const ROW_HEIGHT = 30;
+const ROW_HEIGHT = 36;
 
 const READ_ONLY = ['objectId', 'createdAt', 'updatedAt'];
 
@@ -396,13 +397,13 @@ export default class BrowserTable extends React.Component {
           let wrapLeft = 30;
           for (let i = 0; i < this.props.current.col; i++) {
             const column = this.props.order[i];
-            wrapLeft += column.visible ? column.width : 0;
+            wrapLeft += column.visible ? column.width + 1 : 0;
           }
           if (!readonly && !this.props.isUnique) {
             editor = (
               <Editor
-                top={wrapTop}
-                left={wrapLeft}
+                top={wrapTop + ROW_HEIGHT}
+                left={wrapLeft + 24}
                 type={type}
                 targetClass={targetClass}
                 value={value}
@@ -473,28 +474,34 @@ export default class BrowserTable extends React.Component {
           <div className={styles.table} ref={this.tableRef}>
             <div className={styles.empty}>
               {this.props.relation ? (
-                <EmptyState
+                <B4aBrowserEmptyState
                   title="No data to display"
                   description="This relation has no rows. Attach existing rows or create row."
-                  cta={`Create ${this.props.relation.targetClassName} and attach`}
-                  action={this.props.onAddRow}
-                  secondaryCta={`Attach existing rows from ${this.props.relation.targetClassName}`}
-                  secondaryAction={this.props.onAttachRows}
-                  icon="files-solid"
+                  primaryCtaText={`Create ${this.props.relation.targetClassName} and attach`}
+                  primaryCtaAction={this.props.onAddRow}
+                  secondaryCtaText={`Attach existing rows from ${this.props.relation.targetClassName}`}
+                  secondaryCtaAction={this.props.onAttachRows}
+                  icon="empty-browser"
                 />
               ) : (
-                <EmptyState
+                <B4aBrowserEmptyState
                   title="No data to display"
                   description={this.props.onAddRow && 'Add a row to store an object in this class.'}
-                  icon="files-solid"
-                  cta={this.props.onAddRow && 'Add a row'}
-                  action={this.props.onAddRow}
+                  icon="empty-browser"
+                  primaryCtaText={this.props.onAddRow && 'Add a row'}
+                  primaryCtaAction={this.props.onAddRow}
+                  secondaryCtaText={'Import a file'}
+                  secondaryCtaAction={this.props.onImport}
                 />
               )}
             </div>
           </div>
         );
       }
+    } else {
+      table = <div ref={this.tableRef} className={styles.b4aLoadingWrapper}>
+        <B4aLoader />
+      </div>
     }
     return (
       <div className={styles.browser} id="browser">

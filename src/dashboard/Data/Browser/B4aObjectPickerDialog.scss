@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import 'stylesheets/globals.scss';
+ @import 'stylesheets/back4app.scss';
+
+.objectPickerDialogWrapper {
+  position: relative;
+  width: 80vw;
+  background-color: $white;
+  padding: 1rem 2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: $dark;
+  border-radius: 0.5rem;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 13px;
+  left: calc(100% - 25px);
+  cursor: pointer;
+}
+
+.header {
+  @include InterFont;
+  color: $dark;
+  margin-bottom: 1.5rem;
+  .title {
+    font-weight: 600;
+    line-height: 140%;
+    margin-top: 0.5rem;
+  }
+  .subtitle {
+    font-size: 14px;
+    opacity: 0.7;
+  }
+}
+
+.footer {
+  display: flex;
+  margin-top: 1.5rem;
+  gap: 1rem;
+
+  .selectionInputWrapper {
+    background: #3333330F;
+    flex-grow: 1;
+    padding-left: 1rem;
+    border-radius: 5px;
+  }
+}

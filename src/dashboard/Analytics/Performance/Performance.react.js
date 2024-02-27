@@ -13,7 +13,7 @@ import DashboardView from 'dashboard/DashboardView.react';
 import DateRange from 'components/DateRange/DateRange.react';
 import { Directions } from 'lib/Constants';
 import ExplorerActiveChartButton from 'components/ExplorerActiveChartButton/ExplorerActiveChartButton.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Parse from 'parse';
 import React from 'react';
 import styles from 'dashboard/Analytics/Performance/Performance.scss';
@@ -261,7 +261,7 @@ export default class Performance extends DashboardView {
     }
 
     const content = (
-      <LoaderContainer loading={this.state.loading} solid={false}>
+      <B4aLoaderContainer loading={this.state.loading} solid={false}>
         <div className={styles.content}>
           <div ref={this.displayRef} className={styles.display}>
             {chart}
@@ -269,7 +269,7 @@ export default class Performance extends DashboardView {
           {header}
           {footer}
         </div>
-      </LoaderContainer>
+      </B4aLoaderContainer>
     );
 
     return (

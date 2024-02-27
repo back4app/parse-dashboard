@@ -10,7 +10,7 @@ import { post } from 'lib/AJAX';
 import AccountManager from 'lib/AccountManager';
 import ImportDialog from 'dashboard/Data/Browser/ImportDialog.react';
 import ImportRelationDialog from 'dashboard/Data/Browser/ImportRelationDialog.react';
-import ExportSelectedRowsDialog from 'dashboard/Data/Browser/ExportSelectedRowsDialog.react';
+import B4aExportSelectedRowsDialog from 'dashboard/Data/Browser/B4aExportSelectedRowsDialog.react';
 import semver from 'semver/preload.js';
 import Tour from 'components/Tour/Tour.react';
 import { isMobile } from 'lib/browserUtils';
@@ -21,7 +21,7 @@ import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import postgresqlImg from './postgresql.png';
-import PermissionsDialog from 'components/PermissionsDialog/PermissionsDialog.react';
+import B4aPermissionsDialog from 'components/PermissionsDialog/B4aPermissionsDialog.react';
 import validateEntry from 'lib/validateCLPEntry.js';
 import PointerKeyDialog from 'dashboard/Data/Browser/PointerKeyDialog.react';
 import ConfirmDeleteColumnDialog from './ConfirmDeleteColumnDialog.react';
@@ -35,7 +35,7 @@ import DataBrowser from 'dashboard/Data/Browser/DataBrowser.react';
 import { DefaultColumns, SpecialClasses } from 'lib/Constants';
 import DeleteRowsDialog from 'dashboard/Data/Browser/DeleteRowsDialog.react';
 import DropClassDialog from 'dashboard/Data/Browser/DropClassDialog.react';
-import EmptyState from 'components/EmptyState/EmptyState.react';
+import B4aBrowserEmptyState from 'components/B4aBrowserEmptyState/B4aBrowserEmptyState.react';
 import ExportDialog from 'dashboard/Data/Browser/ExportDialog.react';
 import AttachRowsDialog from 'dashboard/Data/Browser/AttachRowsDialog.react';
 import AttachSelectedRowsDialog from 'dashboard/Data/Browser/AttachSelectedRowsDialog.react';
@@ -43,7 +43,7 @@ import CloneSelectedRowsDialog from 'dashboard/Data/Browser/CloneSelectedRowsDia
 import EditRowDialog from 'dashboard/Data/Browser/EditRowDialog.react';
 import ExportSchemaDialog from 'dashboard/Data/Browser/ExportSchemaDialog.react';
 import { List, Map } from 'immutable';
-import Notification from 'dashboard/Data/Browser/Notification.react';
+import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import Parse from 'parse';
 import prettyNumber from 'lib/prettyNumber';
 import queryFromFilters from 'lib/queryFromFilters';
@@ -58,7 +58,7 @@ import * as ClassPreferences from 'lib/ClassPreferences';
 import { Helmet } from 'react-helmet';
 import generatePath from 'lib/generatePath';
 import { withRouter } from 'lib/withRouter';
-
+import Icon from 'components/Icon/Icon.react';
 
 const BROWSER_LAST_LOCATION = 'brower_last_location';
 // The initial and max amount of rows fetched by lazy loading
@@ -233,7 +233,7 @@ class Browser extends DashboardView {
   componentWillMount() {
     const currentApp = this.context;
     if (!currentApp.preventSchemaEdits) {
-      this.action = new SidebarAction('Create a class', this.showCreateClass.bind(this));
+      this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" /> Add class</span>, this.showCreateClass.bind(this));
     }
 
     this.props.schema.dispatch(ActionTypes.FETCH).then(() => {
@@ -2127,9 +2127,9 @@ class Browser extends DashboardView {
     });
     special.sort((a, b) => stringCompare(a.name, b.name));
     categories.sort((a, b) => stringCompare(a.name, b.name));
-    if (special.length > 0 && categories.length > 0) {
-      special.push({ type: 'separator', id: 'classSeparator' });
-    }
+    // if (special.length > 0 && categories.length > 0) {
+    //   special.push({ type: 'separator', id: 'classSeparator' });
+    // }
     const allCategories = [];
     for (const row of [...special, ...categories]) {
       const { filters = [] } = ClassPreferences.getPreferences(
@@ -2235,12 +2235,12 @@ class Browser extends DashboardView {
       if (classes.size === 0) {
         browser = (
           <div className={styles.empty}>
-            <EmptyState
+            <B4aBrowserEmptyState
               title="You have no classes yet"
               description={'This is where you can view and edit your app\u2019s data'}
-              icon="files-solid"
-              cta="Create your first class"
-              action={this.showCreateClass}
+              icon="empty-browser"
+              primaryCtaText="Create your first class"
+              primaryCtaAction={this.showCreateClass}
             />
           </div>
         );
@@ -2574,7 +2574,7 @@ class Browser extends DashboardView {
       }
       const perms = this.state.clp[className];
       extras = (
-        <PermissionsDialog
+        <B4aPermissionsDialog
           title="Edit Class Level Permissions"
           enablePointerPermissions={parseServerSupportsPointerPermissions}
           advanced={true}
@@ -2616,7 +2616,7 @@ class Browser extends DashboardView {
       )
     } else if (this.state.rowsToExport) {
       extras = (
-        <ExportSelectedRowsDialog
+        <B4aExportSelectedRowsDialog
           className={className}
           selection={this.state.rowsToExport}
           count={this.state.filters.isEmpty() ? this.state.counts[className] : this.state.data?.length}
@@ -2633,12 +2633,12 @@ class Browser extends DashboardView {
     const pageTitle = `${this.props.params.className} - Parse Dashboard`;
 
     if (this.state.lastError) {
-      notification = <Notification note={this.state.lastError} isErrorNote={true} />;
+      notification = <B4aNotification note={this.state.lastError} isErrorNote={true} />;
     } else if (this.state.lastNote) {
-      notification = <Notification note={this.state.lastNote} isErrorNote={false} />;
+      notification = <B4aNotification note={this.state.lastNote} isErrorNote={false} />;
     } else if (this.state.exporting) {
       notification = (
-        <Notification
+        <B4aNotification
           note={`Exporting ${this.state.exportingCount}+ objects...`}
           isErrorNote={false}
         />

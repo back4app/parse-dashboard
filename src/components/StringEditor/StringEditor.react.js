@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import React from 'react';
-import styles from 'components/StringEditor/StringEditor.scss';
+import styles from 'components/StringEditor/B4aStringEditor.scss';
 
 export default class StringEditor extends React.Component {
   constructor(props) {

@@ -9,9 +9,15 @@
 @import 'stylesheets/globals.scss';
 
 .content {
-  background-color: #f9f9f9;
-  min-height: $content-max-height;
-  padding-top: 48px;
+  background-color: $dark;
+  max-height: $content-max-height;
+  overflow: hidden;
+  padding-top: $toolbar-height;
+  & .mainContent {
+    max-width: 50rem;
+    margin: 0 auto;
+    padding-top: 5rem;
+  }
 }
 
 .spinnerWrapper {
@@ -20,14 +26,13 @@
   min-height: 80px;
   justify-content: center;
   align-items: center;
-  background: #f6fafb;
 }
 
 .spinner {
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: .15em solid $blue;
+  border: .15em solid $white;
   vertical-align: bottom;
   border-right-color: transparent;
   border-radius: 50%;

@@ -6,18 +6,21 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .field {
+  @include InterFont;
   position: relative;
-  border-style: solid;
-  border-color: $borderGrey;
-  border-width: 1px 1px 0 1px;
+  // border-width: 1px 1px 0 1px;
   min-height: 80px;
-  background: white;
+  background: rgba(51, 51, 51, 0.03);
+  color: $dark;
   display: flex;
+  // margin-bottom: 1px;
+  border-bottom: 1px solid rgba($light-grey, 0.3);
 
   &:last-of-type {
-    border-bottom-width: 1px;
+    border-bottom-width: 0;
   }
 
   > pre[class*="language-"] {
@@ -28,20 +31,43 @@
 .left {
   display: flex;
   align-items: center;
+  // background: #f9f9f9;
 }
 
 .right {
   position: relative;
   min-height: 80px;
-  text-align: right;
+  // text-align: right;
   padding: 0;
-  background: #f6fafb;
+  background: transparent;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  flex: 1
+  flex: 1;
+  background: rgba(51, 51, 51, 0.03);
+  // padding: 0 1rem;
 }
 
+.dark {
+  &.field {
+    background: #1d293d;
+    color: $white;
+  }
+  .right {
+    background: $dark-grey;
+  }
+}
+
+
+.blue {
+  &.field {
+    background: #1d293d;
+    color: $white;
+  }
+  .right {
+    background: $regal-blue;
+  }
+}
 
 .header {
   min-height: 56px;

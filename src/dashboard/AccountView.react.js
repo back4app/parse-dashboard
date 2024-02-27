@@ -6,20 +6,13 @@
  * the root directory of this source tree.
  */
 import React from 'react';
-import { buildAccountSidebar } from './SidebarBuilder';
 import styles from 'dashboard/Dashboard.scss';
 
 export default class AccountView extends React.Component {
   render() {
-    const sidebar = buildAccountSidebar({
-      section: this.props.section,
-      subsection: this.props.subsection,
-    });
-
     return (
-      <div className={styles.dashboard}>
-        <div className={styles.content}>{this.props.children}</div>
-        {sidebar}
+      <div className={styles.apps}>
+        <div className={styles.appContent}>{this.props.children}</div>
       </div>
     );
   }

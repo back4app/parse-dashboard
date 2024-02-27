@@ -1,0 +1,149 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.dropdown {
+  position: relative;
+  background: inherit;
+  font-size: 16px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.dropdown,
+.menu {
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.menu {
+  max-height: 200px;
+  box-shadow: 0px 6px 16px 0px #0000001a;
+  overflow: auto;
+  background: $white;
+
+  > *:last-child .option {
+    border-bottom: none;
+  }
+}
+
+.current {
+  white-space: normal;
+  padding: 1rem;
+  line-height: 40px;
+}
+
+.option {
+  position: relative;
+  height: 46px;
+  line-height: 50px;
+  padding: 13px 16px;
+  color: $old-blue;
+  border-bottom: 1px solid rgab($light-grey, 0.3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    background: rgba($light-grey, 0.03);
+
+    .unchecked {
+      background: $white;
+    }
+  }
+}
+
+.option.disabled {
+  &:hover {
+    background: $white;
+    cursor: default;
+  }
+}
+
+.checked,
+.unchecked {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  top: 15px;
+  right: 8px;
+  border: 1px solid $dark;
+}
+
+.unchecked {
+  background: $white;
+}
+.checked {
+  &::after {
+    content: ' ';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: $dark;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+}
+
+.current.placeholder {
+  color: rgba($dark-blue, 0.5);
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.dense {
+  .checked,
+  .unchecked {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 100%;
+    top: 15px;
+    right: 4px;
+    border: 1px solid $dark;
+  }
+  .checked {
+    &::after {
+      content: ' ';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: $dark;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+    }
+  }
+
+  .icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+  }
+
+  .current {
+    height: 100%;
+    padding: 1rem;
+    line-height: 48px;
+  }
+
+  .option {
+    padding: 0 50px 0 14px;
+  }
+}

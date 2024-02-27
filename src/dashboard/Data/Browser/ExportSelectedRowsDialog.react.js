@@ -5,10 +5,11 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import React from 'react';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
+import Icon from 'components/Icon/Icon.react';
 import Label from 'components/Label/Label.react';
 import Option from 'components/Dropdown/Option.react';
 import Toggle from 'components/Toggle/Toggle.react';
@@ -61,9 +62,8 @@ export default class ExportSelectedRowsDialog extends React.Component {
         )
       ).length / this.props.data.length;
     return (
-      <Modal
-        type={Modal.Types.INFO}
-        icon="warn-outline"
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
         title={
           this.props.selection['*']
             ? 'Export all rows?'
@@ -78,22 +78,13 @@ export default class ExportSelectedRowsDialog extends React.Component {
         onConfirm={() => this.props.onConfirm(this.state.exportType, this.state.indentation)}
       >
         {this.props.selection['*'] && (
-          <div className={styles.row}>
-            <Label
-              text="Do you really want to export all rows?"
-              description={
-                <span className={styles.label}>
-                  Estimated row count: {this.props.count}
-                  <br />
-                  Estimated export size: {this.formatBytes(fileSize * this.props.count)}
-                  <br />
-                  <br />
-                  ⚠️ Exporting all rows may severely impact server or database resources.
-                  <br />
-                  Large datasets are exported as multiple files of up to 1 GB each.
-                </span>
-              }
-            />
+          <div className={styles.subtitle}>
+            <div className={styles.hintText}>Do you really want to export all rows?</div>
+            <div className={styles.label}>
+              Estimated row count: {this.props.count}
+              <br />
+              Estimated export size: {this.formatBytes(fileSize * this.props.count)}
+            </div>
           </div>
         )}
         <Field
@@ -132,11 +123,19 @@ export default class ExportSelectedRowsDialog extends React.Component {
                 placeholder="export all"
                 value={this.state.confirmation}
                 onChange={confirmation => this.setState({ confirmation })}
+                dark={false}
               />
             }
           />
         )}
-      </Modal>
+        <div className={styles.warning}>
+          <Icon name="b4a-warn-fill-icon" width={24} height={24} />
+          <div className="">
+            Exporting all rows may severely impact server or database resources. <br/>
+            Large datasets are exported as multiple files of up to 1 GB each.
+          </div>
+        </div>
+      </B4aModal>
     );
   }
 }

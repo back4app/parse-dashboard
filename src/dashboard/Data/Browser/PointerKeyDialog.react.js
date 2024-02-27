@@ -8,9 +8,8 @@
 import Button from 'components/Button/Button.react';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
-import modalStyles from 'components/Modal/Modal.scss';
 import Label from 'components/Label/Label.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Option from 'components/Dropdown/Option.react';
 import React from 'react';
 import * as ColumnPreferences from 'lib/ColumnPreferences';
@@ -56,8 +55,8 @@ export default class PointerKeyDialog extends React.Component {
       );
     }
     return (
-      <Modal
-        type={Modal.Types.INFO}
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
         title={'Change pointer key?'}
         subtitle={
           hasColumns
@@ -72,15 +71,25 @@ export default class PointerKeyDialog extends React.Component {
           this.props.onConfirm(this.state.name);
         }}
         customFooter={
-          hasColumns ? null : (
-            <div className={modalStyles.footer}>
-              <Button value="Okay, go back." onClick={this.props.onCancel} />
-            </div>
-          )
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
+            {hasColumns ? <>
+              <Button value={'Cancel'} color="white" onClick={this.props.onCancel} width="auto" additionalStyles={{ border: '1px solid #ccc', color: '#303338' }} />
+              <Button
+                primary={true}
+                value="Set pointer key"
+                disabled={!this.state.name}
+                onClick={() => {
+                  this.props.onConfirm(this.state.name);
+                }}
+                progress={false}
+              />
+            </> : <Button value="Okay, go back." onClick={this.props.onCancel} />
+            }
+          </div>
         }
       >
         {content}
-      </Modal>
+      </B4aModal>
     );
   }
 }

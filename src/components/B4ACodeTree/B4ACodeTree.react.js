@@ -9,12 +9,14 @@ import Button from 'components/Button/Button.react';
 import B4ACloudCodeView from 'components/B4ACloudCodeView/B4ACloudCodeView.react';
 import B4ATreeActions from 'components/B4ACodeTree/B4ATreeActions';
 import Swal from 'sweetalert2';
-import B4AAlert from 'components/B4AAlert/B4AAlert.react';
+import B4ACloudCodeInfo from 'components/B4ACodeTree/B4ACloudCodeInfo.react';
 import addFileIcon from './icons/add-file.png';
 import uploadFileIcon from './icons/file-upload-outline.png';
 import removeFileIcon from './icons/trash-can-outline.png';
+import folderInfoIcon from './icons/folder-info.png';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
 import PropTypes from 'lib/PropTypes';
+import Icon from 'components/Icon/Icon.react';
 
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
@@ -232,30 +234,23 @@ export default class B4ACodeTree extends React.Component {
       content = <img style={{ width: '100%', height: '100%', objectFit: 'scale-down' }} src={this.state.source} />;
     }
     else if (this.state.isFolderSelected === true) {
-      content = this.state.source && this.state.source !== '' ? <B4AAlert
-        hideClose
-        show={true}
+      content = this.state.source && this.state.source !== '' ? <B4ACloudCodeInfo
+        imgSrc={folderInfoIcon}
         title={typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}
         description={this.state.source} /> : <div></div>;
     }
     else if (this.state.selectedFile) {
-      content = <div className={`${styles['files-box']}`}>
-        <div className={styles['files-header']} >
+      content = <div className={`${styles.filesPreviewWrapper}`}>
+        <div className={styles.filesPreviewHeader} >
           <p>{ typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
-          <Button
-            additionalStyles={{ minWidth: '70px', background: 'transparent', border: 'none' }}
-            value={
-              <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <img src={removeFileIcon} height='24px' width='24px' />
-                <span style={{ color: 'dimgray', fontSize: '10px', lineHeight: '15px' }}>Remove File</span>
-              </div>
-            }
+          <button
+            className={styles.deleteBtn}
             primary={true}
-            color={'red'}
-            width='93'
             disabled={!this.state.nodeId}
             onClick={this.deleteFile.bind(this)}
-          />
+          >
+            <Icon name='b4a-delete-icon' fill="#E85C3E" width={24} height={20} />
+          </button>
         </div>
         <B4ACloudCodeView
           isFolderSelected={this.state.isFolderSelected}
@@ -266,7 +261,7 @@ export default class B4ACodeTree extends React.Component {
       </div>;
     } else {
       content = (
-        <B4AAlert show={true} hideClose description="Select a file to edit" />
+        <B4ACloudCodeInfo imgSrc={folderInfoIcon} description="Select a file to edit" />
       );
     }
 
@@ -304,11 +299,10 @@ export default class B4ACodeTree extends React.Component {
                   }}
                   disabled={false}
                   value={
-                    <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <img src={addFileIcon} height='24px' width='24px' />
-                      <span style={{ color: 'dimgray', fontSize: '10px', lineHeight: '15px' }}>New File</span>
+                    <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
+                      <img src={addFileIcon} height='18px' width='18px' />
+                      <span style={{ color: '#f9f9f9', marginLeft:'0.25rem' }}>New File</span>
                     </div>}
-                  primary={true}
                   width='20'
                   additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none', padding: '0' }}
                 />
@@ -319,11 +313,10 @@ export default class B4ACodeTree extends React.Component {
                   handleFiles={this.handleFiles.bind(this)}>
                   <Button
                     value={
-                      <div style={{ fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <img src={uploadFileIcon} height='24px' width='24px' />
-                        <span style={{ color: 'dimgray', fontSize: '10px', lineHeight: '15px' }}>Upload File</span>
+                      <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
+                        <img src={uploadFileIcon} height='18px' width='18px' />
+                        <span style={{ color: '#f9f9f9', marginLeft: '0.25rem' }}>Upload File</span>
                       </div>}
-                    primary={true}
                     width='20'
                     additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none', padding: '0' }}
                   />

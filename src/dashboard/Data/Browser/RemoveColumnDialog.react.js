@@ -8,9 +8,9 @@
 import Button from 'components/Button/Button.react';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
-import modalStyles from 'components/Modal/Modal.scss';
+import modalStyles from 'components/B4aModal/B4aModal.scss';
 import Label from 'components/Label/Label.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Option from 'components/Dropdown/Option.react';
 import React from 'react';
 
@@ -46,9 +46,8 @@ export default class RemoveColumnDialog extends React.Component {
       );
     }
     return (
-      <Modal
-        type={Modal.Types.DANGER}
-        icon="warn-outline"
+      <B4aModal
+        type={B4aModal.Types.DANGER}
         title="Remove a column?"
         subtitle={
           hasColumns
@@ -71,7 +70,7 @@ export default class RemoveColumnDialog extends React.Component {
         }
       >
         {content}
-      </Modal>
+      </B4aModal>
     );
   }
 }

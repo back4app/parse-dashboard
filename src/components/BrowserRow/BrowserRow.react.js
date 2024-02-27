@@ -65,7 +65,7 @@ export default class BrowserRow extends Component {
       requiredCols = ['authData'];
     }
     return (
-      <div className={styles.tableRow} style={{ minWidth: rowWidth }}>
+      <div className={styles.tableRow} style={{ minWidth: rowWidth + 34 }}> { /** 34 -> extra padding to cover up last column */}
         <span className={styles.checkCell}>
           <input
             disabled={row < 0}
@@ -119,42 +119,45 @@ export default class BrowserRow extends Component {
           }
           const isRequired = requiredCols.includes(name);
           return (
-            <BrowserCell
-              appId={this.props.appId}
-              key={name}
-              schema={this.props.schema}
-              simplifiedSchema={this.props.simplifiedSchema}
-              filters={this.props.filters}
-              className={className}
-              field={name}
-              row={row}
-              col={j}
-              type={type}
-              readonly={readOnly}
-              width={width}
-              current={currentCol === j}
-              onSelect={setCurrent}
-              onEditChange={setEditing}
-              onPointerClick={onPointerClick}
-              onPointerCmdClick={onPointerCmdClick}
-              onFilterChange={onFilterChange}
-              setRelation={setRelation}
-              objectId={obj.id}
-              value={attr}
-              hidden={hidden}
-              isRequired={isRequired}
-              markRequiredFieldRow={markRequiredFieldRow}
-              setCopyableValue={setCopyableValue}
-              setContextMenu={setContextMenu}
-              onEditSelectedRow={onEditSelectedRow}
-              onAddRow={onAddRow}
-              onAddColumn={onAddColumn}
-              onDeleteRows={onDeleteRows}
-              onDeleteSelectedColumn={onDeleteSelectedColumn}
-              showNote={this.props.showNote}
-              onRefresh={this.props.onRefresh}
-              scripts={this.props.scripts}
-            />
+            <>
+              <BrowserCell
+                appId={this.props.appId}
+                key={name}
+                schema={this.props.schema}
+                simplifiedSchema={this.props.simplifiedSchema}
+                filters={this.props.filters}
+                className={className}
+                field={name}
+                row={row}
+                col={j}
+                type={type}
+                readonly={readOnly}
+                width={width}
+                current={currentCol === j}
+                onSelect={setCurrent}
+                onEditChange={setEditing}
+                onPointerClick={onPointerClick}
+                onPointerCmdClick={onPointerCmdClick}
+                onFilterChange={onFilterChange}
+                setRelation={setRelation}
+                objectId={obj.id}
+                value={attr}
+                hidden={hidden}
+                isRequired={isRequired}
+                markRequiredFieldRow={markRequiredFieldRow}
+                setCopyableValue={setCopyableValue}
+                setContextMenu={setContextMenu}
+                onEditSelectedRow={onEditSelectedRow}
+                onAddRow={onAddRow}
+                onAddColumn={onAddColumn}
+                onDeleteRows={onDeleteRows}
+                onDeleteSelectedColumn={onDeleteSelectedColumn}
+                showNote={this.props.showNote}
+                onRefresh={this.props.onRefresh}
+                scripts={this.props.scripts}
+              />
+              <div className={styles.cellSeparator}></div>
+            </>
           );
         })}
       </div>

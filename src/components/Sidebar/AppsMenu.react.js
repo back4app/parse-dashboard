@@ -5,12 +5,11 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import AppBadge from 'components/AppBadge/AppBadge.react';
 import AppName from 'components/Sidebar/AppName.react';
 import html from 'lib/htmlString';
 import { Link } from 'react-router-dom';
 import React from 'react';
-import styles from 'components/Sidebar/Sidebar.scss';
+import styles from 'components/Sidebar/B4aSidebar.scss';
 import baseStyles from 'stylesheets/base.scss';
 import Icon from 'components/Icon/Icon.react';
 
@@ -40,7 +39,6 @@ const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
             onClick={onSelect.bind(null, current.slug)}
           >
             <span>{app.name}</span>
-            <AppBadge production={app.production} />
             {app.serverInfo.error && <span className={styles.appStatus}><Icon name='exclaimation-circle' width={20} height={20} fill='#eb445b' /></span>}
             {app.serverInfo.status === 'LOADING' && <span className={styles.appStatus}><div className={styles.spinner}></div></span>}
           </Link>

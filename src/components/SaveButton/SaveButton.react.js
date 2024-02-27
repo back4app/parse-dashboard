@@ -44,7 +44,7 @@ const SaveButton = ({
     <span className={className}>
       <Button
         primary={true}
-        width={'128px'}
+        width={'140px'}
         progress={state === SaveButton.States.SAVING}
         color={color}
         onClick={state === SaveButton.States.WAITING ? onClick : null}

@@ -115,7 +115,7 @@ export default class DateTimePicker extends React.Component {
     return (
       <div
         style={{ width: this.props.width }}
-        className={styles.picker}
+        className={`${styles.picker} ${this.props.dark ? styles.dark : ''}`}
         onClick={e => e.stopPropagation()}
       >
         <Calendar
@@ -142,6 +142,7 @@ export default class DateTimePicker extends React.Component {
               );
             this.props.onChange(newDate);
           }}
+          dark={this.props.dark}
         />
         <div className={styles.time}>
           <div style={{ float: 'left' }}>
@@ -173,4 +174,9 @@ DateTimePicker.propTypes = {
   onChange: PropTypes.func.isRequired.describe('A function to call when a new date is selected.'),
   close: PropTypes.func.describe('An optional function to call to close the calendar.'),
   local: PropTypes.bool.describe('An option flag to set when using a local DateTimeInput.'),
+  dark: PropTypes.bool.describe('An option flag to set dark theme DateTimeInput.'),
 };
+
+DateTimePicker.defaultProps = {
+  dark: true
+}

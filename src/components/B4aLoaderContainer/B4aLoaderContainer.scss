@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+
+ @import 'stylesheets/back4app.scss';
+
+.loaderContainer {
+  position: relative;
+  .loaderParent {
+    color: $white;
+    visibility: hidden;
+    background: $dark;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    &.visible {
+      visibility: visible;
+    }
+    &.solid {
+      background: $dark;
+    }
+  }
+}
+
+.loader {
+  position: relative;
+  display: block;
+  width: 140px;
+  height: 140px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .text {
+    position: absolute;
+    bottom: 5%;
+    right: 0;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+  }
+
+  // svg {
+  //   position: absolute;
+  //   width: 20px;
+  //   height: 20px;
+  //   border-radius: 100%;
+  //   fill: $white;
+  //   transform: translate(-50%, -50%);
+  // }
+}
+

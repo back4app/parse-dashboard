@@ -13,8 +13,8 @@ import Toolbar              from 'components/Toolbar/Toolbar.react';
 import Toggle               from 'components/Toggle/Toggle.react';
 import Button               from 'components/Button/Button.react'
 import VideoTutorialButton  from 'components/VideoTutorialButton/VideoTutorialButton.react';
-import ColumnsConfiguration
-  from 'components/ColumnsConfiguration/ColumnsConfiguration.react';
+import B4aColumnsConfiguration
+  from 'components/ColumnsConfiguration/B4aColumnsConfiguration.react';
 import SubMenuItem from '../../../components/BrowserMenu/SubMenuItem.react';
 
 const apiDocsButtonStyle = {
@@ -153,7 +153,7 @@ const B4ABrowserToolbar = ({
         />
       </BrowserMenu>
     );
-  } else {
+  } else if (onAddRow) {
     menu = (
       <BrowserMenu title='Edit' icon='more-icon' setCurrent={setCurrent} active={currentUser ? true : false} >
         {isPendingEditCloneRows ?
@@ -307,9 +307,10 @@ const B4ABrowserToolbar = ({
       readWritePermissions={readWritePermissions}
       lockIcon={lockIcon}
       onClickSecurity={onClickSecurity}
-      section={relation ? `Relation <${relation.targetClassName}> | ` : `Class | ${details.join(' \u2022 ')}`}
-      subsection={subsection}
+      section="Database"
+      subsection="Browser"
       details={relation ? details.join(' \u2022 ') : details.join(' \u2022 ')}
+      className={subsection}
       helpsection={helpsection}>
       {onAddRow && (
         <a className={classes.join(' ')} onClick={onClick}>
@@ -323,14 +324,16 @@ const B4ABrowserToolbar = ({
           <span>Column</span>
         </a>
       )}
-      {(
-        <a className={styles.deleteBtn + ` ${(selectionLength >= 1) && !isPendingEditCloneRows && styles.active}`} onClick={selectionLength === 0 || isPendingEditCloneRows ? null : () => onDeleteRows(selection)}>
-          <Icon name='delete-icon' width={24} height={20} />
-        </a>
+      {onDeleteRows && (
+        <>
+          <a className={styles.deleteBtn + ` ${(selectionLength >= 1) && !isPendingEditCloneRows && styles.active}`} onClick={selectionLength === 0 || isPendingEditCloneRows ? null : () => onDeleteRows(selection)}>
+            <Icon name='b4a-delete-icon' fill="#E85C3E" width={24} height={20} />
+          </a>
+          <div className={styles.verticalSeparator}></div>
+        </>
       )}
-      <div className={styles.verticalSeparator}></div>
       <a className={styles.toolbarButton + ` ${isPendingEditCloneRows && styles.toolbarButtonDisabled}`} onClick={isPendingEditCloneRows ? null : onRefresh} title='Refresh'>
-        <Icon name='refresh-icon' width={30} height={26} />
+        <Icon name='b4a-refresh-icon' width={18} height={18} />
       </a>
       <B4aBrowserFilter
         setCurrent={setCurrent}
@@ -342,7 +345,7 @@ const B4ABrowserToolbar = ({
         blacklistedFilters={onAddRow ? [] : ['unique']}
         disabled={isPendingEditCloneRows}
       />
-      <ColumnsConfiguration
+      <B4aColumnsConfiguration
         disabled={isPendingEditCloneRows}
         handleColumnsOrder={handleColumnsOrder}
         handleColumnDragDrop={handleColumnDragDrop}
@@ -389,7 +392,7 @@ const B4ABrowserToolbar = ({
       ) : (
         <noscript />
       )} */}
-      {enableSecurityDialog ? <div className={styles.toolbarSeparator} /> : <noscript />}
+      {/* {enableSecurityDialog ? <div className={styles.toolbarSeparator} /> : <noscript />} */}
       {menu}
       {onAddRow && (
         <LoginDialog

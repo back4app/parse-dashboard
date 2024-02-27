@@ -11,7 +11,7 @@ import DashboardView from 'dashboard/DashboardView.react';
 import * as DateUtils from 'lib/DateUtils';
 import EmptyState from 'components/EmptyState/EmptyState.react';
 import englishOrdinalIndicator from 'lib/englishOrdinalIndicator';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import prettyNumber from 'lib/prettyNumber';
 import React from 'react';
 import styles from 'dashboard/Analytics/Retention/Retention.scss';
@@ -260,10 +260,10 @@ export default class Retention extends DashboardView {
     }
 
     const content = (
-      <LoaderContainer loading={this.state.loading}>
+      <B4aLoaderContainer loading={this.state.loading}>
         <div className={styles.content}>{chart}</div>
         {footer}
-      </LoaderContainer>
+      </B4aLoaderContainer>
     );
 
     return (

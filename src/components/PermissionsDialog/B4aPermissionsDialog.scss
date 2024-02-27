@@ -1,0 +1,470 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import 'stylesheets/globals.scss';
+ @import 'stylesheets/back4app.scss';
+
+ $labelWidth: 330px;
+ $labelWidthWithoutCount: 355px;
+ $colWidth: 82px;
+ $colWidthWithoutCount: 55px;
+ $writeColWidth: 92px;
+ $writeColWidthWithoutCount: 89px;
+ $addFieldColWidth: 118px;
+ $addFieldColWidthWithoutCount: 116px;
+ $deleteColWidth: 44px;
+
+ $sumReadColsWidth: calc(3 * #{$colWidth});
+ $sumReadColsWidthWithoutCount: calc(3 * #{$colWidthWithoutCount});
+ $sumWriteColsWidth: calc(3 * #{$writeColWidth});
+ $sumWriteColsWidthWithoutCount: calc(3 * #{$writeColWidthWithoutCount});
+
+ $permissionsDialogWidth: calc(#{$labelWidth} + (2 * #{$colWidth}) + #{$deleteColWidth});
+ $permissionsDialogMaxWidth: calc(#{$labelWidth} + #{$sumReadColsWidth} + #{$sumWriteColsWidth} + #{$addFieldColWidth} + #{$deleteColWidth});
+
+ $simplePointerWriteWidth: calc( #{$colWidth} + #{$addFieldColWidth});
+ $pointerWriteWidth: calc( #{$sumWriteColsWidth} + #{$addFieldColWidth});
+
+ $clpDialogWidth: calc(#{$permissionsDialogWidth} + #{$addFieldColWidth});
+
+.dialog {
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: $permissionsDialogWidth;
+  background: white;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: width 0.3s 0.15s ease-out;
+  padding: 1rem 2rem;
+  .close {
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  cursor: pointer;
+
+  svg {
+    fill: $dark-blue;
+    vertical-align: top;
+  }
+
+  &:hover svg {
+    fill: $dark;
+  }
+}
+}
+
+.clp{
+  width: $clpDialogWidth;
+
+  .level{
+    width: calc($clpDialogWidth - 4rem);
+   }
+  // 118px for add field in CLP only
+  .fourth {
+    width: $addFieldColWidth;
+  }
+ }
+
+.clp.advanced{
+  .fourth {
+    width: $colWidth;
+  }
+  .second {
+    margin-left: 0
+  }
+}
+
+.header {
+  @include InterFont;
+  //height: 50px;
+  //background: $blue;
+  position: relative;
+  color: $dark;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.body {
+  margin: 1.5rem 0;
+}
+
+.level { 
+   height: 50px;
+   width: calc($permissionsDialogWidth - 4rem); //   width: 658px;
+   position: relative;
+   color: $light-grey;
+   transition: width 0.3s 0.15s ease-out;
+
+   > div {
+     margin: 0;
+     position: absolute;
+     top: 10px;
+     right: 10px;
+   }
+
+   > span {
+     display: inline-block;
+     font-size: 12;
+     height: 50px;
+     line-height: 50px;
+     padding-left: 20px;
+   }
+ }
+
+ .tableWrap {
+  //  height: 288px;
+   overflow-y: auto;
+   overflow-x: hidden;
+ }
+
+.first {
+  width: calc(100% - $labelWidth);
+  background: rgba(51, 51, 51, 0.06) !important;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  left: $labelWidth;
+}
+
+.second, .third, .fourth {
+  width: $colWidth;
+}
+.fifth, .sixth, .seventh {
+  width: $writeColWidth;
+}
+
+.fifthWithoutCount, .sixthWithoutCount, .seventhWithoutCount {
+  width: $writeColWidthWithoutCount;
+}
+
+.eighth {
+  width: $addFieldColWidth;
+}
+
+.eighthWithoutCount {
+width: $addFieldColWidth;
+}
+
+.nineth {
+  width: $deleteColWidth;
+}
+
+.table {
+  position: relative;
+  // min-height:300px;
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: rgba(0,0,40,0.03);
+
+    &.second {
+      left: $labelWidth;
+    }
+    &.fourth {
+      left: calc(#{$labelWidth} + (2 * #{$colWidth}));
+    }
+    &.sixth {
+      left: calc(#{$labelWidth} + #{$sumReadColsWidth} + #{$writeColWidth});
+    }
+    &.eighth {
+      left: calc(#{$labelWidth} + #{$sumReadColsWidth} + #{$sumWriteColsWidth});
+    }
+    &.eighthWithoutCount {
+      left: calc(#{$labelWidthWithoutCount} + #{$sumReadColsWidth} + #{$sumWriteColsWidth});
+    }
+  }
+}
+
+.footer {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+
+  .details {
+    font-size: 12px;
+    a {
+      display: inline-block;
+      color: $old-blue;
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        right: 0;
+        width: 100%;
+        height: 1px;
+        background: currentColor;
+      }
+    }
+  }
+
+  .actions {
+    float: right;
+
+    button {
+      margin-left: 10px;
+    }
+  }
+}
+
+ .headers {
+   display: flex;
+   transition: height .3s cubic-bezier(0.645,0.045,0.355,1) .5s;
+   background: rgba(51, 51, 51, 0.06);
+   opacity: 0.5;
+   height: 0;
+   padding-left: $labelWidth;
+   text-align: center;
+   color: $dark-blue;
+   font-size: 0.875rem;
+   overflow: visible;
+
+   div {
+    //  float: left;
+    position: relative;
+    border-left: 1px solid $light-grey;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: top;
+    &:not(:last-child):before {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 100%;
+      width: 1px;
+      // height: 288px;
+      background: rgba($light-grey, 0.3);
+    }
+   }
+ }
+
+ .readHeader {
+   width: $sumReadColsWidth;
+ }
+ 
+ .readHeaderWithoutCount {
+    width: $sumReadColsWidthWithoutCount;
+  }
+
+ .writeHeader {
+   width: $sumWriteColsWidth;
+ }
+ 
+ .writeHeaderWithoutCount {
+    width: $sumWriteColsWidthWithoutCount;
+  }
+
+ .addHeader {
+   width: $addFieldColWidth;
+   border-right: 1px solid white;
+ }
+
+ .addHeaderWithoutCount {
+  width: $addFieldColWidthWithoutCount;
+  border-right: 1px solid white;
+ }
+ 
+ .advanced {
+   width: $permissionsDialogMaxWidth;
+
+   .level {
+     width: calc($permissionsDialogMaxWidth - 4rem);
+   }
+
+   .headers {
+     height: 20px;
+   }
+ }
+
+.row {
+  display: flex;
+  min-height: 4.5rem;
+  height: 100%;
+  vertical-align: middle;
+  font-size: 15px;
+  border-bottom: 1px solid rgba($light-grey, 0.3);
+  white-space: nowrap;
+  background: rgba(51, 51, 51, 0.03);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.row.public {
+  background: rgba(51, 51, 51, 0.03);
+  border-bottom: 1px solid rgba($light-grey, 0.3);
+  color: $dark-blue;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+
+.label {
+  @include InterFont;
+  display: inline-flex;
+  width: $labelWidth;
+  padding: 0 20px;
+  flex-direction: column;
+  align-self: center;
+  color: $dark-blue;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.check {
+  display: inline-flex;
+  flex-direction: column;
+  align-self: center;
+  text-align: center;
+
+  > svg {
+    fill: $dark-blue;
+    vertical-align: middle;
+    align-self: center;
+  }
+}
+
+.pointerRead {
+  display: inline-block;
+  width: $sumReadColsWidth;
+  padding: 5px 10px;
+}
+
+.pointerWrite {
+  width: $simplePointerWriteWidth;
+  padding: 0px 10px;
+  display: inline-block;
+}
+
+.checkboxWrap {
+  position: relative;
+  vertical-align: top;
+  border: 1px solid #e3e3ea;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 5px;
+  background: white;
+}
+
+.entry {
+  height: 30px;
+  width: 290px;
+  border: 1px solid $mainTextColor;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  padding: 0 6px;
+  margin: 10px 0 0 20px;
+  vertical-align: top;
+}
+
+.error {
+  border-color: $red;
+  color: $red;
+}
+
+.delete {
+  display: inline-block;
+  vertical-align: top;
+  width: 32px;
+  height: 50px;
+  padding-top: 15px;
+  text-align: right;
+
+  button {
+    @include buttonReset;
+  }
+
+  svg {
+    vertical-align: top;
+    cursor: pointer;
+    fill: $dark-blue;
+
+    &:hover {
+      fill: $error-red;
+    }
+  }
+}
+
+.pillHolder{
+  max-width: 100px;
+  position: relative;
+  display: inline-block;
+  top: 5px;
+}
+
+.pillType{
+  width: auto;
+  display: inline-flex;
+  height: 20;
+  padding: 2px 8px 0 8px;
+}
+
+.customLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prefix {
+  color: $dark-blue;
+  opacity: 0.5;
+  & + a {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: $dark-blue;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      left: 0;
+      height: 1px;
+      background: $dark-blue;
+    }
+  }
+}
+
+.hint{
+  margin-top: 0.25rem;
+  color: $dark-blue;
+  opacity: 0.8;
+  font-size: 0.8em;
+}
+
+.selectable{
+  user-select: text;
+  font-weight: 600;
+}
+
+.readonlyCheck {
+  @include InterFont;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  color: rgba($dark-blue, 0.5);
+  font-size: 0.875rem;
+}
+
+@include modalKeyframes();

@@ -9,7 +9,7 @@ import Icon     from 'components/Icon/Icon.react';
 import Popover  from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import React    from 'react';
-import styles   from 'components/Sidebar/Sidebar.scss';
+import styles   from 'components/Sidebar/B4aSidebar.scss';
 
 export default class FooterMenu extends React.Component {
   constructor() {

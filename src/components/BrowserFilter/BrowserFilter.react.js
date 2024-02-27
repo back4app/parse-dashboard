@@ -139,14 +139,9 @@ export default class BrowserFilter extends React.Component {
             onClick={() => this.props.setCurrent(null)}
             id={POPOVER_CONTENT_ID}
           >
-            <div
-              onClick={this.toggle}
-              style={{
-                cursor: 'pointer',
-                width: node.clientWidth,
-                height: node.clientHeight,
-              }}
-            ></div>
+            <div className={styles.title} onClick={this.toggle}>
+              <Icon name="b4a-browser-filter-icon" width={24} height={24} />
+            </div>
             <div className={styles.body}>
               <Filter
                 className={this.props.className}
@@ -241,7 +236,7 @@ export default class BrowserFilter extends React.Component {
     return (
       <div className={wrapperStyle.join(' ')} ref={this.wrapRef}>
         <div className={buttonStyle.join(' ')} onClick={!this.props.disabled ? this.toggle : null}>
-          <Icon name="filter-icon" width={24} height={24} />
+          <Icon name="b4a-browser-filter-icon" width={24} height={24} />
           {/* <span>{this.props.filters.size ? 'Filtered' : 'Filter'}</span> */}
         </div>
         {popover}

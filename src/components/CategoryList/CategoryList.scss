@@ -6,33 +6,34 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .class_list {
   position: relative;
-  margin-bottom: 5px;
-  border-left: 1px solid #3e87b2;
+  // margin-bottom: 5px;
+  // border-left: 1px solid #3e87b2;
 
   a {
     display: block;
     padding-left: 12px;
     height: 20px;
     line-height: 20px;
-    color: #8fb9cf;
-    font-size: 12px;
+    color: $light-blue;
+    font-size: 1rem;
 
     &.active {
-      color: white;
+      color: $white;
+      font-weight: 600;
     }
 
     &:hover {
-      color: white;
+      color: $white;
     }
 
     span {
       display: block;
 
       &:first-of-type {
-        @include DosisFont;
         float: right;
         width: 50px;
         text-align: right;
@@ -51,7 +52,7 @@
   position: relative;
   padding-left: 12px;
   border-left: 1px solid #3e87b2;
-  font-size: 12px;
+  font-size: 0.875rem;
   line-height: 20px;
 
   & .action_div {
@@ -76,21 +77,21 @@
     line-height: 20px;
     border-left: 1px solid #3e87b2;
     color: #8fb9cf;
-    font-size: 12px;
+    font-size: 0.875rem;
 
     &.active {
-      color: white;
+      color: $white;
     }
 
     &:hover {
-      color: white;
+      color: $white;
     }
 
     span {
       display: block;
 
       &:first-of-type {
-        @include DosisFont;
+        @include SoraFont;
         float: right;
         width: 50px;
         text-align: right;
@@ -111,12 +112,12 @@
   position: absolute;
   width: 1px;
   height: 20px;
-  background: white;
+  background: $white;
   transition: top 0.2s cubic-bezier(1, 0, 0, 1);
 }
 
 .category-action {
-  @include DosisFont;
+  @include SoraFont;
   position: absolute;
   font-size: 12px;
   font-weight: 400;
@@ -125,7 +126,7 @@
   top: 0px;
   right: 0px;
   background: #0c5987;
-  color: white;
+  color: $white;
   border-radius: 3px;
 
   &:hover {
@@ -135,7 +136,7 @@
 
 .separator {
   margin: 6px 0 6px 12px;
-  background-color: #3e87b2;
+  background-color: $regal-blue;
   border: 0;
   height: 1px;
 }
@@ -159,6 +160,7 @@
 }
 .link {
   display: flex;
+  margin: 0.75rem 0;
   a {
     &:first-of-type {
       flex-grow: 1
@@ -168,6 +170,7 @@
 
 .childLink {
   display: flex;
+  margin: 0.75rem 0;
   a {
     &:first-of-type {
       flex-grow: 1;
@@ -180,5 +183,13 @@
       flex-grow: 1;
       margin-right: 0px !important;
     }
+  }
+
+  .deleteIcon {
+    fill: $light-blue;
+  }
+
+  &:hover .deleteIcon {
+    fill: $white;
   }
 }

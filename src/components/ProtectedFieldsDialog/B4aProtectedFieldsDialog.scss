@@ -1,0 +1,294 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import "stylesheets/globals.scss";
+ @import "stylesheets/back4app.scss";
+ 
+ $labelWidth: 240px;
+ $fieldsWidth: 680px;
+ 
+ $deleteColWidth: 44px;
+ 
+ $entryMargin: 20px;
+ $entryWidth: calc(#{$labelWidth} - #{$entryMargin}* 2);
+ 
+ $permissionsDialogWidth: calc(
+   #{$labelWidth} + #{$fieldsWidth} + #{$deleteColWidth}
+ );
+ 
+ .dialog {
+   @include modalAnimation();
+   color: $dark;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   width: $permissionsDialogWidth;
+   background: $white;
+   border-radius: 5px;
+   overflow: hidden;
+   transition: width 0.3s 0.15s ease-out;
+   padding: 1rem 2rem;
+ }
+ 
+ .closeIcon {
+   position: absolute;
+   top: 13px;
+   left: calc(100% - 25px);
+   cursor: pointer;
+ }
+ 
+ .header {
+   position: relative;
+   font-size: 1rem;
+   font-weight: 600;
+   line-height: 140%;
+   text-align: center;
+   margin-bottom: 1.5rem;
+ }
+ 
+ .level {
+   height: 50px;
+   width: $permissionsDialogWidth; //   width: 658px;
+   background: #0e69a1;
+   position: relative;
+   color: white;
+   transition: width 0.3s 0.15s ease-out;
+ 
+   > div {
+     margin: 0;
+     position: absolute;
+     top: 10px;
+     right: 10px;
+   }
+ 
+   > span {
+     display: inline-block;
+     font-size: 12;
+     height: 50px;
+     line-height: 50px;
+     padding-left: 20px;
+   }
+ }
+ 
+ .tableWrap {
+   // height: 450px;
+   overflow-y: auto;
+   overflow-x: hidden;
+   background-color: rgba($white, 0.03);
+ }
+ 
+ .second {
+   width: #{$fieldsWidth};
+ }
+ 
+ .table {
+   position: relative;
+   background-color: rgba($white, 0.03);
+   // min-height: 450px;
+ 
+   .overlay {
+     position: absolute;
+     top: 0;
+     bottom: 0;
+     pointer-events: none;
+     // background: rgba(0, 0, 40, 0.03);
+ 
+     &.second {
+       left: $labelWidth;
+     }
+   }
+ }
+ 
+ .footer {
+   position: relative;
+   height: 51px;
+ 
+   .details {
+     font-size: 12px;
+ 
+     a {
+       position: relative;
+       color: $old-blue;
+       &::before {
+         position: absolute;
+         content: '';
+         width: 100%;
+         top: 100%;
+         left: 0;
+         height: 1px;
+         background: currentColor;
+       }
+     }
+   }
+ 
+   .actions {
+     float: right;
+     padding: 10px 15px;
+     padding-right: 0;
+ 
+     button {
+       margin-left: 10px;
+     }
+   }
+ }
+ 
+ .multiselect {
+   display: inline-block;
+   width: #{$fieldsWidth};
+ }
+ 
+ .row {
+   display: flex;
+   min-height: 80px;
+   height: 100%;
+   vertical-align: middle;
+   font-size: 15px;
+   border-bottom: 1px solid $light-grey;
+   white-space: nowrap;
+   background: rgba(51, 51, 51, 0.031);
+ 
+   &:last-of-type{
+     border: none;
+     background: #3333330F;
+   }
+ }
+ 
+ .row.public {
+   background: rgba(22, 156, 238, 0.18);
+   border-bottom: 1px solid #0e69a1;
+   color: $blue;
+ }
+ 
+ .label {
+   display: inline-flex;
+   width: $labelWidth;
+   flex-direction: row;
+   justify-content: space-between;
+   align-items: center;
+   padding: 1rem;
+   color: rgba($light-grey, 0.03);
+   flex-shrink: 0;
+ 
+   & > span > p {
+     @include InterFont;
+     padding: 0;
+     color: $dark-blue;
+ 
+     &:first-of-type {
+       font-size: 14px;
+       font-weight: 700;
+       
+     }
+     &:last-of-type {
+       font-size: 12px;
+     }
+   }
+ 
+   p {
+     padding: 0;
+   }
+ }
+ 
+ .content {
+   background: rgba(51, 51, 51, 0.03);
+   width: 100%;
+ }
+ 
+ .entry {
+   height: 30px;
+   width: $entryWidth;
+   border: 1px solid $mainTextColor;
+   border-radius: 5px;
+   font-size: 14px;
+   outline: none;
+   padding: 0 6px;
+   margin: 10px $entryMargin;
+   vertical-align: top;
+ }
+ 
+ .error {
+   border-color: $error-red;
+   color: $error-red;
+   overflow: hidden;
+   white-space: normal;
+   padding-top: 0.4rem;
+   font-size: 12px;
+   font-weight: 600;
+ }
+ 
+ .delete {
+   margin-left: 10px;
+   button {
+     @include buttonReset;
+   }
+ 
+   svg {
+     vertical-align: top;
+     cursor: pointer;
+     fill: $dark-blue;
+ 
+     &:hover {
+       fill: $error-red;
+     }
+   }
+ }
+ 
+ .pillHolder {
+   max-width: 200px;
+   overflow: hidden;
+   display: inline-flex;
+   align-self: center;
+   padding-left: 4px;
+ }
+ 
+ .pillType {
+   width: auto;
+   display: inline-flex;
+   font-size: 14px;
+   color: $dark-grey;
+   opacity: 0.5;
+   line-height: 140%;
+   padding-left: 8px;
+ }
+ 
+ .multiselect {
+   .pillType {
+     visibility: collapse;
+     display: none;
+     top: 5px;
+     color: $dark-grey;
+     opacity: 0.5;
+     font-size: 14px;
+     line-height: 140%;
+   }
+ }
+ 
+ .hint {
+   color: $secondaryTextColor;
+   font-size: 0.8em;
+ }
+ .selectable {
+   user-select: text;
+ }
+ .prefix {
+   // color: #0e69a1;
+ }
+ 
+ .suggestions {
+   margin-left: -19px;
+   width: $entryWidth;
+   margin-top: -24px;
+ }
+ 
+ .entry input {
+   width: $entryWidth !important;
+   padding: 0 6px;
+   margin: 10px 20px;
+ }
+ 
+ @include modalKeyframes();
+ 

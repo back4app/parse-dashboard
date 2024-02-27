@@ -6,6 +6,7 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .dropdown {
   display: inline-block;
@@ -17,13 +18,15 @@
 }
 
 .current, .menu {
-  background: $purple;
+  background: $old-dark-blue;
   border-radius: 5px;
-  color: white;
+  color: $white;
   cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid $light-blue;
 
   &.blue {
-    background: $darkBlue;
+    background: $old-blue;
   }
 }
 
@@ -39,23 +42,30 @@
   }
 
   &:after {
-    @include arrow('down', 12px, 8px, rgba(255,255,255,0.3));
     position: absolute;
-    content: '';
-    top: 12px;
-    right: 10px;
+    content: ' ';
+    top: 30%;
+    left: calc(100% - 20px);
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid $white;
+    border-bottom: 1px solid $white;
+    transform: rotate(45deg);
+    transition: all 0.5s ease-in-out;
+  }
+  &:has(.menu)::after {
+    transform: rotate(226deg);
   }
 }
-
 
 .withoutArrow {
   position: relative;
   height: 30px;
   line-height: 30px;
   padding: 0 30px 0 10px;
-  background: $purple;
+  background: $old-dark-blue;
   border-radius: 5px;
-  color: white;
+  color: $white;
   cursor: pointer;
 
   div {
@@ -64,7 +74,7 @@
   }
 
   &.blue {
-    background: $darkBlue;
+    background: $old-dark-blue;
   }
 }
 
@@ -72,11 +82,33 @@
   max-height: 360px;
   overflow-y: auto;
   font-size: 14px;
+  border: 1px solid $light-blue;
+  border-radius: 4px;
 
   div {
     height: 30px;
     line-height: 30px;
     padding: 0 10px;
+
+    &:first-of-type {
+      position: relative;
+      &:after {
+        position: absolute;
+        content: ' ';
+        top: 40%;
+        left: calc(100% - 20px);
+        width: 8px;
+        height: 8px;
+        border-right: 1px solid $white;
+        border-bottom: 1px solid $white;
+        transform: rotate(226deg);
+        transition: all 0.5s ease-in-out;
+      }
+    }
+
+    &:last-of-type {
+      border-bottom: 0;
+    }
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
@@ -87,4 +119,6 @@
 .disabled {
   pointer-events: none;
   opacity: .65;
+  border: 1px solid $light-blue;
+  border-radius: 4px;
 }

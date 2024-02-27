@@ -145,7 +145,7 @@ export default class GeoPointEditor extends React.Component {
       });
     };
     return (
-      <div style={{ width: this.props.width, ...this.props.style }} className={styles.editor}>
+      <div style={{ width: this.props.width, ...this.props.style }} className={`${styles.editor} ${this.props.dark ? styles.dark : ''}`}>
         <input
           ref={this.latitudeRef}
           value={this.state.latitude}

@@ -9,7 +9,7 @@
 import Parse from 'parse';
 import React from 'react';
 import styles from 'dashboard/Data/Browser/Browser.scss';
-import ProtectedFieldsDialog from 'components/ProtectedFieldsDialog/ProtectedFieldsDialog.react';
+import B4aProtectedFieldsDialog from 'components/ProtectedFieldsDialog/B4aProtectedFieldsDialog.react';
 import { CurrentApp } from 'context/currentApp';
 
 const pointerPrefix = 'userField:';
@@ -119,7 +119,7 @@ export default class SecureFieldsDialog extends React.Component {
       this.context.serverInfo.features.schemas.editClassLevelPermissions;
     if (this.props.perms && this.state.open) {
       dialog = (
-        <ProtectedFieldsDialog
+        <B4aProtectedFieldsDialog
           title="Edit Protected Fields"
           columns={this.props.columns}
           userPointers={this.props.userPointers}

@@ -6,15 +6,16 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .footer {
   @include animation('footer-enter 0.2s cubic-bezier(0.165, 0.84, 0.44, 1)');
   // position: fixed;
-  left: 300px;
+  left: 360px;
   right: 0;
   bottom: 0;
-  background: #fbfbfc;
-  border-top: 1px solid #555572;
+  background: transparent;
+  border-top: 1px solid $regal-blue;
   min-height: 49px;
   padding: 9px 11px;
   transition: left 0.5s ease-in;

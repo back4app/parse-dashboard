@@ -7,7 +7,7 @@
  */
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import React from 'react';
 import TextInput from 'components/TextInput/TextInput.react';
 
@@ -49,11 +49,14 @@ export default class DeleteRowsDialog extends React.Component {
             />
           }
           input={
-            <TextInput
-              placeholder="delete selected"
-              value={this.state.confirmation}
-              onChange={confirmation => this.setState({ confirmation })}
-            />
+            <div style={{ padding: '0 1rem', width: '100%' }}>
+              <TextInput
+                placeholder="delete selected"
+                value={this.state.confirmation}
+                onChange={confirmation => this.setState({ confirmation })}
+                dark={false}
+              />
+            </div>
           }
         />
       );
@@ -64,20 +67,22 @@ export default class DeleteRowsDialog extends React.Component {
         <Field
           label={<Label text="Confirm this action" description='Enter "delete all" to continue.' />}
           input={
-            <TextInput
-              placeholder="delete all"
-              value={this.state.confirmation}
-              onChange={confirmation => this.setState({ confirmation })}
-            />
+            <div style={{ padding: '0 1rem', width: '100%' }}>
+              <TextInput
+                placeholder="delete all"
+                value={this.state.confirmation}
+                onChange={confirmation => this.setState({ confirmation })}
+                dark={false}
+              />
+            </div>
           }
         />
       );
     }
     const deleteText = this.props.relation ? 'Detach' : 'Delete';
     return (
-      <Modal
-        type={Modal.Types.DANGER}
-        icon="warn-outline"
+      <B4aModal
+        type={B4aModal.Types.DANGER}
         title={
           this.props.selection['*']
             ? `${deleteText} all rows?`
@@ -95,9 +100,10 @@ export default class DeleteRowsDialog extends React.Component {
         cancelText="Cancel"
         onCancel={this.props.onCancel}
         onConfirm={this.props.onConfirm}
+        buttonsInCenter={true}
       >
         {content}
-      </Modal>
+      </B4aModal>
     );
   }
 }

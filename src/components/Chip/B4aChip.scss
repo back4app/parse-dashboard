@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ 
+ @import "stylesheets/globals.scss";
+ @import "stylesheets/back4app.scss";
+ 
+ .chip {
+   @include InterFont;
+   border-radius: 15px;
+   color: $white;
+   font-size: 12px;
+   padding: 0 10px;
+   justify-content: space-between;
+   align-items: center;
+   gap: 5px;
+   display: inline-flex;
+   background-color: $old-blue;
+   border: none;
+   cursor: pointer;
+   height: 32px;
+   outline: none;
+   font-size: 14px;
+   white-space: nowrap;
+   vertical-align: middle;
+   text-decoration: none;
+   margin-right: 10px;
+ }
+ 
+ .content {
+   cursor: inherit;
+ }
+ 
+ .chip {
+   svg {
+     color: $light-blue;
+     cursor: pointer;
+     fill: currentColor;
+     font-size: 16px;
+     transition: fill 500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+     user-select: none;
+     flex-shrink: 0;
+   }
+   svg:hover {
+     color: $error-red;
+   }
+ }
+ 

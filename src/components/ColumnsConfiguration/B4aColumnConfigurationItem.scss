@@ -1,0 +1,37 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.columnConfigItem {
+  // padding: 8px 10px;
+  display: flex;
+  border-radius: 5px;
+  cursor: grab;
+  margin-bottom: 1rem;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  height: 24px;
+}
+
+.visibilityIcon {
+  cursor: pointer;
+  width: 30px;
+}
+
+.columnConfigItemName {
+  @include SoraFont;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 24px;
+  &.hide {
+    opacity: 0.3;
+  }
+}
+
+.columnIcon {
+  width: auto;
+  flex-grow: 1;
+  justify-content: end;
+}

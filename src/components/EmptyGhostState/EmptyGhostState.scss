@@ -1,0 +1,62 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+
+  .title {
+    color: $white;
+    font-family: 'Sora', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+  }
+  .description {
+    color: $light-blue;
+    font-family: 'Inter', sans-serif;
+    line-height: 140%;
+    max-width: 34rem;
+    text-align: center;
+  }
+
+  .actionBtns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+
+    button {
+      @include InterFont;
+      color: $white;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.3125rem 0.875rem;
+      border-radius: 0.3125rem;
+      cursor: pointer;
+      transition: all ease-in-out 0.3s;
+    }
+
+    .secondaryCta {
+      background: transparent;
+      border: 1px solid $light-grey;
+      &:hover {
+        background: rgba($white, 0.1);
+      }
+    }
+
+    .cta {
+      background: $cta-green;
+      &:hover {
+        filter: drop-shadow(1px 1px 10px #92E1B4);
+        background-color: #13A39A!important;
+      }
+    }
+  }
+
+}

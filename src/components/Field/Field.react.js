@@ -9,11 +9,12 @@ import PropTypes from 'lib/PropTypes';
 import React from 'react';
 import styles from 'components/Field/Field.scss';
 
-const Field = ({ label, input, labelWidth = 50, labelPadding, height, className, minHeight, textAlign }) => {
+const Field = ({ label, input, labelWidth = 50, labelPadding, height, className, minHeight, textAlign, theme = Field.Theme.LIGHT }) => {
   const classes = [styles.field];
   if (className) {
     classes.push(className);
   }
+  classes.push(styles[theme]);
   labelWidth = labelWidth || 50;
   minHeight = minHeight || '';
   if (label && labelPadding) {
@@ -35,6 +36,12 @@ const Field = ({ label, input, labelWidth = 50, labelPadding, height, className,
 };
 
 export default Field;
+
+Field.Theme = {
+  DARK: 'dark',
+  LIGHT: 'light',
+  BLUE: 'blue'
+}
 
 Field.propTypes = {
   label: PropTypes.node.describe(

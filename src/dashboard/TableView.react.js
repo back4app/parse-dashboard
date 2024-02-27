@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import DashboardView from 'dashboard/DashboardView.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import React from 'react';
 import styles from 'dashboard/TableView.scss';
 
@@ -54,9 +54,9 @@ export default class TableView extends DashboardView {
     const loading = this.state ? this.state.loading : false;
     return (
       <div>
-        <LoaderContainer loading={loading}>
+        <B4aLoaderContainer loading={loading}>
           <div className={styles.content}>{content}</div>
-        </LoaderContainer>
+        </B4aLoaderContainer>
         {toolbar}
         <div className={styles.headers}>{headers}</div>
         {extras}

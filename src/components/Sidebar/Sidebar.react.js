@@ -92,7 +92,7 @@ const Sidebar = ({
     return () => {
       window.removeEventListener('resize', windowResizeHandler);
       document.body.removeEventListener('click', checkExternalClick);
-      isSidebarFixed = fixed;
+      isSidebarFixed = collapsed;
     }
   }, []);
 
@@ -148,9 +148,10 @@ const Sidebar = ({
               active={active}
               primaryBackgroundColor={primaryBackgroundColor}
               isCollapsed={true}
-              onClick={active
-                ? (() => setCollapsed(false))
-                : (() => isSidebarCollapsed = false)}>
+              // onClick={active
+              //   ? (() => setCollapsed(false))
+              //   : (() => isSidebarCollapsed = false)}
+            >
             </SidebarSection>
           );
         })}
@@ -266,7 +267,6 @@ const Sidebar = ({
               name={currentApp.name}
               onClick={() => setAppsMenuOpen(true)}
               pin={pin}
-              onPinClick={onPinClick}
             />
           </div>
         )}

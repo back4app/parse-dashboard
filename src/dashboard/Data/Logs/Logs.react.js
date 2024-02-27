@@ -13,7 +13,7 @@ import LogViewEntry from 'components/LogView/LogViewEntry.react';
 import React from 'react';
 import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
 import Toolbar from 'components/Toolbar/Toolbar.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Icon from 'components/Icon/Icon.react';
 import ServerLogsView from '../../../components/ServerLogsView/ServerLogsView.react';
 // import B4AAlert from 'components/B4AAlert/B4AAlert.react';
@@ -141,13 +141,13 @@ class Logs extends DashboardView {
     let content = null;
     if (type === 'access' || type === 'system') {
       content = (
-        <LoaderContainer loading={this.state.loading} solid={false}>
+        <B4aLoaderContainer loading={this.state.loading} solid={false}>
           <ServerLogsView type={type} logs={this.state.serverLogs} />
-        </LoaderContainer>
+        </B4aLoaderContainer>
       );
     } else {
       content = (
-        <LoaderContainer loading={this.state.loading} solid={false}>
+        <B4aLoaderContainer loading={this.state.loading} solid={false}>
           {this.state.logs.length === 0 && !this.state.loading ? (
             <div className={styles.content}>
               <EmptyState
@@ -167,7 +167,7 @@ class Logs extends DashboardView {
               </LogView>
             </div>
           )}
-        </LoaderContainer>
+        </B4aLoaderContainer>
       );
     }
     

@@ -79,7 +79,8 @@ class HubConnections extends DashboardView {
         <div className={styles.headerContainer}>
           <div className={styles.headerDescriptionContainer}>
             <section className={styles.header}>
-              <span className={styles.subtitle}>{(this.state.data && this.state.data.length) || 0} public databases connected</span>
+              {/* <span className={styles.subtitle}>{(this.state.data && this.state.data.length) || 0} public databases connected</span> */}
+              <span className={styles.subtitle}>Database Hub</span>
               <div>
                 <span className={styles.title}>Connections</span>
               </div>

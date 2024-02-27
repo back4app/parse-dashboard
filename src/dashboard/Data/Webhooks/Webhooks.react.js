@@ -40,7 +40,7 @@ class Webhooks extends TableView {
     super();
     this.section = 'More';
     this.subsection = 'Webhooks';
-    this.action = new SidebarAction('Create a webhook', this.openNewWebhookModal.bind(this));
+    this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" />Create a webhook</span>, this.openNewWebhookModal.bind(this));
     this.state = {
       showNewWebhookModal: false,
       showEditWebhookModal: false,
@@ -75,7 +75,7 @@ class Webhooks extends TableView {
 
   renderToolbar() {
     return (
-      <Toolbar section="Integrations" subsection="Webhooks">
+      <Toolbar section="Webhooks">
         <Button
           color="white"
           value="Create a Webhook"

@@ -4,6 +4,7 @@ import Parse from 'parse';
 
 import CodeEditor from 'components/CodeEditor/CodeEditor.react';
 import Button from 'components/Button/Button.react';
+import Icon from 'components/Icon/Icon.react';
 import SaveButton from 'components/SaveButton/SaveButton.react';
 import Swal from 'sweetalert2';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -148,53 +149,73 @@ export default class Playground extends Component {
     const { results, running, saving, savingState } = this.state;
 
     return React.cloneElement(
-      <div className={styles['playground-ctn']}>
-        <Toolbar section={this.section} subsection={this.subsection} />
-        <div style={{ height: 'calc(100vh - 156px)' }}>
-          <CodeEditor
-            placeHolder={placeholderCode}
-            ref={editor => (this.editor = editor)}
-          />
-          <div className={styles['console-ctn']}>
-            <header>
-              <h3>Console</h3>
-              <div className={styles['buttons-ctn']}>
-                <div>
-                  <div style={{ marginRight: '15px' }}>
-                    {window.localStorage && (
-                      <SaveButton
-                        state={savingState}
-                        primary={false}
-                        color="white"
-                        onClick={() => this.saveCode()}
-                        progress={saving}
-                      />
-                    )}
-                  </div>
-                  <Button
-                    value={'Run'}
-                    primary={false}
-                    onClick={() => this.runCode()}
-                    progress={running}
-                    color="white"
-                  />
-                </div>
-              </div>
-            </header>
+      <>
+        <Toolbar section={this.section} subsection={this.subsection}>
+          <div className={styles['buttons-ctn']}>
+            <Button
+              value={<span className={styles.runBtn}>
+                <Icon width={16} height={16} fill="#CCCCCC" name="b4a-play" className={styles.icon} />
+                Run
+              </span>}
+              primary={false}
+              onClick={() => this.runCode()}
+              progress={running}
+              color="white"
+            />
+            {window.localStorage && (
+              <SaveButton
+                state={savingState}
+                primary={false}
+                color="green"
+                onClick={() => this.saveCode()}
+                progress={saving}
+              />
+            )}
+          </div>
+        </Toolbar>
+        <div className={styles['playground-ctn']}>
+          <div className={styles.playgroundEditor}>
+            <CodeEditor
+              fontSize={14}
+              placeHolder={placeholderCode}
+              ref={editor => (this.editor = editor)}
+            />
+          </div>
+          <div className={styles.console}>
+            <div>Console</div>
             <section>
-              {results.map(({ log, name }, i) => (
-                <ReactJson
-                  key={i + `${log}`}
-                  src={log}
-                  collapsed={1}
-                  theme="solarized"
-                  name={name}
-                />
-              ))}
+              {!results.length ? <span className={styles.null}>null</span> : (
+                results.map(({ log, name }, i) => (
+                  <ReactJson
+                    key={i + `${log}`}
+                    src={log}
+                    collapsed={1}
+                    theme={{
+                      base00: '#0A0B0C', // default background
+                      base01: '#111214',
+                      base02: '#f9f9f94d',
+                      base03: '#F9F9F9',
+                      base04: '#c1e2ff',
+                      base05: '#f9f9f9',
+                      base06: '#f9f9f9',
+                      base07: '#f9f9f999',
+                      base08: '#f9f9f9',
+                      base09: '#27AE60', // Integers, Boolean, Constants, XML Attributes, Markup Link Url
+                      base0A: '#f9f9f9',
+                      base0B: '#f9f9f9',
+                      base0C: '#f9f9f9',
+                      base0D: '#f9f9f9b3',
+                      base0E: '#f9f9f999',
+                      base0F: '#15A9FF'
+                    }}
+                    name={name}
+                  />
+                ))
+              )}
             </section>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 }

@@ -6,6 +6,7 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .modal {
   @include modalAnimation();
@@ -65,25 +66,25 @@
 
 .danger {
   .header {
-    background: $red;
+    background: $error-red;
   }
 }
 
 .warning {
   .header {
-    background: $yellow
+    background: $alert-yellow;
   }
 }
 
 .info {
   .header {
-    background: $blue;
+    background: $old-dark-blue;
   }
 }
 
 .valid {
   .header {
-    background: $green;
+    background: $cta-green;
   }
 }
 

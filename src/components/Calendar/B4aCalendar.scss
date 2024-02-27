@@ -1,0 +1,151 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import 'stylesheets/globals.scss';
+ @import 'stylesheets/back4app.scss';
+
+ .calendar {
+   @include InterFont;
+   background: $dark-grey;
+   color: $white;
+   width: 182px;
+   height: auto;
+
+   &.dark {
+    .month {
+      button {
+        &:first-of-type::before {
+          border-color: $white !important;
+        }
+        &:last-of-type::after {
+          border-color: $white !important;
+        }
+      }
+    }
+    .days {
+      span, button {
+        color: $white !important;
+      }
+    }
+   }
+ }
+ 
+ .month {
+   margin-bottom: 10px;
+ 
+   button {
+     @include buttonReset;
+     position: relative;
+     display: inline-block;
+     width: 14px;
+     height: 20px;
+     border: none;
+     margin: 0 6px;
+
+ 
+     &:first-of-type {
+       float: left;
+ 
+       &:before {
+         content: ' ';
+         position: absolute;
+         width: 8px;
+         height: 8px;
+         border: 1.5px solid $dark;
+         border-right: 0;
+         border-bottom: 0;
+         top: 50%;
+         transform: rotate(-45deg) translateY(-50%);
+         left: 4px;
+       }
+     }
+ 
+     &:last-of-type {
+       float: right;
+ 
+       &:after {
+          content: ' ';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border: 1.5px solid $dark;
+          border-left: 0;
+          border-bottom: 0;
+          top: 50%;
+          transform: rotate(45deg) translateY(-50%);
+          left: 3px;
+       }
+     }
+   }
+ 
+   div {
+     font-size: 14px;
+     text-align: center;
+   }
+ }
+ 
+ .weekdays {
+   font-size: 14px;
+   display: grid;
+   grid-template-columns: repeat(7, 1fr);
+   place-content: center;
+ 
+   span {
+    @include InterFont;
+     display: inline-block;
+     width: 30px;
+     height: 30px;
+     line-height: 30px;
+     font-size: 14px;
+     text-align: center;
+   }
+ }
+ 
+ .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  place-content: center;
+   span, button {
+     @include InterFont;
+     @include buttonReset;
+     display: inline-block;
+     vertical-align: bottom;
+     width: 30px;
+     height: 30px;
+     line-height: 30px;
+     font-size: 14px;
+     text-align: center;
+     margin: 0;
+     color: rgba($dark, 0.9);
+   }
+ 
+   .selected {
+     color: white;
+     background: $old-blue;
+   }
+ }
+ 
+ .shadeBefore {
+   button {
+     background: #efeff1;
+   }
+ 
+   .selected {
+     background: $darkBlue;
+   }
+ 
+   .selected ~ button {
+     background: white;
+   }
+ }
+ 
+ .shadeAfter {
+   .selected ~ button {
+     background: #efeff1;
+   }
+ }
+ 

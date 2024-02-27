@@ -9,7 +9,7 @@ import PropTypes from 'lib/PropTypes';
 import React     from 'react';
 import styles    from 'components/Tooltip/SimpleTooltip.scss';
 
-let Tooltip = ({ value, children }) => {
+const Tooltip = ({ value, children }) => {
   return (
     <div className={styles.tooltipWrap}>
       {children}

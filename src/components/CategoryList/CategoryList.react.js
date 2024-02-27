@@ -11,6 +11,7 @@ import styles from 'components/CategoryList/CategoryList.scss';
 import { Link } from 'react-router-dom';
 import generatePath from 'lib/generatePath';
 import { CurrentApp } from 'context/currentApp';
+import Icon from 'components/Icon/Icon.react';
 
 export default class CategoryList extends React.Component {
   static contextType = CurrentApp;
@@ -56,7 +57,7 @@ export default class CategoryList extends React.Component {
               for (let i = 0; i < c.filters?.length; i++) {
                 const filter = c.filters[i];
                 if (queryFilter === filter.filter) {
-                  height += (i + 1) * 20;
+                  height += (i + 1) * (20 + 12); // added 24 for margin top & bottom
                   break;
                 }
               }
@@ -69,9 +70,9 @@ export default class CategoryList extends React.Component {
         if (id === 'classSeparator') {
           height += 13;
         } else if (this.state.openClasses.includes(id)) {
-          height = height + 20 * (c.filters.length + 1);
+          height = (height + 20 + 12) * (c.filters.length + 1);
         } else {
-          height += 20;
+          height += 20 + 12;
         }
       }
       this.highlight.style.display = 'none';
@@ -179,7 +180,7 @@ export default class CategoryList extends React.Component {
                           this.props.removeFilter(filterData);
                         }}
                       >
-                        ×
+                        <Icon name='b4a-delete-icon' className={styles.deleteIcon} width={18} height={18} />
                       </a>
                     </div>
                   );

@@ -15,21 +15,21 @@ $footerHeight: 61px;
 
 .sidebar {
   position: fixed;
-  width: 300px;
+  width: 360px;
   top: $header-height;
   left: 0;
   bottom: 0;
-  background: #0c5582;
-  color: #fff;
+  color: $white;
   transition: left 0.5s ease-in;
   z-index: 100;
+  background: #112C4D;
 
   &.collapsed {
     left: 0;
     width: 54px;
 
     .pinContainer {
-      height: 48px;
+      height: 79px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -43,7 +43,7 @@ $footerHeight: 61px;
     }
 
     .footer {
-      height: 48px;
+      height: 79px;
       justify-content: center;
       cursor: pointer;
 
@@ -69,7 +69,7 @@ $footerHeight: 61px;
 .content {
   position: absolute;
   overflow-y: auto;
-  top: 48px;
+  top: 79px;
   right: 0;
   bottom: 61px;
   left: 0;
@@ -110,7 +110,7 @@ $footerHeight: 61px;
 
 .header {
   background: #05283c;
-  height: 48px;
+  height: 79px;
   padding: 10px 14px;
 
   :global(.icon) {
@@ -122,9 +122,11 @@ $footerHeight: 61px;
 
 .currentApp, .menuRow {
   @include ellipsis();
-  display: block;
-  background: #094162;
-  height: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #112C4D;
+  height: 60px;
   padding: 10px 14px;
 
   color: white;
@@ -174,6 +176,10 @@ $footerHeight: 61px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1.5rem 2rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.375rem;
+  font-weight: 600;
 
   .appNameContainer {
     display: flex;
@@ -254,7 +260,7 @@ $footerHeight: 61px;
 .appsMenu {
   overflow: auto;
   background: #094162;
-  width: 300px;
+  width: 360px;
 
   .menuRow:hover {
     background: #0c5582;
@@ -290,7 +296,7 @@ $footerHeight: 61px;
 }
 
 .menuSection {
-  @include DosisFont;
+  @include SoraFont;
   height: 24px;
   line-height: 24px;
   background: #0c5582;
@@ -303,7 +309,7 @@ $footerHeight: 61px;
 }
 
 .createApp {
-  @include DosisFont;
+  @include SoraFont;
   display: block;
   background: $blue;
   color: white;
@@ -321,7 +327,7 @@ $footerHeight: 61px;
 }
 
 .section {
-  background: #0c5582;
+  background: $mid-blue;
 
   :global(.icon) {
     margin-right: 14px;
@@ -337,12 +343,13 @@ $footerHeight: 61px;
 }
 
 .active {
-  background: #159cee;
+  background: rgba(16, 32, 58, 0.6);
 
   .section_header{
     font-weight: 700;
+    padding: 1.5rem 2rem;
     &:hover{
-      background: #159cee;
+      background: rgba(16, 32, 58, 0.3);
     }
   }
 }
@@ -350,13 +357,13 @@ $footerHeight: 61px;
 .section_header {
   display: block;
   align-items: center;
-  height: 48px;
+  // height: 65px;
   font-size: 18px;
-  padding: 9px 14px;
-  color: white;
+  padding: 1rem 2rem;
+  color: $white;
 
   &:hover{
-    background-color: #1184ca;
+    background: rgba(16, 32, 58, 0.3);
     text-decoration: underline;
     color: white;
   }
@@ -371,16 +378,15 @@ $footerHeight: 61px;
 }
 
 .section_contents {
-  background: #0e69a0;
+  background: rgba(16, 32, 58, 0.60);
   padding: 16px 14px 16px 50px;
 }
 
 .subitem {
   position: relative;
   height: 28px;
-  line-height: 28px;
-  font-size: 16px;
-  font-weight: 700;
+  line-height: 140%;
+  font-size: 1.125rem;
   color: white;
 }
 
@@ -396,7 +402,7 @@ a.subitem {
 }
 
 .action {
-  @include DosisFont;
+  @include SoraFont;
   position: absolute;
   font-size: 12px;
   font-weight: 400;
@@ -418,7 +424,7 @@ a.subitem {
 }
 
 .version {
-  @include DosisFont;
+  @include SoraFont;
   position: relative;
   width: 75px;
   height: 100%;
@@ -508,7 +514,7 @@ a.subitem {
 }
 
 .pinContainer {
-  height: 48px;
+  height: 79px;
   display: flex;
   justify-content: center;
   align-items: center;

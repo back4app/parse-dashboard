@@ -21,7 +21,7 @@ const getPositionToFitVisibleScreen = ref => {
       const prevElBox = prevEl.getBoundingClientRect();
       const showOnRight = prevElBox.x + prevElBox.width + elBox.width < window.innerWidth;
       return {
-        x: showOnRight ? prevElBox.width : -elBox.width,
+        x: showOnRight ? prevElBox.width : -(elBox.width + 5),
         y,
       };
     }

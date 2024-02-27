@@ -16,7 +16,7 @@ import Fieldset from 'components/Fieldset/Fieldset.react';
 import FieldStyles from 'components/Field/Field.scss';
 import FlowView from 'components/FlowView/FlowView.react';
 import Label from 'components/Label/Label.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Parse from 'parse';
 import prettyNumber from 'lib/prettyNumber';
 import PushExperimentDropdown from 'components/PushExperimentDropdown/PushExperimentDropdown.react';
@@ -823,12 +823,12 @@ class PushDetails extends DashboardView {
     const { isFlowView, experimentInfo, flowFooterDetails } = this.experimentInfoHelper();
     return (
       <div className={styles.detailsWrapper}>
-        <LoaderContainer loading={this.state.loading}>
+        <B4aLoaderContainer loading={this.state.loading}>
           {this.renderPushRates(experimentInfo)}
           {this.renderAnalytics()}
           {this.renderTargetTable()}
           {this.renderStatusTable()}
-        </LoaderContainer>
+        </B4aLoaderContainer>
         {isFlowView ? (
           <FlowView
             initialFields={{}}

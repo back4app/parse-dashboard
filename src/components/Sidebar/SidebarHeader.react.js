@@ -8,7 +8,7 @@
 // import Icon     from 'components/Icon/Icon.react';
 // import { Link } from 'react-router-dom';
 import React    from 'react';
-import styles   from 'components/Sidebar/Sidebar.scss';
+import styles   from 'components/Sidebar/B4aSidebar.scss';
 // get the package.json environment variable
 const version = process.env.version;
 

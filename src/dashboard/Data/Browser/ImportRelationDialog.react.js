@@ -7,7 +7,7 @@
  */
 import React    from 'react';
 import ParseApp from 'lib/ParseApp';
-import Modal    from 'components/Modal/Modal.react';
+import B4aModal    from 'components/B4aModal/B4aModal.react';
 import Field    from 'components/Field/Field.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import FileInput from 'components/FileInput/FileInput.react';
@@ -33,16 +33,14 @@ export default class ImportRelationDialog extends React.Component {
 
   render() {
     return (
-      <Modal
-        type={Modal.Types.INFO}
-        icon='down-outline'
-        iconSize={40}
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
         title='Import relation data'
         subtitle={'You will receive an e-mail once your data is imported'}
         confirmText='Import'
         cancelText='Cancel'
         disabled={!this.valid()}
-        buttonsInCenter={true}
+        buttonsInCenter={false}
         onCancel={this.props.onCancel}
         onConfirm={() => {
             this.props.onConfirm(this.state.relationName, this.state.file)
@@ -57,24 +55,31 @@ export default class ImportRelationDialog extends React.Component {
                   text='Enter the relation name' />
             }
             input={
-              <TextInput
-                  placeholder='Relation name'
-                  value={this.state.relationName}
-                  onChange={(relationName) => this.setState({ relationName: relationName })} />
+              <div style={{ padding: '0 1rem', width: '100%' }}>
+                <TextInput
+                    placeholder='Relation name'
+                    value={this.state.relationName}
+                    onChange={(relationName) => this.setState({ relationName: relationName })} 
+                    dark={false}
+                />
+              </div>
             } />
         <Field
             label={
                 <Label
                     text='Select a JSON or CSV file with your relation data' />}
             input={
-                <FileInput
-                    onChange={(file) => {this.setState({ file: file });}} />}
+                <div style={{ padding: '0 1rem', width: '100%' }}>
+                  <FileInput
+                      onChange={(file) => {this.setState({ file: file });}} />
+                </div>
+              }
         />
         {this.state.startedImport ?
           <div style={{ padding: 20 }}>We are importing your data. You will be notified by e-mail once it is completed.</div> : null }
         {this.state.errorMessage ?
           <div style={{ padding: 20, color: '#ff395e' }}>Import Request failed with the following error: "{ this.state.errorMessage }".</div> : null }
-      </Modal>
+      </B4aModal>
     );
   }
 }

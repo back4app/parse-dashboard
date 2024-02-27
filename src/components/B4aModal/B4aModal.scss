@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.modal {
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 540px;
+  background: white;
+  border-radius: 0.5rem;
+  background: $white;
+  overflow: hidden;
+  transition: width 0.5s cubic-bezier(1, 0, 0, 1);
+  padding: 1rem 2rem;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 13px;
+  left: calc(100% - 25px);
+  cursor: pointer;
+}
+
+.header {
+  position: relative;
+  transition: background 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.title {
+  @include InterFont;
+  color: $dark;
+  text-align: center;
+  font-weight: 600;
+  line-height: 140%;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  @include InterFont;
+  color: $dark;
+  opacity: 0.7;
+  text-align: center;
+  line-height: 140%;
+}
+
+.icon {
+  margin-bottom: 1rem;
+}
+
+// .danger {
+//   .header {
+//     background: $error-red;
+//   }
+// }
+
+// .warning {
+//   .header {
+//     background: $alert-yellow;
+//   }
+// }
+
+// .info {
+//   .header {
+//     background: $old-dark-blue;
+//   }
+// }
+
+// .valid {
+//   .header {
+//     background: $cta-green;
+//   }
+// }
+
+.footer {
+  // padding: 17px 28px;
+
+  > * {
+    margin: 0 12px 0 0;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.textModal {
+  text-align: center;
+  padding: 17px 55px 0 55px;
+}
+
+@include modalKeyframes();

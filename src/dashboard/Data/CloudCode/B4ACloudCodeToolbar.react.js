@@ -2,12 +2,15 @@ import React          from 'react';
 import Toolbar        from 'components/Toolbar/Toolbar.react';
 import styles         from 'dashboard/Data/CloudCode/B4ACloudCodeToolbar.scss';
 
-let B4ACloudCodeToolbar = () => {
+const B4ACloudCodeToolbar = ({ children }) => {
   return (
     <Toolbar
       toolbarStyles={styles.title}
-      subsection={'Cloud Code Functions'}
-      details={'Settings'}>
+      section="Cloud Code"
+      subsection="Functions & Web Hosting"
+      details={'Settings'}
+    >
+      {children}
     </Toolbar>
   );
 };

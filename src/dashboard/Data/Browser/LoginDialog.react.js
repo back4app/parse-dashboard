@@ -1,6 +1,6 @@
 import React from 'react';
-import Modal from 'components/Modal/Modal.react';
-import LoginRow from 'components/LoginRow/LoginRow.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
+import B4aLoginRow from 'components/LoginRow/B4aLoginRow.react';
 import Notification from 'dashboard/Data/Browser/Notification.react';
 
 export default class LoginDialog extends React.Component {
@@ -57,8 +57,8 @@ export default class LoginDialog extends React.Component {
 
     return (
       open && (
-        <Modal
-          type={Modal.Types.INFO}
+        <B4aModal
+          type={B4aModal.Types.DEFAULT}
           title={currentUser ? 'Switch User' : 'Browse as User'}
           subtitle={
             <div style={{ paddingTop: '5px' }}>
@@ -74,28 +74,30 @@ export default class LoginDialog extends React.Component {
           confirmText="Browse"
           cancelText="Cancel"
         >
-          <LoginRow
+          <B4aLoginRow
             label="Username"
             input={
               <input
                 onChange={e => this.setState({ username: e.nativeEvent.target.value })}
                 onKeyDown={this.handleKeyDown}
                 autoFocus
+                placeholder='username'
               />
             }
           />
-          <LoginRow
+          <B4aLoginRow
             label="Password"
             input={
               <input
                 onChange={e => this.setState({ password: e.nativeEvent.target.value })}
                 type="password"
                 onKeyDown={this.handleKeyDown}
+                placeholder='********'
               />
             }
           />
           <Notification note={this.state.error} isErrorNote={true} />
-        </Modal>
+        </B4aModal>
       )
     );
   }

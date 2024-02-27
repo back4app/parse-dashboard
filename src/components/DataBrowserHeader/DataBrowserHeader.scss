@@ -6,24 +6,34 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .header {
-  @include MonospaceFont;
+  @include CourierFont;
   position: relative;
   display: block;
   white-space: nowrap;
   // overflow: hidden;
-  height: 30px;
-  padding: 4px 6px 4px 2px;
+  height: 46px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   border-left: 4px solid transparent;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.objectPickerContent {
+  .header {
+    height: 36px;
+  }
 }
 
 .name {
-  color: white;
-  font-size: 12px;
-  height: 22px;
-  line-height: 22px;
+  color: $white;
+  font-size: 0.875rem;
+  // height: 22px;
+  line-height: 140%;
   margin-right: 8px;
   float: left;
   max-width: 100%;
@@ -34,10 +44,10 @@
 .type {
   position: relative;
   display: flex;
-  color: #A2A6B1;
-  font-size: 10px;
-  height: 22px;
-  line-height: 22px;
+  color: $light-blue;
+  font-size: 0.75rem;
+  // height: 22px;
+  line-height: 140%;
   overflow: hidden;
   text-overflow: ellipsis;
 
@@ -69,7 +79,7 @@
     @include arrow('down', 12px, 8px, #A2A6B1);
     content: '';
     position: absolute;
-    top: 11px;
+    top: 18px;
     right: 8px;
   }
 }

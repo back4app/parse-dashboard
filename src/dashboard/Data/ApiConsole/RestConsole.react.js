@@ -9,20 +9,19 @@ import Button from 'components/Button/Button.react';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
-import fieldStyle from 'components/Field/Field.scss';
 import FlowFooter from 'components/FlowFooter/FlowFooter.react';
 import FormNote from 'components/FormNote/FormNote.react';
 import generateCurl from 'dashboard/Data/ApiConsole/generateCurl';
 import JsonPrinter from 'components/JsonPrinter/JsonPrinter.react';
 import Label from 'components/Label/Label.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Option from 'components/Dropdown/Option.react';
 import Parse from 'parse';
 import React, { Component } from 'react';
 import request from 'dashboard/Data/ApiConsole/request';
-import styles from 'dashboard/Data/ApiConsole/ApiConsole.scss';
+import styles from 'dashboard/Data/ApiConsole/RestConsole.scss';
 import TextInput from 'components/TextInput/TextInput.react';
-import Toggle from 'components/Toggle/Toggle.react';
+import B4aToggle from 'components/Toggle/B4aToggle.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import { CurrentApp } from 'context/currentApp';
 
@@ -134,7 +133,7 @@ export default class RestConsole extends Component {
 
   render() {
     const methodDropdown = (
-      <Dropdown onChange={method => this.setState({ method })} value={this.state.method}>
+      <Dropdown onChange={method => this.setState({ method })} value={this.state.method} dark={true}>
         <Option value="GET">GET</Option>
         <Option value="POST">POST</Option>
         <Option value="PUT">PUT</Option>
@@ -169,10 +168,10 @@ export default class RestConsole extends Component {
         options
       );
       modal = (
-        <Modal
+        <B4aModal
           title="cURL Request"
           subtitle="Use this to replicate the request"
-          icon="laptop-outline"
+          onCancel={() => this.setState({ curlModal: false })}
           customFooter={
             <div className={styles.footer}>
               <Button
@@ -184,114 +183,138 @@ export default class RestConsole extends Component {
           }
         >
           <div className={styles.curl}>{content}</div>
-        </Modal>
+        </B4aModal>
       );
     }
 
     return (
-      <div style={{ padding: '120px 0 0 0' }}>
-        <Fieldset
-          legend="Send a test query"
-          description="Try out some queries, and take a look at what they return."
-        >
-          <Field label={<Label text="What type of request?" />} input={methodDropdown} />
-          <Field
-            label={
-              <Label
-                text="Which endpoint?"
-                description={
-                  <span>
-                    Not sure what endpoint you need?
-                    <br />
-                    Take a look at our{' '}
-                    <a href="http://docs.parseplatform.org/rest/guide/">REST API guide</a>.
-                  </span>
-                }
-              />
-            }
-            input={
-              <TextInput
-                value={this.state.endpoint}
-                monospace={true}
-                placeholder={'classes/_User'}
-                onChange={endpoint => this.setState({ endpoint })}
-              />
-            }
-          />
-          <Field
-            label={<Label text="Use Master Key?" description={'This will bypass any ACL/CLPs.'} />}
-            input={
-              <Toggle
-                value={this.state.useMasterKey}
-                onChange={useMasterKey => this.setState({ useMasterKey })}
-              />
-            }
-          />
-          <Field
-            label={
-              <Label
-                text="Run as..."
-                description={
-                  'Send your query as a specific user. You can use their username or Object ID.'
-                }
-              />
-            }
-            input={
-              <TextInput
-                value={this.state.runAsIdentifier}
-                monospace={true}
-                placeholder={'Username or ID'}
-                onChange={runAsIdentifier => this.setState({ runAsIdentifier })}
-                onBlur={this.fetchUser.bind(this)}
-              />
-            }
-          />
-          <FormNote color="red" show={!!this.state.error}>
-            {this.state.error}
-          </FormNote>
-          <Field
-            label={
-              <Label
-                text="Query parameters"
-                description={
-                  <span>
-                    Learn more about query parameters in our{' '}
-                    <a href="http://docs.parseplatform.org/rest/guide/#queries">REST API guide</a>.
-                  </span>
-                }
-              />
-            }
-            input={
-              <TextInput
-                value={this.state.parameters}
-                monospace={true}
-                multiline={true}
-                placeholder={parameterPlaceholder}
-                onChange={parameters => this.setState({ parameters })}
-              />
-            }
-          />
-        </Fieldset>
-        <Fieldset legend="Results" description="">
-          <div className={fieldStyle.field}>
-            <JsonPrinter object={this.state.response} />
+      <div className={styles.content}>
+        <div className={styles.mainContent}>
+          <div className={styles.header}>
+            <div className={styles.title}>Send a test query</div>
+            <div className={styles.subtitle}>Try out some queries, and take a look at what they return.</div>
           </div>
-        </Fieldset>
-        <Toolbar section="Core" subsection="API Console" />
-        <FlowFooter
-          primary={
-            <Button
-              primary={true}
-              disabled={hasError}
-              value="Send Query"
-              progress={this.state.inProgress}
-              onClick={this.makeRequest.bind(this)}
+          <Fieldset
+            legend=""
+            description=""
+          >
+            <Field label={<Label text="What type of request?" dark={true} />} input={methodDropdown} theme={Field.Theme.BLUE} />
+            <Field
+              label={
+                <Label
+                  text="Which endpoint?"
+                  description={
+                    <span>
+                      Not sure what endpoint you need?
+                      <br />
+                      Take a look at our{' '}
+                      <a href="http://docs.parseplatform.org/rest/guide/" className={styles.helpLink}>REST API guide</a>.
+                    </span>
+                  }
+                  dark={true}
+                />
+              }
+              input={
+                <div style={{ padding: '0 1rem', width: '100%' }}>
+                  <TextInput
+                    value={this.state.endpoint}
+                    monospace={true}
+                    placeholder={'classes/_User'}
+                    onChange={endpoint => this.setState({ endpoint })}
+                  />
+                </div>
+              }
+              theme={Field.Theme.BLUE}
             />
-          }
-          secondary={
-            <Button disabled={hasError} value="Export to cURL" onClick={this.showCurl.bind(this)} />
-          }
-        />
+            <Field
+              label={<Label text="Use Master Key?" description={'This will bypass any ACL/CLPs.'} dark={true} />}
+              input={
+                <div style={{ padding: '1rem', width: '100%' }}>
+                  <B4aToggle
+                    type={B4aToggle.Types.TRUE_FALSE}
+                    value={this.state.useMasterKey}
+                    onChange={useMasterKey => this.setState({ useMasterKey })}
+                  />
+                </div>
+              }
+              theme={Field.Theme.BLUE}
+            />
+            <Field
+              label={
+                <Label
+                  text="Run as..."
+                  description={
+                    'Send your query as a specific user. You can use their username or Object ID.'
+                  }
+                  dark={true}
+                />
+              }
+              input={
+                <div style={{ padding: '0 1rem', width: '100%' }}>
+                  <TextInput
+                    value={this.state.runAsIdentifier}
+                    monospace={true}
+                    placeholder={'Username or ID'}
+                    onChange={runAsIdentifier => this.setState({ runAsIdentifier })}
+                    onBlur={this.fetchUser.bind(this)}
+                  />
+                </div>
+              }
+              theme={Field.Theme.BLUE}
+            />
+            <FormNote color="red" show={!!this.state.error}>
+              {this.state.error}
+            </FormNote>
+            <Field
+              label={
+                <Label
+                  text="Query parameters"
+                  description={
+                    <span>
+                      Learn more about query parameters in our{' '}
+                      <a href="http://docs.parseplatform.org/rest/guide/#queries" className={styles.helpLink}>REST API guide</a>.
+                    </span>
+                  }
+                  dark={true}
+                />
+              }
+              input={
+                <div style={{ padding: '0 1rem', width: '100%' }}>
+                  <TextInput
+                    value={this.state.parameters}
+                    monospace={true}
+                    multiline={true}
+                    placeholder={parameterPlaceholder}
+                    onChange={parameters => this.setState({ parameters })}
+                    className={styles.textarea}
+                  />
+                </div>
+              }
+              theme={Field.Theme.BLUE}
+            />
+          </Fieldset>
+          <div className={styles.results}>
+            <div className={styles.title}>Result</div>
+            <div className={styles.resultContent}><JsonPrinter object={this.state.response} /></div>
+          </div>
+        </div>
+        <Toolbar section="API" subsection="Console > REST">
+          <FlowFooter
+            borderTop="none"
+            primary={
+              <Button
+                primary={true}
+                disabled={hasError}
+                value="Send Query"
+                progress={this.state.inProgress}
+                onClick={this.makeRequest.bind(this)}
+              />
+            }
+            secondary={
+              <Button disabled={hasError} value="Export to cURL" onClick={this.showCurl.bind(this)} />
+            }
+          />
+        </Toolbar>
         {modal}
       </div>
     );

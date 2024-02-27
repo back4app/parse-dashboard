@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import React from 'react';
-import Sidebar from 'components/Sidebar/Sidebar.react';
+import B4aSidebar from 'components/Sidebar/B4aSidebar.react';
 import styles from 'dashboard/Dashboard.scss';
 import Icon from 'components/Icon/Icon.react';
 import baseStyles from 'stylesheets/base.scss';
@@ -126,14 +126,14 @@ export default class DashboardView extends React.Component {
       link: '/index'
     })
 
-    databaseSubsections.push({
-      name: 'Blockchain',
-      link: '/blockchain',
-      badge: {
-        label: 'NEW',
-        color: 'green'
-      }
-    })
+    // databaseSubsections.push({
+    //   name: 'Blockchain',
+    //   link: '/blockchain',
+    //   badge: {
+    //     label: 'NEW',
+    //     color: 'green'
+    //   }
+    // })
 
     const cloudCodeSubSections = [];
     // Show cloud code to all parse versions
@@ -203,25 +203,25 @@ export default class DashboardView extends React.Component {
       });
     }
 
-    moreSubSection.push({
-      name: 'Analytics',
-      link: '/analytics'
-    })
+    // moreSubSection.push({
+    //   name: 'Analytics',
+    //   link: '/analytics'
+    // })
 
     moreSubSection.push({
       name: 'Database HUB',
       link: '/connections'
     })
 
-    moreSubSection.push({
-      name: 'Admin App',
-      link: '/admin'
-    })
+    // moreSubSection.push({
+    //   name: 'Admin App',
+    //   link: '/admin'
+    // })
 
-    moreSubSection.push({
-      name: 'App Templates',
-      link: '/app-templates'
-    })
+    // moreSubSection.push({
+    //   name: 'App Templates',
+    //   link: '/app-templates'
+    // })
     // moreSubSection.push({
     //   name: 'Dashboard Settings',
     //   link: '/settings/dashboard'
@@ -263,7 +263,7 @@ export default class DashboardView extends React.Component {
     if (databaseSubsections.length > 0) {
       appSidebarSections.push({
         name: 'Database',
-        icon: 'database',
+        icon: 'b4a-database-icon',
         link: '/browser',
         subsections: databaseSubsections,
       });
@@ -271,14 +271,14 @@ export default class DashboardView extends React.Component {
 
     appSidebarSections.push({
       name: 'Cloud Code',
-      icon: 'cloud-code',
+      icon: 'b4a-cloud-code-icon',
       link: '/cloud_code',
       subsections: cloudCodeSubSections,
     })
 
     appSidebarSections.push({
       name: 'API',
-      icon: 'api',
+      icon: 'b4a-api-icon',
       link: '/connect',
       subsections: apiSubSections
     })
@@ -286,7 +286,7 @@ export default class DashboardView extends React.Component {
     if (settingsSections.length > 0) {
       appSidebarSections.push({
         name: 'App Settings',
-        icon: 'gear-solid',
+        icon: 'b4a-app-settings-icon',
         link: '/settings',
         subsections: settingsSections,
       });
@@ -294,13 +294,13 @@ export default class DashboardView extends React.Component {
 
     appSidebarSections.push({
       name: 'More',
-      icon: 'more',
+      icon: 'b4a-more-icon',
       link: '/config',
       subsections: moreSubSection
     })
 
     const sidebar = (
-      <Sidebar
+      <B4aSidebar
         showTour={this.state && this.state.showTour}
         sections={appSidebarSections}
         appSelector={true}
@@ -313,7 +313,7 @@ export default class DashboardView extends React.Component {
         footerMenuButtons={this.getFooterMenuButtons && this.getFooterMenuButtons()}
       >
         {sidebarChildren}
-      </Sidebar>
+      </B4aSidebar>
     );
 
     let content = <div className={styles.content}>{this.renderContent()}</div>;

@@ -67,9 +67,10 @@ export default class DateTimeInput extends React.Component {
           <DateTimePicker
             local={this.props.local}
             value={this.props.value}
-            width={this.inputRef.current.clientWidth}
+            width={this.props.width ?? this.inputRef.current.clientWidth}
             onChange={this.props.onChange}
             close={() => this.setState({ open: false })}
+            dark={this.props.dark}
           />
         </Popover>
       );

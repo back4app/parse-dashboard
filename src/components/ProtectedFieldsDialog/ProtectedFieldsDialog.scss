@@ -6,9 +6,10 @@
  * the root directory of this source tree.
  */
 @import "stylesheets/globals.scss";
+@import "stylesheets/back4app.scss";
 
-$labelWidth: 440px;
-$fieldsWidth: 480px;
+$labelWidth: 240px;
+$fieldsWidth: 680px;
 
 $deleteColWidth: 44px;
 
@@ -21,24 +22,32 @@ $permissionsDialogWidth: calc(
 
 .dialog {
   @include modalAnimation();
+  color: $dark;
   position: absolute;
   top: 50%;
   left: 50%;
   width: $permissionsDialogWidth;
-  background: white;
+  background: $white;
   border-radius: 5px;
   overflow: hidden;
   transition: width 0.3s 0.15s ease-out;
+  padding: 1rem 2rem;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 13px;
+  left: calc(100% - 25px);
+  cursor: pointer;
 }
 
 .header {
-  height: 50px;
-  background: $blue;
   position: relative;
-  color: #ffffff;
-  line-height: 50px;
-  font-size: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 140%;
   text-align: center;
+  margin-bottom: 1.5rem;
 }
 
 .level {
@@ -66,9 +75,10 @@ $permissionsDialogWidth: calc(
 }
 
 .tableWrap {
-  height: 450px;
+  // height: 450px;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: rgba($white, 0.03);
 }
 
 .second {
@@ -77,14 +87,15 @@ $permissionsDialogWidth: calc(
 
 .table {
   position: relative;
-  min-height: 450px;
+  background-color: rgba($white, 0.03);
+  // min-height: 450px;
 
   .overlay {
     position: absolute;
     top: 0;
     bottom: 0;
     pointer-events: none;
-    background: rgba(0, 0, 40, 0.03);
+    // background: rgba(0, 0, 40, 0.03);
 
     &.second {
       left: $labelWidth;
@@ -95,20 +106,29 @@ $permissionsDialogWidth: calc(
 .footer {
   position: relative;
   height: 51px;
-  border-top: 1px solid #e3e3ea;
 
   .details {
     font-size: 12px;
-    padding-left: 20px;
 
     a {
-      color: $blue;
+      position: relative;
+      color: $old-blue;
+      &::before {
+        position: absolute;
+        content: '';
+        width: 100%;
+        top: 100%;
+        left: 0;
+        height: 1px;
+        background: currentColor;
+      }
     }
   }
 
   .actions {
     float: right;
     padding: 10px 15px;
+    padding-right: 0;
 
     button {
       margin-left: 10px;
@@ -123,15 +143,17 @@ $permissionsDialogWidth: calc(
 
 .row {
   display: flex;
-  min-height: 50px;
+  min-height: 80px;
   height: 100%;
   vertical-align: middle;
   font-size: 15px;
-  border-bottom: 1px solid #e3e3ea;
+  border-bottom: 1px solid $light-grey;
   white-space: nowrap;
+  background: rgba(51, 51, 51, 0.031);
 
-  &:nth-child(odd) {
-    background: rgba(14, 105, 161, 0.03);
+  &:last-of-type{
+    border: none;
+    background: #3333330F;
   }
 }
 
@@ -144,9 +166,35 @@ $permissionsDialogWidth: calc(
 .label {
   display: inline-flex;
   width: $labelWidth;
-  padding: 0 20px;
-  flex-direction: column;
-  align-self: center;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  color: rgba($light-grey, 0.03);
+
+  & > span > p {
+    @include InterFont;
+    padding: 0;
+    color: $dark-blue;
+
+    &:first-of-type {
+      font-size: 14px;
+      font-weight: 700;
+      
+    }
+    &:last-of-type {
+      font-size: 12px;
+    }
+  }
+
+  p {
+    padding: 0;
+  }
+}
+
+.content {
+  background: rgba(51, 51, 51, 0.03);
+  width: 100%;
 }
 
 .entry {
@@ -162,20 +210,17 @@ $permissionsDialogWidth: calc(
 }
 
 .error {
-  border-color: $red;
-  color: $red;
+  border-color: $error-red;
+  color: $error-red;
   overflow: hidden;
   white-space: normal;
+  padding-top: 0.4rem;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .delete {
-  display: inline-block;
-  vertical-align: top;
-  width: 32px;
-  height: 50px;
-  padding-top: 15px;
-  text-align: right;
-
+  margin-left: 10px;
   button {
     @include buttonReset;
   }
@@ -183,10 +228,10 @@ $permissionsDialogWidth: calc(
   svg {
     vertical-align: top;
     cursor: pointer;
-    fill: #c1c7cd;
+    fill: $dark-blue;
 
     &:hover {
-      fill: $red;
+      fill: $error-red;
     }
   }
 }
@@ -202,8 +247,11 @@ $permissionsDialogWidth: calc(
 .pillType {
   width: auto;
   display: inline-flex;
-  height: 20;
-  padding: 2px 8px 0 8px;
+  font-size: 14px;
+  color: $dark-grey;
+  opacity: 0.5;
+  line-height: 140%;
+  padding-left: 8px;
 }
 
 .multiselect {
@@ -211,6 +259,10 @@ $permissionsDialogWidth: calc(
     visibility: collapse;
     display: none;
     top: 5px;
+    color: $dark-grey;
+    opacity: 0.5;
+    font-size: 14px;
+    line-height: 140%;
   }
 }
 
@@ -222,7 +274,7 @@ $permissionsDialogWidth: calc(
   user-select: text;
 }
 .prefix {
-  color: #0e69a1;
+  // color: #0e69a1;
 }
 
 .suggestions {

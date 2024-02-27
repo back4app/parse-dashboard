@@ -242,7 +242,7 @@ export default class SecuritySettings extends DashboardView {
         </Fieldset> */}
         {/* {permissions} */}
         {/* {resetDialog} */}
-        <Toolbar section="Settings" subsection="Security & Keys" />
+        <Toolbar section="App Settings" subsection="Security & Keys" />
       </div>
     );
   }

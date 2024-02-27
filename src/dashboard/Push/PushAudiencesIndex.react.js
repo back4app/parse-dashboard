@@ -14,7 +14,7 @@ import CategoryItemAction from 'components/CategoryList/CategoryItemAction.js';
 import DashboardView from 'dashboard/DashboardView.react';
 import EmptyState from 'components/EmptyState/EmptyState.react';
 import FormModal from 'components/FormModal/FormModal.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Modal from 'components/Modal/Modal.react';
 import PushAudienceDialog from 'components/PushAudienceDialog/PushAudienceDialog.react';
 import PushAudiencesIndexRow from './PushAudiencesIndexRow.react';
@@ -327,9 +327,9 @@ class PushAudiencesIndex extends DashboardView {
     const extras = this.renderExtras ? this.renderExtras() : null;
     return (
       <div>
-        <LoaderContainer loading={this.state.loading}>
+        <B4aLoaderContainer loading={this.state.loading}>
           <div className={stylesTable.content}>{content}</div>
-        </LoaderContainer>
+        </B4aLoaderContainer>
         {toolbar}
         <div className={stylesTable.headers}>{headers}</div>
         {extras}

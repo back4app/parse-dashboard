@@ -14,8 +14,8 @@ const Label = props => {
   const padding = (props.padding || 20) + 'px';
   return (
     <div
-      className={[styles.label, fieldStyles.centered].join(' ')}
-      style={{ padding: '0 ' + padding, ...props.style }}>
+      className={[styles.label, fieldStyles.centered, props.dark ? styles.dark : ''].join(' ')}
+      style={{ padding: '9px ' + padding, ...props.style }}>
       <div className={styles.text}>{props.text}</div>
       {props.description ? <div className={styles.description}>{props.description}</div> : null}
     </div>
@@ -28,4 +28,9 @@ Label.propTypes = {
   text: PropTypes.node.describe('The main text/node of the label.'),
   description: PropTypes.node.describe('The secondary text/node of the label.'),
   padding: PropTypes.number.describe('Allows you to override the left-right padding of the label.'),
+  dark: PropTypes.bool.describe('Allows you to remove or use dark style.'),
 };
+
+Label.defaultProps = {
+  dark: false,
+}

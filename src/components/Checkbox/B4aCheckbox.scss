@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.input {
+  display: inline-block;
+  cursor: pointer;
+  height: 20px;
+  line-height: 20px;
+}
+
+.checkbox {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 18px;
+  width: 18px;
+  border-radius: 2px;
+  background: $white;
+  vertical-align: middle;
+  border: 1px solid $mainTextColor;
+
+  svg {
+    vertical-align: top;
+  }
+}
+
+.minus {
+  display: block;
+  width: 10px;
+  height: 3px;
+  background: $blue;
+  // margin-top: 4px;
+  // border-radius: 2px;
+}
+
+.label {
+  @include InterFont;
+  color: $mainTextColor;
+  font-size: 14px;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+.dark {
+  .checkbox {
+    border: 1px solid $dark-blue !important;
+  }
+  .minus {
+    background: $white !important;
+  }
+  .label {
+    color: $dark-blue !important;
+  }
+  &.checked, &.indeterminate {
+    .checkbox {
+      border-color: $dark-blue !important;
+      background: $dark-blue;
+    }
+  
+    .label {
+      color: $dark-blue !important;
+    }
+  }
+  svg {
+    fill: $white;
+  }
+}

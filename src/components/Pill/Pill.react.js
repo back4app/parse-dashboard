@@ -16,9 +16,10 @@ const Pill = ({
   fileDownloadLink,
   followClick = false,
   shrinkablePill = false,
+  dark = true,
 }) => (
   <span
-    className={[styles.pill, !followClick && onClick ? styles.action : void 0].join(' ')}
+    className={[styles.pill, !followClick && onClick ? styles.action : void 0, dark ? styles.dark : ''].join(' ')}
     onClick={!followClick && onClick ? onClick : null}
   >
     <span
@@ -30,12 +31,12 @@ const Pill = ({
     </span>
     {followClick && (
       <a onClick={e => !e.metaKey && onClick()}>
-        <Icon name="right-outline" width={20} height={20} fill="#1669a1" />
+        <Icon name="b4a-up-arrow" width={16} height={16} fill="#1669a1" />
       </a>
     )}
     {!followClick && fileDownloadLink && (
       <a href={fileDownloadLink} target="_blank">
-        <Icon name="right-outline" width={20} height={20} fill="#1669a1" />
+        <Icon name="b4a-up-arrow" width={16} height={16} fill="#1669a1" />
       </a>
     )}
   </span>

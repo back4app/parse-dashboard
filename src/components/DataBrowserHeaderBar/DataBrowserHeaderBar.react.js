@@ -38,11 +38,11 @@ export default class DataBrowserHeaderBar extends React.Component {
         return;
       }
       const wrapStyle = { width };
-      if (i % 2) {
-        wrapStyle.background = '#726F85';
-      } else {
-        wrapStyle.background = '#66637A';
-      }
+      // if (i % 2) {
+      //   wrapStyle.background = '#726F85';
+      // } else {
+      //   wrapStyle.background = '#66637A';
+      // }
       let onClick = null;
       if (
         !preventSort &&
@@ -117,7 +117,7 @@ export default class DataBrowserHeaderBar extends React.Component {
       <DndProvider backend={HTML5Backend}>
         <div className={styles.bar}>
           {elements}
-          {renderSkeleton()}
+          {/* {renderSkeleton()} */}
         </div>
       </DndProvider>
     );

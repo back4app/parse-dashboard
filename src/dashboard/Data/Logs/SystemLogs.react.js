@@ -8,11 +8,11 @@
 import B4AAlert from 'components/B4AAlert/B4AAlert.react';
 import CategoryList from 'components/CategoryList/CategoryList.react';
 import DashboardView from 'dashboard/DashboardView.react';
-import EmptyState from 'components/EmptyState/EmptyState.react';
+import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import React from 'react';
 import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
 import Toolbar from 'components/Toolbar/Toolbar.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Icon from 'components/Icon/Icon.react';
 import ServerLogsView from 'components/ServerLogsView/ServerLogsView.react';
 import { withRouter } from 'lib/withRouter';
@@ -142,8 +142,8 @@ export default class SystemLogs extends DashboardView {
     let toolbar = null;
     toolbar = (
       <Toolbar
-        section="Logs"
-        subsection="Server System"
+        section="Cloud Code"
+        subsection="Logs > System"
         details={ReleaseInfo({ release: this.state.release })}
       >
         <a
@@ -165,16 +165,17 @@ export default class SystemLogs extends DashboardView {
       description={alertWhatIsMessage}
     />
     content = (
-      <LoaderContainer loading={this.state.loading} solid={false}>
+      <B4aLoaderContainer loading={this.state.loading} solid={false}>
         <div className={styles.content}>
           {!this.state.loading && this.state.logs === '' && (
-            <EmptyState
-              icon="files-outline"
-              title="No System logs in the last 30 days"
-              description={'In this section, you will find the messages related to general logs of your Parse Server application and all logging levels associated with either success or error of your Cloud Code Functions provided by options like console.log() or console.error()'}
-              cta="Learn more"
-              action={'https://www.back4app.com/docs/platform/parse-server-logs'}
-            />
+            <div style={{ padding: '1.5rem 0' }}>
+              <EmptyGhostState
+                title="No System logs in the last 30 days"
+                description={'In this section, you will find the messages related to general logs of your Parse Server application and all logging levels associated with either success or error of your Cloud Code Functions provided by options like console.log() or console.error()'}
+                cta="Learn more"
+                action={'https://www.back4app.com/docs/platform/parse-server-logs'}
+              />
+            </div>
           )}
           {!this.state.loading && this.state.logs !== '' && (
             <div>
@@ -183,7 +184,7 @@ export default class SystemLogs extends DashboardView {
             </div>
           )}
         </div>
-      </LoaderContainer>
+      </B4aLoaderContainer>
     );
 
     return (

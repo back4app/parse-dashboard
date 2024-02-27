@@ -1,0 +1,33 @@
+@import 'stylesheets/back4app.scss';
+@import 'stylesheets/globals.scss';
+
+.header {
+  @include SoraFont;
+  margin-bottom: 1rem;
+  color: $white;
+
+  & .title {
+    position: relative;
+    font-family: 'Sora', sans-serif;
+    font-size: 2.1875rem;
+    font-weight: 600;
+    line-height: 130%;
+    margin-bottom: 1rem;
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: calc(100% - 1.5rem);
+      width: 1.5rem;
+      height: 3px;
+      border-radius: 0.25rem;
+      background: linear-gradient(90deg, $light-blue -8.33%, $cta-green 100%);
+      box-shadow: 0px 0px 7px 0px rgba(193, 226, 255, 0.16);
+    }
+  }
+  & .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    line-height: 140%;
+  }
+}

@@ -19,7 +19,7 @@ import ExplorerActiveChartButton from 'components/ExplorerActiveChartButton/Expl
 import ExplorerMenuButton from 'components/ExplorerMenuButton/ExplorerMenuButton.react';
 import Icon from 'components/Icon/Icon.react';
 import JsonPrinter from 'components/JsonPrinter/JsonPrinter.react';
-import LoaderContainer from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Parse from 'parse';
 import prettyNumber from 'lib/prettyNumber';
 import React from 'react';
@@ -649,9 +649,9 @@ class Explorer extends DashboardView {
 
     return (
       <div>
-        <LoaderContainer loading={this.state.loading} solid={false}>
+        <B4aLoaderContainer loading={this.state.loading} solid={false}>
           {content}
-        </LoaderContainer>
+        </B4aLoaderContainer>
         {toolbar}
       </div>
     );

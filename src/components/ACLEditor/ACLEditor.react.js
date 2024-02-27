@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import Parse from 'parse';
-import PermissionsDialog from 'components/PermissionsDialog/PermissionsDialog.react';
+import B4aPermissionsDialog from 'components/PermissionsDialog/B4aPermissionsDialog.react';
 import React from 'react';
 
 function validateEntry(text, returnInvalid = true) {
@@ -111,7 +111,7 @@ function toACL(perms) {
 }
 
 const ACLEditor = ({ value, onCommit }) => (
-  <PermissionsDialog
+  <B4aPermissionsDialog
     title="Edit Access Control List (ACL)"
     advanced={false}
     confirmText="Save ACL"

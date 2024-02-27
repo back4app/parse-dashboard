@@ -3,7 +3,7 @@ import axios            from 'axios'
 import InfiniteScroll   from 'react-infinite-scroller';
 import DashboardView    from 'dashboard/DashboardView.react';
 import subscribeTo      from 'lib/subscribeTo';
-import LoaderContainer  from 'components/LoaderContainer/LoaderContainer.react'
+import B4aLoaderContainer  from 'components/B4aLoaderContainer/B4aLoaderContainer.react'
 import B4AFieldTemplate from 'components/B4AFieldTemplate/B4AFieldTemplate.react';
 import Fieldset         from 'components/Fieldset/Fieldset.react';
 import styles           from 'dashboard/B4aAppTemplates/B4aAppTemplates.scss'
@@ -95,12 +95,12 @@ class B4aAppTemplates extends DashboardView {
 
     return (
       <div className={styles.loading}>
-        <LoaderContainer loading={this.state.loading} hideAnimation={false} solid={true}>
+        <B4aLoaderContainer loading={this.state.loading} hideAnimation={false} solid={true}>
           <div className={styles['app-templates']} ref={this.scrollRef}>
             {fieldSet}
             {toolbar}
           </div>
-        </LoaderContainer>
+        </B4aLoaderContainer>
       </div>
     )
   }

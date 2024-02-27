@@ -7,7 +7,8 @@
  */
 import React from 'react';
 import { escape } from 'lib/StringEscaping';
-import styles from 'components/FileInput/FileInput.scss';
+import styles from 'components/FileInput/B4aFileInput.scss';
+import Icon from 'components/Icon/Icon.react';
 
 export default class FileInput extends React.Component {
   handleChange(e) {
@@ -59,9 +60,9 @@ export default class FileInput extends React.Component {
           {this.props.uploading ? (
             <div className={styles.spinner}></div>
           ) : label ? (
-            <span>Change file</span>
+            <div className={styles.defaultLabel}><span>Change file</span><Icon name="B4a-upload-file-icon" width="24px" height="24px" fill="#10203A" /> </div>
           ) : (
-            <span>Upload a file</span>
+            <div className={styles.defaultLabel}><span>Upload file</span><Icon name="B4a-upload-file-icon" width="24px" height="24px" fill="#10203A" /> </div>
           )}
           <input {...inputProps} />
         </div>

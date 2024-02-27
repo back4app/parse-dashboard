@@ -12,8 +12,8 @@ import { CurrentApp } from 'context/currentApp';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
 import baseStyles from 'stylesheets/base.scss';
-import EmptyState from 'components/EmptyState/EmptyState.react';
-import Loader from 'components/Loader/Loader.react';
+import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 function AppData() {
   const navigate = useNavigate();
@@ -30,24 +30,21 @@ function AppData() {
     current.setParseKeys();
     if (current.serverInfo.status === 'LOADING') {
       return (
-        <div className={baseStyles.pageCenter}>
-          <Loader />
+        <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
+          <B4aLoader />
         </div>
       );
     } else if (current.serverInfo.error) {
       return (
         <div className={baseStyles.pageCenter}>
-          <div style={{ height: '800px', position: 'relative' }}>
-            <EmptyState
-              icon={'cloud-surprise'}
-              title={'Couldn\'t load this app'}
-              description={
-                'Something went wrong while loading this app, could you please try opening another app.'
-              }
-              cta={'Go to apps'}
-              action={() => (window.location = '/apps')}
-            ></EmptyState>
-          </div>
+          <EmptyGhostState
+            title={'Couldn\'t load this app'}
+            description={
+              'Something went wrong while loading this app, could you please try opening another app.'
+            }
+            cta={'Go to apps'}
+            action={() => (window.location = '/apps')}
+          ></EmptyGhostState>
         </div>
       );
     }

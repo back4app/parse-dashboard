@@ -12,7 +12,7 @@ import Field from 'components/Field/Field.react';
 import B4aHubPublishModal from 'dashboard/B4aHubPublishPage/B4aHubPublishModal'
 import B4aHubUnpublishModal from 'dashboard/B4aHubPublishPage/B4aHubUnpublishModal'
 import Swal from 'sweetalert2'
-import LoaderContainer  from 'components/LoaderContainer/LoaderContainer.react';
+import B4aLoaderContainer  from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import { CurrentApp } from 'context/currentApp';
 
 
@@ -63,7 +63,7 @@ class B4aHubPublishPage extends DashboardView {
 
   renderContent() {
     return (
-      <LoaderContainer className={styles.loading} loading={this.state.loading} hideAnimation={false} solid={true}>
+      <B4aLoaderContainer className={styles.loading} loading={this.state.loading} hideAnimation={false} solid={true}>
         <div className={styles['hub-publish-page']}>
           <Toolbar section="Publish on Hub" />
           <Fieldset
@@ -172,7 +172,7 @@ class B4aHubPublishPage extends DashboardView {
             )}
           </Fieldset>
         </div>
-      </LoaderContainer>
+      </B4aLoaderContainer>
     )
   }
 }

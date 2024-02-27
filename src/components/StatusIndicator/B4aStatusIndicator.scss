@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+ @import 'stylesheets/globals.scss';
+ @import 'stylesheets/back4app.scss';
+
+ .status {
+   @include InterFont;
+   display: inline-flex;
+   align-items: center;
+   gap: 4px;
+   font-size: 14px;
+   text-transform: capitalize;
+ 
+   svg {
+    fill: currentColor;
+   }
+ }
+ 
+ .blue {
+   color: $old-blue;
+   svg {
+     @include animation('spin .75s linear infinite');
+   }
+ }
+ 
+ .red {
+   color: $error-red;
+ }
+ 
+ .green {
+   color: $cta-green;
+ }
+ 
+ @include keyframes(spin) {
+  100% {
+    @include transform(rotate(360deg));
+  }
+}

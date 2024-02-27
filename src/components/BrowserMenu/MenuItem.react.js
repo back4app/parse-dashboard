@@ -6,7 +6,7 @@
  * the root directory of this source tree.
  */
 import React from 'react';
-import styles from 'components/BrowserMenu/BrowserMenu.scss';
+import styles from 'components/BrowserMenu/B4aBrowserMenu.scss';
 
 const MenuItem = ({ text, disabled, active, greenActive, onClick }) => {
   const classes = [styles.item];
