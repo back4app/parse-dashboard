@@ -1,38 +1,17 @@
 {
   "apps": [
     {
-      "serverURL": "https://parseapi.back4app.com",
-      "appId": "FM67IDdVvynbYasJjKEJKk4qixC4SoRiEXVvzTwq",
-      "javascriptKey": "TuK5Ie9E71toeIHWOQTZ5zKQcv787grFUUBu6kNJ",
-      "restKey": "HYgs6GXvDYrs5ehsvzHzlakCo5bENQqAx7C200hq",
-      "clientKey": "50uvDXabQ0dcxs96MloGJh1y1JteyI0saJX9oQms",
-      "windowsKey": "NR8e9agd5dnu4CvYif1GoNB1vMwfxnrsVurdtjPG",
-      "webhookKey": "qWhyZ385H8JPrrYUlJiupa80ezKFEtx31V0AL3LK",
-      "apiKey": "6456bc17-19b8-43e2-b2bd-90a30f269e4e",
-      "appName": "SpeedTest",
-      "production": true,
-      "appNameForURL": "6a05f263-a6cc-4441-9264-b7d154800f1b",
-      "feedbackEmail": "davimacedo@back4app.com",
+      "serverURL": "http://localhost:1337/parse",
+      "appId": "APPLICATION_ID",
+      "masterKey": "MASTER_KEY",
+      "appName": "Countries States and Cities",
+      "iconName": "",
+      "primaryBackgroundColor": "",
+      "secondaryBackgroundColor": "",
       "custom": {
-          "isGDPR": false,
-          "forceShowGDPRFields": false,
-          "showAdminPage": false,
-          "isOwner": true,
-          "isDatabasePublic": false
-      },
-      "supportedPushLocales": [],
-      "graphQLServerURL": null,
-      "parseOptions": {},
-      "masterKey": "o6HQDT0sxQKaUPTvFo1sELsUaFGRd3RzZ263W4CY"
+        "isOwner": true
+      }
     }
   ],
-  "newFeaturesInLatestVersion": [],
-  "user": {
-      "email": "adavimacedo@gmail.com",
-      "has_password": false,
-      "account_keys": [],
-      "name": "adavimacedo@gmail.com",
-      "playDatabaseBrowserTutorial": false,
-      "allowHubPublish": false
-  }
+  "iconsFolder": "icons"
 }
