@@ -27,6 +27,9 @@ export const ManageAppFields = ({
   errors,
   isGDPR,
   databaseVersion,
+  useLatestDashboardVersion,
+  setUseLatestDashboardVersion,
+  backendBetaUser
 }) => {
 
   const checkDB = databaseURL?.split('://')[0];
@@ -111,8 +114,8 @@ export const ManageAppFields = ({
         }
         input={
           <Toggle
-            value={fields.client_class_creation_enabled}
-            onChange={allow => setField('dashboard_latest_version', allow)}
+            value={useLatestDashboardVersion}
+            onChange={value => setUseLatestDashboardVersion(value)}
           />
         }
       />

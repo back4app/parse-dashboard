@@ -166,7 +166,9 @@ export default class GeneralSettings extends DashboardView {
               cleanUpMessageColor={this.state.cleanupNoteColor}
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
               cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage}
-              isGDPR={this.context.custom && this.context.custom.isGDPR}/>
+              isGDPR={this.context.custom && this.context.custom.isGDPR}
+              useLatestDashboardVersion={fields.useLatestDashboardVersion}
+              setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}/>
             <DangerzoneFields
               errors={errors}
               mongoURL={fields.mongoURL}
