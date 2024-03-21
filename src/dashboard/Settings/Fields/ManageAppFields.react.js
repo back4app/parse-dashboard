@@ -100,6 +100,24 @@ export const ManageAppFields = ({
       />
       <hr className={styles.fieldHr} />
       <Field
+        labelWidth={60}
+        label={
+          <Label
+            text="Dashboard"
+            description={
+              'Use latest version'
+            }
+          />
+        }
+        input={
+          <Toggle
+            value={fields.client_class_creation_enabled}
+            onChange={allow => setField('dashboard_latest_version', allow)}
+          />
+        }
+      />
+      <hr className={styles.fieldHr} />
+      <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
         label={<Label text='Password policy' description={'Manage password policies for this app'} dark={true} />}
