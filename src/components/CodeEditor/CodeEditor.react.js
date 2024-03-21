@@ -66,7 +66,7 @@ export default class CodeEditor extends React.Component {
           });
         }}
         fontSize={fontSize}
-        showPrintMargin={true}
+        showPrintMargin={false}
         showGutter={true}
         highlightActiveLine={true}
         width="100%"

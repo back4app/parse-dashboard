@@ -338,14 +338,15 @@ class Dashboard extends React.Component {
 
     const AnalyticsRoute = (
       <Route>
-        <Route path="overview" element={<AnalyticsOverview />} />
+        {/* <Route path="overview" element={<AnalyticsOverview />} />
         <Route path="explorer/:displayType" element={<Explorer />} />
         <Route path="retention" element={<Retention />} />
-        <Route path="performance" element={<Performance />} />
-        <Route path="slow_queries" element={<SlowQueries />} />
+        <Route path="performance" element={<Performance />} /> */}
+        {/* <Route path="slow_queries" element={<SlowQueries />} /> */}
         <Route path="slow_requests" element={<SlowQueries />} />
-        <Route index element={<Navigate replace to="performance" />} />
-        <Route path="explorer" element={<Navigate replace to="chart" />} />
+        <Route index element={<Navigate replace to="slow_requests" />} />
+        {/* <Route index element={<Navigate replace to="performance" />} /> */}
+        {/* <Route path="explorer" element={<Navigate replace to="chart" />} /> */}
       </Route>
     );
 
@@ -413,7 +414,7 @@ class Dashboard extends React.Component {
         {/* <Route path="blockchain" element={<BlockchainPage /> } /> */}
 
         <Route path="connections" element={<HubConnections />} />
-        {/* <Route path="analytics">{AnalyticsRoute}</Route> */}
+        <Route path="analytics">{AnalyticsRoute}</Route>
         <Route path="settings">{SettingsRoute}</Route>
         {/* {user.allowHubPublish && <Route path="hub-publish" element={<B4aHubPublishPage />} />} */}
       </Route>

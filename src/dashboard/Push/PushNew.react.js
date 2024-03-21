@@ -97,7 +97,7 @@ const LocalizedMessageField = ({
         className={monospace ? styles.monospace : ''}
         label={<Label text={'What would you like to say?'} dark={true} />}
         input={
-          <div style={{ padding: '0 1rem', width: '100%' }}>
+          <div style={{ padding: '1rem', width: '100%' }}>
             <TextInput
               multiline={true}
               height={200}
@@ -667,7 +667,7 @@ class PushNew extends DashboardView {
         className={monospace ? styles.monospace : ''}
         label={<Label text="What would you like to say?" dark={true} />}
         input={
-          <div style={{ padding: '0 1rem', width: '100%' }}>
+          <div style={{ padding: monospace ? '0 1rem' : '1rem', width: '100%' }}>
             <TextInput
               multiline={true}
               height={200}

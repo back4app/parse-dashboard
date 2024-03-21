@@ -6,7 +6,7 @@
   max-height: 100%;
 }
 
-@media (min-width: 774px) {
+@media only screen and (min-width: 774px) {
   .fileSelector {
     flex: 0 0 29.33333%;
     width: 29%;
@@ -19,7 +19,7 @@
   }
 }
 
-@media (min-width: 1440px) {
+@media only screen and (min-width: 1440px) {
   .fileSelector {
     max-width: 20rem;
     overflow: auto;
@@ -27,6 +27,7 @@
 
   .filePreview {
     flex: auto;
+    max-width: calc(100% - 20rem);
   }
 }
 

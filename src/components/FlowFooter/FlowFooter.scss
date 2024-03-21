@@ -9,7 +9,7 @@
 @import 'stylesheets/back4app.scss';
 
 .footer {
-  @include animation('footer-enter 0.2s cubic-bezier(0.165, 0.84, 0.44, 1)');
+  // @include animation('footer-enter 0.2s cubic-bezier(0.165, 0.84, 0.44, 1)');
   position: fixed;
   top: $header-height;
   right: 0;
@@ -67,8 +67,16 @@
 @include keyframes(footer-enter) {
   0% {
     @include transform(translate(0%, -100%));
+    opacity: 0;
   }
   100% {
     @include transform(translate(0%, 0%));
+    opacity: 1;
+  }
+}
+
+body:global(.sidebarCollapsed) {
+  .content {
+    left: $b4aSidebarCollapsedWidth;
   }
 }

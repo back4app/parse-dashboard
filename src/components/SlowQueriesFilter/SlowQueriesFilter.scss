@@ -6,22 +6,30 @@
  * the root directory of this source tree.
  */
 @import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
 
 .wrap {
   display: inline-block;
 }
 
 .entry {
-  height: 30px;
-  padding: 8px;
+  height: 28px;
+  padding: 4px;
+  width: 30px;
+  border: 1px solid rgba($white, 0.06);
+  border-radius: 5px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 
   svg {
-    fill: #66637A;
+    fill: $white;
   }
 
-  &:hover svg {
-    fill: white;
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
+
 }
 
 .entry.active {
@@ -29,36 +37,37 @@
   border-radius: 5px;
 
   svg {
-    fill: white;
+    fill: $white;
   }
 }
 
 .active .title, .active .body {
-  background: $blue;
+  // background: $blue;
+  border: 1px solid $old-blue;
 }
 
 .title {
-  background: #797691;
-  padding: 8px;
-  border-radius: 5px 5px 0 0;
+  background: $old-dark-blue;
+  padding: 4px;
+  border-radius: 5px;
+  width: 30px;
+  height: 28px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(249, 249, 249, 0.0588235294);
 
   svg {
-    fill: white;
+    fill: $white;
   }
 }
 
 .entry, .title {
-  @include DosisFont;
+  @include InterFont;
   position: relative;
-  bottom: -4px;
   font-size: 14px;
-  color: #ffffff;
+  color: $white;
   cursor: pointer;
-
-  svg {
-    vertical-align: top;
-    margin-right: 6px;
-  }
 
   span {
     display: inline-block;
@@ -70,24 +79,20 @@
 
 .body {
   position: absolute;
-  top: 30px;
+  top: 32px;
   right: 0;
-  border-radius: 5px 0 5px 5px;
-  background: #797691;
-  width: 670px;
+  border-radius: 5px;
+  background: $old-dark-blue;
+  border: 1px solid rgba(249, 249, 249, 0.0588235294);
+  // width: 670px;
   font-size: 14px;
 }
 
 .row {
   padding: 8px 15px;
-
-  > * {
-    margin-right: 10px;
-
-    &:nth-last-child(1) {
-      margin-right: 0;
-    }
-  }
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
   input {
     @include MonospaceFont;
@@ -99,7 +104,7 @@
     border-radius: 5px;
     vertical-align: top;
     padding: 0 8px;
-    color: white;
+    color: $white;
     font-size: 14px;
   }
 }

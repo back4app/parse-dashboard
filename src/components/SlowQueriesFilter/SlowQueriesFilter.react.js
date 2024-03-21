@@ -51,24 +51,23 @@ export default class SlowQueriesFilter extends React.Component {
         <Popover fixed={false} position={position}>
           <div className={popoverStyle.join(' ')}>
             <div className={styles.title} onClick={() => this.setState({ open: false })}>
-              <Icon name="filter-solid" width={14} height={14} />
-              <span>Filter</span>
+              <Icon name="b4a-browser-filter-icon" width={18} height={18} />
             </div>
             <div className={styles.body}>
               <div className={styles.row}>
                 <ChromeDropdown
-                  color={active ? 'blue' : 'purple'}
+                  color={active ? '' : 'purple'}
                   value={method || 'Method'}
                   options={this.props.methodOptions}
                   onChange={method => this.props.onChange({ method })} />
                 <ChromeDropdown
-                  color={active ? 'blue' : 'purple'}
+                  color={active ? '' : 'purple'}
                   value={path || 'Path'}
                   options={this.props.pathOptions}
                   onChange={path => this.props.onChange({ path })}
-                  width={340} />
+                  width={200} />
                 <ChromeDropdown
-                  color={active ? 'blue' : 'purple'}
+                  color={active ? '' : 'purple'}
                   value={respStatus || 'Resp. Status'}
                   options={this.props.respStatusOptions}
                   onChange={respStatus => this.props.onChange({ respStatus })} />
@@ -83,14 +82,15 @@ export default class SlowQueriesFilter extends React.Component {
                   color='white'
                   value='Clear all'
                   disabled={!active}
-                  width='120px'
+                  // width='120px'
+                  dark={true}
                   onClick={this.clear.bind(this)} />
                 <Button
-                  color="white"
+                  color="green"
                   primary={true}
                   value='Run Query'
                   disabled={!active}
-                  width='120px'
+                  // width='120px'
                   onClick={onRunQuery} />
               </div>
             </div>
@@ -105,8 +105,7 @@ export default class SlowQueriesFilter extends React.Component {
     return (
       <div className={styles.wrap} ref={this.wrapRef}>
         <div className={buttonStyle.join(' ')} onClick={() => this.setState({ open: true })}>
-          <Icon name="filter-solid" width={14} height={14} />
-          <span>Filter</span>
+          <Icon name="b4a-browser-filter-icon" width={18} height={18} />
         </div>
         {popover}
       </div>

@@ -108,7 +108,7 @@ export default class GeneralSettings extends DashboardView {
     return <div>
       <FlowView
         initialFields={initialFields}
-        validate={(changes) => GeneralSettingsValidataions.validate(changes)}
+        validate={({ changes }) => GeneralSettingsValidataions.validate(changes)}
         onSubmit={async ({ changes }) => {
           return getPromiseList({ changes, setDifference, initialFields, app: this.context, promiseCallback: this.promiseCallback.bind(this) })
         }}

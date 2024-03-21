@@ -78,7 +78,7 @@ export default class FlowView extends React.Component {
           footerMessage: this.props.footerContents({ changes: this.state.changes, fields: this.state.fields })
         });
       }
-      Promise.resolve(this.props.validate(newChanges))
+      Promise.resolve(this.props.validate({ changes: newChanges }))
         .catch(({ errors }) => {
           this.setState({
             saveError: 'Validation failed',
@@ -107,7 +107,7 @@ export default class FlowView extends React.Component {
       if(key === 'collaborators'){
         this.handleClickSaveButton();
       }
-      this.props.validate(newChanges)
+      this.props.validate({ changes: newChanges })
         .catch(({ errors }) => {
           this.setState({
             saveError: 'Validation failed',

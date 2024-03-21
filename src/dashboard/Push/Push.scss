@@ -71,6 +71,9 @@
   font-weight: bold;
   position: relative;
   text-align: center;
+  span {
+    color: $white;
+  }
 }
 
 .localeRemoveButton {
@@ -87,7 +90,7 @@
 
 .localizationSegment {
   text-align: center;
-  padding: 20px 10px;
+  padding: 20px 0;
   flex-direction: column !important;
 }
 

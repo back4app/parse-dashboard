@@ -43,6 +43,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: 80%;
       }
     }
   }
@@ -181,7 +182,8 @@
   margin: 0.75rem 0;
   a {
     &:first-of-type {
-      flex-grow: 1
+      flex-grow: 1;
+      width: 100%;
     }
   }
 }

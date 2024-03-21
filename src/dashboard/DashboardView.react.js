@@ -203,10 +203,10 @@ export default class DashboardView extends React.Component {
       });
     }
 
-    // moreSubSection.push({
-    //   name: 'Analytics',
-    //   link: '/analytics'
-    // })
+    moreSubSection.push({
+      name: 'Analytics',
+      link: '/analytics'
+    })
 
     moreSubSection.push({
       name: 'Database HUB',

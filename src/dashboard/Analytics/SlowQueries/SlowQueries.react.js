@@ -9,8 +9,7 @@ import * as AnalyticsQueryStore from 'lib/stores/AnalyticsQueryStore';
 import * as SchemaStore from 'lib/stores/SchemaStore';
 import Button from 'components/Button/Button.react';
 import CategoryList from 'components/CategoryList/CategoryList.react';
-import EmptyState from 'components/EmptyState/EmptyState.react';
-import FlowFooter from 'components/FlowFooter/FlowFooter.react';
+import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import Icon from 'components/Icon/Icon.react';
 import React from 'react';
 import SlowQueriesFilter from 'components/SlowQueriesFilter/SlowQueriesFilter.react';
@@ -22,7 +21,7 @@ import Toolbar from 'components/Toolbar/Toolbar.react';
 import { withRouter } from 'lib/withRouter';
 
 const SLOW_QUERIES_HEADERS = ['#', 'Date Time', 'Method', 'Path', 'Parameters', 'Resp. Status', 'Resp. Time (ms)'];
-const TABLE_WIDTH = [5, 17, 8, 25, 25, 10, 10];
+const TABLE_WIDTH = [5, 17, 8, 25, 20, 12, 13];
 
 const APP_VERSIONS_EXPLORER_QUERY = {
   type: 'json',
@@ -82,8 +81,8 @@ class SlowQueries extends TableView {
     const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
     return (
       <CategoryList current={current} linkPrefix={'analytics/'} categories={[
-        { name: 'Explorer', id: 'explorer' },
-        { name: 'Performance', id: 'performance' },
+        // { name: 'Explorer', id: 'explorer' },
+        // { name: 'Performance', id: 'performance' },
         { name: 'Slow Requests', id: 'slow_requests' },
       ]} />
     );
@@ -207,7 +206,17 @@ class SlowQueries extends TableView {
     let actions = null;
     if (!this.state.loading) {
       actions = (
-        <div>
+        <>
+          <Button
+            value="Run query"
+            primary={true}
+            width="auto"
+            color="green"
+            disabled={!this.state.mutated}
+            className={styles.runQueryBtn}
+            onClick={this.fetchSlowQueries.bind(this, this.context)}
+            additionalStyles={{ height: '26px', fontWeight: '400', marginRight: '8px', lineHeight: '14px', padding: '4px 8px' }}
+          />
           <SlowQueriesFilter
             method={this.state.method}
             path={this.state.path}
@@ -226,10 +235,9 @@ class SlowQueries extends TableView {
             onClick={this.handleDownload.bind(this)}
             className={styles.toolbarAction}
           >
-            <Icon name="download" width={14} height={14} fill="#66637a" />
-            Download
+            <Icon name="download" width={18} height={18} />
           </button>
-        </div>
+        </>
       );
     }
 
@@ -266,7 +274,7 @@ class SlowQueries extends TableView {
 
   renderEmpty() {
     return (
-      <EmptyState
+      <EmptyGhostState
         title="Slow Queries"
         description={'You haven\'t executed any queries.'}
         icon="gears"
@@ -277,26 +285,26 @@ class SlowQueries extends TableView {
   }
 
   renderExtras() {
-    return (
-      <FlowFooter
-        borderTop='1px solid rgba(151, 151, 151, 0.27)'
-        // secondary={(
-        //   <span style={{ marginRight: '10px' }}>
-        //     <DateRange
-        //       value={this.state.dateRange}
-        //       onChange={(newValue) => (this.setState({ dateRange: newValue, mutated: true }))}
-        //       align={Directions.RIGHT} />
-        //   </span>
-        // )}
-        primary={
-          <Button
-            primary={true}
-            disabled={!this.state.mutated}
-            onClick={this.fetchSlowQueries.bind(this, this.context)}
-            value="Run query"
-          />
-        }
-      />
+    return (<></>
+    // <FlowFooter
+    // borderTop='1px solid rgba(151, 151, 151, 0.27)'
+    // secondary={(
+    //   <span style={{ marginRight: '10px' }}>
+    //     <DateRange
+    //       value={this.state.dateRange}
+    //       onChange={(newValue) => (this.setState({ dateRange: newValue, mutated: true }))}
+    //       align={Directions.RIGHT} />
+    //   </span>
+    // )}
+    // primary={
+    //   <Button
+    //     primary={true}
+    //     disabled={!this.state.mutated}
+    //     onClick={this.fetchSlowQueries.bind(this, this.context)}
+    //     value="Run query"
+    //   />
+    // }
+    // />
     );
   }
 }
