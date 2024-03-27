@@ -8,7 +8,7 @@
 import B4AAlert from 'components/B4AAlert/B4AAlert.react';
 import CategoryList from 'components/CategoryList/CategoryList.react';
 import DashboardView from 'dashboard/DashboardView.react';
-import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import React from 'react';
 import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -159,7 +159,7 @@ export default class AccessLogs extends DashboardView {
         <div className={styles.content}>
           {!this.state.loading && this.state.logs === '' && (
             <div style={{ padding: '1.5rem 0' }}>
-              <EmptyGhostState
+              <B4aEmptyState
                 title="No Access logs in the last 30 days"
                 description="Here you will find a detailed extract of all requests made to your server, including the request time, type, response time, size, and more."
                 cta="Learn more"

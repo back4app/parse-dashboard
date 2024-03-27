@@ -8,7 +8,7 @@
 import B4AAlert from 'components/B4AAlert/B4AAlert.react';
 import CategoryList from 'components/CategoryList/CategoryList.react';
 import DashboardView from 'dashboard/DashboardView.react';
-import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import LogView from 'components/LogView/LogView.react';
 import LogViewEntry from 'components/LogView/LogViewEntry.react';
 import React from 'react';
@@ -168,7 +168,7 @@ export default class InfoLogs extends DashboardView {
         <div className={styles.content}>
           {!this.state.loading && (!Array.isArray(this.state.logs) || this.state.logs.length === 0) && (
             <div style={{ padding: '1.5rem 0' }}>
-              <EmptyGhostState
+              <B4aEmptyState
                 title="No Error logs in the last 30 days"
                 description="In this section, you will track general Parse Server errors. For example, when the user hasn’t defined its password correctly, Parse Server will log an error message here."
                 cta="Learn more"
