@@ -9,7 +9,28 @@ import PropTypes from 'lib/PropTypes'
 import TextInput from 'components/TextInput/TextInput.react';
 import B4aToggle from 'components/Toggle/B4aToggle.react';
 import styles from 'dashboard/IndexManager/IndexForm.scss';
+import withReactContent from 'sweetalert2-react-content'
 import Swal from 'sweetalert2';
+
+import buttonStyles from 'components/Button/Button.scss';
+import baseStyles from 'stylesheets/base.scss';
+import modalStyles from 'components/B4aModal/B4aModal.scss';
+
+const MySwal = withReactContent(Swal.mixin({
+  customClass: {
+    header: '',
+    title: `${modalStyles.title} ${styles.sweetalertTitle}`,
+    htmlContainer: `${styles.sweetalertContainer}`,
+    closeButton: styles.sweetalertCloseBtn,
+    icon: styles.sweetalertIcon,
+    input: styles.sweetalertInput,
+    actions: `${styles.sweetalertActions}`,
+    confirmButton: [buttonStyles.button, baseStyles.unselectable, buttonStyles.primary, buttonStyles.green].join(' '),
+    cancelButton: [buttonStyles.button, baseStyles.unselectable, buttonStyles.white].join(' '),
+    loader: styles.sweetalertLoader,
+  },
+  buttonsStyling: false,
+}));
 
 class IndexForm extends Component {
   constructor(props) {
@@ -214,18 +235,19 @@ class IndexForm extends Component {
       indexOptions
     }
 
-    Swal.queue([{
+    MySwal.fire({
       title: 'Are you sure you want to create the indexes?',
       text: 'This process will run in background and could take minutes, depending on your class size.',
       type: 'warning',
       showLoaderOnConfirm: true,
       confirmButtonText: 'Confirm',
-      showLoaderOnConfirm: true,
+      showCancelButton: true,
+      reverseButtons: true,
       preConfirm: () => {
         return this.props.onConfirm(indexConfiguration)
       },
-      showCancelButton: true
-    }])
+      showCloseButton: true,
+    })
   }
 
   renderClassContent() {

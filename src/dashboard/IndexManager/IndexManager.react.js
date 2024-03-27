@@ -242,7 +242,7 @@ class IndexManager extends DashboardView {
       errorMessages.push('Only one text index is allowed per class')
     }
     if (errorMessages.length) {
-      Swal.insertQueueStep({
+      customSwl.fire({
         title: 'We found some errors',
         html: `<p style="text-align: center">${errorMessages.join('</p><p style="text-align: center">')}</p>`,
         type: 'error',
