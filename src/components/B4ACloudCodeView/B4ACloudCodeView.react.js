@@ -70,7 +70,7 @@ export default class B4ACloudCodeView extends React.Component {
       style.hljs.padding = '1em 0.5em';
     }
     return (
-      <div style={{ height: '100%'}} >
+      <div style={{ height: 'calc(100% - 40px)'}} >
         <CodeEditor
           style={{ zIndex: 4 }}
           fontSize={13}
