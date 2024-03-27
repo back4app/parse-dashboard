@@ -185,7 +185,7 @@ export default class Playground extends Component {
           <div className={styles.console}>
             <div>Console</div>
             <section>
-              {!results.length ? <span className={styles.null}>null</span> : (
+              {!results.length ? '' : (
                 results.map(({ log, name }, i) => (
                   <ReactJson
                     key={i + `${log}`}
