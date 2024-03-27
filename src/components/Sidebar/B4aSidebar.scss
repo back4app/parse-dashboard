@@ -8,6 +8,11 @@
 @import 'stylesheets/globals.scss';
 @import 'stylesheets/back4app.scss';
 
+$headerHeight: 80px;
+$menuSectionHeight: 24px;
+$sidebarMenuItemHeight: 79px;
+$footerHeight: 57px;
+
 .sidebar {
   @include SoraFont;
   position: fixed;
@@ -237,7 +242,7 @@
 
   .appListContainer {
     overflow-y: auto;
-    // height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
+    height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
   }
 }
 
