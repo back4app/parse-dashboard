@@ -18,7 +18,6 @@ export default class Tour extends React.Component {
   }
 
   componentDidMount() {
-    console.log('component DID MOUNT>>>>>>>>>');
     const sidebarPromise = getComponentReadyPromise(() => document.querySelector('#sidebar'));
     const toolbarPromise = getComponentReadyPromise(() => document.querySelector('#toolbar'));
     const dataBrowserPromise = getComponentReadyPromise(() => document.querySelector('#browser'));
