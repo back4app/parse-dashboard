@@ -28,6 +28,7 @@ $callouColor: $light-grey;
     font-weight: 400;
     border-radius: 5px;
     padding: 2px 10px;
+    max-width: 270px;
     // TODO we don't want to use z-index. But this makes everything easier
     // since we can do everything in CSS. We need to revisit this in the future
     z-index: 1000;
@@ -39,21 +40,20 @@ $callouColor: $light-grey;
       display: inline;
       left: 32px;
       top: $topTooltip;
-      height: auto;
       // Faking arrow with border by making 2 arrows.
       .callout1 {
         @include arrow('up', $calloutSize + 3, $calloutSize, $callouColor);
         position: absolute;
-        left: 150px;
-        // transform: translateX(-50%);
+        left: 50%;
+        transform: translateX(-50%);
         top: -5.2px;
       }
 
       .callout2 {
         @include arrow('up', $calloutSize + 3, $calloutSize, $tooltipBG);
         position: absolute;        
-        left: 150px;
-        // transform: translateX(-50%);
+        left: 50%;
+        transform: translateX(-50%);
         top: -5.2px;
       }
     }

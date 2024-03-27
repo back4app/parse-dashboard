@@ -8,7 +8,7 @@ const AppName = ({ name, onClick, onPinClick }) => (
   <div>
     <div className={styles.currentApp}>
       <div className={styles.appNameContainer} onClick={onClick}>
-        <Tooltip className={styles.Tooltip} value={(<>{name}</>)}>
+        <Tooltip className={styles.Tooltip} value={(<span>{name}</span>)}>
           <div className={styles.currentAppName}>{name}</div>
         </Tooltip>
         <Icon name="b4a-chevron-down" width={18} height={18} />
