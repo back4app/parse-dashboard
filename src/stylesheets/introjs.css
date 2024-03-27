@@ -183,12 +183,19 @@ tr.introjs-showElement > th {
   position: absolute;
   visibility: visible;
   padding: 15px;
-  background-color: white;
+  background-color: #f9f9f9;
   min-width: 470px;
   max-width: 470px;
   border-radius: 3px;
   box-shadow: 0 1px 10px rgba(0,0,0,.4);
   transition: opacity 0.1s ease-out;
+}
+
+.introjs-tooltiptext {
+  color: #0F1C32;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 140% !important;
 }
 
 .introjs-tooltip > * {
@@ -215,21 +222,28 @@ tr.introjs-showElement > th {
   padding: 0.6em 1.6em;
   margin: 0;
   text-decoration: none;
-  font: bold 12px/normal Raleway;
-  color: white;
+  font: bold 12px/normal Inter;
+  color: #f9f9f9;
   white-space: nowrap;
   cursor: pointer;
   outline: none;
-  background-color: #094162;
   border-radius: 4px;
   /* IE hacks */
   zoom: 1;
   *display: inline;
   margin-top: 10px;
+  transition: all 0.5s ease;
 }
 
 .introjs-nextbutton {
   margin-left: 5px;
+  background-color: #27AE60;
+}
+
+.introjs-nextbutton:hover {
+  text-decoration: none !important;
+  filter: drop-shadow(1px 1px 10px #92E1B4);
+  background-color: #13A39A!important;
 }
 
 .introjs-button:focus {
@@ -238,7 +252,7 @@ tr.introjs-showElement > th {
 }
 
 .introjs-button:hover {
-  background-color: #3987cc;
+  /* background-color: #3987cc; */
 }
 
 .introjs-button:hover {
@@ -249,25 +263,35 @@ tr.introjs-showElement > th {
 .introjs-skipbutton {
   box-sizing: content-box;
   margin-right: 5px;
-  background-color: #c30000;
+  background-color: #E85C3E;
 }
 
 .introjs-skipbutton:hover {
-  background-color: red;
+  background-color: #D86448 !important;
+  text-decoration: none !important;
+  filter: drop-shadow(1px 1px 10px #D86448) !important;
 }
 
 .introjs-prevbutton {
   margin-left: auto;
+  color: #303338;
+  background-color: #ccc;
+}
+
+.introjs-prevbutton:hover {
+  text-decoration: none !important;
+  color: #303338;
 }
 
 .introjs-disabled, .introjs-disabled:hover, .introjs-disabled:focus {
-  color: #9a9a9a !important;
+  color: #828181 !important;
   border-color: #d4d4d4;
   box-shadow: none;
   cursor: default;
-  background-color: #f4f4f4;
+  background-color: #ccc;
   background-image: none;
   text-decoration: none;
+  cursor: not-allowed;
 }
 
 .introjs-hidden {
@@ -331,7 +355,7 @@ tr.introjs-showElement > th {
   padding: 15px;
   border-radius: 5px;
   background-color: #182634;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .intro-code-run {

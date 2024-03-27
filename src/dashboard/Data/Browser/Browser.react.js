@@ -419,10 +419,11 @@ class Browser extends DashboardView {
     return {
       steps,
       onBeforeStart: () => {
-        document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
+        // document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
         // document.querySelector('[class^="section_header"][href*="/apidocs"]').style.backgroundColor = "#0c5582";
         if (className !== '_User' && className.indexOf('_') !== -1) {
-          history.push(context.generatePath('browser/_User'));
+          this.props.navigate(generatePath(this.context, 'browser/_User'));
+          // history.push(this.context.generatePath('browser/_User'));
         }
         post('/tutorial', { databaseBrowser: true });
 
@@ -447,6 +448,9 @@ class Browser extends DashboardView {
               const nextButton = getNextButton();
               if (nextButton) {
                 nextButton.innerHTML = 'Next';
+              }
+              if (this._currentStep === 1) {
+                document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
               }
             }
             break;
@@ -493,7 +497,8 @@ class Browser extends DashboardView {
               const numberLayer = document.querySelector('.introjs-helperNumberLayer');
               numberLayer.style.marginLeft = 0;
               if (!unexpectedErrorThrown) {
-                history.push(context.generatePath('browser/B4aVehicle'));
+                this.props.navigate(generatePath(this.context, 'browser/B4aVehicle'));
+                // history.push(this.context.generatePath('browser/B4aVehicle'));
               }
             }
             break;
@@ -561,6 +566,8 @@ class Browser extends DashboardView {
         }
       },
       onExit: () => {
+        document.querySelector('#section_contents > div > div').style.backgroundColor = '';
+        document.querySelector('.footer .more').style.backgroundColor = '';
         this.setState({ showTour: false });
       }
     };
