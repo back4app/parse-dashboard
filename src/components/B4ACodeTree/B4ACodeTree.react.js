@@ -363,20 +363,21 @@ export default class B4ACodeTree extends React.Component {
                 </ReactFileReader>
               </div>
             </div>
-            <Resizable className={styles['files-tree']}
-              defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}
-              enable={{
-                top:false,
-                right:false,
-                bottom:true,
-                left:false,
-                topRight:false,
-                bottomRight:false,
-                bottomLeft:false,
-                topLeft:false
-              }}>
+            <div className={styles['files-tree']}
+              // defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}
+              // enable={{
+              //   top:false,
+              //   right:false,
+              //   bottom:true,
+              //   left:false,
+              //   topRight:false,
+              //   bottomRight:false,
+              //   bottomLeft:false,
+              //   topLeft:false
+              // }}
+            >
               <div id={'tree'} onClick={this.watchSelectedNode.bind(this)}></div>
-            </Resizable>
+            </div>
           </div>
         </div>
         <div className={styles.filePreview}>

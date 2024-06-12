@@ -212,9 +212,10 @@ body:global(.sidebarCollapsed) {
   & .cellSeparator {
     // margin: 0 1rem;
     height: 36px;
-    width: 1px;
-    background: rgba(249, 249, 249, 0.06);
+    width: 5px;
+    // background: rgba(249, 249, 249, 0.06);
     display: inline-block;
+    border-right: 1px solid rgba(249, 249, 249, 0.06);
   }
 }
 
@@ -457,7 +458,7 @@ body:global(.sidebarCollapsed) {
     }
 
     & .cellSeparator {
-      background: #CCCCCC29;
+      // background: #CCCCCC29;
     }
   }
   .deleteBtn {
