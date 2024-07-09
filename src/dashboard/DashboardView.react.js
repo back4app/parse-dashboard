@@ -126,14 +126,14 @@ export default class DashboardView extends React.Component {
       link: '/index'
     })
 
-    databaseSubsections.push({
-      name: 'Blockchain',
-      link: '/blockchain',
-      badge: {
-        label: 'NEW',
-        color: 'green'
-      }
-    })
+    // databaseSubsections.push({
+    //   name: 'Blockchain',
+    //   link: '/blockchain',
+    //   badge: {
+    //     label: 'NEW',
+    //     color: 'green'
+    //   }
+    // })
 
     const cloudCodeSubSections = [];
     // Show cloud code to all parse versions
