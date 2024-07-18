@@ -74,7 +74,10 @@ export const ManageAppFields = ({
               (isGDPR !== true || hideDatabaseURL !== true) &&
               <VisibilityField
                 onVisibleComponent={
-                  () =>
+                  () => {
+                    console.log('hide here')
+                    console.log(hideDatabaseURL)
+                    return(
                     <FieldSettings
                       containerStyles={{ borderTop: 'none' }}
                       padding={'7px 0px'}
@@ -83,7 +86,7 @@ export const ManageAppFields = ({
                         text='Database URI'
                         description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
                       />}
-                    />}
+                    />)}
                 onHiddenComponent={
                   (props) => <FormButton
                     onClick={() => props.toggleVisibility(true)}
