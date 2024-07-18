@@ -74,6 +74,7 @@ export default class GeneralSettings extends DashboardView {
       parseVersion: this.context.settings.fields.fields.parseVersion,
       mongoVersion: this.context.settings.fields.fields.mongoVersion,
       databaseVersion: this.context.settings.fields.fields.databaseVersion,
+      hideDatabaseURL: this.context.hideDatabaseURL,
       clientPush: this.context.settings.fields.fields.clientPush,
       clientClassCreation: this.context.settings.fields.fields.clientClassCreation,
       useLatestDashboardVersion: this.context.useLatestDashboardVersion
@@ -168,7 +169,7 @@ export default class GeneralSettings extends DashboardView {
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
               cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage}
               isGDPR={this.context.custom && this.context.custom.isGDPR}
-              hideDatabaseURL={this.context.custom && this.context.custom.hideDatabaseURL}
+              hideDatabaseURL={this.context.hideDatabaseURL}
               useLatestDashboardVersion={fields.useLatestDashboardVersion}
               setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}
               backendBetaUser={AccountManager.currentUser().backendBetaUser}/>
