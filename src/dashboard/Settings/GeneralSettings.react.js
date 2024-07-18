@@ -168,6 +168,7 @@ export default class GeneralSettings extends DashboardView {
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
               cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage}
               isGDPR={this.context.custom && this.context.custom.isGDPR}
+              hideDatabaseURL={this.context.custom && this.context.custom.hideDatabaseURL}
               useLatestDashboardVersion={fields.useLatestDashboardVersion}
               setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}
               backendBetaUser={AccountManager.currentUser().backendBetaUser}/>
