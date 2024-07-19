@@ -69,9 +69,9 @@ export const ManageAppFields = ({
   // TODO replace with password policy
   label={<Label text='Database' description={'Database configurations'} />}
   input={
-    (isGDPR !== true || hideDatabaseURL !== true) &&
     <div style={{ flex: 1 }}>
       {
+        (isGDPR !== true && hideDatabaseURL !== true) &&
         <VisibilityField
           onVisibleComponent={
             () => {
