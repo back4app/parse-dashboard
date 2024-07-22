@@ -65,65 +65,65 @@ export const ManageAppFields = ({
         }
       />
       <Field
-  labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
-  // TODO replace with password policy
-  label={<Label text='Database' description={'Database configurations'} />}
-  input={
-    <div style={{ flex: 1 }}>
-      {
-        (isGDPR !== true && hideDatabaseURL !== true) &&
-        <VisibilityField
-          onVisibleComponent={
-            () => {
-              console.log('database URL here');
-              console.log(databaseURL);
-              console.log('Hide here');
-              console.log(hideDatabaseURL);
-              return (
-                <FieldSettings
-                  containerStyles={{ borderTop: 'none' }}
-                  padding={'7px 0px'}
-                  labelWidth={'50%'}
-                  label={<LabelSettings
-                    text='Database URI'
-                    description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
-                  />}
-                />
-              );
-            }
-          }
-          onHiddenComponent={
-            (props) => (
-              <FormButton
-                onClick={() => {
-                  props.toggleVisibility(true);
-                }}
-                value='Show Database URI'
+        labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
+        // TODO replace with password policy
+        label={<Label text='Database' description={'Database configurations'} />}
+        input={
+          <div style={{ flex: 1 }}>
+            {
+              (isGDPR !== true && hideDatabaseURL !== true) &&
+              <VisibilityField
+                onVisibleComponent={
+                  () => {
+                    console.log('database URL here');
+                    console.log(databaseURL);
+                    console.log('Hide here');
+                    console.log(hideDatabaseURL);
+                    return (
+                      <FieldSettings
+                        containerStyles={{ borderTop: 'none' }}
+                        padding={'7px 0px'}
+                        labelWidth={'50%'}
+                        label={<LabelSettings
+                          text='Database URI'
+                          description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
+                        />}
+                      />
+                    );
+                  }
+                }
+                onHiddenComponent={
+                  (props) => (
+                    <FormButton
+                      onClick={() => {
+                        props.toggleVisibility(true);
+                      }}
+                      value='Show Database URI'
+                    />
+                  )
+                }
               />
-            )
-          }
-        />
-      }
-      <FieldSettings
-        containerStyles={{ borderBottom: 'none' }}
-        padding="7px 0px"
-        labelWidth="50%"
-        label={(
-          <LabelSettings
-            text="Database Version"
-            description={
-              <>
-                <span>
-                  {checkDB.split('+srv')[0]} {!databaseVersion ? mongoVersion : databaseVersion}
-                </span>
-              </>
             }
-          />
-        )}
+            <FieldSettings
+              containerStyles={{ borderBottom: 'none' }}
+              padding="7px 0px"
+              labelWidth="50%"
+              label={(
+                <LabelSettings
+                  text="Database Version"
+                  description={
+                    <>
+                      <span>
+                        {checkDB.split('+srv')[0]} {!databaseVersion ? mongoVersion : databaseVersion}
+                      </span>
+                    </>
+                  }
+                />
+              )}
+            />
+          </div>
+        }
       />
-    </div>
-  }
-/>
       {(backendBetaUser || !b4aSettings.BACKEND_DASHBOARD_IS_BETA) && (
         <>
           <Field
