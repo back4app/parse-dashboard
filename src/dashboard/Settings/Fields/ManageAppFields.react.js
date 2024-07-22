@@ -74,36 +74,22 @@ export const ManageAppFields = ({
               (isGDPR !== true && hideDatabaseURL !== true) &&
               <VisibilityField
                 onVisibleComponent={
-                  () => {
-                    console.log('database URL here');
-                    console.log(databaseURL);
-                    console.log('Hide here');
-                    console.log(hideDatabaseURL);
-                    return (
-                      <FieldSettings
-                        containerStyles={{ borderTop: 'none' }}
-                        padding={'7px 0px'}
-                        labelWidth={'50%'}
-                        label={<LabelSettings
-                          text='Database URI'
-                          description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
-                        />}
-                      />
-                    );
-                  }
-                }
+                  () =>
+                    <FieldSettings
+                      containerStyles={{ borderTop: 'none' }}
+                      padding={'7px 0px'}
+                      labelWidth={'50%'}
+                      label={<LabelSettings
+                        text='Database URI'
+                        description={<p style={{ wordBreak: 'break-word', height: 'auto', padding: 0 }}>{databaseURL}</p>}
+                      />}
+                    />}
                 onHiddenComponent={
-                  (props) => (
-                    <FormButton
-                      onClick={() => {
-                        props.toggleVisibility(true);
-                      }}
-                      value='Show Database URI'
-                    />
-                  )
+                  (props) => <FormButton
+                    onClick={() => props.toggleVisibility(true)}
+                    value='Show Database URI' />
                 }
-              />
-            }
+              />}
             <FieldSettings
               containerStyles={{ borderBottom: 'none' }}
               padding="7px 0px"
