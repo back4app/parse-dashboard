@@ -55,7 +55,7 @@ export default class GeneralSettings extends DashboardView {
     const windowsUrl = this.props.initialFields.urls.find(({ platform }) => platform === 'win');
     const webUrl = this.props.initialFields.urls.find(({ platform }) => platform === 'web');
     const otherURL = this.props.initialFields.urls.find(({ platform }) => platform === 'other');
-
+debugger
     return {
       requestLimit: this.props.initialFields.pricing_plan.request_limit,
       appName: this.context.name,
