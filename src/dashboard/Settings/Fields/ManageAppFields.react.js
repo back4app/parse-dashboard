@@ -32,7 +32,7 @@ export const ManageAppFields = ({
 }) => {
 
   const checkDB = databaseURL?.split('://')[0];
-
+debugger
   return (
     <Fieldset
       legend='App Management'
@@ -71,7 +71,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             {
-              (isGDPR !== true && permissions.hideDatabaseURL !== true) &&
+              (isGDPR !== true && (permissions && permissions.hideDatabaseURL) !== true) &&
               <VisibilityField
                 onVisibleComponent={
                   () =>
