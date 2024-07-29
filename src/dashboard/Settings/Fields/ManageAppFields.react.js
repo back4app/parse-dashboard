@@ -72,7 +72,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             {
-              (isGDPR !== true && permissions.hideDatabaseURL !== true) &&
+              (isGDPR !== true && (hideDatabaseURL || permissions.hideDatabaseURL) !== true) &&
               <VisibilityField
                 onVisibleComponent={
                   () =>

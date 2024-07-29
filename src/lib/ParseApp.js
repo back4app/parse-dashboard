@@ -92,7 +92,7 @@ export default class ParseApp {
     this.columnPreference = columnPreference;
     this.databaseURL = databaseURL;
     this.hideDatabaseURL = hideDatabaseURL;
-    this.permissions = permissions.hideDatabaseURL;
+    // this.permissions = permissions.hideDatabaseURL;
     this.scripts = scripts;
     this.enableSecurityChecks = !!enableSecurityChecks;
     this.useLatestDashboardVersion = useLatestDashboardVersion !== false;

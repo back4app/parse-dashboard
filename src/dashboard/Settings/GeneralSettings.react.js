@@ -74,8 +74,8 @@ debugger
       parseVersion: this.context.settings.fields.fields.parseVersion,
       mongoVersion: this.context.settings.fields.fields.mongoVersion,
       databaseVersion: this.context.settings.fields.fields.databaseVersion,
-      // hideDatabaseURL: this.context.settings.fields.fields.hideDatabaseURL,
-      permissions: this.context.section.fields.fields.permissions,
+      hideDatabaseURL: this.context.settings.fields.fields.hideDatabaseURL,
+      // permissions: this.context.section.fields.fields.permissions,
       clientPush: this.context.settings.fields.fields.clientPush,
       clientClassCreation: this.context.settings.fields.fields.clientClassCreation,
       useLatestDashboardVersion: this.context.useLatestDashboardVersion
@@ -170,8 +170,8 @@ debugger
               cleanUpSystemLog={() => this.setState({showPurgeSystemLogModal: true})}
               cleanUpSystemLogMessage={this.state.cleanupSystemLogMessage}
               isGDPR={this.context.custom && this.context.custom.isGDPR}
-              // hideDatabaseURL={fields.hideDatabaseURL}
-              permissions={fields.permissions}
+              hideDatabaseURL={fields.hideDatabaseURL}
+              // permissions={fields.permissions}
               useLatestDashboardVersion={fields.useLatestDashboardVersion}
               setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}
               backendBetaUser={AccountManager.currentUser().backendBetaUser}/>
