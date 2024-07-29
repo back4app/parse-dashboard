@@ -324,5 +324,6 @@ ManageAppFields.propTypes = {
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
   isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
-  hideDatabaseURL: PropTypes.bool.describe('Hide connection String')
+  hideDatabaseURL: PropTypes.bool.describe('Hide connection String'),
+  permissions: PropTypes.object.describe('App permissions')
 }
