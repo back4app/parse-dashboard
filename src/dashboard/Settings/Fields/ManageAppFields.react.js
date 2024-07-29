@@ -72,7 +72,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             {
-              (isGDPR !== true && (hideDatabaseURL || permissions.hideDatabaseURL) !== true) &&
+              (isGDPR !== true && hideDatabaseURL) !== true) &&
               <VisibilityField
                 onVisibleComponent={
                   () =>
@@ -325,6 +325,6 @@ ManageAppFields.propTypes = {
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
   isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
-  hideDatabaseURL: PropTypes.bool.describe('Hide connection String'),
-  permissions: PropTypes.object.describe('App permissions')
+  hideDatabaseURL: PropTypes.bool.describe('Hide connection String')
+  // permissions: PropTypes.object.describe('App permissions')
 }
