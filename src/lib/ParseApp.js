@@ -55,6 +55,7 @@ export default class ParseApp {
     graphQLServerURL,
     columnPreference,
     databaseURL,
+    hideDatabaseURL,
     permissions,
     scripts,
     classPreference,
@@ -90,7 +91,8 @@ export default class ParseApp {
     this.graphQLServerURL = graphQLServerURL;
     this.columnPreference = columnPreference;
     this.databaseURL = databaseURL;
-    this.permissions = permissions ? permissions : {};
+    this.hideDatabaseURL = hideDatabaseURL;
+    this.permissions = permissions.hideDatabaseURL;
     this.scripts = scripts;
     this.enableSecurityChecks = !!enableSecurityChecks;
     this.useLatestDashboardVersion = useLatestDashboardVersion !== false;
