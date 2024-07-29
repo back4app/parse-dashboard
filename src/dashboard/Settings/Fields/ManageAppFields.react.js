@@ -25,6 +25,7 @@ export const ManageAppFields = ({
   errors,
   isGDPR,
   hideDatabaseURL,
+  permissions,
   databaseVersion,
   useLatestDashboardVersion,
   setUseLatestDashboardVersion,
@@ -71,7 +72,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             {
-              (isGDPR !== true && hideDatabaseURL !== true) &&
+              (isGDPR !== true && permissions.hideDatabaseURL !== true) &&
               <VisibilityField
                 onVisibleComponent={
                   () =>
