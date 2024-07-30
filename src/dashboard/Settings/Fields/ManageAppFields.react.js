@@ -32,7 +32,7 @@ export const ManageAppFields = ({
 }) => {
 
   const checkDB = databaseURL?.split('://')[0];
-debugger
+
   return (
     <Fieldset
       legend='App Management'
