@@ -56,7 +56,6 @@ export default class ParseApp {
     columnPreference,
     databaseURL,
     hideDatabaseURL,
-    permissions,
     scripts,
     classPreference,
     enableSecurityChecks,

@@ -71,6 +71,7 @@ debugger
         label={<Label text='Database' description={'Database configurations'} />}
         input={
           <div style={{ flex: 1 }}>
+            {console.log('permissions:', permissions, 'hideDatabaseURL:', hideDatabaseURL)}
             {
               (isGDPR !== true && (hideDatabaseURL || permissions.hideDatabaseURL) !== true) &&
               <VisibilityField
