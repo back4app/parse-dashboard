@@ -26,7 +26,7 @@ export const ManageAppFields = ({
   mongoVersion,
   errors,
   isGDPR,
-  hideDatabaseURL,
+  permissions,
   databaseVersion,
   useLatestDashboardVersion,
   setUseLatestDashboardVersion,
@@ -75,7 +75,7 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             {
-              (isGDPR !== true && hideDatabaseURL !== true) &&
+              (isGDPR !== true && permissions.hideDatabaseURL !== true) &&
               <div style={{ padding: '11px 0' }}>
                 <B4aKeyField name="Show Database" hidden={true} showKeyName={true} keyText="URI">
                   {databaseURL}
@@ -316,5 +316,5 @@ ManageAppFields.propTypes = {
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
   isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
-  hideDatabaseURL: PropTypes.bool.describe('Hide connection String')
+  permissions: PropTypes.object.describe('App permissions')
 }
