@@ -46,7 +46,7 @@ export default class ServerSettings extends DashboardView {
         <div className={styles.content}>
           <iframe src={iframeSrc} className={styles.iframeContent} />
         </div>
-        <Toolbar section='App Settings' subsection="Server Setting" />
+        <Toolbar section='App Settings' subsection="Server Settings" />
       </div>
     );
   }
