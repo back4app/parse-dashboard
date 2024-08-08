@@ -450,7 +450,9 @@ export default class Collaborators extends React.Component {
               });
             })
           } />
-        } />
+        }
+        theme={Field.Theme.BLUE}
+        />
     )
   }
 
