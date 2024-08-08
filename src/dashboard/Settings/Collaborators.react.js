@@ -436,7 +436,7 @@ export default class Collaborators extends React.Component {
       <Field
         minHeight={40}
         labelWidth={55}
-        label={<Label text='Waiting for account registration' />}
+        label={<Label text='Waiting for account registration' dark={true}/>}
         input={<FormTableCollab
           items={
             this.state.waiting_collaborators.map(collaborator => {
@@ -450,7 +450,9 @@ export default class Collaborators extends React.Component {
               });
             })
           } />
-        } />
+        }
+        theme={Field.Theme.BLUE}
+      />
     )
   }
 
