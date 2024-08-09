@@ -333,6 +333,7 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
+    console.log(permissions)
     return (
       <Field
         labelWidth={55}
@@ -357,8 +358,7 @@ export default class Collaborators extends React.Component {
             return this.validateEmail(email);
           }}
           onSubmit={this.handleAdd.bind(this)}
-          submitButtonText='ADD' />} />
-    )
+          submitButtonText='ADD' />} />)
   }
 
   listAppOwnerEmail() {
