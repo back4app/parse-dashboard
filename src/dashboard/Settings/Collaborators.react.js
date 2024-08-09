@@ -333,7 +333,7 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
-    console.log(this.fields.permissions)
+    console.log(this.fields)
     return (
       <Field
         labelWidth={55}
@@ -454,6 +454,5 @@ Collaborators.propTypes = {
   ),
   onRemove: PropTypes.func.isRequired.describe(
     'A function that will be called whenever a user removes a valid collaborator email. It receives the removed email and an updated array of all collaborators for this app.'
-  ),
-  permissions: PropTypes.object.describe('App permissions')
+  )
 };
