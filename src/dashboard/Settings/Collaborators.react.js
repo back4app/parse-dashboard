@@ -333,7 +333,6 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
-    console.log(this.permissions)
     console.log(this.fields.permissions)
     return (
       <Field
