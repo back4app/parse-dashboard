@@ -339,7 +339,8 @@ export default class Collaborators extends React.Component {
         labelWidth={55}
         label={<Label
           text='Add new collaborator'
-          description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.</span>} />}
+          description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.<br />
+          Number of collaborators you can add {this.props.permissions.maxCollaborators}.</span>} />}
         input={<InlineSubmitInput
           render={() => {
             return <TextInput
