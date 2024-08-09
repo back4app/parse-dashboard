@@ -334,7 +334,7 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
-    console.log(this.props)
+    console.log(this)
     return (
       <Field
         labelWidth={55}
