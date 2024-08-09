@@ -143,6 +143,7 @@ export default class GeneralSettings extends DashboardView {
               setOtherURL={setField.bind(this, 'otherURL')} />
             <CollaboratorsFields
               errors={errors}
+              permissions={fields.permissions}
               collaborators={fields.collaborators}
               waiting_collaborators={fields.waiting_collaborators}
               ownerEmail={this.props.initialFields.owner_email}
