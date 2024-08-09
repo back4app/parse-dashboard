@@ -334,7 +334,6 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
-    console.log(this)
     return (
       <Field
         labelWidth={55}
@@ -349,6 +348,7 @@ export default class Collaborators extends React.Component {
               onChange={(value)=> {
                 this.setState({currentEmail: value, showBtnCollaborator: this.validateEmail(value)});
               }}
+              disabled={this.props.permissions && (this.props.permissions.maxCollaborators > this.props.collaborators.length) ? false : true} 
             />
           }}
           showButton={this.state.showBtnCollaborator}
