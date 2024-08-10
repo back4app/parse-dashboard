@@ -442,7 +442,6 @@ export default class Collaborators extends React.Component {
                   </a>
                 </strong>
                 <br />
-                <br />
               </>
             ) : ''}
             {this.props.description}
