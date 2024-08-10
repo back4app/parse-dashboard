@@ -452,7 +452,7 @@ export default class Collaborators extends React.Component {
         }
         description={
           <>
-            {this.props.permissions ? (
+            {this.props.permissions && (
               <>
                 <strong>
                   {`${this.props.permissions.maxCollaborators - (this.props.collaborators.length + this.props.waiting_collaborators.length)} remaining.`}
@@ -465,19 +465,22 @@ export default class Collaborators extends React.Component {
                 </strong>
                 <br />
               </>
-            ) : (
-              <>{this.props.description}</>
             )}
+            {this.props.description}
           </>
         }
       >
-        {this.props.viewer_email === this.props.owner_email 
-          ? (limitReached ? 
-              <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-                Add More Spots
-              </a> 
-              : this.addCollaboratorField())
-          : this.listAppOwnerEmail()}
+        {this.props.viewer_email === this.props.owner_email ? (
+          limitReached ? (
+            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+              Add More Spots
+            </a>
+          ) : (
+            this.addCollaboratorField()
+          )
+        ) : (
+          this.listAppOwnerEmail()
+        )}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
         {this.state.showDialog ? this.setCollabPermissions() : null}
