@@ -441,10 +441,9 @@ export default class Collaborators extends React.Component {
     )
   }
 
-
   render() {
     const limitReached = this.props.permissions && 
-                         (this.props.collaborators.length + this.props.waiting_collaborators.length) === this.props.permissions.maxCollaborators;  
+                         (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;  
     return (
       <Fieldset
         legend={
