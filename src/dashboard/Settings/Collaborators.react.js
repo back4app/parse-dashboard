@@ -442,24 +442,27 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    const limitReached = this.props.permissions.maxCollaborators &&
-      (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
+    const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
+    const maxCollaborators = this.props.permissions ? this.props.permissions.maxCollaborators : null;
+    const limitReached = maxCollaborators !== null && totalCollaborators === maxCollaborators;
+  
     return (
       <Fieldset
         legend={
           this.props.legend && (
-            `${this.props.legend} ${this.props.permissions
-              ? `${this.props.collaborators.length + this.props.waiting_collaborators.length} / ${this.props.permissions.maxCollaborators}`
-              : ''
+            `${this.props.legend} ${
+              maxCollaborators !== null
+                ? `${totalCollaborators} / ${maxCollaborators}`
+                : ''
             }`
           )
         }
         description={
           <>
-            {this.props.permissions && (
+            {maxCollaborators !== null && (
               <>
                 <strong>
-                  {`${this.props.permissions.maxCollaborators - (this.props.collaborators.length + this.props.waiting_collaborators.length)} remaining.`}
+                  {`${maxCollaborators - totalCollaborators} remaining.`}
                 </strong>{' '}
                 Need more?{' '}
                 <strong>
@@ -493,7 +496,7 @@ export default class Collaborators extends React.Component {
       </Fieldset>
     );
   }
-}
+}  
 
 Collaborators.propTypes = {
   legend: PropTypes.string.isRequired.describe('Title of this section'),
