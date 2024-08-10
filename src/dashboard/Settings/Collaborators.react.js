@@ -432,8 +432,6 @@ export default class Collaborators extends React.Component {
         }
         description={
           <>
-            {this.props.description}
-            <br />
             {this.props.permissions ? (
               <>
                 {`${this.props.permissions.maxCollaborators - this.props.collaborators.length} remaining. `}
@@ -443,6 +441,9 @@ export default class Collaborators extends React.Component {
                 </a>
               </>
             ) : ''}
+            <br />
+            <br />
+            {this.props.description}
           </>
         }
       >
