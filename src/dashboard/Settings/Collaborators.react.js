@@ -441,7 +441,10 @@ export default class Collaborators extends React.Component {
     )
   }
 
+
   render() {
+    const limitReached = this.props.permissions && 
+                         (this.props.collaborators.length + this.props.waiting_collaborators.length) === this.props.permissions.maxCollaborators;  
     return (
       <Fieldset
         legend={
@@ -463,19 +466,26 @@ export default class Collaborators extends React.Component {
                 </strong>
                 <br />
               </>
-            ) : ''}
-            {this.props.description}
+            ) : (
+              <>{this.props.description}</>
+            )}
           </>
         }
       >
-        {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
+        {this.props.viewer_email === this.props.owner_email 
+          ? (limitReached ? 
+              <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                Add More Spots
+              </a> 
+              : this.addCollaboratorField())
+          : this.listAppOwnerEmail()}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
         {this.state.showDialog ? this.setCollabPermissions() : null}
         {this.props.collaborators.length > 0 ? this.renderCollaborators() : null}
         {this.state.waiting_collaborators.length > 0 ? this.renderStandByCollaborators() : null}
       </Fieldset>
-    )
+    );
   }
 }
 
