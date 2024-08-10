@@ -335,45 +335,47 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
-    const { permissions, collaborators, waiting_collaborators } = this.props;
-    const totalCollaborators = collaborators.length + waiting_collaborators.length;
-    const maxCollaborators = permissions ? permissions.maxCollaborators : 0;
-    const limitReached = maxCollaborators > 0 && totalCollaborators >= maxCollaborators;
-
+    const limitReached = this.props.permissions &&
+      (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
     return (
       <Field
         labelWidth={55}
         label={
           <Label
             text='Add new collaborator'
-            description={
-              <span>
-                Collaborators will have read/write access but cannot <br />
-                delete the app or add more collaborators.
-              </span>
-            }
+            description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.</span>}
           />
         }
         input={
-          <div>
-            <TextInput
-              placeholder={limitReached ?
-                "Limit reached. Add more spots on the pricing page." :
-                "What&#39;s their email?"}
-              value={this.state.currentEmail}
-              onChange={(value) => {
-                this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
+          limitReached ? (
+            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+              Add More Spots
+            </a>
+          ) : (
+            <InlineSubmitInput
+              render={() => {
+                return (
+                  <TextInput
+                    placeholder="What&#39;s their email?"
+                    value={this.state.currentEmail}
+                    onChange={(value) => {
+                      this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
+                    }}
+                    disabled={false} // Campo de entrada habilitado quando o limite não é atingido
+                  />
+                );
               }}
-              disabled={limitReached}
+              showButton={this.state.showBtnCollaborator}
+              validate={(email) => {
+                if (this.state.showBtnCollaborator === true) {
+                  return true;
+                }
+                return this.validateEmail(email);
+              }}
+              onSubmit={this.handleAdd.bind(this)}
+              submitButtonText='ADD'
             />
-            {limitReached && (
-              <p>
-                <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-                  Add More Spots
-                </a>
-              </p>
-            )}
-          </div>
+          )
         }
       />
     );
