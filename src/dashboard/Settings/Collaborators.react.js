@@ -349,7 +349,7 @@ export default class Collaborators extends React.Component {
               onChange={(value) => {
                 this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
               }}
-              disabled={this.props.permissions && this.props.collaborators.length >= this.props.permissions.maxCollaborators}
+              disabled={this.props.permissions && (this.props.collaborators.length + this.props.waiting_collaborators.length) == this.props.permissions.maxCollaborators}
             />
           }}
           showButton={this.state.showBtnCollaborator}
