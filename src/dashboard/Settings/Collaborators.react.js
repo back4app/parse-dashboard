@@ -349,7 +349,10 @@ export default class Collaborators extends React.Component {
               onChange={(value) => {
                 this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
               }}
-              disabled={this.props.permissions && (this.props.collaborators.length + this.props.waiting_collaborators.length) == this.props.permissions.maxCollaborators}
+              disabled={
+                this.props.permissions &&
+                (this.props.collaborators.length + this.props.waiting_collaborators.length) === this.props.permissions.maxCollaborators
+              }
             />
           }}
           showButton={this.state.showBtnCollaborator}
@@ -437,9 +440,9 @@ export default class Collaborators extends React.Component {
                 <strong>
                   {`${this.props.permissions.maxCollaborators - (this.props.collaborators.length + this.props.waiting_collaborators.length)} remaining.`}
                 </strong>{' '}
-                  Need more?{' '}
-                  <strong>
-                    <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                Need more?{' '}
+                <strong>
+                  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
                     Add More Spots
                   </a>
                 </strong>
