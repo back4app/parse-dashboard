@@ -425,7 +425,9 @@ export default class Collaborators extends React.Component {
 
   render() {
     return (
-      <Fieldset legend={this.props.legend} description={this.props.description}>
+      <Fieldset
+        legend={this.props.legend && `${this.props.legend} ${this.props.permissions ? this.props.collaborators.length + ' / ' + this.props.permissions.maxCollaborators : ''}`}
+        description={this.props.description} >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
