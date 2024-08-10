@@ -335,8 +335,8 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
-    const limitReached = this.props.permissions && 
-                         (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;  
+    const limitReached = this.props.permissions &&
+      (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
     return (
       <Field
         labelWidth={55}
@@ -361,7 +361,7 @@ export default class Collaborators extends React.Component {
                     onChange={(value) => {
                       this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
                     }}
-                    disabled={false} // Campo de entrada habilitado quando o limite não é atingido
+                    disabled={false} 
                   />
                 );
               }}
@@ -442,13 +442,17 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    const limitReached = this.props.permissions && 
-                         (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;  
+    const limitReached = this.props.permissions.maxCollaborators &&
+      (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
     return (
       <Fieldset
         legend={
-          this.props.legend &&
-          `${this.props.legend} ${this.props.permissions ? this.props.collaborators.length + this.props.waiting_collaborators.length + ' / ' + this.props.permissions.maxCollaborators : ''}`
+          this.props.legend && (
+            `${this.props.legend} ${this.props.permissions
+              ? `${this.props.collaborators.length + this.props.waiting_collaborators.length} / ${this.props.permissions.maxCollaborators}`
+              : ''
+            }`
+          )
         }
         description={
           <>
