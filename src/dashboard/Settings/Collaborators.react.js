@@ -38,17 +38,17 @@ export default class Collaborators extends React.Component {
     super();
 
     const defaultFeaturesPermissions = {
-      "coreSettings" : "Read",
-      "manageParseServer" : "Read",
-      "logs" : "Read",
-      "cloudCode" : "Write",
-      "jobs" : "Write",
-      "webHostLiveQuery" : "Write",
-      "verificationEmails" : "Write",
-      "oauth" : "Write",
-      "twitterOauth" : "Write",
-      "pushAndroidSettings" : "Write",
-      "pushIOSSettings" : "Write"
+      "coreSettings": "Read",
+      "manageParseServer": "Read",
+      "logs": "Read",
+      "cloudCode": "Write",
+      "jobs": "Write",
+      "webHostLiveQuery": "Write",
+      "verificationEmails": "Write",
+      "oauth": "Write",
+      "twitterOauth": "Write",
+      "pushAndroidSettings": "Write",
+      "pushIOSSettings": "Write"
     }
 
     this.defaultFeaturesPermissions = defaultFeaturesPermissions
@@ -81,7 +81,7 @@ export default class Collaborators extends React.Component {
   handleAdd() {
     //TODO: Show some in-progress thing while the collaborator is being validated, or maybe have some sort of
     //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
-    this.setState({lastError: '', lastSuccess: '', showBtnCollaborator: false });
+    this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
     return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
       // lastError logic assumes we only have 1 input field
       if (response.success) {
@@ -114,7 +114,7 @@ export default class Collaborators extends React.Component {
           {message}
           {this.state.inviteCollab ?
             <span> -&nbsp;
-            <a onClick={() => {this.setState({showDialog: true})}} style={{ fontWeight: "bold" }}>Send Invite</a>
+              <a onClick={() => { this.setState({ showDialog: true }) }} style={{ fontWeight: "bold" }}>Send Invite</a>
             </span>
             : null}
         </div>
@@ -136,7 +136,7 @@ export default class Collaborators extends React.Component {
         });
       }
     }).catch(error => {
-      this.setState({showDialog: false, lastError: error.response.data.error || error.message || error.error, inviteCollab: false });
+      this.setState({ showDialog: false, lastError: error.response.data.error || error.message || error.error, inviteCollab: false });
     });
   }
 
@@ -149,7 +149,8 @@ export default class Collaborators extends React.Component {
           showDialog: false,
           lastSuccess: `The permission to ${this.state.currentEmailInput} has been updated!`,
           currentEmailInput: '',
-          waiting_collaborators: response.data.response });
+          waiting_collaborators: response.data.response
+        });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
         }, 5000);
@@ -160,7 +161,7 @@ export default class Collaborators extends React.Component {
         });
       }
     }).catch(error => {
-      this.setState({showDialog: false, lastError: error.response.data.error || error.message || error.error, inviteCollab: false });
+      this.setState({ showDialog: false, lastError: error.response.data.error || error.message || error.error, inviteCollab: false });
     });
   }
 
@@ -171,7 +172,7 @@ export default class Collaborators extends React.Component {
       })
     });
   }
-  handleEditInvitePermission(collaborator){
+  handleEditInvitePermission(collaborator) {
     this.setState({
       showDialog: true,
       editInvitePermission: true,
@@ -229,7 +230,7 @@ export default class Collaborators extends React.Component {
     return (
       <PermissionsCollaboratorDialog
         role='User'
-        email={this.state.currentEmail || this.state.currentEmailInput }
+        email={this.state.currentEmail || this.state.currentEmailInput}
         description='Configure how this user can access the App features.'
         advanced={false}
         confirmText='Save'
@@ -323,10 +324,10 @@ export default class Collaborators extends React.Component {
               }
             );
           }
-          else if (this.state.inviteCollab){
+          else if (this.state.inviteCollab) {
             this.sendInvite(featuresPermission, classesPermission, this.props.owner_email);
           }
-          else if (this.state.editInvitePermission){
+          else if (this.state.editInvitePermission) {
             this.editInvite(featuresPermission, classesPermission)
           }
         }} />
@@ -339,22 +340,21 @@ export default class Collaborators extends React.Component {
         labelWidth={55}
         label={<Label
           text='Add new collaborator'
-          description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.<br />
-          Number of collaborators you can add <strong>{this.props.permissions.maxCollaborators}.</strong></span>} />}
+          description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.</span>} />}
         input={<InlineSubmitInput
           render={() => {
             return <TextInput
               placeholder="What&#39;s their email?"
               value={this.state.currentEmail}
-              onChange={(value)=> {
-                this.setState({currentEmail: value, showBtnCollaborator: this.validateEmail(value)});
+              onChange={(value) => {
+                this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
               }}
               disabled={this.props.permissions && this.props.collaborators.length >= this.props.permissions.maxCollaborators}
             />
           }}
           showButton={this.state.showBtnCollaborator}
           validate={(email) => {
-            if ( this.state.showBtnCollaborator === true ) {
+            if (this.state.showBtnCollaborator === true) {
               return true;
             }
             return this.validateEmail(email);
@@ -364,13 +364,13 @@ export default class Collaborators extends React.Component {
   }
 
   listAppOwnerEmail() {
-    return(
+    return (
       <Field
         labelWidth={55}
         label={<Label text='App Owner' />}
         input={<TextInput
           value={this.props.owner_email}
-          onChange={() => {}}
+          onChange={() => { }}
           disabled={true}
         />}
       />
@@ -426,8 +426,26 @@ export default class Collaborators extends React.Component {
   render() {
     return (
       <Fieldset
-        legend={this.props.legend && `${this.props.legend} ${this.props.permissions ? this.props.collaborators.length + ' / ' + this.props.permissions.maxCollaborators : ''}`}
-        description={this.props.description} >
+        legend={
+          this.props.legend &&
+          `${this.props.legend} ${this.props.permissions ? this.props.collaborators.length + ' / ' + this.props.permissions.maxCollaborators : ''}`
+        }
+        description={
+          <>
+            {this.props.description}
+            <br />
+            {this.props.permissions ? (
+              <>
+                {`${this.props.permissions.maxCollaborators - this.props.collaborators.length} remaining. `}
+                Need more?{' '}
+                <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                  Add More Spots
+                </a>
+              </>
+            ) : ''}
+          </>
+        }
+      >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
