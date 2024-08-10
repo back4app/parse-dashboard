@@ -435,14 +435,16 @@ export default class Collaborators extends React.Component {
             {this.props.permissions ? (
               <>
                 {`${this.props.permissions.maxCollaborators - this.props.collaborators.length} remaining. `}
-                Need more?{' '}
-                <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-                  Add More Spots
-                </a>
+                <strong>
+                  Need more?{' '}
+                  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                    Add More Spots
+                  </a>
+                </strong>
+                <br />
+                <br />
               </>
             ) : ''}
-            <br />
-            <br />
             {this.props.description}
           </>
         }
