@@ -458,7 +458,7 @@ export default class Collaborators extends React.Component {
         }
         description={
           <>
-            {maxCollaborators !== null && maxCollaborators > 0 && (
+            {!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0 && (
               <>
                 <strong>
                   {`${maxCollaborators - totalCollaborators} remaining.`}
