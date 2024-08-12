@@ -347,7 +347,7 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          limitReached ? (
+          limitReached && !ignoreCollaboratorLimit ? (
             <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
               Add More Spots
             </a>
@@ -458,7 +458,7 @@ export default class Collaborators extends React.Component {
         }
         description={
           <>
-            {!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0 && (
+            {!ignoreCollaboratorLimit &&maxCollaborators !== null && maxCollaborators > 0 && (
               <>
                 <strong>
                   {`${maxCollaborators - totalCollaborators} remaining.`}
