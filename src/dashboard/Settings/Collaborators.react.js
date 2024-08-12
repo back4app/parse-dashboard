@@ -445,15 +445,14 @@ export default class Collaborators extends React.Component {
     const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-    const limitReached = maxCollaborators !== null && totalCollaborators >= maxCollaborators;
 
     return (
       <Fieldset
         legend={
           this.props.legend && (
             `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
-              ? `${totalCollaborators} / ${maxCollaborators}`
-              : ''
+              ? ''
+              : `${totalCollaborators} / ${maxCollaborators}`
             }`
           )
         }
