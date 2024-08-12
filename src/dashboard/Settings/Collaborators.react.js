@@ -451,8 +451,8 @@ export default class Collaborators extends React.Component {
         legend={
           this.props.legend && (
             `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
-              ? ''
-              : `${totalCollaborators} / ${maxCollaborators}`
+              ? `${totalCollaborators} / ${maxCollaborators}`
+              : ''
             }`
           )
         }
