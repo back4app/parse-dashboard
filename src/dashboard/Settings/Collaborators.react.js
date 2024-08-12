@@ -337,6 +337,7 @@ export default class Collaborators extends React.Component {
   addCollaboratorField() {
     const limitReached = this.props.permissions &&
       (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
+      const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     return (
       <Field
         labelWidth={55}
@@ -361,7 +362,7 @@ export default class Collaborators extends React.Component {
                     onChange={(value) => {
                       this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
                     }}
-                    disabled={false} // Campo de entrada habilitado quando o limite não é atingido
+                    disabled={false} 
                   />
                 );
               }}
