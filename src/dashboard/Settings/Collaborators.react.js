@@ -194,11 +194,22 @@ export default class Collaborators extends React.Component {
         showCancelButton: true,
         reverseButtons: true,
         preConfirm: () => {
-          this.props.onRemove(collaborator, newCollaborators);
-          Swal.close();
+          return this.props.onRemove(collaborator, newCollaborators)
+            .then(response => {
+              if (response.success) {
+                this.setState({ collaborators: newCollaborators });
+                Swal.close();
+              } else {
+                Swal.showValidationMessage('Error removing collaborator');
+              }
+            })
+            .catch(error => {
+              Swal.showValidationMessage(`Request failed: ${error}`);
+            });
         }
       }
     ]);
+    window.location.reload();
   }
 
   handleEdit(collaborator) {
@@ -337,7 +348,7 @@ export default class Collaborators extends React.Component {
   addCollaboratorField() {
     const limitReached = this.props.permissions &&
       (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
-      const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+    const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     return (
       <Field
         labelWidth={55}
@@ -362,7 +373,7 @@ export default class Collaborators extends React.Component {
                     onChange={(value) => {
                       this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
                     }}
-                    disabled={false} 
+                    disabled={false}
                   />
                 );
               }}
@@ -459,7 +470,7 @@ export default class Collaborators extends React.Component {
         }
         description={
           <>
-            {!ignoreCollaboratorLimit &&maxCollaborators !== null && maxCollaborators > 0 && (
+            {!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0 && (
               <>
                 <strong>
                   {`${maxCollaborators - totalCollaborators} remaining.`}
