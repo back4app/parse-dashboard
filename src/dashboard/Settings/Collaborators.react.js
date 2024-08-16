@@ -172,7 +172,6 @@ export default class Collaborators extends React.Component {
       })
     });
   }
-
   handleEditInvitePermission(collaborator) {
     this.setState({
       showDialog: true,
@@ -349,65 +348,35 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          // limitReached && !ignoreCollaboratorLimit ? (
-          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-          //     Add More Spots
-          //   </a>
-          // ) : (
-          //   <InlineSubmitInput
-          //     render={() => {
-          //       return (
-          //         <TextInput
-          //           placeholder="What&#39;s their email?"
-          //           value={this.state.currentEmail}
-          //           onChange={(value) => {
-          //             this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
-          //           }}
-          //           disabled={false} 
-          //         />
-          //       );
-          //     }}
-          //     showButton={this.state.showBtnCollaborator}
-          //     validate={(email) => {
-          //       if (this.state.showBtnCollaborator === true) {
-          //         return true;
-          //       }
-          //       return this.validateEmail(email);
-          //     }}
-          //     onSubmit={this.handleAdd.bind(this)}
-          //     submitButtonText='ADD'
-          //   />
-          // )
-
-limitReached && !ignoreCollaboratorLimit ? (
-  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-    Add More Spots
-  </a>
-) : (
-  <InlineSubmitInput
-    render={() => {
-      return (
-        <TextInput
-          placeholder="What&#39;s their email?"
-          value={this.state.currentEmail}
-          onChange={(value) => {
-            this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
-          }}
-          disabled={limitReached && !ignoreCollaboratorLimit} 
-        />
-      );
-    }}
-    showButton={this.state.showBtnCollaborator}
-    validate={(email) => {
-      if (this.state.showBtnCollaborator === true) {
-        return true;
-      }
-      return this.validateEmail(email);
-    }}
-    onSubmit={this.handleAdd.bind(this)}
-    submitButtonText='ADD'
-  />
-)
+          limitReached && !ignoreCollaboratorLimit ? (
+            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+              Add More Spots
+            </a>
+          ) : (
+            <InlineSubmitInput
+              render={() => {
+                return (
+                  <TextInput
+                    placeholder="What&#39;s their email?"
+                    value={this.state.currentEmail}
+                    onChange={(value) => {
+                      this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
+                    }}
+                    disabled={false} 
+                  />
+                );
+              }}
+              showButton={this.state.showBtnCollaborator}
+              validate={(email) => {
+                if (this.state.showBtnCollaborator === true) {
+                  return true;
+                }
+                return this.validateEmail(email);
+              }}
+              onSubmit={this.handleAdd.bind(this)}
+              submitButtonText='ADD'
+            />
+          )
         }
       />
     );
@@ -474,8 +443,6 @@ limitReached && !ignoreCollaboratorLimit ? (
   }
 
   render() {
-    // const filteredCollaborators = this.props.collaborators.filter(collaborator => !settings.IGNORE_EMAILS.includes(collaborator.userEmail));
-    // const totalCollaborators = filteredCollaborators.length + this.props.waiting_collaborators.length;
     const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
