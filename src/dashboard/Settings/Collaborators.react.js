@@ -195,14 +195,11 @@ export default class Collaborators extends React.Component {
         reverseButtons: true,
         preConfirm: () => {
           this.props.onRemove(collaborator, newCollaborators);
-          // Atualiza o estado do componente para refletir a mudança sem recarregar a página
-          this.setState({ collaborators: newCollaborators });
           Swal.close();
         }
       }
     ]);
   }
-  
 
   handleEdit(collaborator) {
     this.setState(
@@ -340,7 +337,7 @@ export default class Collaborators extends React.Component {
   addCollaboratorField() {
     const limitReached = this.props.permissions &&
       (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
-    const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+      const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     return (
       <Field
         labelWidth={55}
@@ -365,7 +362,7 @@ export default class Collaborators extends React.Component {
                     onChange={(value) => {
                       this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
                     }}
-                    disabled={false}
+                    disabled={false} 
                   />
                 );
               }}
@@ -462,7 +459,7 @@ export default class Collaborators extends React.Component {
         }
         description={
           <>
-            {!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0 && (
+            {!ignoreCollaboratorLimit &&maxCollaborators !== null && maxCollaborators > 0 && (
               <>
                 <strong>
                   {`${maxCollaborators - totalCollaborators} remaining.`}
