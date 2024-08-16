@@ -172,6 +172,33 @@ export default class Collaborators extends React.Component {
       })
     });
   }
+
+  handleRemoveInvite(collaborator) {
+    Swal.mixin().queue([
+      {
+        html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove the invite for <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span>?</p>`,
+        type: "warning",
+        confirmButtonText: "Delete",
+        confirmButtonColor: "#ff395e",
+        showCancelButton: true,
+        reverseButtons: true,
+        preConfirm: () => {
+          return this.context.removeInviteCollaborator(collaborator.userEmail)
+            .then((response) => {
+              this.setState({
+                waiting_collaborators: response.response
+              });
+              Swal.close(); 
+            })
+            .catch((error) => {
+              Swal.showValidationMessage(`Request failed: ${error}`);
+            });
+        }
+      }
+    ]);
+  }
+  
+
   handleEditInvitePermission(collaborator) {
     this.setState({
       showDialog: true,
@@ -348,35 +375,65 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          limitReached && !ignoreCollaboratorLimit ? (
-            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-              Add More Spots
-            </a>
-          ) : (
-            <InlineSubmitInput
-              render={() => {
-                return (
-                  <TextInput
-                    placeholder="What&#39;s their email?"
-                    value={this.state.currentEmail}
-                    onChange={(value) => {
-                      this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
-                    }}
-                    disabled={false} 
-                  />
-                );
-              }}
-              showButton={this.state.showBtnCollaborator}
-              validate={(email) => {
-                if (this.state.showBtnCollaborator === true) {
-                  return true;
-                }
-                return this.validateEmail(email);
-              }}
-              onSubmit={this.handleAdd.bind(this)}
-              submitButtonText='ADD'
-            />
-          )
+          // limitReached && !ignoreCollaboratorLimit ? (
+          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+          //     Add More Spots
+          //   </a>
+          // ) : (
+          //   <InlineSubmitInput
+          //     render={() => {
+          //       return (
+          //         <TextInput
+          //           placeholder="What&#39;s their email?"
+          //           value={this.state.currentEmail}
+          //           onChange={(value) => {
+          //             this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
+          //           }}
+          //           disabled={false} 
+          //         />
+          //       );
+          //     }}
+          //     showButton={this.state.showBtnCollaborator}
+          //     validate={(email) => {
+          //       if (this.state.showBtnCollaborator === true) {
+          //         return true;
+          //       }
+          //       return this.validateEmail(email);
+          //     }}
+          //     onSubmit={this.handleAdd.bind(this)}
+          //     submitButtonText='ADD'
+          //   />
+          // )
+
+limitReached && !ignoreCollaboratorLimit ? (
+  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+    Add More Spots
+  </a>
+) : (
+  <InlineSubmitInput
+    render={() => {
+      return (
+        <TextInput
+          placeholder="What&#39;s their email?"
+          value={this.state.currentEmail}
+          onChange={(value) => {
+            this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
+          }}
+          disabled={limitReached && !ignoreCollaboratorLimit} 
+        />
+      );
+    }}
+    showButton={this.state.showBtnCollaborator}
+    validate={(email) => {
+      if (this.state.showBtnCollaborator === true) {
+        return true;
+      }
+      return this.validateEmail(email);
+    }}
+    onSubmit={this.handleAdd.bind(this)}
+    submitButtonText='ADD'
+  />
+)
         }
       />
     );
@@ -443,7 +500,9 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
+    const filteredCollaborators = this.props.collaborators.filter(collaborator => !settings.IGNORE_EMAILS.includes(collaborator.userEmail));
+    const totalCollaborators = filteredCollaborators.length + this.props.waiting_collaborators.length;
+    // const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
 
@@ -474,7 +533,7 @@ export default class Collaborators extends React.Component {
               </>
             )}
             {this.props.description}
-          </>
+          </> g x
         }
       >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
