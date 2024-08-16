@@ -129,8 +129,7 @@ export default class Collaborators extends React.Component {
   sendInvite(featuresPermission, classesPermission, owner) {
     return this.context.sendEmailToInviteCollaborator(this.state.currentEmail, featuresPermission, classesPermission, owner).then((response) => {
       if (response.status === 200) {
-        updateWaitingCollaborator(response.data.response)
-        this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false /*waiting_collaborators: response.data.response*/ });
+        this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false, waiting_collaborators: response.data.response });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
         }, 5000);
@@ -174,6 +173,7 @@ export default class Collaborators extends React.Component {
 
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
+      console.log('Response from handleRemoveInvite:', response.response); 
       this.setState({
         waiting_collaborators: response.response
       })
