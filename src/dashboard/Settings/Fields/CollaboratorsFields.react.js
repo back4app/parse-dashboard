@@ -23,7 +23,7 @@ export const CollaboratorsFields = ({
     viewer_email={viewerEmail}
     onAdd={addCollaborator}
     onRemove={removeCollaborator}
-    updateWaitingCollaborators={this.updateWaitingCollaborators}
+    updateWaitingCollaborators={updateWaitingCollaborators}
     onEdit={editCollaborator} />
 };
 
