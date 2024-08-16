@@ -125,11 +125,11 @@ export default class Collaborators extends React.Component {
       </FormNote>
     );
   }
-
+  
   sendInvite(featuresPermission, classesPermission, owner) {
     return this.context.sendEmailToInviteCollaborator(this.state.currentEmail, featuresPermission, classesPermission, owner).then((response) => {
       if (response.status === 200) {
-        this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false,  this.props.updateWaitingCollaborators(response.data.response); /*waiting_collaborators: response.data.response*/ });
+        this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false,  this.props.updateWaitingCollaborators(response.data.response) });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
         }, 5000);
