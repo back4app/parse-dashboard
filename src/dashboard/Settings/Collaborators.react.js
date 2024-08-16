@@ -104,11 +104,7 @@ export default class Collaborators extends React.Component {
   componentDidMount() {
     this.setState({ waiting_collaborators: this.props.waiting_collaborators })
   }
-
-  updateWaitingCollaborators = (newWaitingCollaborators) => {
-    this.setState({ waiting_collaborators: newWaitingCollaborators });
-  }
-
+  
   displayMessage(colorNotification, message) {
     return (
       <FormNote
@@ -155,8 +151,6 @@ export default class Collaborators extends React.Component {
           currentEmailInput: '',
           waiting_collaborators: response.data.response
         });
-        this.props.updateWaitingCollaborators(response.data.response);
-
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
         }, 5000);
