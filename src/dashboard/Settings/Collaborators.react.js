@@ -500,9 +500,9 @@ limitReached && !ignoreCollaboratorLimit ? (
   }
 
   render() {
-    const filteredCollaborators = this.props.collaborators.filter(collaborator => !settings.IGNORE_EMAILS.includes(collaborator.userEmail));
-    const totalCollaborators = filteredCollaborators.length + this.props.waiting_collaborators.length;
-    // const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
+    // const filteredCollaborators = this.props.collaborators.filter(collaborator => !settings.IGNORE_EMAILS.includes(collaborator.userEmail));
+    // const totalCollaborators = filteredCollaborators.length + this.props.waiting_collaborators.length;
+    const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
 
