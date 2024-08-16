@@ -125,7 +125,6 @@ export default class Collaborators extends React.Component {
   sendInvite(featuresPermission, classesPermission, owner) {
     return this.context.sendEmailToInviteCollaborator(this.state.currentEmail, featuresPermission, classesPermission, owner).then((response) => {
       if (response.status === 200) {
-        console.log('Response from sendInvite:', response.data.response); // Adicione este log
         this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false, waiting_collaborators: response.data.response });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
@@ -168,7 +167,6 @@ export default class Collaborators extends React.Component {
 
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
-      console.log('Response from handleRemoveInvite:', response.response); 
       this.setState({
         waiting_collaborators: response.response
       })
@@ -328,6 +326,8 @@ export default class Collaborators extends React.Component {
             );
           }
           else if (this.state.inviteCollab) {
+            console.log(this.state.inviteCollab)
+            console.log(this.state)
             this.sendInvite(featuresPermission, classesPermission, this.props.owner_email);
           }
           else if (this.state.editInvitePermission) {
@@ -351,65 +351,35 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          // limitReached && !ignoreCollaboratorLimit ? (
-          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-          //     Add More Spots
-          //   </a>
-          // ) : (
-          //   <InlineSubmitInput
-          //     render={() => {
-          //       return (
-          //         <TextInput
-          //           placeholder="What&#39;s their email?"
-          //           value={this.state.currentEmail}
-          //           onChange={(value) => {
-          //             this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
-          //           }}
-          //           disabled={false} 
-          //         />
-          //       );
-          //     }}
-          //     showButton={this.state.showBtnCollaborator}
-          //     validate={(email) => {
-          //       if (this.state.showBtnCollaborator === true) {
-          //         return true;
-          //       }
-          //       return this.validateEmail(email);
-          //     }}
-          //     onSubmit={this.handleAdd.bind(this)}
-          //     submitButtonText='ADD'
-          //   />
-          // )
-
-limitReached && !ignoreCollaboratorLimit ? (
-  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-    Add More Spots
-  </a>
-) : (
-  <InlineSubmitInput
-    render={() => {
-      return (
-        <TextInput
-          placeholder="What&#39;s their email?"
-          value={this.state.currentEmail}
-          onChange={(value) => {
-            this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
-          }}
-          disabled={limitReached && !ignoreCollaboratorLimit} 
-        />
-      );
-    }}
-    showButton={this.state.showBtnCollaborator}
-    validate={(email) => {
-      if (this.state.showBtnCollaborator === true) {
-        return true;
-      }
-      return this.validateEmail(email);
-    }}
-    onSubmit={this.handleAdd.bind(this)}
-    submitButtonText='ADD'
-  />
-)
+          limitReached && !ignoreCollaboratorLimit ? (
+            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+              Add More Spots
+            </a>
+          ) : (
+            <InlineSubmitInput
+              render={() => {
+                return (
+                  <TextInput
+                    placeholder="What&#39;s their email?"
+                    value={this.state.currentEmail}
+                    onChange={(value) => {
+                      this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
+                    }}
+                    disabled={false} 
+                  />
+                );
+              }}
+              showButton={this.state.showBtnCollaborator}
+              validate={(email) => {
+                if (this.state.showBtnCollaborator === true) {
+                  return true;
+                }
+                return this.validateEmail(email);
+              }}
+              onSubmit={this.handleAdd.bind(this)}
+              submitButtonText='ADD'
+            />
+          )
         }
       />
     );
