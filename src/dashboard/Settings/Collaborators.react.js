@@ -104,7 +104,7 @@ export default class Collaborators extends React.Component {
   componentDidMount() {
     this.setState({ waiting_collaborators: this.props.waiting_collaborators })
   }
-  
+
   displayMessage(colorNotification, message) {
     return (
       <FormNote
@@ -167,13 +167,11 @@ export default class Collaborators extends React.Component {
 
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
-      console.log('Response from handleRemoveInvite:', response.response); 
       this.setState({
         waiting_collaborators: response.response
       })
     });
   }
-
   handleEditInvitePermission(collaborator) {
     this.setState({
       showDialog: true,
@@ -445,8 +443,6 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    // const filteredCollaborators = this.props.collaborators.filter(collaborator => !settings.IGNORE_EMAILS.includes(collaborator.userEmail));
-    // const totalCollaborators = filteredCollaborators.length + this.props.waiting_collaborators.length;
     const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
