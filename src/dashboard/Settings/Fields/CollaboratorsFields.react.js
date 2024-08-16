@@ -11,6 +11,7 @@ export const CollaboratorsFields = ({
   addCollaborator,
   removeCollaborator,
   editCollaborator,
+  updateWaitingCollaborators
 }) => {
   return <Collaborators
     legend='Collaborators'
@@ -22,12 +23,14 @@ export const CollaboratorsFields = ({
     viewer_email={viewerEmail}
     onAdd={addCollaborator}
     onRemove={removeCollaborator}
+    updateWaitingCollaborators={this.updateWaitingCollaborators}
     onEdit={editCollaborator} />
 };
 
 CollaboratorsFields.propTypes = {
   collaborators: PropTypes.arrayOf(PropTypes.object).isRequired,
   waiting_collaborators: PropTypes.any,
+  updateWaitingCollaborators= PropTypes.any,
   permissions: PropTypes.object, 
   ownerEmail: PropTypes.string,
   viewerEmail: PropTypes.viewerEmail,
