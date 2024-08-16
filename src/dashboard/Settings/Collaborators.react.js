@@ -102,7 +102,7 @@ export default class Collaborators extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ waiting_collaborators: this.props.waiting_collaborators })
+    // this.setState({ waiting_collaborators: this.props.waiting_collaborators })
   }
 
   displayMessage(colorNotification, message) {
