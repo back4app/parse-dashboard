@@ -533,7 +533,7 @@ limitReached && !ignoreCollaboratorLimit ? (
               </>
             )}
             {this.props.description}
-          </> g x
+          </>
         }
       >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
