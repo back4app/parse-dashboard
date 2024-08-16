@@ -102,7 +102,7 @@ export default class Collaborators extends React.Component {
   }
 
   componentDidMount() {
-    // this.setState({ waiting_collaborators: this.props.waiting_collaborators })
+    this.setState({ waiting_collaborators: this.props.waiting_collaborators })
   }
 
   displayMessage(colorNotification, message) {
@@ -167,6 +167,7 @@ export default class Collaborators extends React.Component {
 
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
+      console.log('Response from handleRemoveInvite:', response.response); 
       this.setState({
         waiting_collaborators: response.response
       })
@@ -326,8 +327,6 @@ export default class Collaborators extends React.Component {
             );
           }
           else if (this.state.inviteCollab) {
-            console.log(this.state.inviteCollab)
-            console.log(this.state)
             this.sendInvite(featuresPermission, classesPermission, this.props.owner_email);
           }
           else if (this.state.editInvitePermission) {
