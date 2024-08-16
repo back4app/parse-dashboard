@@ -194,23 +194,15 @@ export default class Collaborators extends React.Component {
         showCancelButton: true,
         reverseButtons: true,
         preConfirm: () => {
-          return this.props.onRemove(collaborator, newCollaborators)
-            .then(response => {
-              if (response.success) {
-                this.setState({ collaborators: newCollaborators });
-                Swal.close();
-              } else {
-                Swal.showValidationMessage('Error removing collaborator');
-              }
-            })
-            .catch(error => {
-              Swal.showValidationMessage(`Request failed: ${error}`);
-            });
+          this.props.onRemove(collaborator, newCollaborators);
+          // Atualiza o estado do componente para refletir a mudança sem recarregar a página
+          this.setState({ collaborators: newCollaborators });
+          Swal.close();
         }
       }
     ]);
-    window.location.reload();
   }
+  
 
   handleEdit(collaborator) {
     this.setState(
