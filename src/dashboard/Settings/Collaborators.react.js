@@ -125,6 +125,7 @@ export default class Collaborators extends React.Component {
   sendInvite(featuresPermission, classesPermission, owner) {
     return this.context.sendEmailToInviteCollaborator(this.state.currentEmail, featuresPermission, classesPermission, owner).then((response) => {
       if (response.status === 200) {
+        console.log('Response from sendInvite:', response.data.response); // Adicione este log
         this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false, waiting_collaborators: response.data.response });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
@@ -167,37 +168,12 @@ export default class Collaborators extends React.Component {
 
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
+      console.log('Response from handleRemoveInvite:', response.response); 
       this.setState({
         waiting_collaborators: response.response
       })
     });
   }
-
-  handleRemoveInvite(collaborator) {
-    Swal.mixin().queue([
-      {
-        html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove the invite for <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span>?</p>`,
-        type: "warning",
-        confirmButtonText: "Delete",
-        confirmButtonColor: "#ff395e",
-        showCancelButton: true,
-        reverseButtons: true,
-        preConfirm: () => {
-          return this.context.removeInviteCollaborator(collaborator.userEmail)
-            .then((response) => {
-              this.setState({
-                waiting_collaborators: response.response
-              });
-              Swal.close(); 
-            })
-            .catch((error) => {
-              Swal.showValidationMessage(`Request failed: ${error}`);
-            });
-        }
-      }
-    ]);
-  }
-  
 
   handleEditInvitePermission(collaborator) {
     this.setState({
