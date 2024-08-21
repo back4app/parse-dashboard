@@ -201,12 +201,11 @@ export default class Collaborators extends React.Component {
   //       }
   //     }
   //   ])
-  //   this.setState({
-  //     limitReached: 
-  //   })
   // }
+
   handleDelete(collaborator) {
     let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
+  
     Swal.mixin().queue([
       {
         html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
@@ -217,15 +216,15 @@ export default class Collaborators extends React.Component {
         reverseButtons: true,
         preConfirm: () => {
           this.props.onRemove(collaborator, newCollaborators);
-          this.setState(prevState => ({
-            limitReached: prevState.limitReached - 1
-          }));
           Swal.close();
         }
       }
-    ])
+    ]);
+  
+    this.forceUpdate();
   }
   
+
   handleEdit(collaborator) {
     this.setState(
       {
