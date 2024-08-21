@@ -343,8 +343,8 @@ export default class Collaborators extends React.Component {
     // // const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
 
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-    const limitReached = this.context.settings.fields.fields.limitReached ?? 0;
-
+    const limitReached = this.context.settings.fields.fields.limitReached || 0;
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators || 0
     return (
       <Field
         labelWidth={55}
@@ -355,7 +355,7 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          limitReached && !ignoreCollaboratorLimit ? (
+          limitReached == maxCollaborators && !ignoreCollaboratorLimit ? (
             <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
               Add More Spots
             </a>
