@@ -451,6 +451,7 @@ export default class Collaborators extends React.Component {
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     console.log(this.state.limitReached)
     console.log(this.props.limitReached)
+    console.log(this.context.settings.fields)
     // console.log('here')
     // console.log(this.state)
     // console.log(limitReached)
