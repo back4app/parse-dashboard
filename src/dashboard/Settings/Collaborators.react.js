@@ -351,11 +351,12 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          limitReached && !ignoreCollaboratorLimit ? (
-            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-              Add More Spots
-            </a>
-          ) : (
+          // limitReached && !ignoreCollaboratorLimit ? (
+          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+          //     Add More Spots
+          //   </a>
+          // ) : 
+          (
             <InlineSubmitInput
               render={() => {
                 return (
@@ -452,8 +453,8 @@ export default class Collaborators extends React.Component {
     // console.log('here')
     // console.log(this.state)
     // console.log(limitReached)
-    console.log(this.state.limitReached)
-    console.log(this.props.limitReached)
+    // console.log(this.state.limitReached)
+    // console.log(this.props.limitReached)
 
     return (
       <Fieldset

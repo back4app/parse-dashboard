@@ -32,9 +32,9 @@ export const CollaboratorsFields = ({
 CollaboratorsFields.propTypes = {
   collaborators: PropTypes.arrayOf(PropTypes.object).isRequired,
   waiting_collaborators: PropTypes.any,
-  permissions: PropTypes.number, 
+  permissions: PropTypes.object, 
   limitReached: PropTypes.number, 
-  maxCollaborators: PropTypes.object, 
+  maxCollaborators: PropTypes.number, 
   ownerEmail: PropTypes.string,
   viewerEmail: PropTypes.viewerEmail,
   addCollaborator: PropTypes.func.isRequired,
