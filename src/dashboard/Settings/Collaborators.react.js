@@ -185,27 +185,8 @@ export default class Collaborators extends React.Component {
     })
   }
 
-  // handleDelete(collaborator) {
-  //   let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
-  //   Swal.mixin().queue([
-  //     {
-  //       html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
-  //       type: "warning",
-  //       confirmButtonText: "Delete",
-  //       confirmButtonColor: "#ff395e",
-  //       showCancelButton: true,
-  //       reverseButtons: true,
-  //       preConfirm: () => {
-  //         this.props.onRemove(collaborator, newCollaborators);
-  //         Swal.close();
-  //       }
-  //     }
-  //   ])
-  // }
-
   handleDelete(collaborator) {
     let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
-    
     Swal.mixin().queue([
       {
         html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
@@ -217,13 +198,9 @@ export default class Collaborators extends React.Component {
         preConfirm: () => {
           this.props.onRemove(collaborator, newCollaborators);
           Swal.close();
-            this.setState({ 
-            limitReached: newCollaborators.length,
-            updateLegend: !this.state.updateLegend
-          });
         }
       }
-    ]);
+    ])
   }
 
   handleEdit(collaborator) {
@@ -361,8 +338,12 @@ export default class Collaborators extends React.Component {
 
   addCollaboratorField() {   
 
+    // const limitReached = this.props.permissions &&
+    // (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
+    // // const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-    const limitReached = this.context.settings.fields.fields.limitReached
+    const limitReached = this.context.settings.fields.fields.limitReached;
 
     return (
       <Field
@@ -471,13 +452,16 @@ export default class Collaborators extends React.Component {
 
   render() {
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = this.state.limitReached || this.context.settings.fields.fields.limitReached;
-  
-    const legendText = `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
+    
+    const limitReached = this.context.settings.fields.fields.limitReached
+
+    const legendText = this.state.updateLegend
+    ? `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
       ? `${limitReached} / ${maxCollaborators}`
-      : ''}`;
-  
+      : ''}`
+    : this.props.legend;
+
     return (
       <Fieldset
         legend={legendText}
