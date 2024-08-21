@@ -205,7 +205,7 @@ export default class Collaborators extends React.Component {
 
   handleDelete(collaborator) {
     let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
-  
+    
     Swal.mixin().queue([
       {
         html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
@@ -218,8 +218,8 @@ export default class Collaborators extends React.Component {
           this.props.onRemove(collaborator, newCollaborators);
           Swal.close();
             this.setState({ 
-            updateLegend: !this.state.updateLegend,
-            limitReached: this.props.collaborators.length
+            limitReached: newCollaborators.length,
+            updateLegend: !this.state.updateLegend
           });
         }
       }
