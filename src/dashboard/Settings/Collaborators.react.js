@@ -221,9 +221,10 @@ export default class Collaborators extends React.Component {
       }
     ]);
   
-    this.forceUpdate();
+    this.setState({
+      collaborators: newCollaborators,
+    });
   }
-  
 
   handleEdit(collaborator) {
     this.setState(
