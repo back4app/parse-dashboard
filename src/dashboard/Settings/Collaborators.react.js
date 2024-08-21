@@ -185,6 +185,26 @@ export default class Collaborators extends React.Component {
     })
   }
 
+  // handleDelete(collaborator) {
+  //   let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
+  //   Swal.mixin().queue([
+  //     {
+  //       html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
+  //       type: "warning",
+  //       confirmButtonText: "Delete",
+  //       confirmButtonColor: "#ff395e",
+  //       showCancelButton: true,
+  //       reverseButtons: true,
+  //       preConfirm: () => {
+  //         this.props.onRemove(collaborator, newCollaborators);
+  //         Swal.close();
+  //       }
+  //     }
+  //   ])
+  //   this.setState({
+  //     limitReached: 
+  //   })
+  // }
   handleDelete(collaborator) {
     let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
     Swal.mixin().queue([
@@ -197,12 +217,15 @@ export default class Collaborators extends React.Component {
         reverseButtons: true,
         preConfirm: () => {
           this.props.onRemove(collaborator, newCollaborators);
+          this.setState(prevState => ({
+            limitReached: prevState.limitReached - 1
+          }));
           Swal.close();
         }
       }
-    ]);
+    ])
   }
-
+  
   handleEdit(collaborator) {
     this.setState(
       {
@@ -337,9 +360,10 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {   
-    // const limitReached = this.props.permissions &&
-    //   (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
-    //   const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+
+    const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+    const limitReached = this.context.settings.fields.fields.limitReached
+
     return (
       <Field
         labelWidth={55}
@@ -350,11 +374,11 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          // limitReached && !ignoreCollaboratorLimit ? (
-          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-          //     Add More Spots
-          //   </a>
-          // ) : 
+          limitReached && !ignoreCollaboratorLimit ? (
+            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+              Add More Spots
+            </a>
+          ) : 
           (
             <InlineSubmitInput
               render={() => {
