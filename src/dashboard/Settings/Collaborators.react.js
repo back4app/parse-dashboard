@@ -341,6 +341,7 @@ export default class Collaborators extends React.Component {
     //   (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
     //   const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     console.log(this.state.limitReached)
+    console.log(this.props.limitReached)
     return (
       <Field
         labelWidth={55}
