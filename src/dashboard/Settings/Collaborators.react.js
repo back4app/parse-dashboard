@@ -337,9 +337,10 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {   
-    const limitReached = this.props.permissions &&
-      (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
-      const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+    // const limitReached = this.props.permissions &&
+    //   (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
+    //   const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+    console.log(this.state.limitReached)
     return (
       <Field
         labelWidth={55}
@@ -448,18 +449,22 @@ export default class Collaborators extends React.Component {
     const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-    console.log('here')
-    console.log(this.state)
-    console.log(limitReached)
+    // console.log('here')
+    // console.log(this.state)
+    // console.log(limitReached)
+    console.log(this.state.limitReached)
+    console.log(this.props.limitReached)
+
     return (
       <Fieldset
         legend={
-          this.props.legend && (
-            `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
-              ? `${totalCollaborators} / ${maxCollaborators}`
-              : ''
-            }`
-          )
+          this.props.legend 
+          // && (
+          //   `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
+          //     ? `${totalCollaborators} / ${maxCollaborators}`
+          //     : ''
+          //   }`
+          // )
         }
         description={
           <>
@@ -512,5 +517,6 @@ Collaborators.propTypes = {
   onRemove: PropTypes.func.isRequired.describe(
     'A function that will be called whenever a user removes a valid collaborator email. It receives the removed email and an updated array of all collaborators for this app.'
   ),
-  permissions: PropTypes.object.describe('App permissions')
+  permissions: PropTypes.object.describe('App permissions'),
+  limitReached: PropTypes.number.describe('limit of collaborators'),
 };
