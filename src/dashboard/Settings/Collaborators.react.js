@@ -68,7 +68,9 @@ export default class Collaborators extends React.Component {
       currentEmailInput: '',
       inviteCollab: false,
       showBtnCollaborator: false,
-      permissions: {}
+      permissions: {},
+      limitReached: '',
+      maxCollaborators: ''
     };
   }
 
@@ -334,7 +336,7 @@ export default class Collaborators extends React.Component {
     )
   }
 
-  addCollaboratorField() {
+  addCollaboratorField() {   
     const limitReached = this.props.permissions &&
       (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
       const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
@@ -446,7 +448,8 @@ export default class Collaborators extends React.Component {
     const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-
+    console.log('here')
+    console.log(this.state.limitReached)
     return (
       <Fieldset
         legend={
