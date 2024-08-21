@@ -449,7 +449,8 @@ export default class Collaborators extends React.Component {
     const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     console.log('here')
-    console.log(this.state.limitReached)
+    console.log(this.state)
+    console.log(limitReached)
     return (
       <Fieldset
         legend={
