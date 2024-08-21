@@ -205,7 +205,6 @@ export default class Collaborators extends React.Component {
 
   handleDelete(collaborator) {
     let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
-  
     Swal.mixin().queue([
       {
         html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
@@ -217,14 +216,14 @@ export default class Collaborators extends React.Component {
         preConfirm: () => {
           this.props.onRemove(collaborator, newCollaborators);
           Swal.close();
+            this.setState({ updateLegend: true }, () => {
+            this.setState({ updateLegend: false });
+          });
         }
       }
     ]);
-  
-    this.setState({
-      collaborators: newCollaborators,
-    });
   }
+  
 
   handleEdit(collaborator) {
     this.setState(
@@ -475,17 +474,15 @@ export default class Collaborators extends React.Component {
     
     const limitReached = this.context.settings.fields.fields.limitReached
 
+    const legendText = this.state.updateLegend
+    ? `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
+      ? `${limitReached} / ${maxCollaborators}`
+      : ''}`
+    : this.props.legend;
+
     return (
       <Fieldset
-        legend={
-          this.props.legend 
-          && (
-            `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
-              ? `${limitReached} / ${maxCollaborators}`
-              : ''
-            }`
-          )
-        }
+        legend={legendText}
         description={
           <>
             {!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0 && (
