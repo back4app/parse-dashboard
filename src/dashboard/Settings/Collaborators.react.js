@@ -80,29 +80,63 @@ export default class Collaborators extends React.Component {
       lodash.mapValues(this.context.classCounts.counts, () => 'Write')
   }
 
+  // handleAdd() {
+  //   //TODO: Show some in-progress thing while the collaborator is being validated, or maybe have some sort of
+  //   //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
+  //   this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
+  //   return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
+  //     // lastError logic assumes we only have 1 input field
+  //     if (response.success) {
+  //       this.setState({
+  //         showDialog: true,
+  //         toAdd: true,
+  //         lastError: '',
+  //         inviteCollab: false,
+  //         limitReached: prevState => ({prevState.limitReached + 1})
+  //       });
+  //       return true;
+  //     } else if (response.error) {
+  //       this.setState({ lastError: response.error });
+  //       return false;
+  //     }
+  //   }).catch(error => {
+  //     this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true })
+  //   });
+  // }
+
+
   handleAdd() {
-    //TODO: Show some in-progress thing while the collaborator is being validated, or maybe have some sort of
-    //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
+    // Clear previous error messages and button state
     this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
+  
     return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
-      // lastError logic assumes we only have 1 input field
       if (response.success) {
-        this.setState({
-          showDialog: true,
-          toAdd: true,
-          lastError: '',
-          inviteCollab: false
+        // Update the state and log the previous and new values of limitReached
+        this.setState(prevState => {
+          const newLimitReached = prevState.limitReached + 1;
+          console.log('Previous limitReached:', prevState.limitReached);
+          console.log('New limitReached:', newLimitReached);
+          return {
+            showDialog: true,
+            toAdd: true,
+            lastError: '',
+            inviteCollab: false,
+            limitReached: newLimitReached 
+          };
+        }, () => {
+          console.log('State after update:', this.state.limitReached);
         });
+  
         return true;
       } else if (response.error) {
         this.setState({ lastError: response.error });
         return false;
       }
     }).catch(error => {
-      this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true })
+      this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true });
     });
   }
-
+  
   componentDidMount() {
     this.setState({ waiting_collaborators: this.props.waiting_collaborators })
   }
@@ -337,11 +371,6 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {   
-
-    // const limitReached = this.props.permissions &&
-    // (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
-    // // const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
-
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     const limitReached = this.context.settings.fields.fields.limitReached || 0;
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators || 0
