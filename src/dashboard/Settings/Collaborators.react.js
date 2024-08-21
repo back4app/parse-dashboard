@@ -457,17 +457,19 @@ export default class Collaborators extends React.Component {
     const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
     
-    const limitReached = this.context.settings.fields.fields.limitReached ?? 0
-
-    const legendText = this.state.updateLegend
-    ? `${this.props.legend} ${!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0
-      ? `${limitReached} / ${maxCollaborators}`
-      : ''}`
-    : this.props.legend;
-
+    const limitReached = this.context.settings.fields.fields.limitReached || 0;
+    
     return (
-      <Fieldset
-        legend={legendText}
+    <Fieldset
+      legend={
+        this.props.legend && (
+          `${this.props.legend} ${
+            maxCollaborators !== null && maxCollaborators > 0
+              ? `${limitReached} / ${maxCollaborators}`
+              : ''
+          }`
+        )
+      }
         description={
           <>
             {!ignoreCollaboratorLimit && maxCollaborators !== null && maxCollaborators > 0 && (
