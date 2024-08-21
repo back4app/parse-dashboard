@@ -458,7 +458,7 @@ export default class Collaborators extends React.Component {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
     
     const limitReached = this.context.settings.fields.fields.limitReached || 0;
-    
+
     return (
     <Fieldset
       legend={
