@@ -17,7 +17,6 @@ import { isMobile } from 'lib/browserUtils';
 // import * as queryString from 'query-string';
 // import PropTypes from 'lib/PropTypes';
 // import ParseApp from 'lib/ParseApp';
-import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import postgresqlImg from './postgresql.png';
@@ -128,7 +127,6 @@ class Browser extends DashboardView {
       keepAddingCols: false,
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
-      showPostgresqlModal: !!Cookies.get('isPostgresql'),
       openSecurityDialog: false,
 
       markRequiredFieldRow: 0,
@@ -245,18 +243,6 @@ class Browser extends DashboardView {
     } else if (this.props.params.className) {
       this.prefetchData(this.props, this.context);
     }
-    if (this.state.showPostgresqlModal) {
-      MySwal.fire({
-        ...postgresqlAlert,
-        onAfterClose: () => {
-          Cookies.remove('isPostgresql', { domain: 'back4app.com' });
-          this.setState({
-            showPostgresqlModal: false
-          });
-        }
-      });
-    }
-
     window.addEventListener('resize', this.windowResizeHandler);
   }
 
