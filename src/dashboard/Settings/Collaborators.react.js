@@ -336,39 +336,50 @@ export default class Collaborators extends React.Component {
     )
   }
 
-  addCollaboratorField() {   
-    // const limitReached = this.props.permissions &&
-    //   (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
-    //   const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
+
+  addCollaboratorField() {
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
+    const limitReached = this.context.settings.fields.fields.limitReached;
+
     return (
       <Field
         labelWidth={55}
         label={
           <Label
-            text='Add new collaborator'
-            description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.</span>}
+            text="Add new collaborator"
+            description={
+              <span>
+                Collaborators will have read/write access but cannot
+                <br />
+                delete the app or add more collaborators.
+              </span>
+            }
           />
         }
         input={
-          // limitReached && !ignoreCollaboratorLimit ? (
-          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-          //     Add More Spots
-          //   </a>
-          // ) : 
-          (
+          maxCollaborators !== true && maxCollaborators !== null && maxCollaborators >= limitReached ? (
+            <a
+              href="https://www.back4app.com/pricing/backend-as-a-service"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Add More Spots
+            </a>
+          ) : (
             <InlineSubmitInput
-              render={() => {
-                return (
-                  <TextInput
-                    placeholder="What&#39;s their email?"
-                    value={this.state.currentEmail}
-                    onChange={(value) => {
-                      this.setState({ currentEmail: value, showBtnCollaborator: this.validateEmail(value) });
-                    }}
-                    disabled={false} 
-                  />
-                );
-              }}
+              render={() => (
+                <TextInput
+                  placeholder="What's their email?"
+                  value={this.state.currentEmail}
+                  onChange={(value) => {
+                    this.setState({
+                      currentEmail: value,
+                      showBtnCollaborator: this.validateEmail(value),
+                    });
+                  }}
+                  disabled={false}
+                />
+              )}
               showButton={this.state.showBtnCollaborator}
               validate={(email) => {
                 if (this.state.showBtnCollaborator === true) {
@@ -377,7 +388,7 @@ export default class Collaborators extends React.Component {
                 return this.validateEmail(email);
               }}
               onSubmit={this.handleAdd.bind(this)}
-              submitButtonText='ADD'
+              submitButtonText="ADD"
             />
           )
         }
@@ -446,42 +457,42 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators    
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
     const limitReached = this.context.settings.fields.fields.limitReached
 
     return (
       <Fieldset
-      legend={
-        this.props.legend 
-        && (
-          `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
-            ? `${limitReached} / ${maxCollaborators}`
-            : ''
-          }`
-        )
-      }
-      description={
-        <>
-          {maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0 && (
-            <>
-             <strong>
-             {maxCollaborators - limitReached >= 0 
-               ? `${maxCollaborators - limitReached} remaining.` 
-               : "You reached your plan limit"}
-             </strong>{' '}
-              Need more?{' '}
-              <strong>
-                <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-                  Add More Spots
-                </a>
-              </strong>
-              <br />
-            </>
-          )}
-          {this.props.description}
-        </>
-      }
-    >
+        legend={
+          this.props.legend
+          && (
+            `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
+              ? `${limitReached} / ${maxCollaborators}`
+              : ''
+            }`
+          )
+        }
+        description={
+          <>
+            {maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0 && (
+              <>
+                <strong>
+                  {maxCollaborators - limitReached >= 0
+                    ? `${maxCollaborators - limitReached} remaining.`
+                    : "You reached your plan limit"}
+                </strong>{' '}
+                Need more?{' '}
+                <strong>
+                  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                    Add More Spots
+                  </a>
+                </strong>
+                <br />
+              </>
+            )}
+            {this.props.description}
+          </>
+        }
+      >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
