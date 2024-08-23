@@ -102,7 +102,7 @@ export default class Collaborators extends React.Component {
       this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true })
     });
   }
-  
+
   componentDidMount() {
     this.setState({ waiting_collaborators: this.props.waiting_collaborators })
   }
@@ -200,7 +200,7 @@ export default class Collaborators extends React.Component {
           Swal.close();
         }
       }
-    ])
+    ]);
   }
 
   handleEdit(collaborator) {
@@ -337,8 +337,9 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {   
-    const limitReached = this.context.settings.fields.fields.limitReached || 0;
-    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators || 0
+    // const limitReached = this.props.permissions &&
+    //   (this.props.collaborators.length + this.props.waiting_collaborators.length) >= this.props.permissions.maxCollaborators;
+    //   const ignoreCollaboratorLimit = this.props.permissions.ignoreCollaboratorLimit;
     return (
       <Field
         labelWidth={55}
@@ -349,11 +350,11 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          maxCollaborators !== true && limitReached && limitReached >= maxCollaborators ? (
-            <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-              Add More Spots
-            </a>
-          ) : 
+          // limitReached && !ignoreCollaboratorLimit ? (
+          //   <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+          //     Add More Spots
+          //   </a>
+          // ) : 
           (
             <InlineSubmitInput
               render={() => {
@@ -445,42 +446,42 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = this.context.settings.fields.fields.limitReached;
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators    
+    const limitReached = this.context.settings.fields.fields.limitReached
 
     return (
-    <Fieldset
+      <Fieldset
       legend={
-        this.props.legend && (
-          `${this.props.legend} ${
-            maxCollaborators !== null && maxCollaborators !== true
-              ? `${limitReached} / ${maxCollaborators}`
-              : ''
+        this.props.legend 
+        && (
+          `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
+            ? `${limitReached} / ${maxCollaborators}`
+            : ''
           }`
         )
       }
-        description={
-          <>
-            {maxCollaborators !== null && maxCollaborators !== true && (
-              <>
-                <strong>
-                  {maxCollaborators - limitReached >= 0 
-                    ? `${maxCollaborators - limitReached} remaining.` 
-                    : "You reached your plan limit"}
-                </strong>{' '}
-                Need more?{' '}
-                <strong>
-                  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
-                    Add More Spots
-                  </a>
-                </strong>
-                <br />
-              </>
-            )}
-            {this.props.description}
-          </>
-        }
-      >
+      description={
+        <>
+          {maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0 && (
+            <>
+             <strong>
+             {maxCollaborators - limitReached >= 0 
+               ? `${maxCollaborators - limitReached} remaining.` 
+               : "You reached your plan limit"}
+             </strong>{' '}
+              Need more?{' '}
+              <strong>
+                <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                  Add More Spots
+                </a>
+              </strong>
+              <br />
+            </>
+          )}
+          {this.props.description}
+        </>
+      }
+    >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
