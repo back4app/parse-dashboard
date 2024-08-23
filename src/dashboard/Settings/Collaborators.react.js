@@ -70,8 +70,7 @@ export default class Collaborators extends React.Component {
       showBtnCollaborator: false,
       permissions: {},
       limitReached: '',
-      maxCollaborators: '',
-      ignoreCollaboratorLimit: ''
+      maxCollaborators: ''
     };
   }
 
@@ -372,7 +371,6 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {   
-    const ignoreCollaboratorLimit = this.context.settings.fields.fields.ignoreCollaboratorLimit;
     const limitReached = this.context.settings.fields.fields.limitReached || 0;
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators || 0
     return (
@@ -385,7 +383,7 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          !ignoreCollaboratorLimit && limitReached && limitReached >= maxCollaborators ? (
+          maxCollaborators !== true && limitReached && limitReached >= maxCollaborators ? (
             <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
               Add More Spots
             </a>
@@ -484,7 +482,7 @@ export default class Collaborators extends React.Component {
     // const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
     // const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
     
-    const ignoreCollaboratorLimit = this.context.settings.fields.fields.ignoreCollaboratorLimit;
+    // const ignoreCollaboratorLimit = this.context.settings.fields.fields.ignoreCollaboratorLimit;
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
     
     const limitReached = this.context.settings.fields.fields.limitReached || 0;
@@ -494,7 +492,7 @@ export default class Collaborators extends React.Component {
       legend={
         this.props.legend && (
           `${this.props.legend} ${
-            !ignoreCollaboratorLimit && maxCollaborators !== null
+            maxCollaborators !== null && maxCollaborators !== true
               ? `${limitReached} / ${maxCollaborators}`
               : ''
           }`
@@ -502,7 +500,7 @@ export default class Collaborators extends React.Component {
       }
         description={
           <>
-            {!ignoreCollaboratorLimit && maxCollaborators !== null && (
+            {maxCollaborators !== null && maxCollaborators !== true && (
               <>
                 <strong>
                   {`${maxCollaborators - limitReached} remaining.`}
