@@ -12,6 +12,7 @@ export const CollaboratorsFields = ({
   removeCollaborator,
   editCollaborator,
   limitReached,
+  ignoreCollaboratorLimit,
   maxCollaborators
 }) => {
   return <Collaborators
@@ -21,6 +22,7 @@ export const CollaboratorsFields = ({
     waiting_collaborators={waiting_collaborators}
     permissions={permissions}
     limitReached={limitReached}
+    ignoreCollaboratorLimit={ignoreCollaboratorLimit}
     maxCollaborators={maxCollaborators}
     owner_email={ownerEmail}
     viewer_email={viewerEmail}
@@ -34,7 +36,8 @@ CollaboratorsFields.propTypes = {
   waiting_collaborators: PropTypes.any,
   permissions: PropTypes.object, 
   limitReached: PropTypes.number, 
-  maxCollaborators: PropTypes.number, 
+  maxCollaborators: PropTypes.number,
+  ignoreCollaboratorLimit: PropTypes.bool,
   ownerEmail: PropTypes.string,
   viewerEmail: PropTypes.viewerEmail,
   addCollaborator: PropTypes.func.isRequired,
