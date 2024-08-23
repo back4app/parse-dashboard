@@ -339,7 +339,7 @@ export default class Collaborators extends React.Component {
 
   addCollaboratorField() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = this.context.settings.fields.fields.limitReached;
+    const limitReached = this.context.settings.fields.fields.limitReached ?? 0;
 
     return (
       <Field
@@ -457,8 +457,8 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
-    const limitReached = this.context.settings.fields.fields.limitReached
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
+    const limitReached = this.context.settings.fields.fields.limitReached ?? 0;
 
     return (
       <Fieldset
@@ -525,5 +525,5 @@ Collaborators.propTypes = {
     'A function that will be called whenever a user removes a valid collaborator email. It receives the removed email and an updated array of all collaborators for this app.'
   ),
   permissions: PropTypes.object.describe('App permissions'),
-  // limitReached: PropTypes.number.describe('limit of collaborators'),
+  limitReached: PropTypes.number.describe('limit of collaborators'),
 };
