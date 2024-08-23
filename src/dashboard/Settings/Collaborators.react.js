@@ -479,13 +479,8 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    // const totalCollaborators = this.props.collaborators.length + this.props.waiting_collaborators.length;
-    // const maxCollaborators = this.props.permissions.maxCollaborators ? this.props.permissions.maxCollaborators : null;
-    
-    // const ignoreCollaboratorLimit = this.context.settings.fields.fields.ignoreCollaboratorLimit;
-    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators
-    
-    const limitReached = this.context.settings.fields.fields.limitReached || 0;
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
+    const limitReached = this.context.settings.fields.fields.limitReached;
 
     return (
     <Fieldset
@@ -503,7 +498,9 @@ export default class Collaborators extends React.Component {
             {maxCollaborators !== null && maxCollaborators !== true && (
               <>
                 <strong>
-                  {`${maxCollaborators - limitReached} remaining.`}
+                  {maxCollaborators - limitReached >= 0 
+                    ? `${maxCollaborators - limitReached} remaining.` 
+                    : "You reached your plan limit"}
                 </strong>{' '}
                 Need more?{' '}
                 <strong>
