@@ -80,61 +80,32 @@ export default class Collaborators extends React.Component {
       lodash.mapValues(this.context.classCounts.counts, () => 'Write')
   }
 
-  // handleAdd() {
-  //   //TODO: Show some in-progress thing while the collaborator is being validated, or maybe have some sort of
-  //   //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
-  //   this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
-  //   return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
-  //     // lastError logic assumes we only have 1 input field
-  //     if (response.success) {
-  //       this.setState({
-  //         showDialog: true,
-  //         toAdd: true,
-  //         lastError: '',
-  //         inviteCollab: false
-  //       });
-  //       return true;
-  //     } else if (response.error) {
-  //       this.setState({ lastError: response.error });
-  //       return false;
-  //     }
-  //   }).catch(error => {
-  //     this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true })
-  //   });
-  // }
-
-
   handleAdd() {
+    //TODO: Show some in-progress thing while the collaborator is being validated, or maybe have some sort of
+    //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
     this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
-  
-    this.context.validateCollaborator(this.state.currentEmail).then((response) => {
+    return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
+      console.log('response here')
+      console.log(response)
+      // lastError logic assumes we only have 1 input field
       if (response.success) {
         this.setState({
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false
+          inviteCollab: false,
+          limitReached: this.context.settings.fields.fields.limitReached
         });
-  
-        return this.addCollaborator(this.state.currentEmail).then((updateResponse) => {
-          this.setState({
-            limitReached: updateResponse.data.limitReached,
-            maxCollaborators: updateResponse.data.maxCollaborators
-          });
-          // this.forceUpdate();
-        }).catch((error) => {
-          this.setState({ lastError: error.message });
-        });
-  
+        return true;
       } else if (response.error) {
         this.setState({ lastError: response.error });
         return false;
       }
     }).catch(error => {
-      this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true });
+      this.setState({ lastError: error.message, inviteCollab: error.status === 404 && true })
     });
   }
-  
+
 
   componentDidMount() {
     this.setState({ waiting_collaborators: this.props.waiting_collaborators })
