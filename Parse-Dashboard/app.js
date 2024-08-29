@@ -206,7 +206,7 @@ module.exports = function(config, options) {
           <script>
             PARSE_DASHBOARD_PATH = "${mountPath}";
           </script>
-          <title>Parse Dashboard</title>
+          <title>Backend Dashboard</title>
         </head>
         <body>
           <div id="login_mount"></div>
@@ -249,7 +249,7 @@ module.exports = function(config, options) {
           <script>
             PARSE_DASHBOARD_PATH = "${mountPath}";
           </script>
-          <title>Parse Dashboard</title>
+          <title>Backend Dashboard</title>
         </head>
           <body>
             <div id="browser_mount"></div>
