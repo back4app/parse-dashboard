@@ -776,6 +776,9 @@ export default class ParseApp {
           this.settings.fields.fields.collaborators : [];
       this.settings.fields.fields.collaborators = [ ...this.settings.fields.fields.collaborators, data.data ];
     });
+    console.log('data here')
+    console.log(data)
+    console.log(JSON.stringify(data))
     return promise;
   }
 
