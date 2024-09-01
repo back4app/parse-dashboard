@@ -86,7 +86,7 @@ export default class Collaborators extends React.Component {
     this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
     return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
       console.log('response here')
-      console.log(response)
+      console.log(JSON.stringify(response))
       // lastError logic assumes we only have 1 input field
       if (response.success) {
         this.setState({
