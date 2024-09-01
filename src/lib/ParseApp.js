@@ -763,7 +763,6 @@ export default class ParseApp {
     return promise;
   }
 
-
   addCollaborator(email, featuresPermission, classesPermission) {
     const path = '/apps/' + this.slug + '/collaborations';
     const promise = axios.post(path, {'collaboration[email]': email, featuresPermission, classesPermission});
