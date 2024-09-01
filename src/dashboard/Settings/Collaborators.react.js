@@ -460,7 +460,9 @@ export default class Collaborators extends React.Component {
 
   render() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.context.settings.fields.fields.limitReached >= this.context.settings.fields.fields.collaborators) ? this.context.settings.fields.fields.limitReached : 0
+    const limitReached = this.context.settings.fields.fields.limitReached ?? 0
+    const collaborators = this.context.settings.fields.fields.collaborators
+    // const limitReached = (this.context.settings.fields.fields.limitReached >= this.context.settings.fields.fields.collaborators) ? this.context.settings.fields.fields.limitReached : 0
     // const collaborators = this.context.settings.fields.fields.collaborators;
 
     // (limitReached >= collaborators) : coll
@@ -474,7 +476,7 @@ export default class Collaborators extends React.Component {
           this.props.legend
           && (
             `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
-              ? `${limitReached} / ${maxCollaborators}`
+              ? `${collaborators} / ${maxCollaborators}`
               : ''
             }`
           )
