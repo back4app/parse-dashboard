@@ -96,6 +96,7 @@ export default class Collaborators extends React.Component {
           inviteCollab: false,
           limitReached: this.context.settings.fields.fields.limitReached
         });
+        console.log(limitReached)
         return true;
       } else if (response.error) {
         this.setState({ lastError: response.error });
