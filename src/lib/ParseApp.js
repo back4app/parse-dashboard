@@ -770,15 +770,16 @@ export default class ParseApp {
       //TODO: this currently works because everything that uses collaborators
       // happens to re-render after this call anyway, but really the collaborators
       // should be updated properly in a store or AppsManager or something
+      console.log('data here')
+      console.log(data)
+      console.log(JSON.stringify(data))
+      
       this.settings.fields.fields.limitReached = data.limitReached;
       this.settings.fields.fields.collaborators =
         Array.isArray(this.settings.fields.fields.collaborators) ?
           this.settings.fields.fields.collaborators : [];
       this.settings.fields.fields.collaborators = [ ...this.settings.fields.fields.collaborators, data.data ];
     });
-    console.log('data here')
-    console.log(data)
-    console.log(JSON.stringify(data))
     return promise;
   }
 
