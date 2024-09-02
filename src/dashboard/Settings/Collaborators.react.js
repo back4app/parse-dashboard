@@ -470,7 +470,7 @@ export default class Collaborators extends React.Component {
     console.log(this.context.settings.fields.fields.limitReached)
     console.log(limitReached)
     console.log('test 3')
-    console.log(this.props.collaborators)
+    console.log(this.props.collaborators.length)
     return (
       <Fieldset
         legend={
