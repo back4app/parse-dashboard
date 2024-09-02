@@ -462,11 +462,12 @@ export default class Collaborators extends React.Component {
 
   render() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.context.settings.fields.fields.collaborators.length <= this.context.settings.fields.fields.limitReached) ? this.context.settings.fields.fields.collaborators.length : this.context.settings.fields.fields.limitReached || 0
-    const newlimit = this.state.limitReached
-    // console.log('render here')
-    // console.log(this.context.settings.fields.fields.collaborators >= this.context.settings.fields.fields.collaborators.length)  ? this.context.settings.fields.fields.limitReached : 0
-    // console.log('limitReached here')
+    const limitReached = (this.state.limitReached.length <= this.context.settings.fields.fields.limitReached) ? this.state.limitReached.length : this.context.settings.fields.fields.limitReached || 0
+    
+    console.log('test 1')
+    console.log(this.state.limitReached.length)
+    console.log('test 2')
+    console.log(this.context.settings.fields.fields.limitReached)
     console.log(limitReached)
 
     return (
