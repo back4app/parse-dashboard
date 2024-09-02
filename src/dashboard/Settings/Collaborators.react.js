@@ -466,6 +466,7 @@ export default class Collaborators extends React.Component {
     const newlimit = this.state.limitReached
     console.log('render here')
     console.log(this.context.settings.fields.fields.collaborators)
+    console.log('render here')
     console.log(newlimit)
 
     return (
@@ -474,7 +475,7 @@ export default class Collaborators extends React.Component {
           this.props.legend
           && (
             `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
-              ? `${limitReached} / ${maxCollaborators}`
+              ? `${newlimit} / ${maxCollaborators}`
               : ''
             }`
           )
