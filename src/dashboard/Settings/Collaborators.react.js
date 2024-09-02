@@ -94,7 +94,7 @@ export default class Collaborators extends React.Component {
           toAdd: true,
           lastError: '',
           inviteCollab: false,
-          limitReached: this.context.settings.fields.fields.limitReached
+          limitReached: this.context.settings.fields.fields.collaborators
         });
         return true;
       } else if (response.error) {
@@ -462,12 +462,12 @@ export default class Collaborators extends React.Component {
 
   render() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.context.settings.fields.fields.limitReached >= this.context.settings.fields.fields.collaborators.length) ? this.context.settings.fields.fields.limitReached : 0
+    const limitReached = (this.context.settings.fields.fields.collaborators.length <= this.context.settings.fields.fields.limitReached) ? this.context.settings.fields.fields.collaborators.length : this.context.settings.fields.fields.limitReached || 0
     const newlimit = this.state.limitReached
-    console.log('render here')
-    console.log(this.context.settings.fields.fields.collaborators)
-    console.log('render here')
-    console.log(newlimit)
+    // console.log('render here')
+    // console.log(this.context.settings.fields.fields.collaborators >= this.context.settings.fields.fields.collaborators.length)  ? this.context.settings.fields.fields.limitReached : 0
+    // console.log('limitReached here')
+    console.log(limitReached)
 
     return (
       <Fieldset
@@ -475,7 +475,7 @@ export default class Collaborators extends React.Component {
           this.props.legend
           && (
             `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
-              ? `${newlimit || limitReached} / ${maxCollaborators}`
+              ? `${limitReached} / ${maxCollaborators}`
               : ''
             }`
           )
