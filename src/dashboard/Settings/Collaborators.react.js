@@ -86,15 +86,12 @@ export default class Collaborators extends React.Component {
     this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
     return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
       // lastError logic assumes we only have 1 input field
-      console.log('limit here')
-      console.log(response.limit)
       if (response.success) {
         this.setState({
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false,
-          limitReached: response.limit
+          inviteCollab: false
         });
         return true;
       } else if (response.error) {
@@ -463,10 +460,12 @@ export default class Collaborators extends React.Component {
   render() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     const limitReached = (this.context.settings.fields.fields.limitReached >= this.context.settings.fields.fields.collaborators.length) ? this.context.settings.fields.fields.limitReached : 0
-    const newlimit = this.state.limitReached
+    const newlimit = this.setState({
+      limitReached: this.context.settings.fields.fields.limitReached 
+    })
     console.log('render here')
     console.log(this.context.settings.fields.fields.collaborators)
-    console.log('render here')
+    console.log('newlimit here')
     console.log(newlimit)
 
     return (
