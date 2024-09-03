@@ -656,7 +656,6 @@ export default class ParseApp {
   }
 
   removeInviteCollaborator(email) {
-  
     const path = '/apps/' + this.slug + '/collaborations/removeInvite/' + encodeURIComponent(email);
     const promise = AJAX.del(path);
     promise.then(() => {
