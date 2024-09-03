@@ -340,20 +340,9 @@ export default class Collaborators extends React.Component {
 
 
   addCollaboratorField() {
-    // const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    // const limitReached = this.context.settings.fields.fields.limitReached ?? 0;
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.props.collaborators.length <=  this.context.settings.fields.fields.limitReached) 
-    ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
+    const limitReached = (this.props.collaborators.length <=  this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
     
-    console.log('test 4')
-    console.log(this.state.limitReached.length)
-    console.log('test 5')
-    console.log(this.context.settings.fields.fields.limitReached)
-    console.log(limitReached)
-    console.log('test 6')
-    console.log(this.props.collaborators.length)
-
     return (
       <Field
         labelWidth={55}
@@ -472,14 +461,7 @@ export default class Collaborators extends React.Component {
   render() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     const limitReached = (this.props.collaborators.length <=  this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
-    
-    console.log('test 1')
-    console.log(this.state.limitReached.length)
-    console.log('test 2')
-    console.log(this.context.settings)
-    console.log(limitReached)
-    console.log('test 3')
-    console.log(this.props.collaborators.length)
+
     return (
       <Fieldset
         legend={
