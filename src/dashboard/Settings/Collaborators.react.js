@@ -441,10 +441,10 @@ export default class Collaborators extends React.Component {
   }
 
   renderStandByCollaborators() {
-    const limitReached = this.context.settings.fields.fields.waiting_collaborators.length
+    const limitReached = this.context.settings.fields.fields.waiting_collaborators.length +  + this.context.settings.fields.fields.limitReached
     console.log('test 1')
     console.log(limitReached)
-    const test = this.props.waiting_collaborators.length
+    const test = this.props.waiting_collaborators.length + this.context.settings.fields.fields.limitReached
     console.log('test 2')
     console.log(test)
     return (
