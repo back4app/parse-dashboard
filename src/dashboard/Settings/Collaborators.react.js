@@ -177,6 +177,7 @@ export default class Collaborators extends React.Component {
       })
     });
   }
+  
   handleEditInvitePermission(collaborator) {
     this.setState({
       showDialog: true,
@@ -437,6 +438,8 @@ export default class Collaborators extends React.Component {
   }
 
   renderStandByCollaborators() {
+    const limitReached = (this.props.collaborators.length + this.props.waiting_collaborators.length <=  this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
+    console.log(limitReached)
     return (
       <Field
         minHeight={40}
