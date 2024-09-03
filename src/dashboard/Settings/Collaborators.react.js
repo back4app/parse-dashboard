@@ -136,7 +136,7 @@ export default class Collaborators extends React.Component {
       } else {
         this.setState({
           lastError: response.error,
-          inviteCollab: false
+          inviteCollab: false,
         });
       }
     }).catch(error => {

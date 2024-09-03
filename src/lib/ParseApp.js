@@ -645,7 +645,7 @@ export default class ParseApp {
 
   sendEmailToInviteCollaborator(email, featuresPermission, classesPermission, owner) {
     const path = '/apps/' + this.slug + '/collaborations/saveInvite';
-    const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
+    const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner,});
     return promise;
   }
 
@@ -656,8 +656,14 @@ export default class ParseApp {
   }
 
   removeInviteCollaborator(email) {
+  
     const path = '/apps/' + this.slug + '/collaborations/removeInvite/' + encodeURIComponent(email);
-    const promise = AJAX.del(path)
+    const promise = AJAX.del(path);
+    promise.then(() => {
+      this.settings.fields.fields.waiting_collaborators = this.settings.fields.fields.waiting_collaborators.filter(
+        c => c.userEmail != email
+      );
+    });
     return promise;
   }
 
