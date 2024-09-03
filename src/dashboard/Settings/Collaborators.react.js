@@ -172,7 +172,8 @@ export default class Collaborators extends React.Component {
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
       this.setState({
-        waiting_collaborators: response.response
+        waiting_collaborators: response.response,
+        limitReached: response.limitReached
       })
     });
   }
