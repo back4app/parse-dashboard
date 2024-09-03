@@ -331,9 +331,6 @@ export default class Collaborators extends React.Component {
             );
           }
           else if (this.state.inviteCollab) {
-            const limitReached = this.props.waiting_collaborators.length 
-            console.log('new limit reached')
-            console.log(limitReached)
             this.sendInvite(featuresPermission, classesPermission, this.props.owner_email);
           }
           else if (this.state.editInvitePermission) {
@@ -346,7 +343,7 @@ export default class Collaborators extends React.Component {
 
   addCollaboratorField() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.props.collaborators.length <=  this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
+    const limitReached = (this.props.collaborators.length + this.props.waiting_collaborators <= this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
     
     return (
       <Field
@@ -441,7 +438,7 @@ export default class Collaborators extends React.Component {
   }
 
   renderStandByCollaborators() {
-    const limitReached = this.context.settings.fields.fields.waiting_collaborators.length +  + this.context.settings.fields.fields.limitReached
+    const limitReached = this.context.settings.fields.fields.waiting_collaborators.length + this.context.settings.fields.fields.limitReached
     console.log('test 1')
     console.log(limitReached)
     const test = this.props.waiting_collaborators.length + this.context.settings.fields.fields.limitReached
@@ -471,7 +468,7 @@ export default class Collaborators extends React.Component {
 
   render() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.props.collaborators.length <=  this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
+    const limitReached = (this.props.collaborators.length <= this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
 
     return (
       <Fieldset
