@@ -91,8 +91,7 @@ export default class Collaborators extends React.Component {
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false,
-          limitReached: 
+          inviteCollab: false
         });
         return true;
       } else if (response.error) {
