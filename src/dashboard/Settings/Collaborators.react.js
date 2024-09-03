@@ -93,8 +93,7 @@ export default class Collaborators extends React.Component {
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false,
-          limitReached: this.context.settings.fields.fields.collaborators
+          inviteCollab: false
         });
         return true;
       } else if (response.error) {
@@ -464,6 +463,13 @@ export default class Collaborators extends React.Component {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     const limitReached = (this.props.collaborators.length <= this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached || 0
     
+    console.log('test 1')
+    console.log(this.state.limitReached.length)
+    console.log('test 2')
+    console.log(this.context.settings.fields.fields.limitReached)
+    console.log(limitReached)
+    console.log('test 3')
+    console.log(this.props.collaborators.length)
     return (
       <Fieldset
         legend={
