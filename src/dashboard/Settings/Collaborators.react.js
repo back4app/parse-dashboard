@@ -441,9 +441,9 @@ export default class Collaborators extends React.Component {
     console.log('this part')
     console.log(this.context.settings.fields.fields)
     console.log('this other part')
-    console.log(this.context.fields.fields.waiting_collaborators)
+    console.log(this.context.settings.fields.fields.waiting_collaborators)
     console.log('this another part')
-    console.log(this.context.fields.fields.waiting_collaborators.length)
+    console.log(this.context.settings.fields.fields.waiting_collaborators.length)
     // const limitReached = this.context.settings.fields.fields.waiting_collaborators.length + this.context.settings.fields.fields.limitReached
     // console.log('test 1')
     // console.log(limitReached)
