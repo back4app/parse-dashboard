@@ -444,12 +444,12 @@ export default class Collaborators extends React.Component {
     console.log(this.context.settings.fields.fields.waiting_collaborators)
     console.log('this another part')
     console.log(this.context.settings.fields.fields.waiting_collaborators.length)
-    // const limitReached = this.context.settings.fields.fields.waiting_collaborators.length + this.context.settings.fields.fields.limitReached
-    // console.log('test 1')
-    // console.log(limitReached)
-    // const test = this.context.settings.fields.fields.waiting_collaborators// + this.context.settings.fields.fields.limitReached
-    // console.log('test 2')
-    // console.log(test)
+    const limitReached = this.context.settings.fields.fields.waiting_collaborators.length + this.context.settings.fields.fields.limitReached
+    console.log('test 1')
+    console.log(limitReached)
+    const test = this.context.settings.fields.fields.waiting_collaborators + this.context.settings.fields.fields.limitReached
+    console.log('test 2')
+    console.log(test)
     return (
       <Field
         minHeight={40}
