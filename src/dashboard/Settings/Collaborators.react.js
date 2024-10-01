@@ -92,7 +92,7 @@ export default class Collaborators extends React.Component {
           toAdd: true,
           lastError: '',
           inviteCollab: false,
-          limitReached: this.context.settings.fields.fields.limitReached
+          limitReached: this.context.settings.fields.fields.limitReached ?? 0
         });
         return true;
       } else if (response.error) {
@@ -173,7 +173,7 @@ export default class Collaborators extends React.Component {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
       this.setState({
         waiting_collaborators: response.response,
-        limitReached: response.limitReached
+        limitReached: response.limitReached ?? 0
       })
     });
   }
@@ -343,7 +343,7 @@ export default class Collaborators extends React.Component {
 
   addCollaboratorField() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.props.collaborators.length + this.props.waiting_collaborators <= this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
+    const limitReached = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.limitReached ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.limitReached ?? 0);
     
     return (
       <Field
@@ -438,7 +438,7 @@ export default class Collaborators extends React.Component {
   }
 
   renderStandByCollaborators() {
-    const limitReached = this.context.settings.fields.fields.limitReached
+    const limitReached = (this.context.settings.fields.fields.limitReached ?? 0)
     console.log('test 1')
     console.log(limitReached)
     // const test = this.context.settings.fields.fields.waiting_collaborators + this.context.settings.fields.fields.limitReached
