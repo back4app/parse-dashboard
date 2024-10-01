@@ -441,9 +441,7 @@ export default class Collaborators extends React.Component {
     const limitReached = (this.context.settings.fields.fields.limitReached ?? 0)
     console.log('test 1')
     console.log(limitReached)
-    // const test = this.context.settings.fields.fields.waiting_collaborators + this.context.settings.fields.fields.limitReached
-    // console.log('test 2')
-    // console.log(test)
+    
     return (
       <Field
         minHeight={40}
@@ -467,11 +465,10 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
+    //working
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    // const limitReached = (this.props.collaborators.length + this.props.collaborator.waiting_collaborators.length <= this.context.settings.fields.fields.limitReached) ? this.props.collaborators.length : this.context.settings.fields.fields.limitReached;
     const limitReached = (this.context.settings.fields.fields.limitReached ?? 0)
-    // console.log('here')
-    // console.log(this.props.collaborator)
+
     return (
       <Fieldset
         legend={
