@@ -468,7 +468,11 @@ export default class Collaborators extends React.Component {
     //working
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
-
+    const test = this.settings.fields.fields.collaboratorUsage
+    console.log('test here')
+    console.log(test)
+    console.log("collaboratorUsage here")
+    console.log(collaboratorUsage)
     return (
       <Fieldset
         legend={
