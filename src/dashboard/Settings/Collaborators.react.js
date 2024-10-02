@@ -92,7 +92,7 @@ export default class Collaborators extends React.Component {
           toAdd: true,
           lastError: '',
           inviteCollab: false,
-          collaboratorUsage: response.collaboratorUsage       //   collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
+          collaboratorUsage: response.data.collaboratorUsage       //   collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
         });
         console.log('handle add')
         console.log(this.state.collaboratorUsage)
