@@ -69,7 +69,7 @@ export default class Collaborators extends React.Component {
       inviteCollab: false,
       showBtnCollaborator: false,
       permissions: {},
-      limitReached: '',
+      collaboratorUsage: '',
       maxCollaborators: ''
     };
   }
@@ -92,7 +92,7 @@ export default class Collaborators extends React.Component {
           toAdd: true,
           lastError: '',
           inviteCollab: false,
-          limitReached: this.context.settings.fields.fields.limitReached ?? 0
+          collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
         });
         return true;
       } else if (response.error) {
@@ -173,7 +173,7 @@ export default class Collaborators extends React.Component {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
       this.setState({
         waiting_collaborators: response.response,
-        limitReached: response.limitReached ?? 0
+        collaboratorUsage: response.collaboratorUsage ?? 0
       })
     });
   }
@@ -343,7 +343,7 @@ export default class Collaborators extends React.Component {
 
   addCollaboratorField() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.limitReached ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.limitReached ?? 0);
+    const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
     
     return (
       <Field
@@ -361,7 +361,7 @@ export default class Collaborators extends React.Component {
           />
         }
         input={
-          maxCollaborators !== true && maxCollaborators !== null && limitReached >= maxCollaborators ? (
+          maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
             <a
               href="https://www.back4app.com/pricing/backend-as-a-service"
               target="_blank"
@@ -438,9 +438,9 @@ export default class Collaborators extends React.Component {
   }
 
   renderStandByCollaborators() {
-    const limitReached = (this.context.settings.fields.fields.limitReached ?? 0)
+    const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
     console.log('test 1')
-    console.log(limitReached)
+    console.log(collaboratorUsage)
     
     return (
       <Field
@@ -467,7 +467,7 @@ export default class Collaborators extends React.Component {
   render() {
     //working
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const limitReached = (this.context.settings.fields.fields.limitReached ?? 0)
+    const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
 
     return (
       <Fieldset
@@ -475,7 +475,7 @@ export default class Collaborators extends React.Component {
           this.props.legend
           && (
             `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
-              ? `${limitReached} / ${maxCollaborators}`
+              ? `${collaboratorUsage} / ${maxCollaborators}`
               : ''
             }`
           )
@@ -485,8 +485,8 @@ export default class Collaborators extends React.Component {
             {maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0 && (
               <>
                 <strong>
-                  {maxCollaborators - limitReached >= 0
-                    ? `${maxCollaborators - limitReached} remaining.`
+                  {maxCollaborators - collaboratorUsage >= 0
+                    ? `${maxCollaborators - collaboratorUsage} remaining.`
                     : "You reached your plan limit"}
                 </strong>{' '}
                 Need more?{' '}
@@ -534,5 +534,5 @@ Collaborators.propTypes = {
     'A function that will be called whenever a user removes a valid collaborator email. It receives the removed email and an updated array of all collaborators for this app.'
   ),
   permissions: PropTypes.object.describe('App permissions'),
-  limitReached: PropTypes.number.describe('limit of collaborators'),
+  collaboratorUsage: PropTypes.number.describe('limit of collaborators'),
 };
