@@ -91,8 +91,8 @@ export default class Collaborators extends React.Component {
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false
-          // collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
+          inviteCollab: false,
+          collaboratorUsage: response.collaboratorUsage       //   collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
         });
         console.log('handle add')
         console.log(this.state.collaboratorUsage)
@@ -473,9 +473,9 @@ export default class Collaborators extends React.Component {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     // const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
     
-    const collaboratorUsage = this.state.collaboratorUsage
+    // const collaboratorUsage = this.state.collaboratorUsage
     // const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    // const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
+    const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
     
     console.log("collaboratorUsage here")
     console.log(collaboratorUsage)
