@@ -69,7 +69,7 @@ export default class Collaborators extends React.Component {
       inviteCollab: false,
       showBtnCollaborator: false,
       permissions: {},
-      collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage,
+      collaboratorUsage: '',
       maxCollaborators: ''
     };
   }
@@ -91,9 +91,11 @@ export default class Collaborators extends React.Component {
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false
-          // collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
+          inviteCollab: false,
+          collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
         });
+        console.log('handle add')
+        console.log(this.state.collaboratorUsage)
         return true;
       } else if (response.error) {
         this.setState({ lastError: response.error });
