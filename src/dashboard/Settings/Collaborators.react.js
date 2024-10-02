@@ -91,8 +91,8 @@ export default class Collaborators extends React.Component {
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false,
-          collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
+          inviteCollab: false
+          // collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage ?? 0
         });
         console.log('handle add')
         console.log(this.state.collaboratorUsage)
