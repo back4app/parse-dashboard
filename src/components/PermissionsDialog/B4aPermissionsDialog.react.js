@@ -1086,19 +1086,37 @@ export default class B4aPermissionsDialog extends React.Component {
     } else if (pointer) {
       // get class info from schema
       const selectedColumn = columns.find(col => col.name === key);
-      const { type, targetClass } = selectedColumn;
-
-      const pillText = type + (targetClass ? `<${targetClass}>` : '');
-
-      label = (
-        <span>
-          <p>
-            {key}
-            {pill(pillText)}
-          </p>
-          <p className={styles.hint}>Only users pointed to by this field</p>
-        </span>
-      );
+      let labelSubContent;
+      if (selectedColumn) {
+        const { type, targetClass } = selectedColumn;
+        const pillText = type + (targetClass ? `<${targetClass}>` : '');
+        labelSubContent = (
+          <span>
+            <p>
+              {key}
+              {pill(pillText)}
+            </p>
+            <p className={styles.hint}>Only users pointed to by this field</p>
+          </span>
+        );
+      } else {
+        labelSubContent = (
+          <span>
+            <p>
+              {key}
+            </p>
+            <p className={styles.hint}>This column has been deleted or removed</p>
+          </span>
+        );
+      }
+      label = <div className={styles.customLabel}>
+        {labelSubContent}
+        <div className={styles.delete}>
+          <button type="button" onClick={this.deleteRow.bind(this, key, pointer)}>
+            <Icon name="b4a-trash-icon" width={18} height={18} />
+          </button>
+        </div>
+      </div>
     }
 
     let content = null;
