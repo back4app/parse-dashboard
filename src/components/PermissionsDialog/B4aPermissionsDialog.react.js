@@ -429,7 +429,7 @@ function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange)
       );
     } else {
       cols.push(
-        <div key="third" className={[styles.pointerWrite].join(' ')}>
+        <div key="third" className={[styles.check, styles.pointerWrite].join(' ')}>
           <div className={styles.checkboxWrap}>
             <B4aCheckbox
               label="Write and Add field"
