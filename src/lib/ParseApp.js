@@ -645,7 +645,15 @@ export default class ParseApp {
 
   sendEmailToInviteCollaborator(email, featuresPermission, classesPermission, owner) {
     const path = '/apps/' + this.slug + '/collaborations/saveInvite';
-    const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner,});
+    const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
+    promise.then(({ data }) => {
+      this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
+      this.settings.fields.fields.collaborators =
+        Array.isArray(this.settings.fields.fields.collaborators) ?
+          this.settings.fields.fields.collaborators : [];
+      this.settings.fields.fields.collaborators = [ ...this.settings.fields.fields.collaborators, data.data ];
+    });
+
     return promise;
   }
 
