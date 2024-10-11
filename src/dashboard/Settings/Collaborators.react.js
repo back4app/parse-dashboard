@@ -108,6 +108,25 @@ export default class Collaborators extends React.Component {
     });    
   }
 
+  handleDelete(collaborator) {
+    let newCollaborators = this.props.collaborators.filter(oldCollaborator => oldCollaborator.userEmail !== collaborator.userEmail);
+    Swal.mixin().queue([
+      {
+        html: `<p style="text-align: center; margin-bottom: 16px;">Are you sure you want to remove <span style="font-weight: bold; color: #169cee">${collaborator.userEmail}</span> as a collaborator.</p>`,
+        type: "warning",
+        confirmButtonText: "Delete",
+        confirmButtonColor: "#ff395e",
+        showCancelButton: true,
+        reverseButtons: true,
+        preConfirm: () => {
+          this.props.onRemove(collaborator, newCollaborators);
+          Swal.close();
+        }
+      }
+    ]);
+  }
+
+
 
   componentDidMount() {
     this.setState({ waiting_collaborators: this.props.waiting_collaborators })
@@ -349,7 +368,7 @@ export default class Collaborators extends React.Component {
 
   addCollaboratorField() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
+    const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.data.collaboratorUsage ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
     
     return (
       <Field
@@ -476,7 +495,10 @@ export default class Collaborators extends React.Component {
     const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
 
     // const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
-    
+    console.log('context')
+    console.log(this.context.settings)
+    console.log('settings')
+    console.log(this.settings)
     console.log("collaboratorUsage here")
     console.log(collaboratorUsage)
     return (
