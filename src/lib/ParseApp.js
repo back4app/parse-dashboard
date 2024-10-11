@@ -778,6 +778,7 @@ export default class ParseApp {
       // should be updated properly in a store or AppsManager or something     
 
       //charles mexa aqui
+      console.log(JSON.stringify(data))
       this.settings.fields.fields.collaboratorUsage = data.collaboratorUsage;
       this.settings.fields.fields.collaborators =
         Array.isArray(this.settings.fields.fields.collaborators) ?
