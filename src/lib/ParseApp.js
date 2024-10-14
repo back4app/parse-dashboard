@@ -649,8 +649,11 @@ export default class ParseApp {
     promise.then(({ data }) => {
       console.log("data.data")
       console.log(data)
+      console.log(data.response)
+      console.log(data.response.length)
       
-      // this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
+      
+      // this.settings.fields.fields.collaboratorUsage = data.response
       // this.settings.fields.fields.collaboratorUsage = data.data;
     });
 
