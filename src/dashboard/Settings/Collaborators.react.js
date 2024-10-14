@@ -465,7 +465,6 @@ export default class Collaborators extends React.Component {
 
   renderStandByCollaborators() {
     const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
-    console.log('test 1')
     console.log(collaboratorUsage)
     
     return (

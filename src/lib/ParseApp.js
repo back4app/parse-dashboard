@@ -647,6 +647,8 @@ export default class ParseApp {
     const path = '/apps/' + this.slug + '/collaborations/saveInvite';
     const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     promise.then(({ data }) => { 
+      console.log('data.data here')
+      console.log(data)
       this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage
     });
 
