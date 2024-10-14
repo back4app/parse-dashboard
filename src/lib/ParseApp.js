@@ -653,7 +653,7 @@ export default class ParseApp {
       console.log(data.response.length)
       
       
-      // this.settings.fields.fields.collaboratorUsage = data.response
+      this.settings.fields.fields.waiting_collaborators = data.response
       // this.settings.fields.fields.collaboratorUsage = data.data;
     });
 
