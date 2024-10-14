@@ -665,6 +665,8 @@ export default class ParseApp {
     const path = '/apps/' + this.slug + '/collaborations/removeInvite/' + encodeURIComponent(email);
     const promise = AJAX.del(path);
     promise.then((data) => {
+      console.log('data remove invite')
+      console.log(data)
       this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
       this.settings.fields.fields.waiting_collaborators = this.settings.fields.fields.waiting_collaborators.filter(
         c => c.userEmail != email
