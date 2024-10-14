@@ -85,8 +85,6 @@ export default class Collaborators extends React.Component {
     //async validator in the parent form. Currently if you mash the add button, they same collaborator gets added many times.
     this.setState({ lastError: '', lastSuccess: '', showBtnCollaborator: false });
     return this.context.validateCollaborator(this.state.currentEmail).then((response) => {
-      console.log('response here')
-      console.log(JSON.stringify(response))
       // lastError logic assumes we only have 1 input field
       if (response.success) {
         this.setState({
@@ -96,8 +94,6 @@ export default class Collaborators extends React.Component {
           inviteCollab: false,
           collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage
         });
-        console.log('handle add')
-        console.log(this.state.collaboratorUsage)
         return true;
       } else if (response.error) {
         this.setState({ lastError: response.error });
@@ -198,8 +194,6 @@ export default class Collaborators extends React.Component {
         waiting_collaborators: response.response,
         collaboratorUsage: response.data.collaboratorUsage ?? 0
       })
-      console.log('collaborator usage here handle remove invite')
-      console.log(this.state.collaboratorUsage)
     });
   }
   
@@ -463,10 +457,7 @@ export default class Collaborators extends React.Component {
     )
   }
 
-  renderStandByCollaborators() {
-    const collaboratorUsage = (this.context.settings.fields.fields.collaboratorUsage ?? 0)
-    console.log(collaboratorUsage)
-    
+  renderStandByCollaborators() {   
     return (
       <Field
         minHeight={40}
@@ -490,24 +481,9 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
-    //working
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    // const collaboratorUsage = 
-    // (this.context.settings.fields.fields.collaborators.length + this.context.settings.fields.fields.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0))
-    // ? (this.props.collaborators.length + this.props.waiting_collaborators.length) :
-    //  (this.context.settings.fields.fields.collaboratorUsage ?? 0);
-
     const collaboratorUsage = this.context.settings.fields.fields.collaboratorUsage || 0
-    console.log('new new')
-    console.log(this.context.settings.fields.fields.waiting_collaborators.length)
-    console.log(this.context.settings.fields.fields.collaborators.length)
-    console.log('context')
-    console.log(this.context.settings)
-    console.log('settings')
-    console.log(this.settings)
-    console.log("collaboratorUsage here")
-    
-    console.log(collaboratorUsage)
+
     return (
       <Fieldset
         legend={

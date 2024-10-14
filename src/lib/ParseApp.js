@@ -647,8 +647,6 @@ export default class ParseApp {
     const path = '/apps/' + this.slug + '/collaborations/saveInvite';
     const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     promise.then(({ data }) => { 
-      console.log('data.data here')
-      console.log(data)
       this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage
     });
 
@@ -665,8 +663,6 @@ export default class ParseApp {
     const path = '/apps/' + this.slug + '/collaborations/removeInvite/' + encodeURIComponent(email);
     const promise = AJAX.del(path);
     promise.then((data) => {
-      console.log('data remove invite')
-      console.log(data)
       this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
       this.settings.fields.fields.waiting_collaborators = this.settings.fields.fields.waiting_collaborators.filter(
         c => c.userEmail != email
@@ -748,10 +744,11 @@ export default class ParseApp {
   removeCollaboratorById(id) {
     const path = '/apps/' + this.slug + '/collaborations/' + id.toString();
     const promise = AJAX.del(path);
-    promise.then(() => {
+    promise.then((data) => {
       //TODO: this currently works because everything that uses collaborators
       // happens to re-render after this call anyway, but really the collaborators
       // should be updated properly in a store or AppsManager or something
+      this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
       this.settings.fields.fields.collaborators = this.settings.fields.fields.collaborators.filter(
         c => c.id != id
       );
