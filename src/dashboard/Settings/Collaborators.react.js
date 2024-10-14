@@ -493,14 +493,15 @@ export default class Collaborators extends React.Component {
   render() {
     //working
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators.length <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? (this.props.collaborators.length + this.props.waiting_collaborators.length) : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
-    console.log('props')
-    console.log(this.props.waiting_collaborators)
+    const collaboratorUsage = (this.context.fields.fields.collaborators.length + this.context.fields.fields.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? (this.props.collaborators.length + this.props.waiting_collaborators.length) : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
+    console.log('new new')
+    console.log(this.context.fields.fields.waiting_collaborators)
     console.log('context')
     console.log(this.context.settings)
     console.log('settings')
     console.log(this.settings)
     console.log("collaboratorUsage here")
+    
     console.log(collaboratorUsage)
     return (
       <Fieldset
