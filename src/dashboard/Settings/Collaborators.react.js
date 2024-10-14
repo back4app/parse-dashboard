@@ -495,7 +495,8 @@ export default class Collaborators extends React.Component {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     const collaboratorUsage = (this.context.settings.fields.fields.collaborators.length + this.context.settings.fields.fields.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? (this.props.collaborators.length + this.props.waiting_collaborators.length) : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
     console.log('new new')
-    console.log(this.context.settings.fields.fields.waiting_collaborators)
+    console.log(this.context.settings.fields.fields.waiting_collaborators.length)
+    console.log(this.context.settings.fields.fields.collaborators.length)
     console.log('context')
     console.log(this.context.settings)
     console.log('settings')
