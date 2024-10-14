@@ -369,8 +369,8 @@ export default class Collaborators extends React.Component {
   addCollaboratorField() {
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
     // const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators <= (this.context.settings.fields.fields.data.collaboratorUsage ?? 0)) ? this.props.collaborators.length : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
-    const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators.length <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? (this.props.collaborators.length + this.props.waiting_collaborators.length) : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
-
+    // const collaboratorUsage = (this.props.collaborators.length + this.props.waiting_collaborators.length <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? (this.props.collaborators.length + this.props.waiting_collaborators.length) : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
+    const collaboratorUsage = this.context.settings.fields.fields.collaboratorUsage || 0
     return (
       <Field
         labelWidth={55}
@@ -492,7 +492,12 @@ export default class Collaborators extends React.Component {
   render() {
     //working
     const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
-    const collaboratorUsage = (this.context.settings.fields.fields.collaborators.length + this.context.settings.fields.fields.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0)) ? (this.props.collaborators.length + this.props.waiting_collaborators.length) : (this.context.settings.fields.fields.collaboratorUsage ?? 0);
+    // const collaboratorUsage = 
+    // (this.context.settings.fields.fields.collaborators.length + this.context.settings.fields.fields.waiting_collaborators <= (this.context.settings.fields.fields.collaboratorUsage ?? 0))
+    // ? (this.props.collaborators.length + this.props.waiting_collaborators.length) :
+    //  (this.context.settings.fields.fields.collaboratorUsage ?? 0);
+
+    const collaboratorUsage = this.context.settings.fields.fields.collaboratorUsage || 0
     console.log('new new')
     console.log(this.context.settings.fields.fields.waiting_collaborators.length)
     console.log(this.context.settings.fields.fields.collaborators.length)
