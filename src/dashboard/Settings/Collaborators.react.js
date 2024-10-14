@@ -88,7 +88,10 @@ export default class Collaborators extends React.Component {
       lastSuccess: '',
       currentEmailInput: '',
       inviteCollab: false,
-      showBtnCollaborator: false
+      showBtnCollaborator: false,
+      permissions: {},
+      collaboratorUsage: '',
+      maxCollaborators: ''
     };
   }
 
@@ -109,7 +112,8 @@ export default class Collaborators extends React.Component {
           showDialog: true,
           toAdd: true,
           lastError: '',
-          inviteCollab: false
+          inviteCollab: false,
+          collaboratorUsage: this.context.settings.fields.fields.collaboratorUsage
         });
         return true;
       } else if (response.error) {
@@ -145,7 +149,7 @@ export default class Collaborators extends React.Component {
   sendInvite(featuresPermission, classesPermission, owner) {
     return this.context.sendEmailToInviteCollaborator(this.state.currentEmail, featuresPermission, classesPermission, owner).then((response) => {
       if (response.status === 200) {
-        this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false, waiting_collaborators: response.data.response });
+        this.setState({ lastError: '', inviteCollab: false, showDialog: false, lastSuccess: 'The invite has been sent!', currentEmail: '', showBtnCollaborator: false, waiting_collaborators: response.data.response, collaboratorUsage: response.data.response.length });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
         }, 5000);
@@ -169,7 +173,8 @@ export default class Collaborators extends React.Component {
           showDialog: false,
           lastSuccess: `The permission to ${this.state.currentEmailInput} has been updated!`,
           currentEmailInput: '',
-          waiting_collaborators: response.data.response });
+          waiting_collaborators: response.data.response
+        });
         setTimeout(() => {
           this.setState({ lastSuccess: '' })
         }, 5000);
@@ -187,7 +192,8 @@ export default class Collaborators extends React.Component {
   handleRemoveInvite(collaborator) {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
       this.setState({
-        waiting_collaborators: response.response
+        waiting_collaborators: response.response,
+        collaboratorUsage: response.data.collaboratorUsage ?? 0
       })
     });
   }
@@ -358,32 +364,56 @@ export default class Collaborators extends React.Component {
   }
 
   addCollaboratorField() {
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
+    const collaboratorUsage = this.context.settings.fields.fields.collaboratorUsage || 0
+
     return (
       <Field
         labelWidth={55}
         label={<Label
           dark={true}
           text='Add new collaborator'
-          description={<span>Collaborators will have read/write access but cannot <br /> delete the app or add more collaborators.</span>} />}
-        input={<InlineSubmitInput
-          render={() => {
-            return <div style={{ width: '100%', padding: '0 1rem' }}><TextInput
-              placeholder="What&#39;s their email?"
-              value={this.state.currentEmail}
-              onChange={(value)=> {
-                this.setState({currentEmail: value, showBtnCollaborator: this.validateEmail(value)});
-              }}
-            /></div>
-          }}
-          showButton={this.state.showBtnCollaborator}
-          validate={(email) => {
-            if (this.state.showBtnCollaborator === true) {
-              return true;
-            }
-            return this.validateEmail(email);
-          }}
-          onSubmit={this.handleAdd.bind(this)}
-          submitButtonText='ADD' />}
+          description={
+          <span>
+            Collaborators will have read/write access but cannot 
+            <br /> 
+            delete the app or add more collaborators.
+          </span>} 
+        />}
+        input={
+          maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
+            <a
+            href="https://www.back4app.com/pricing/backend-as-a-service"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Add More Spots
+          </a>
+ ) : (
+  <InlineSubmitInput
+    render={() => (
+      <TextInput
+        placeholder="What's their email?"
+        value={this.state.currentEmail}
+        onChange={(value) => {
+          this.setState({
+            currentEmail: value,
+            showBtnCollaborator: this.validateEmail(value),
+          });
+        }}
+        disabled={false}
+      />
+    )}
+    showButton={this.state.showBtnCollaborator}
+    validate={(email) => {
+      if (this.state.showBtnCollaborator === true) {
+        return true;
+      }
+      return this.validateEmail(email);
+    }}
+    onSubmit={this.handleAdd.bind(this)}
+    submitButtonText="ADD"
+  />)}
         theme={Field.Theme.BLUE}
       />
     )
@@ -455,8 +485,42 @@ export default class Collaborators extends React.Component {
   }
 
   render() {
+    const maxCollaborators = this.context.settings.fields.fields.maxCollaborators;
+    const collaboratorUsage = this.context.settings.fields.fields.collaboratorUsage || 0
+
     return (
-      <Fieldset legend={this.props.legend} description={this.props.description}>
+      <Fieldset
+      legend={
+        this.props.legend
+        && (
+          `${this.props.legend} ${maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0
+            ? `${collaboratorUsage} / ${maxCollaborators}`
+            : ''
+          }`
+        )
+      }
+      description={
+        <>
+          {maxCollaborators !== true && maxCollaborators !== null && maxCollaborators > 0 && (
+            <>
+              <strong>
+                {maxCollaborators - collaboratorUsage >= 0
+                  ? `${maxCollaborators - collaboratorUsage} remaining.`
+                  : "You reached your plan limit"}
+              </strong>{' '}
+              Need more?{' '}
+              <strong>
+                <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                  Add More Spots
+                </a>
+              </strong>
+              <br />
+            </>
+          )}
+          {this.props.description}
+        </>
+      }
+    >
         {this.props.viewer_email === this.props.owner_email ? this.addCollaboratorField() : this.listAppOwnerEmail()}
         {this.state.lastSuccess !== '' ? this.displayMessage('green', this.state.lastSuccess) : null}
         {this.state.lastError !== '' ? this.displayMessage('red', this.state.lastError) : null}
@@ -488,4 +552,6 @@ Collaborators.propTypes = {
   onRemove: PropTypes.func.isRequired.describe(
     'A function that will be called whenever a user removes a valid collaborator email. It receives the removed email and an updated array of all collaborators for this app.'
   ),
+  permissions: PropTypes.object.describe('App permissions'),
+  collaboratorUsage: PropTypes.number.describe('limit of collaborators'),
 };

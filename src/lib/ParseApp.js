@@ -644,6 +644,9 @@ export default class ParseApp {
   sendEmailToInviteCollaborator(email, featuresPermission, classesPermission, owner) {
     const path = '/apps/' + this.slug + '/collaborations/saveInvite';
     const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
+    promise.then(({ data }) => { 
+      this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage
+    });
     return promise;
   }
 
@@ -655,7 +658,13 @@ export default class ParseApp {
 
   removeInviteCollaborator(email) {
     const path = '/apps/' + this.slug + '/collaborations/removeInvite/' + encodeURIComponent(email);
-    const promise = AJAX.del(path)
+    const promise = AJAX.del(path);
+    promise.then((data) => {
+      this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
+      this.settings.fields.fields.waiting_collaborators = this.settings.fields.fields.waiting_collaborators.filter(
+        c => c.userEmail != email
+      );
+    });
     return promise;
   }
 
@@ -732,10 +741,11 @@ export default class ParseApp {
   removeCollaboratorById(id) {
     const path = '/apps/' + this.slug + '/collaborations/' + id.toString();
     const promise = AJAX.del(path);
-    promise.then(() => {
+    promise.then((data) => {
       //TODO: this currently works because everything that uses collaborators
       // happens to re-render after this call anyway, but really the collaborators
       // should be updated properly in a store or AppsManager or something
+      this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
       this.settings.fields.fields.collaborators = this.settings.fields.fields.collaborators.filter(
         c => c.id != id
       );
@@ -768,6 +778,7 @@ export default class ParseApp {
       //TODO: this currently works because everything that uses collaborators
       // happens to re-render after this call anyway, but really the collaborators
       // should be updated properly in a store or AppsManager or something
+      this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
       this.settings.fields.fields.collaborators =
         Array.isArray(this.settings.fields.fields.collaborators) ?
           this.settings.fields.fields.collaborators : [];
