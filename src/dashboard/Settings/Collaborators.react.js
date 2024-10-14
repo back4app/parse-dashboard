@@ -196,7 +196,7 @@ export default class Collaborators extends React.Component {
     return this.context.removeInviteCollaborator(collaborator.userEmail).then((response) => {
       this.setState({
         waiting_collaborators: response.response,
-        collaboratorUsage: response.collaboratorUsage ?? 0
+        collaboratorUsage: response.data.collaboratorUsage ?? 0
       })
       console.log('collaborator usage here handle remove invite')
       console.log(this.state.collaboratorUsage)
