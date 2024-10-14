@@ -648,7 +648,8 @@ export default class ParseApp {
     const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
     promise.then(({ data }) => {
       console.log("data.data")
-      console.log(data.data)
+      console.log(data)
+      
       // this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage;
       // this.settings.fields.fields.collaboratorUsage = data.data;
     });
