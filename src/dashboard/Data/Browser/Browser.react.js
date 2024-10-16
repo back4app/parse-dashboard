@@ -787,13 +787,16 @@ class Browser extends DashboardView {
   importClass(className, file) {
     return this.context.importData(className, file)
       .then((res) => {
-        return res;
+        return res.json();
       }, (error) => {
         console.log(error);
         return Promise.resolve({
           error: true,
           message: error.message
         });
+      }).then(data => {
+        this.showNote(data.response);
+        return data;
       });
   }
 
