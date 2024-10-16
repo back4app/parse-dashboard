@@ -2049,14 +2049,16 @@ class Browser extends DashboardView {
         const element = document.createElement('a');
         const file = new Blob(
           [
-            JSON.stringify(
-              objects.map(obj => {
+            JSON.stringify({
+              results: objects.map(obj => {
                 const json = obj._toFullJSON();
                 delete json.__type;
+                delete json.className
                 return json;
-              }),
-              null,
-              indentation ? 2 : null
+              })
+            },
+            null,
+            indentation ? 2 : null
             ),
           ],
           { type: 'application/json' }
