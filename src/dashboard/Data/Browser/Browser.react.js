@@ -787,16 +787,13 @@ class Browser extends DashboardView {
   importClass(className, file) {
     return this.context.importData(className, file)
       .then((res) => {
-        return res.json();
+        return res;
       }, (error) => {
         console.log(error);
         return Promise.resolve({
           error: true,
           message: error.message
         });
-      }).then(data => {
-        this.showNote(data.response);
-        return data;
       });
   }
 
@@ -2525,6 +2522,7 @@ class Browser extends DashboardView {
         <ImportDialog
           className={className}
           onCancel={() => this.setState({ showImportDialog: false })}
+          showNote={this.showNote}
           onConfirm={(file) => this.importClass(className, file)} />
       );
     } else if (this.state.showImportRelationDialog) {
