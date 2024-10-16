@@ -58,7 +58,7 @@ export default class ImportDialog extends React.Component {
           input={
             <div style={{ padding: '0 1rem', width: '100%' }}>
               <FileInput
-                onChange={(file) => {this.setState({ file: file });}} />
+                onChange={(file) => {this.setState({ file: file });}} accept=".csv,.json" />
             </div>
           }
         />
