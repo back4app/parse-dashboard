@@ -51,7 +51,7 @@ function resolvePermission(perms, rowId, column) {
   };
 }
 
-function resolvePointerPermission(perms, pointerPerms, rowId, column, parseVersion) {
+function resolvePointerPermission(perms, pointerPerms, rowId, column, isDeletedColumn) {
   const publicAccess = perms.get(column) && perms.get(column).get('*');
   const auth = perms.get(column).get('requiresAuthentication');
 
@@ -74,7 +74,7 @@ function resolvePointerPermission(perms, pointerPerms, rowId, column, parseVersi
   //  - Public row: always
   //  - Authn row:  always
   //  - Entry row:  when requires auth OR not Public
-  const editable = !forceChecked;
+  const editable = isDeletedColumn ? false : !forceChecked;
 
   return {
     checked,
@@ -266,7 +266,7 @@ function renderAdvancedCheckboxes(rowId, perms, advanced, onChange, currentApp) 
   ];
 }
 
-function renderSimpleCheckboxes(rowId, perms, onChange) {
+function renderSimpleCheckboxes(rowId, perms, onChange, isDeletedColumn) {
   // Public state
   const allowPublicRead = perms.get('read').get('*');
   const allowPublicWrite = perms.get('write').get('*');
@@ -288,7 +288,7 @@ function renderSimpleCheckboxes(rowId, perms, onChange) {
 
   return [
     <div key="second" className={[styles.check, styles.second].join(' ')}>
-      {showReadCheckbox ? (
+      {showReadCheckbox && !isDeletedColumn ? (
         <B4aCheckbox
           label="Read"
           checked={readChecked}
@@ -300,7 +300,7 @@ function renderSimpleCheckboxes(rowId, perms, onChange) {
       )}
     </div>,
     <div key="third" className={[styles.check, styles.third].join(' ')}>
-      {showWriteCheckbox ? (
+      {showWriteCheckbox && isDeletedColumn ? (
         <B4aCheckbox
           label="Write"
           checked={writeChecked}
@@ -314,14 +314,14 @@ function renderSimpleCheckboxes(rowId, perms, onChange) {
   ];
 }
 
-function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange) {
-  const get = resolvePointerPermission(perms, pointerPerms, rowId, 'get');
-  const find = resolvePointerPermission(perms, pointerPerms, rowId, 'find');
-  const count = resolvePointerPermission(perms, pointerPerms, rowId, 'count');
-  const create = resolvePointerPermission(perms, pointerPerms, rowId, 'create');
-  const update = resolvePointerPermission(perms, pointerPerms, rowId, 'update');
-  const del = resolvePointerPermission(perms, pointerPerms, rowId, 'delete');
-  const addField = resolvePointerPermission(perms, pointerPerms, rowId, 'addField');
+function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange, isDeletedColumn) {
+  const get = resolvePointerPermission(perms, pointerPerms, rowId, 'get', isDeletedColumn);
+  const find = resolvePointerPermission(perms, pointerPerms, rowId, 'find', isDeletedColumn);
+  const count = resolvePointerPermission(perms, pointerPerms, rowId, 'count', isDeletedColumn);
+  const create = resolvePointerPermission(perms, pointerPerms, rowId, 'create', isDeletedColumn);
+  const update = resolvePointerPermission(perms, pointerPerms, rowId, 'update', isDeletedColumn);
+  const del = resolvePointerPermission(perms, pointerPerms, rowId, 'delete', isDeletedColumn);
+  const addField = resolvePointerPermission(perms, pointerPerms, rowId, 'addField', isDeletedColumn);
 
   // whether this field is listed under readUserFields[]
   const readUserFields = pointerPerms.get('read');
@@ -404,7 +404,7 @@ function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange)
 
     cols.push(
       <div key="second" className={[styles.check, styles.second].join(' ')}>
-        {readForceChecked ? (
+        {readForceChecked || isDeletedColumn ? (
           <div className={styles.readonlyCheck}><Icon name="b4a-check" width={18} height={18} /> Read</div>
         ) : (
           <B4aCheckbox
@@ -418,7 +418,7 @@ function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange)
       </div>
     );
 
-    if (writeForceChecked) {
+    if (writeForceChecked || isDeletedColumn) {
       cols.push(
         <div key="third" className={[styles.check, styles.third].join(' ')}>
           <div className={styles.readonlyCheck}><Icon name="b4a-check" width={18} height={18} /> Create</div>
@@ -429,7 +429,7 @@ function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange)
       );
     } else {
       cols.push(
-        <div key="third" className={[styles.pointerWrite].join(' ')}>
+        <div key="third" className={[styles.check, styles.pointerWrite].join(' ')}>
           <div className={styles.checkboxWrap}>
             <B4aCheckbox
               label="Write and Add field"
@@ -508,7 +508,7 @@ function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange)
             label="Update"
             checked={update.checked}
             onChange={value => onChange(rowId, 'update', value)}
-            dakr={true}
+            dark={true}
           />
         ) : (
           <div className={styles.readonlyCheck}><Icon name="b4a-check" width={18} height={18} /> Update</div>
@@ -1028,6 +1028,7 @@ export default class B4aPermissionsDialog extends React.Component {
         </a>
       </span>
     );
+    let isDeletedColumn = false;
 
     if (type.user) {
       label = (
@@ -1085,19 +1086,40 @@ export default class B4aPermissionsDialog extends React.Component {
       );
     } else if (pointer) {
       // get class info from schema
-      const { type, targetClass } = columns[key];
-
-      const pillText = type + (targetClass ? `<${targetClass}>` : '');
-
-      label = (
-        <span>
-          <p>
-            {key}
-            {pill(pillText)}
-          </p>
-          <p className={styles.hint}>Only users pointed to by this field</p>
-        </span>
-      );
+      const selectedColumn = columns.find(col => col.name === key);
+      let labelSubContent;
+      const isColumnTypeChanged = selectedColumn && selectedColumn.type !== 'Pointer';
+      if (selectedColumn && selectedColumn.type === 'Pointer') {
+        const { type, targetClass } = selectedColumn;
+        const pillText = type + (targetClass ? `<${targetClass}>` : '');
+        labelSubContent = (
+          <span>
+            <p>
+              {key}
+              {pill(pillText)}
+            </p>
+            <p className={styles.hint}>Only users pointed to by this field</p>
+          </span>
+        );
+      } else {
+        isDeletedColumn = true;
+        labelSubContent = (
+          <span>
+            <p>
+              {key}
+            </p>
+            <p className={styles.hint}>{isColumnTypeChanged ? 'The column type has been changed' : 'The column has been deleted'}</p>
+          </span>
+        );
+      }
+      label = <div className={styles.customLabel}>
+        {labelSubContent}
+        <div className={styles.delete}>
+          <button type="button" onClick={this.deleteRow.bind(this, key, pointer)}>
+            <Icon name="b4a-trash-icon" width={18} height={18} />
+          </button>
+        </div>
+      </div>
     }
 
     let content = null;
@@ -1108,7 +1130,8 @@ export default class B4aPermissionsDialog extends React.Component {
           this.state.perms,
           this.state.pointerPerms.get(key),
           this.state.level === 'Advanced',
-          this.togglePointer.bind(this)
+          this.togglePointer.bind(this),
+          isDeletedColumn
         );
       } else if (this.props.advanced) {
         content = renderAdvancedCheckboxes(
@@ -1119,19 +1142,19 @@ export default class B4aPermissionsDialog extends React.Component {
           this.state.parseVersion
         );
       } else {
-        content = renderSimpleCheckboxes(key, this.state.perms, this.toggleField.bind(this));
+        content = renderSimpleCheckboxes(key, this.state.perms, this.toggleField.bind(this), isDeletedColumn);
       }
     }
-    let trash = null;
-    if (!this.state.transitioning) {
-      trash = (
-        <div className={styles.delete}>
-          <button type="button" onClick={this.deleteRow.bind(this, key, pointer)}>
-            <Icon name="trash-solid" width={18} height={18} />
-          </button>
-        </div>
-      );
-    }
+    // let trash = null;
+    // if (!this.state.transitioning) {
+    //   trash = (
+    //     <div className={styles.delete}>
+    //       <button type="button" onClick={this.deleteRow.bind(this, key, pointer)}>
+    //         <Icon name="trash-solid" width={18} height={18} />
+    //       </button>
+    //     </div>
+    //   );
+    // }
     return (
       <div key={key} className={styles.row}>
         <div className={styles.label}>{label}</div>
