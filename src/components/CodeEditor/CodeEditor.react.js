@@ -38,7 +38,7 @@ export default class CodeEditor extends React.Component {
     }
     if (props.mode === 'javascript') {
       // eslint-disable-next-line no-undef
-      ace.config.setModuleUrl('ace/mode/javascript_worker', `${b4aSettings.PARSE_DASHBOARD_PATH}/worker-javascript.js`);
+      ace.config.setModuleUrl('ace/mode/javascript_worker', '/worker-javascript.js');
     }
   }
 
@@ -55,12 +55,6 @@ export default class CodeEditor extends React.Component {
           typeof this.props.onCodeChange === 'function' && this.props.onCodeChange(value);
         }}
         onLoad={editor => {
-          if (editor.session.$worker && editor.session.getMode().$id === 'ace/mode/javascript') {
-            editor.session.$worker.send('setOptions', [{
-              'esversion': 13,
-              'esnext': false,
-            }]);
-          }
           editor.once('change', () => {
             editor.session.getUndoManager().reset();
           });
@@ -70,6 +64,21 @@ export default class CodeEditor extends React.Component {
               this.setState({ reset: false })
             }
           });
+
+          editor.session.on('changeMode', function(e, session){
+            if ('ace/mode/javascript' === session.getMode().$id) {
+              console.log('inside single if condition');
+              // eslint-disable-next-line no-extra-boolean-cast
+              if (!!session.$worker) {
+                console.log('inside double if condition');
+                session.$worker.send('setOptions', [{
+                  'esversion': 13,
+                  'esnext': false,
+                }]);
+              }
+            }
+          });
+
         }}
         fontSize={fontSize}
         showPrintMargin={false}
