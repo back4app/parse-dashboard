@@ -15,12 +15,11 @@ import Label    from 'components/Label/Label.react';
 
 export default class ImportDialog extends React.Component {
   constructor() {
-      super();
-      this.state = {
-        file: undefined,
-        startedImport: false,
-        errorMessage: null
-      };
+    super();
+    this.state = {
+      file: undefined,
+      startedImport: false
+    };
   }
 
   valid() {
@@ -41,14 +40,17 @@ export default class ImportDialog extends React.Component {
         disabled={!this.valid()}
         onCancel={this.props.onCancel}
         onConfirm={() => {
+          this.setState({ startedImport: true })
           this.props.onConfirm(this.state.file)
             .then((res) => {
               if (res.error) {
                 this.setState({ errorMessage: res.message });
+                this.props.showNote(`Import Request failed with the following error: "${res.error }".`)
               } else {
                 this.props.onCancel();
+                this.props.showNote('We are importing your data. You will be notified by e-mail once it is completed.')
               }
-            });
+            }).finally(() => this.setState({ startedImport: false, file: undefined }));
         }}>
 
         <Field
@@ -58,14 +60,10 @@ export default class ImportDialog extends React.Component {
           input={
             <div style={{ padding: '0 1rem', width: '100%' }}>
               <FileInput
-                onChange={(file) => {this.setState({ file: file });}} />
+                onChange={(file) => {this.setState({ file: file });}} accept=".csv,.json" />
             </div>
           }
         />
-        {this.state.startedImport ?
-          <div style={{ padding: 20, color: '#0F1C32' }}>We are importing your data. You will be notified by e-mail once it is completed.</div> : null }
-        {this.state.errorMessage ?
-          <div style={{ padding: 20, color: '#E85C3E' }}>Import Request failed with the following error: "{ this.state.errorMessage }".</div> : null }
       </B4aModal>
 
     );
