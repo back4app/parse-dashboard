@@ -164,10 +164,13 @@ const show = async ({domain, setState, createAdmin, createAdminHost, isRoleCreat
 
   return (async () => {
     if (!isRoleCreated) {
-      await Queue.fire({
+      const result = await Queue.fire({
         ...modal1,
         currentProgressStep: 0,
-      })
+      });
+      if (result.isDismissed) {
+        return <></>
+      }
     }
     const result = await Queue.fire({
       ...modal2,
