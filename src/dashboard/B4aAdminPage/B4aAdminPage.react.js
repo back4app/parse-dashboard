@@ -13,7 +13,7 @@ import B4aAdminModal from 'dashboard/B4aAdminPage/B4aAdminModal'
 import B4aAdminParams from 'dashboard/B4aAdminPage/B4aAdminParams'
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import Icon from 'components/Icon/Icon.react';
-import ReactPlayer from 'react-player';
+// import ReactPlayer from 'react-player';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import swalCssStyles from 'stylesheets/swalCustom.css';
 
@@ -141,7 +141,7 @@ class B4aAdminPage extends DashboardView {
     );
 
     const fields = <Fieldset legend="" description="" width="650px">
-      <ReactPlayer
+      {/* <ReactPlayer
         url='https://www.youtube.com/watch?v=7CHdIniAACE'
         controls
         width="650px"
@@ -149,7 +149,7 @@ class B4aAdminPage extends DashboardView {
           border: '1px solid #000',
           borderRadius: '4px',
           marginBottom: '20'
-        }} />
+        }} /> */}
       <Field
         height='120px'
         textAlign='center'
