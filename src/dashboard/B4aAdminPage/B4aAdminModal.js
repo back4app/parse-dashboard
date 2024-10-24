@@ -59,7 +59,7 @@ const renderUserInputs = () => {
     />
     <Field
       label={<Label
-        text={'Username'}
+        text={'Password'}
         description={<div style={{ textAlign: 'left'}}>Please enter a password that you would like to use to login</div>} />
       }
       input={<TextInput
@@ -67,6 +67,7 @@ const renderUserInputs = () => {
         dark={false}
         height={100}
         id="adminPass"
+        hidden={true}
         placeholder='Enter password'
       />}
 
