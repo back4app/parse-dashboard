@@ -57,9 +57,3 @@
   border-color: $old-blue transparent $old-blue transparent;
   border-width: 0.125rem;
 }
-
-div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step {
-  width: 1.5rem !important;
-  height: 1.5rem !important;
-  line-height: 1.5rem !important;
-}

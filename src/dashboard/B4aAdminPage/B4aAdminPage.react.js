@@ -15,6 +15,7 @@ import Toolbar from 'components/Toolbar/Toolbar.react';
 import Icon from 'components/Icon/Icon.react';
 import ReactPlayer from 'react-player';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import swalCssStyles from 'stylesheets/swalCustom.css';
 
 // const EMAIL_VERIFICATION_URL = `${b4aSettings.BACK4APP_API_PATH}/email-verification`;
 
