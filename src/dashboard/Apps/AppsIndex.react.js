@@ -206,7 +206,7 @@ class AppsIndex extends React.Component {
           <a href="https://www.npmjs.com/package/parse-dashboard" target="_blank">
             latest version
           </a>{' '}
-          of Parse Dashboard to get access to: {joinWithFinal('', newFeaturesNodes, ', ', ' and ')}.
+          of Backend Dashboard to get access to: {joinWithFinal('', newFeaturesNodes, ', ', ' and ')}.
         </FlowFooter>
       );
     }

@@ -414,7 +414,7 @@ class Dashboard extends React.Component {
         <Route path="push/:pushId" element={<PushDetails />} />
 
         <Route path="connect" element={<B4aConnectPage />} />
-        {/* <Route path="admin" element={<B4aAdminPage />} /> */}
+        <Route path="admin" element={<B4aAdminPage />} />
         {/* <Route path="app-templates" element={<B4aAppTemplates />} /> */}
 
         <Route path="server-settings/" element={<ServerSettings />} />
@@ -553,7 +553,7 @@ const DashboardWrapper = () => {
   return (
     <BrowserRouter basename={window.PARSE_DASHBOARD_PATH || '/'}>
       <Helmet>
-        <title>Parse Dashboard</title>
+        <title>Backend Dashboard</title>
       </Helmet>
       <NavbarWrapper />
       <Dashboard />
