@@ -553,7 +553,7 @@ const DashboardWrapper = () => {
   return (
     <BrowserRouter basename={window.PARSE_DASHBOARD_PATH || '/'}>
       <Helmet>
-        <title>Parse Dashboard</title>
+        <title>Backend Dashboard</title>
       </Helmet>
       <NavbarWrapper />
       <Dashboard />

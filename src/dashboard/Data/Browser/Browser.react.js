@@ -2730,7 +2730,7 @@ class Browser extends DashboardView {
     }
 
     let notification = null;
-    const pageTitle = `${this.props.params.className} - Parse Dashboard`;
+    const pageTitle = `${this.props.params.className} - Backend Dashboard`;
 
     if (this.state.lastError) {
       notification = <B4aNotification note={this.state.lastError} isErrorNote={true} />;
