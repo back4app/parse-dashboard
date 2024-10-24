@@ -213,10 +213,10 @@ export default class DashboardView extends React.Component {
       link: '/connections'
     })
 
-    // moreSubSection.push({
-    //   name: 'Admin App',
-    //   link: '/admin'
-    // })
+    moreSubSection.push({
+      name: 'Admin App',
+      link: '/admin'
+    })
 
     // moreSubSection.push({
     //   name: 'App Templates',
