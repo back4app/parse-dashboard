@@ -85,7 +85,7 @@ const renderHostInput = (domain) => {
 const renderConfirmStep = (adminURL) => {
   return ReactDOMServer.renderToStaticMarkup(<div className={`${styles['elements-wrapper']} ${styles['congrats-box']}`}>
     <p className={styles['congrats-message']}>Congratulations, your Admin App is active!</p>
-    <a className={styles.adminURL} target='_blank' rel="noopener noreferrer">{adminURL}</a>
+    <a className={styles.adminURL} target='_blank' rel="noopener noreferrer" href={adminURL}>{adminURL}</a>
   </div>);
 }
 
