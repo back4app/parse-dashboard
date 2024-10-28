@@ -1055,8 +1055,7 @@ export default class PermissionsDialog extends React.Component {
       );
     } else if (pointer) {
       // get class info from schema
-      const selectedColumn = columns.find(col => col.name === key);
-      const { type, targetClass } = selectedColumn;
+      const { type, targetClass } = columns[key];
 
       const pillText = type + (targetClass ? `<${targetClass}>` : '');
 
