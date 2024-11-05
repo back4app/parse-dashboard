@@ -266,7 +266,7 @@ function renderAdvancedCheckboxes(rowId, perms, advanced, onChange, currentApp) 
   ];
 }
 
-function renderSimpleCheckboxes(rowId, perms, onChange, isDeletedColumn) {
+function renderSimpleCheckboxes(rowId, perms, onChange, isDeletedColumn = false) {
   // Public state
   const allowPublicRead = perms.get('read').get('*');
   const allowPublicWrite = perms.get('write').get('*');
@@ -300,7 +300,7 @@ function renderSimpleCheckboxes(rowId, perms, onChange, isDeletedColumn) {
       )}
     </div>,
     <div key="third" className={[styles.check, styles.third].join(' ')}>
-      {showWriteCheckbox && isDeletedColumn ? (
+      {showWriteCheckbox && !isDeletedColumn ? (
         <B4aCheckbox
           label="Write"
           checked={writeChecked}
