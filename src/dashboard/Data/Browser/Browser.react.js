@@ -2107,7 +2107,7 @@ class Browser extends DashboardView {
                 } else if (colValue.includes(',')) {
                   // Has delimiter in data, surround with quote (which the value doesn't already contain)
                   return `"${colValue}"`;
-                } else if (colValue.includes('\n')) {
+                } else if (colValue.includes('\n') || colValue.includes('\r')) {
                   // Has newline in data, enclose in quotes
                   return `"${colValue}"`;
                 } else {
