@@ -2009,7 +2009,7 @@ class Browser extends DashboardView {
   async confirmExportSelectedRows(rows, type, indentation) {
     this.setState({ rowsToExport: null, exporting: true, exportingCount: 0 });
     const className = this.props.params.className;
-    const query = new Parse.Query(className);
+    let query = new Parse.Query(className);
 
     if (!rows['*']) {
       // Export selected
@@ -2021,7 +2021,7 @@ class Browser extends DashboardView {
       query.limit(objectIds.length);
     }
 
-    if (!this.state.filters.isEmpty()) {
+    if (!this.state.filters.isEmpty() && !rows['*']) {
       // Export filtered
       const objectIds = [];
       for (const obj of this.state.data) {
@@ -2133,11 +2133,15 @@ class Browser extends DashboardView {
       document.body.removeChild(element);
     };
 
-    if (!rows['*'] || !this.state.filters.isEmpty()) {
+    if (!rows['*']) {
       const objects = await query.find({ useMasterKey: true });
       processObjects(objects);
       this.setState({ exporting: false, exportingCount: objects.length });
     } else {
+      // export all selected filtered data
+      if (!this.state.filters.isEmpty()) {
+        query = queryFromFilters(this.props.params.className, this.state.filters);
+      }
       let batch = [];
       query.eachBatch(
         obj => {
