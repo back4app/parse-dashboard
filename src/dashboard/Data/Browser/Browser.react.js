@@ -2016,7 +2016,7 @@ class Browser extends DashboardView {
                   // If the value contains both a quote and delimiter, adding quotes and escaping will take care of both scenarios
                   colValue = colValue.split('"').join('""');
                   return `"${colValue}"`;
-                } else if (colValue.includes(',')) {
+                } else if (colValue.includes(',') || colValue.includes('\n') || colValue.includes('\r')) {
                   // Has delimiter in data, surround with quote (which the value doesn't already contain)
                   return `"${colValue}"`;
                 } else {
