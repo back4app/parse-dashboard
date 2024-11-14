@@ -93,6 +93,8 @@
 
 .body {
   margin: 1.5rem 0;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .level { 
