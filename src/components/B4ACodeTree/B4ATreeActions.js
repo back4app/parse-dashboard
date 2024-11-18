@@ -159,7 +159,7 @@ const verifyFileNames = async (data, newNode) => {
   return overwrite;
 }
 
-const getExtension = (fileName) => {
+export const getExtension = (fileName) => {
   const re = /(?:\.([^.]+))?$/
   return re.exec(fileName)[1] || '';
 }
