@@ -26,7 +26,7 @@ const myTheme = createTheme({
     gutterBackground: '#0A0B0C',
     gutterForeground: '#f9f9f980',
     gutterBorder: '#dddddd',
-    gutterActiveForeground: '#11437080',
+    gutterActiveForeground: '#f9f9f9',
   },
   styles: [
     { tag: [t.comment, t.quote], color: '#7F8C98' },
@@ -41,29 +41,23 @@ const myTheme = createTheme({
 });
 
 const config = {
-  // eslint configuration
   languageOptions: {
     globals: {
       ...globals.node,
       Parse: true,
     },
-    parserOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-    },
+    ecmaVersion: 2022,
+    sourceType: 'module'
   },
-  'rules': {
-    'no-unused-vars': ['warn', {
-      'vars': 'all',
-      'args': 'after-used',
-      'caughtErrors': 'all',
-      'ignoreRestSiblings': false,
-      'reportUsedIgnorePattern': false
-    }],
-    'no-case-declarations': 0,
-    'no-undef': 'warn',
+  rules: {
     'no-const-assign': 'error',
-    'no-multiple-empty-lines': 1
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector: 'VariableDeclaration[kind=\'const\'] > VariableDeclarator[init.type=\'Identifier\'][init.name=\'undefined\']',
+        message: 'Do not initialize `const` variables to `undefined`.'
+      }
+    ]
   }
 };
 
@@ -72,7 +66,7 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode }, ref
 
   useEffect(() => {
     if (window && window.document.querySelector('.cm-theme')) {
-      const el = window.document.querySelector('.cm-theme')
+      const el = window.document.querySelector('.cm-theme');
       el.style.height = '100%';
       el.style.fontSize = '12px';
     }
@@ -116,7 +110,15 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode }, ref
         ...getLanguageExtension(),
         lintGutter(),
       ]}
-      onChange={(value) => handleCodeChange(value)}
+      onChange={(value) => {
+        handleCodeChange(value)
+      }}
+      onCreateEditor={() => {
+        if (window && window.document.querySelector('.cm-editor')) {
+          const el = window.document.querySelector('.cm-editor');
+          el.style.outline = 'none'
+        }
+      }}
       basicSetup={{ lineNumbers: true, highlightActiveLine: true }}
       theme={myTheme}
     />
