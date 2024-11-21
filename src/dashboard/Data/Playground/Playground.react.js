@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactJson from 'react-json-view';
 import Parse from 'parse';
 
-import CodeEditor from 'components/CodeEditor/CodeEditor.react';
+import B4aCodeEditor from 'components/CodeEditor/B4aCodeEditor.react';
 import Button from 'components/Button/Button.react';
 import Icon from 'components/Icon/Icon.react';
 import SaveButton from 'components/SaveButton/SaveButton.react';
@@ -76,7 +76,7 @@ export default class Playground extends Component {
 
     try {
       const { applicationId, masterKey, serverURL, javascriptKey } = this.context;
-      const originalCode = this.editor.value;
+      const originalCode = this.state.code;
 
       const finalCode = `return (async function(){
         try{
@@ -104,7 +104,7 @@ export default class Playground extends Component {
 
   saveCode() {
     try {
-      const code = this.editor.value;
+      const code = this.state.code;
       if (!code) {
         Swal.fire({
           title: 'Couldn\'t save latest changes',
@@ -182,11 +182,12 @@ export default class Playground extends Component {
         </Toolbar>
         <div className={styles['playground-ctn']}>
           <div className={styles.playgroundEditor}>
-            <CodeEditor
-              fontSize={14}
-              placeHolder={this.state.code}
+            <B4aCodeEditor
+              // fontSize={14}
+              code={this.state.code}
               ref={editor => (this.editor = editor)}
-              fileName={`${this.localKey}.js`}
+              mode='javascript'
+              // fileName={`${this.localKey}.js`}
               onCodeChange={(code) => this.setState({ code })}
             />
           </div>
