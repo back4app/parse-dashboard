@@ -1,9 +1,11 @@
 import React from 'react';
 // import SyntaxHighlighter from 'react-syntax-highlighter';
-import style from 'react-syntax-highlighter/dist/esm/styles/hljs/tomorrow-night-eighties';
-import CodeEditor from '../CodeEditor/CodeEditor.react';
-import * as modelist from 'ace-builds/src-noconflict/ext-modelist.js';
-import 'ace-builds/src-noconflict/mode-graphqlschema';
+// import style from 'react-syntax-highlighter/dist/esm/styles/hljs/tomorrow-night-eighties';
+// import CodeEditor from '../CodeEditor/CodeEditor.react';
+// import * as modelist from 'ace-builds/src-noconflict/ext-modelist.js';
+// import 'ace-builds/src-noconflict/mode-graphqlschema';
+import B4aCodeEditor from '../CodeEditor/B4aCodeEditor.react';
+import { getExtension } from '../B4ACodeTree/B4ATreeActions';
 
 const pageSize = 4000;
 export default class B4ACloudCodeView extends React.Component {
@@ -56,26 +58,25 @@ export default class B4ACloudCodeView extends React.Component {
 
   extensionDecoder() {
     if (this.props.fileName && typeof this.props.fileName === 'string') {
-      return modelist.getModeForPath(this.props.fileName).name;
+      return getExtension(this.props.fileName);
     }
     return 'javascript'
   }
 
-
   render() {
-    if (style.hljs) {
-      style.hljs.background = 'rgb(255 255 255)';
-      style.hljs.color = 'rgb(0 0 0)';
-      style.hljs.height = '100%';
-      style.hljs.padding = '1em 0.5em';
-    }
+    // if (style.hljs) {
+    //   style.hljs.background = 'rgb(255 255 255)';
+    //   style.hljs.color = 'rgb(0 0 0)';
+    //   style.hljs.height = '100%';
+    //   style.hljs.padding = '1em 0.5em';
+    // }
     return (
       <div style={{ height: 'calc(100% - 40px)'}} >
-        <CodeEditor
+        <B4aCodeEditor
           style={{ zIndex: 4 }}
           fontSize={13}
           fileName={this.props.fileName}
-          placeholder={this.props.source}
+          code={this.props.source}
           onCodeChange={(value) => this.props.onCodeChange(value)}
           mode={this.extensionDecoder()}
           ref={editor => (this.editor = editor)}
