@@ -142,6 +142,7 @@ body:global(.sidebarCollapsed) {
   margin-left: 2.5rem;
   align-items: center;
   .publicAccessIcon {
+    cursor: pointer;
     padding: 0 0.38rem;
     width: 28px;
     height: 28px;
