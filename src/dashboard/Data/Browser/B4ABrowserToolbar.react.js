@@ -300,7 +300,10 @@ const B4ABrowserToolbar = ({
   );
 
   const clpDialogRef = useRef(null);
-  const showCLP = () => clpDialogRef.current.handleOpen();
+  const showCLP = () => {
+    setCurrent(null);
+    onClickSecurity()
+  };
 
   return (
     <Toolbar
@@ -308,7 +311,7 @@ const B4ABrowserToolbar = ({
       filters={filters}
       readWritePermissions={readWritePermissions}
       lockIcon={lockIcon}
-      onClickSecurity={onClickSecurity}
+      onClickSecurity={showCLP}
       section="Database"
       subsection="Browser"
       details={relation ? details.join(' \u2022 ') : details.join(' \u2022 ')}
