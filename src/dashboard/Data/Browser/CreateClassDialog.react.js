@@ -45,6 +45,9 @@ class CreateClassDialog extends React.Component {
     if (this.props.currentClasses.indexOf(this.state.name) > -1) {
       return false;
     }
+    if (SpecialClasses.includes(`_${this.state.name}`)) {
+      return false;
+    }
     return true;
   }
 
