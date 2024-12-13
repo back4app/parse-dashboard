@@ -33,6 +33,7 @@ import AccessLogs from './Data/Logs/AccessLogs.react';
 import SystemLogs from './Data/Logs/SystemLogs.react';
 // import B4aHubPublishPage from './B4aHubPublishPage/B4aHubPublishPage.react';
 import B4aAdminPage from './B4aAdminPage/B4aAdminPage.react';
+import B4aWebDeployment from './B4aWebDeployment/B4aWebDeployment.react';
 import B4aAppTemplates from './B4aAppTemplates/B4aAppTemplates.react';
 import { AsyncStatus } from 'lib/Constants';
 import { get } from 'lib/AJAX';
@@ -428,6 +429,7 @@ class Dashboard extends React.Component {
         <Route path="connections" element={<HubConnections />} />
         <Route path="analytics">{AnalyticsRoute}</Route>
         <Route path="settings">{SettingsRoute}</Route>
+        <Route path="web-deployment" element={<B4aWebDeployment />} />
         {/* {user.allowHubPublish && <Route path="hub-publish" element={<B4aHubPublishPage />} />} */}
       </Route>
     );

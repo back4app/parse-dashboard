@@ -293,6 +293,12 @@ export default class DashboardView extends React.Component {
     }
 
     appSidebarSections.push({
+      name: 'Web Deployment',
+      icon: 'b4a-web-deployment-icon',
+      link: '/web-deployment'
+    })
+
+    appSidebarSections.push({
       name: 'More',
       icon: 'b4a-more-icon',
       link: '/config',
