@@ -127,7 +127,7 @@ class B4aWebDeployment extends DashboardView {
           </div>
           <div className={styles.mainBody}>
             <div className={styles.appsListOverview}>
-              <div className={styles.appCount}>{`${this.state.apps.length} web application ${this.state.apps.length === 1 ? '' : 's'}`}</div>
+              <div className={styles.appCount}>{`${this.state.apps.length} Web application${this.state.apps.length === 0 || this.state.apps.length === 1 ? '' : 's'}`}</div>
               <div className={styles.search}>
                 <input className={styles.searchInput} value={this.state.searchText} placeholder='Search' onChange={e => this.setState({ searchText: e.target.value })} />
                 <Icon name="search-outline" width={16} height={16} />
