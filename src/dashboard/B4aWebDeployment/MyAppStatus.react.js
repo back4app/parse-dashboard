@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import Icon from 'components/Icon/Icon.react';
+import styles from './B4aWebDeployment.scss'
 
-const StatusError = <Icon name="status-error" width="12px" height="12px" fill="#f9f9f9" /> ;
-const StatusSpinner = <Icon name="status-spinner" width="12px" height="12px" fill="#f9f9f9" /> ;
-const StatusSuccess = <Icon name="status-success" width="12px" height="12px" fill="#f9f9f9" /> ;
-const StatusQueued = <Icon name="status-queued" width="12px" height="12px" fill="#f9f9f9" /> ;
+const StatusError = <Icon name="status-error" width="12px" height="12px" fill="#E85C3E" />;
+const StatusSpinner = <Icon name="status-spinner" width="12px" height="12px" fill="#15A9FF" className={styles.spinnerStatus} /> ;
+const StatusSuccess = <Icon name="b4a-success-check" width="12px" height="12px" fill="#27AE60" /> ;
+const StatusQueued = <Icon name="status-queued" width="12px" height="12px" fill="#FBFF3B" />;
 
 export const TaskStatus = {
   WAITING: 'WAITING',

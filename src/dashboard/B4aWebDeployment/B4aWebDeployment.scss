@@ -99,17 +99,31 @@
         font-weight: 700;
       }
 
-      .searchInput {
-        background: transparent;
-        border: 1px solid rgba(193,226,255, 0.2);
-        padding: .375rem .75rem;
-        border-radius: .25rem;
-        outline: none;
-        &:hover {
-          border: 1px solid rgba(193,226,255, 0.7);
+      .search {
+        position: relative;
+        .searchInput {
+          background: transparent;
+          border: 1px solid rgba(193,226,255, 0.2);
+          padding: .375rem .75rem;
+          padding-right: 2rem;
+          border-radius: .25rem;
           outline: none;
+          &:hover {
+            border: 1px solid rgba(193,226,255, 0.7);
+            outline: none;
+          }
         }
+
+        svg {
+          position: absolute;
+          right: 10px;
+          bottom: 0;
+          transform: translateY(-75%) rotate(270deg);
+          fill: #cccccc82;
+        }
+
       }
+
     }
 
     & .appItem {
@@ -204,5 +218,27 @@
       }
     }
 
+  }
+}
+
+
+.spinnerStatus {
+  animation: rotating 1s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }

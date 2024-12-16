@@ -7,6 +7,7 @@ import MyAppStatus from './MyAppStatus.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import Icon from 'components/Icon/Icon.react';
 import back4app2 from '../../lib/back4app2';
+import ContainersAppIcon from 'dashboard/B4aWebDeployment/ContainersAppIcon.react';
 
 
 @subscribeTo('Schema', 'schema')
@@ -34,7 +35,8 @@ class B4aWebDeployment extends DashboardView {
     try {
       const response = await back4app2.findApps();
       this.setState({
-        apps: response
+        apps: response,
+        isLoading: false,
       });
     } catch (error) {
       console.log('error while fetching apps');
@@ -86,8 +88,8 @@ class B4aWebDeployment extends DashboardView {
         {toolbar}
         <div className={styles.mainContent}>
           <div className={styles.header}>
-            <div className={styles.title}>Your Containers' Apps</div>
-            <div className={styles.subtitle}>Browse through your existing Containers&apos; Apps or start brand new.</div>
+            <div className={styles.title}>Manage Your Web Applications</div>
+            <div className={styles.subtitle}>Explore your existing applications or kickstart a new project with ease.</div>
           </div>
           <div className={styles.subHeader}>
             <div className="">
@@ -100,7 +102,6 @@ class B4aWebDeployment extends DashboardView {
                 //   });
                 //   return;
                 // }
-                // navigate('/new-container');
                 window.location = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/new-container`
               }} className={styles.createContainerBtn}>
                 <div className={styles.createBtnIcon}>
@@ -114,7 +115,7 @@ class B4aWebDeployment extends DashboardView {
             <div>
               <div className={styles.overview}>
                 <div className={styles.freeContainersCount}>
-                  Free Containers <span className="">
+                  Free web applications <span className="">
                     {this.state.apps ? this.state.apps.filter(app => app.mainService?.mainServiceEnvironment?.plan?.name?.includes('Free')).length : ''}
                   </span>
                 </div>
@@ -126,50 +127,66 @@ class B4aWebDeployment extends DashboardView {
           </div>
           <div className={styles.mainBody}>
             <div className={styles.appsListOverview}>
-              <div className={styles.appCount}>{`${this.state.apps.length} ${this.state.apps.length === 1 ? 'app' : 'apps'}`}</div>
+              <div className={styles.appCount}>{`${this.state.apps.length} web application ${this.state.apps.length === 1 ? '' : 's'}`}</div>
               <div className={styles.search}>
                 <input className={styles.searchInput} value={this.state.searchText} placeholder='Search' onChange={e => this.setState({ searchText: e.target.value })} />
+                <Icon name="search-outline" width={16} height={16} />
               </div>
             </div>
             <div className="">
-              {this.state.filteredApps.map(app => (
-                <div key={app.id}>
-                  <div className={styles.appItem}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div className={styles.appInfo}>
-                        <Icon name="containers-app" width="34px" height="34px" />
-                        <div className={styles.appName} onClick={() => window.location = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/apps/${app.id}`}>
-                          {/* <Link to={`/apps/${app.id}`}> */}
-                          {app.name}
-                          {/* </Link> */}
+              {this.state.isLoading ? (<div style={{ border: '1px solid #f9f9f917', borderRadius: '5px', padding: '5rem 0', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                <Icon name="status-spinner" width="24px" height="24px" fill="#15A9FF" className={styles.spinnerStatus} />
+                <div style={{ marginTop: '1rem', fontWeight: 600, fontSize: '18px', color: '#ccc', textAlign: 'center' }}>
+                  Loading...
+                </div>
+              </div>) : (this.state.loadingErrorMessage ? (<div style={{ border: '1px solid #f9f9f917', borderRadius: '5px', padding: '5rem 0', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                <Icon name="status-error" width="32px" height="32px" fill="#E85C3E" />
+                <div style={{ marginTop: '1rem', fontWeight: 600, fontSize: '18px', color: '#ccc', textAlign: 'center' }}>
+                  {this.state.loadingErrorMessage}
+                </div>
+              </div>) : (
+                <>
+                  {this.state.filteredApps.map(app => (
+                    <div key={app.id}>
+                      <div className={styles.appItem}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div className={styles.appInfo}>
+                            {/* <Icon name="containers-app-icon" width="34px" height="34px" fill="red" /> */}
+                            <ContainersAppIcon />
+                            <div className={styles.appName} onClick={() => window.location = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/apps/${app.id}`}>
+                              {/* <Link to={`/apps/${app.id}`}> */}
+                              {app.name}
+                              {/* </Link> */}
+                            </div>
+                            {app.mainService?.mainServiceEnvironment?.plan ? <span className={styles.appPlanName}>{app.mainService?.mainServiceEnvironment?.plan.name || ''}</span> : null}
+                          </div>
                         </div>
-                        {app.mainService?.mainServiceEnvironment?.plan ? <span className={styles.appPlanName}>{app.mainService?.mainServiceEnvironment?.plan.name || ''}</span> : null}
+                        <div className={styles.appInfoBottom}>
+                          {app.mainService && app.mainService.mainServiceEnvironment && app.mainService.mainServiceEnvironment.mainCustomDomain && app.mainService.mainServiceEnvironment.mainCustomDomain.name && (
+                            <a target="_blank" href={`${window.location.protocol}//${app.mainService.mainServiceEnvironment.mainCustomDomain.name}`} rel="noreferrer" className={styles.appDomainName}>
+                              <span className={styles.appDomainNameText}>{app.mainService.mainServiceEnvironment.mainCustomDomain.name}</span>
+                              <Icon name="containers-link-icon" width={11} height={11} fill="#27AE60" />
+                            </a>
+                          )}
+                          <MyAppStatus app={app} />
+                        </div>
                       </div>
                     </div>
-                    <div className={styles.appInfoBottom}>
-                      {app.mainService && app.mainService.mainServiceEnvironment && app.mainService.mainServiceEnvironment.mainCustomDomain && app.mainService.mainServiceEnvironment.mainCustomDomain.name && (
-                        <a target="_blank" href={`${window.location.protocol}//${app.mainService.mainServiceEnvironment.mainCustomDomain.name}`} rel="noreferrer" className={styles.appDomainName}>
-                          <span className={styles.appDomainNameText}>{app.mainService.mainServiceEnvironment.mainCustomDomain.name}</span>
-                          <Icon name="containers-link-icon" width={11} height={11} fill="#27AE60" />
-                        </a>
-                      )}
-                      <MyAppStatus app={app} />
+                  ))}
+                  {this.state.apps.length === 0 ? <div style={{ border: '1px solid #f9f9f917', borderRadius: '5px', padding: '5rem 0' }}>
+                    <EmptyGhostState />
+                    <div style={{ marginTop: '-2rem', fontWeight: 600, fontSize: '18px', color: '#ccc', textAlign: 'center' }}>
+                      Nothing here, yet!
                     </div>
-                  </div>
-                </div>
+                  </div> : null}
+                  {this.state.filteredApps.length === 0 && this.state.searchText ?  <div style={{ border: '1px solid #f9f9f917', borderRadius: '5px', padding: '5rem 0' }}>
+                    <EmptyGhostState />
+                    <div style={{ marginTop: '-2rem', fontWeight: 600, fontSize: '18px', color: '#ccc', textAlign: 'center' }}>
+                      Try different filter
+                    </div>
+                  </div> : null}
+                </>
               ))}
-              {this.state.apps.length === 0 ? <div style={{ border: '1px solid #f9f9f917', borderRadius: '5px', padding: '5rem 0' }}>
-                <EmptyGhostState />
-                <div style={{ marginTop: '-2rem', fontWeight: 600, fontSize: '18px', color: '#ccc', textAlign: 'center' }}>
-                  Nothing here, yet!
-                </div>
-              </div> : null}
-              {this.state.filteredApps.length === 0 && this.state.searchText ?  <div style={{ border: '1px solid #f9f9f917', borderRadius: '5px', padding: '5rem 0' }}>
-                <EmptyGhostState />
-                <div style={{ marginTop: '-2rem', fontWeight: 600, fontSize: '18px', color: '#ccc', textAlign: 'center' }}>
-                  Try different filter
-                </div>
-              </div> : null}
             </div>
           </div>
         </div>
