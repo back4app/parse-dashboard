@@ -20,7 +20,7 @@
   color: $white;
   margin-top: $header-height;
   transition: left 0.5s ease-in;
-  z-index: 1;
+  z-index: 0;
 }
 
 body:global(.sidebarCollapsed) {
