@@ -200,6 +200,55 @@ class B4aWebDeployment extends DashboardView {
               ))}
             </div>
           </div>
+          <div className={styles.guideSection}>
+            <h1 className={styles.guidesTitle}>Guides & Docs</h1>
+            <div className={styles.guidesContainer}>
+              <ul className={styles.guidesList}>
+                <li>
+                  <a
+                    href="https://www.back4app.com/docs-containers"
+                    rel="noreferrer"
+                    target="_blank"
+                    className={styles.guidesLink}
+                  >
+                    Get Started
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.back4app.com/docs-containers/integrate-with-github"
+                    rel="noreferrer"
+                    target="_blank"
+                    className={styles.guidesLink}
+                  >
+                    Creating a new App
+                  </a>
+                </li>
+              </ul>
+              <ul className={styles.guidesList}>
+                <li>
+                  <a
+                    href="https://www.back4app.com/docs-containers/deployment-process"
+                    rel="noreferrer"
+                    target="_blank"
+                    className={styles.guidesLink}
+                  >
+                    Manage your App
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.back4app.com/docs-containers/troubleshooting"
+                    rel="noreferrer"
+                    target="_blank"
+                    className={styles.guidesLink}
+                  >
+                    Troubleshooting
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     )

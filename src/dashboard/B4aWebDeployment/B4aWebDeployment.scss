@@ -256,3 +256,53 @@
     transform: rotate(360deg);
   }
 }
+
+.guideSection {
+  padding: 1rem;
+  margin-top: 5rem;
+  .guidesTitle {
+    @include SoraFont;
+    font-size: 1.375rem; // 22px
+    line-height: 1.4; // 140%
+  }
+  
+  .guidesContainer {
+    margin-top: 1rem; // 4
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; // 2
+    
+    @media (min-width: 1024px) { // lg breakpoint
+      flex-direction: row;
+      gap: 1rem; // 4
+    }
+  }
+  
+  .guidesList {
+    width: 100%;
+    padding-left: 0.5rem; // 2
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; // 2
+    list-style-type: disc;
+    list-style-position: inside;
+  
+    @media (min-width: 1024px) { // lg breakpoint
+      width: 50%; // lg:w-1/2
+    }
+  }
+  
+  .guidesLink {
+    @include InterFont;
+    font-size: 0.875rem; // 14px
+    line-height: 1.4; // 140%
+    text-decoration: none;
+    color: inherit;
+  
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+
