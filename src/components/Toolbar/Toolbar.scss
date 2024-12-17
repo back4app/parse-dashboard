@@ -29,6 +29,10 @@ body:global(.sidebarCollapsed) {
   }
 }
 
+.toolbar-webdeployment {
+  z-index: 1;
+}
+
 .objectPickerContent {
   .toolbar {
     background: #f9f9f9;

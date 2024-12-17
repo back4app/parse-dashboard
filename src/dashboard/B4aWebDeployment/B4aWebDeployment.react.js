@@ -81,7 +81,7 @@ class B4aWebDeployment extends DashboardView {
     const toolbar = (
       <Toolbar
         section='Web Deployment'
-        toolbarStyles={{ zIndex: 1 }}>
+        toolbarStyles={'toolbar-webdeployment'}>
         {/* <Button
           primary={true}
           value={
