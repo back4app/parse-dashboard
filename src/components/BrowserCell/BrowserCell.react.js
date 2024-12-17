@@ -118,7 +118,7 @@ class BrowserCell extends Component {
         this.props.value[0].__type === 'Pointer' &&
         typeof this.props.onPointerClick === 'function' &&
         this.props.value.findIndex(v => typeof v.objectId !== 'string') === -1 &&
-        this.props.value.length <= 20
+        this.props.value.length > 1
       ) {
         const array = [];
         try {
