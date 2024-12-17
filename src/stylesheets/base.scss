@@ -116,6 +116,10 @@ table {
   background: $dark;
 }
 
+.toolbar-webdeployment {
+  z-index: 1 !important;
+}
+
 label {
   margin: 0;
 }
