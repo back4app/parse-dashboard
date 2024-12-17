@@ -8,6 +8,7 @@ import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import Icon from 'components/Icon/Icon.react';
 import back4app2 from '../../lib/back4app2';
 import ContainersAppIcon from 'dashboard/B4aWebDeployment/ContainersAppIcon.react';
+import Button from 'components/Button/Button.react';
 
 
 @subscribeTo('Schema', 'schema')
@@ -80,6 +81,16 @@ class B4aWebDeployment extends DashboardView {
     const toolbar = (
       <Toolbar
         section='Web Deployment'>
+        {/* <Button
+          primary={true}
+          value={
+            <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" style={{ display: 'inline-block', marginRight: '0.5rem' }} />Deploy a Web App</span>
+          }
+          color="green"
+          width="auto"
+          additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
+          onClick={() => window.location = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/new-container`}
+        /> */}
       </Toolbar>
     );
 
@@ -88,27 +99,27 @@ class B4aWebDeployment extends DashboardView {
         {toolbar}
         <div className={styles.mainContent}>
           <div className={styles.header}>
-            <div className={styles.title}>Manage Your Web Applications</div>
+            <div className={styles.title}>Manage Your Web Applications <span className={styles.chip}>beta</span> </div>
             <div className={styles.subtitle}>Explore your existing applications or kickstart a new project with ease.</div>
           </div>
           <div className={styles.subHeader}>
             <div className="">
               <button onClick={() => {
-                // if (state.apps?.some(app => app.status === AppStatus.PENDING_VERIFICATION)) {
-                //   toast('Please complete email verification!', {
-                //     className:'bg-white px-6 py-4 text-dark text-center rounded-none rounded-bl-lg rounded-br-lg shadow-[0_6px_16px_rgba(0,0,0,0.25)] max-w-xs text-sm',
-                //     duration: 3 * 1000,
-                //     icon: <MailCircleSVG className="text-error-red" width="22px" height="22px" />
-                //   });
-                //   return;
-                // }
-                window.location = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/new-container`
+                if (this.state.apps?.some(app => app.status === 'PENDING_VERIFICATION')) {
+                  // toast('Please complete email verification!', {
+                  //   className:'bg-white px-6 py-4 text-dark text-center rounded-none rounded-bl-lg rounded-br-lg shadow-[0_6px_16px_rgba(0,0,0,0.25)] max-w-xs text-sm',
+                  //   duration: 3 * 1000,
+                  //   icon: <MailCircleSVG className="text-error-red" width="22px" height="22px" />
+                  // });
+                  return;
+                }
+                window.location = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/new-container`;
               }} className={styles.createContainerBtn}>
                 <div className={styles.createBtnIcon}>
                   <Icon name="create-icon" width={15} height={15} fill="#f9f9f9" />
                 </div>
                 <div className={styles.createBtnText}>
-                  Create new app
+                  Deploy a Web App
                 </div>
               </button>
             </div>
@@ -127,7 +138,7 @@ class B4aWebDeployment extends DashboardView {
           </div>
           <div className={styles.mainBody}>
             <div className={styles.appsListOverview}>
-              <div className={styles.appCount}>{`${this.state.apps.length} Web application${this.state.apps.length === 0 || this.state.apps.length === 1 ? '' : 's'}`}</div>
+              <div className={styles.appCount}>{`${this.state.apps.length} Web application${(this.state.apps.length === 0 || this.state.apps.length) === 1 ? '' : 's'}`}</div>
               <div className={styles.search}>
                 <input className={styles.searchInput} value={this.state.searchText} placeholder='Search' onChange={e => this.setState({ searchText: e.target.value })} />
                 <Icon name="search-outline" width={16} height={16} />

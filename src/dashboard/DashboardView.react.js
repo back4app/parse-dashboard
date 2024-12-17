@@ -283,6 +283,12 @@ export default class DashboardView extends React.Component {
       subsections: apiSubSections
     })
 
+    appSidebarSections.push({
+      name: 'Web Deployment',
+      icon: 'b4a-web-deployment-icon',
+      link: '/web-deployment'
+    })
+
     if (settingsSections.length > 0) {
       appSidebarSections.push({
         name: 'App Settings',
@@ -291,12 +297,6 @@ export default class DashboardView extends React.Component {
         subsections: settingsSections,
       });
     }
-
-    appSidebarSections.push({
-      name: 'Web Deployment',
-      icon: 'b4a-web-deployment-icon',
-      link: '/web-deployment'
-    })
 
     appSidebarSections.push({
       name: 'More',

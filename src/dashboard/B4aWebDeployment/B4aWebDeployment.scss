@@ -21,6 +21,9 @@
       font-weight: 600;
       line-height: 130%;
       margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .625rem;
       &::before {
         content: '';
         position: absolute;
@@ -31,6 +34,17 @@
         border-radius: 0.25rem;
         background: linear-gradient(90deg, $light-blue -8.33%, $cta-green 100%);
         box-shadow: 0px 0px 7px 0px rgba(193, 226, 255, 0.16);
+      }
+
+      .chip {
+        display: inline;
+        border: 1px solid $cta-green;
+        background: rgba($cta-green, .25);
+        text-transform: uppercase;
+        padding: 0.25rem 0.625rem;
+        border-radius: .75rem;
+        font-size: .625rem;
+        line-height: 1.4;
       }
     }
     & .subtitle {
