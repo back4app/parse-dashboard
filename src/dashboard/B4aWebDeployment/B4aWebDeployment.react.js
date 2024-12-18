@@ -222,7 +222,7 @@ class B4aWebDeployment extends DashboardView {
                       target="_blank"
                       className={styles.guidesLink}
                     >
-                      Creating a new App
+                      Creating a new web application
                     </a>
                   </li>
                 </ul>
@@ -234,7 +234,7 @@ class B4aWebDeployment extends DashboardView {
                       target="_blank"
                       className={styles.guidesLink}
                     >
-                      Manage your App
+                      Manage your web application
                     </a>
                   </li>
                   <li>
