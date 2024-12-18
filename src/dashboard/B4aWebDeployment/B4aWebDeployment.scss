@@ -9,9 +9,14 @@
   background: $dark;
   color: $white;
   & .mainContent {
-    max-width: 50rem;
-    margin: 0 auto;
+    height: calc(#{$content-max-height} - #{$toolbar-height});
     padding-top: 5rem;
+    position: relative;
+    overflow: auto;
+    & .wrapper {
+      max-width: 50rem;
+      margin: 0 auto;
+    }
   }
   & .header {
     & .title {
