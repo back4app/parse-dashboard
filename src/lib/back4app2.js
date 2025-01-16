@@ -12,6 +12,7 @@ const back4app2 = {
               username
               createdAt
               disableSolucxForm
+              avatar
             }
           }
         `
