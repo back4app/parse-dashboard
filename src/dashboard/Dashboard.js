@@ -548,6 +548,7 @@ const NavbarWrapper = () => {
     back4appDotComSiteURL={b4aSettings.BACK4APP_SITE_PATH}
     back4appDotComOldSiteURL={b4aSettings.BACK4APP_SITE_PATH}
     back4appDotComDashboardURL={b4aSettings.DASHBOARD_PATH}
+    back4appContainersApiURL={b4aSettings.CONTAINERS_API_PATH}
   />
 }
 
