@@ -116,32 +116,41 @@ class BrowserCell extends Component {
         this.props.value[0] &&
         typeof this.props.value[0] === 'object' &&
         this.props.value[0].__type === 'Pointer' &&
-        typeof this.props.onPointerClick === 'function'
+        typeof this.props.onPointerClick === 'function' &&
+        this.props.value.findIndex(v => typeof v.objectId !== 'string') === -1 &&
+        this.props.value.length <= 1
       ) {
         const array = [];
-        this.props.value.map((v, i) => {
-          if (typeof v !== 'object' || v.__type !== 'Pointer') {
-            throw new Error('Invalid type found in pointer array');
-          }
-          const object = new Parse.Object(v.className);
-          object.id = v.objectId;
-          array.push(
-            <Pill
-              key={i}
-              value={v.objectId}
-              onClick={this.props.onPointerClick.bind(undefined, object)}
-              followClick={true}
-              shrinkablePill
-            />
+        try {
+          this.props.value.map((v, i) => {
+            if (typeof v !== 'object' && (v.__type !== 'Pointer' || typeof v.objectId !== 'string')) {
+              throw new Error('Invalid type found in pointer array');
+            }
+            const object = new Parse.Object(v.className);
+            object.id = v.objectId;
+            array.push(
+              <Pill
+                key={i}
+                value={v.objectId}
+                onClick={this.props.onPointerClick.bind(undefined, object)}
+                followClick={v.__type === 'Pointer'}
+                shrinkablePill
+              />
+            );
+          });
+          content = (
+            <ul>
+              {array.map(a => (
+                <li>{a}</li>
+              ))}
+            </ul>
           );
-        });
-        this.copyableValue = content = (
-          <ul>
-            {array.map(a => (
-              <li>{a}</li>
-            ))}
-          </ul>
-        );
+        } catch (e) {
+          if (e.message === 'Invalid type found in pointer array') {
+            content = JSON.stringify(this.props.value);
+          }
+        }
+        this.copyableValue = JSON.stringify(this.props.value);
         if (array.length > 1) {
           classes.push(styles.hasMore);
         }
