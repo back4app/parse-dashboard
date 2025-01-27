@@ -558,7 +558,9 @@ const DashboardWrapper = () => {
       <Helmet>
         <title>Backend Dashboard</title>
       </Helmet>
-      <NavbarWrapper />
+      <div style={{ overflowX: 'clip' }}>
+        <NavbarWrapper />
+      </div>
       <Dashboard />
     </BrowserRouter>
   );
