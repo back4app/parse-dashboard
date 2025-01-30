@@ -48,6 +48,7 @@
     "@codemirror/language": "6.10.3",
     "@codemirror/lint": "6.8.2",
     "@lezer/highlight": "1.2.1",
+    "@sentry/react": "8.52.0",
     "@uiw/codemirror-themes": "4.23.6",
     "@uiw/react-codemirror": "4.23.6",
     "axios": "1.5.1",
