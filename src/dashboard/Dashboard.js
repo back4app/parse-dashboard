@@ -75,7 +75,7 @@ import Security from './Settings/Security/Security.react';
 import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
 import { initializeAmplitude, initializeLogRocketSession } from 'lib/amplitudeEvents';
-import * as Sentry from '@sentry/react';
+import { setUser as setSentryUser } from '@sentry/react';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -229,7 +229,7 @@ class Dashboard extends React.Component {
       }
 
       initializeAmplitude(user.email);
-      Sentry.setUser({
+      setSentryUser({
         id: user.email,
         email: user.email,
         username: user.email,
