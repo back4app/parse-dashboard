@@ -10,7 +10,7 @@ import {
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
   tracesSampleRate: 1.0,
-  replaysSessionSampleRate: 0.5,
+  replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
   maxBreadcrumbs: 100,
   integrations: [
@@ -22,6 +22,7 @@ Sentry.init({
       matchRoutes,
     }),
     Sentry.replayIntegration(),
-    Sentry.captureConsoleIntegration({ levels: ['error']})
+    Sentry.captureConsoleIntegration({ levels: ['error']}),
+    Sentry.browserTracingIntegration(),
   ],
 });
