@@ -9,6 +9,7 @@ import {
 
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
   tracesSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
@@ -21,7 +22,13 @@ Sentry.init({
       createRoutesFromChildren,
       matchRoutes,
     }),
-    Sentry.replayIntegration(),
+    Sentry.replayIntegration({
+      stickySession: true,
+      maskAllText: false,
+      blockAllMedia: true,
+      minReplayDuration: 5000,
+      maskAllInputs: false,
+    }),
     Sentry.captureConsoleIntegration({ levels: ['error']}),
     Sentry.browserTracingIntegration(),
   ],
