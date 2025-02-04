@@ -22,7 +22,8 @@ configuration.output.path = require('path').resolve('./production/bundles');
 configuration.plugins.push(
   new webpack.DefinePlugin({
     'process.env': {
-      'NODE_ENV': JSON.stringify('production')
+      'NODE_ENV': JSON.stringify('production'),
+      'SENTRY_ENV': JSON.stringify('production')
     }
   }),
   // new HtmlWebpackExternalsPlugin({

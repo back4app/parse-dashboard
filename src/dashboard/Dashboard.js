@@ -75,6 +75,7 @@ import Security from './Settings/Security/Security.react';
 import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
 import { initializeAmplitude, initializeLogRocketSession } from 'lib/amplitudeEvents';
+import { setUser as setSentryUser } from '@sentry/react';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -228,6 +229,12 @@ class Dashboard extends React.Component {
       }
 
       initializeAmplitude(user.email);
+      setSentryUser({
+        id: user.email,
+        email: user.email,
+        username: user.email,
+        ip_address: '{{auto}}',
+      });
       waitForScriptToLoad(() => typeof window.LogRocket !== 'undefined').then(() => {
         // eslint-disable-next-line no-undef
         initializeLogRocketSession(user.email);
@@ -491,7 +498,7 @@ const NavbarWrapper = () => {
         window.location.replace(`${b4aSettings.BACK4APP_SITE_PATH}/login?return-url=${encodeURIComponent(window.location.href)}`);
 
         return;
-      };
+      }
 
       setUser(user);
 
@@ -503,7 +510,7 @@ const NavbarWrapper = () => {
         console.error('unexpected error when finding apps plans', e);
 
         return;
-      };
+      }
 
       setAppsPlans(appsPlans);
     })();
