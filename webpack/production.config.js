@@ -23,7 +23,7 @@ configuration.plugins.push(
   new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('production'),
-      'SENTRY_ENV': 'production'
+      'SENTRY_ENV': JSON.stringify('production')
     }
   }),
   // new HtmlWebpackExternalsPlugin({
