@@ -6,7 +6,7 @@ configuration.plugins.push(
   new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('homolog'),
-      'SENTRY_ENV': 'homolog'
+      'SENTRY_ENV': JSON.stringify('homolog')
     }
   }),
   new webpack.SourceMapDevToolPlugin({

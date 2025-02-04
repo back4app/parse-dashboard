@@ -9,6 +9,8 @@ import {
 
 console.log('sentry init file backend dashboard');
 console.log(process.env.SENTRY_ENV);
+console.log(process.env['SENTRY_ENV']);
+console.log(process.env['NODE_ENV']);
 
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
