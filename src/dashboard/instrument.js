@@ -7,12 +7,12 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
-console.log('sentry init file');
-console.log(process.env.NODE_ENV);
+console.log('sentry init file backend dashboard');
+console.log(process.env.SENTRY_ENV);
 
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
-  environment: process.env.NODE_ENV,
+  environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
   replaysSessionSampleRate: 1.0,
   replaysOnErrorSampleRate: 1.0,
