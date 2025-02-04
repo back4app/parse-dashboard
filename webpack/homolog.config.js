@@ -5,7 +5,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 configuration.plugins.push(
   new webpack.DefinePlugin({
     'process.env': {
-      'NODE_ENV': JSON.stringify('homolog')
+      'NODE_ENV': JSON.stringify('homolog'),
+      'SENTRY_ENV': 'homolog'
     }
   }),
   new webpack.SourceMapDevToolPlugin({
