@@ -11,7 +11,7 @@ Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
-  replaysSessionSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
   maxBreadcrumbs: 100,
   integrations: [
