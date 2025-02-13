@@ -20,6 +20,7 @@ import Icon from 'components/Icon/Icon.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import { withRouter } from 'lib/withRouter';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
+import { pushGTMEvent } from 'lib/gtm.js';
 
 @withRouter
 class B4ACloudCode extends CloudCode {
@@ -146,6 +147,7 @@ class B4ACloudCode extends CloudCode {
   }
 
   async uploadCode() {
+    pushGTMEvent('create_app_backend', true);
     const tree = [];
     // Get current files on tree
     const currentCode = $('#tree').jstree().get_json();
