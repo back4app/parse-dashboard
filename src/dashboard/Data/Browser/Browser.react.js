@@ -60,6 +60,7 @@ import generatePath from 'lib/generatePath';
 import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { pushGTMEvent } from 'lib/gtm.js'
 
 const BROWSER_LAST_LOCATION = 'b4a_brower_last_location';
 // The initial and max amount of rows fetched by lazy loading
@@ -742,6 +743,7 @@ class Browser extends DashboardView {
   }
 
   createClass(className, isProtected, shouldContinue = false) {
+    pushGTMEvent('create_app_backend', true);
     let clp = isProtected ? protectedCLPs : defaultCLPS;
     if (semver.lte(this.context.serverInfo.parseServerVersion, '3.1.1')) {
       clp = {};

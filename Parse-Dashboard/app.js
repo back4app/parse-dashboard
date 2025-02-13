@@ -249,6 +249,7 @@ module.exports = function(config, options) {
           <script>
             PARSE_DASHBOARD_PATH = "${mountPath}";
           </script>
+          <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-W79Z9T');</script>
           <title>Backend Dashboard</title>
         </head>
           <body>
@@ -259,6 +260,7 @@ module.exports = function(config, options) {
             <!--End of Zopim Live Chat Script-->
             <script src="https://survey.solucx.com.br/widget.js"></script>
             <script src="https://cdn.logr-ingest.com/LogRocket.min.js" crossorigin="anonymous"></script>
+            <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W79Z9T" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </body>
         </html>
       `);
