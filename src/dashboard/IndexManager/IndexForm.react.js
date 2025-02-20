@@ -43,7 +43,7 @@ class IndexForm extends Component {
       unique: false,
       sparse: false,
       // expireAfterSeconds: '',
-      weights: {}
+      //weights: {}
     }
     this.onChangeIndexName = this.onChangeIndexName.bind(this)
     this.createIndex = this.createIndex.bind(this)
