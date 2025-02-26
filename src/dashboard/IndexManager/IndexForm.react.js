@@ -221,14 +221,14 @@ class IndexForm extends Component {
       sparse,
       unique,
       // expireAfterSeconds,
-      weights: Object.entries(weights).reduce((acc, [key, value]) => {
-        if (typeof value === 'string') {
-          acc[key] = parseInt(value)
-        } else {
-          acc[key] = value
-        }
-        return acc
-      }, {})
+      // weights: Object.entries(weights).reduce((acc, [key, value]) => {
+      //   if (typeof value === 'string') {
+      //     acc[key] = parseInt(value)
+      //   } else {
+      //     acc[key] = value
+      //   }
+      //   return acc
+      // }, {})
     }
     const indexConfiguration = {
       index,
