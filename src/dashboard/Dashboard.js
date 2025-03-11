@@ -13,6 +13,7 @@ import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
 import Browser from './Data/Browser/Browser.react';
 import CloudCode from './Data/CloudCode/B4ACloudCode.react';
+import AppOverview from './Data/AppOverview/AppOverview.react';
 // import CloudCode from './Data/CloudCode/CloudCode.react';
 import Config from './Data/Config/Config.react';
 import Explorer from './Analytics/Explorer/Explorer.react';
@@ -253,9 +254,12 @@ class Dashboard extends React.Component {
           let updatedApp;
           try {
             const serverInfo = await (new ParseApp(app).apiRequest('GET', 'serverInfo', {}, { useMasterKey: true }));
-            app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
-            updatedApp = AppsManager.updateApp(app);
-            this.updateApp(updatedApp);
+            //TODO: remove this timeout
+            setTimeout(() => {
+              app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
+              updatedApp = AppsManager.updateApp(app);
+              this.updateApp(updatedApp);
+            }, 5_000);
           } catch (error) {
             if (error.code === 100) {
               app.serverInfo = {
@@ -393,9 +397,10 @@ class Dashboard extends React.Component {
 
     const AppRoute = (
       <Route element={<AppData />}>
-        <Route index element={<Navigate replace to="browser" />} />
+        <Route index element={<Navigate replace to="overview" />} />
 
         <Route path="getting_started" element={<Empty />} />
+        <Route path="overview" element={<AppOverview />} />
 
         <Route path="browser/:className/:entityId/:relationName" element={<BrowserRoute />} />
         <Route path="browser/:className" element={<BrowserRoute />} />

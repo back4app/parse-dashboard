@@ -1,0 +1,59 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.container {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  padding: 0 5rem;
+  & .header {
+    & .title {
+      position: relative;
+      font-family: 'Sora', sans-serif;
+      font-size: 2.1875rem;
+      font-weight: 600;
+      line-height: 130%;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: calc(100% - 1.5rem);
+        width: 1.5rem;
+        height: 3px;
+        border-radius: 0.25rem;
+        background: linear-gradient(90deg, $light-blue -8.33%, $cta-green 100%);
+        box-shadow: 0px 0px 7px 0px rgba(193, 226, 255, 0.16);
+      }
+    }
+  }
+
+  & .content {
+    & .appName {
+      color: 18px;
+    }
+
+    & .appInfoCard {
+      @include InterFont;
+      margin-top: 18px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba($regal-blue, 0.4);
+
+      & hr {
+        border-color: rgba($regal-blue, 0.4);
+        margin: 12px 0;
+      }
+    }
+
+  }
+}

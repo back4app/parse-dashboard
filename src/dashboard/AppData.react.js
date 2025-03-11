@@ -13,7 +13,6 @@ import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
 import baseStyles from 'stylesheets/base.scss';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
-import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 function AppData() {
   const navigate = useNavigate();
@@ -32,13 +31,7 @@ function AppData() {
     }
 
     current.setParseKeys();
-    if (current.serverInfo.status === 'LOADING') {
-      return (
-        <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
-          <B4aLoader />
-        </div>
-      );
-    } else if (current.serverInfo.error) {
+    if (current.serverInfo.error) {
       return (
         <div className={baseStyles.pageCenter}>
           <EmptyGhostState
