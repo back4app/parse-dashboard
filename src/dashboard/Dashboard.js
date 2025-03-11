@@ -14,15 +14,12 @@ import AppsManager from 'lib/AppsManager';
 import Browser from './Data/Browser/Browser.react';
 import CloudCode from './Data/CloudCode/B4ACloudCode.react';
 import AppOverview from './Data/AppOverview/AppOverview.react';
-// import CloudCode from './Data/CloudCode/CloudCode.react';
 import Config from './Data/Config/Config.react';
-import Explorer from './Analytics/Explorer/Explorer.react';
 import FourOhFour from 'components/FourOhFour/FourOhFour.react';
 import GeneralSettings from './Settings/GeneralSettings.react';
 import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
 import HostingSettings from './Settings/HostingSettings.react';
 import HubConnections from './Hub/HubConnections.react';
-// import Icon from 'components/Icon/Icon.react';
 import IndexManager from './IndexManager/IndexManager.react'
 import JobEdit from 'dashboard/Data/Jobs/JobEdit.react';
 import Jobs from './Data/Jobs/Jobs.react';
@@ -32,28 +29,21 @@ import InfoLogs from './Data/Logs/InfoLogs.react';
 import ErrorLogs from './Data/Logs/ErrorLogs.react';
 import AccessLogs from './Data/Logs/AccessLogs.react';
 import SystemLogs from './Data/Logs/SystemLogs.react';
-// import B4aHubPublishPage from './B4aHubPublishPage/B4aHubPublishPage.react';
 import B4aAdminPage from './B4aAdminPage/B4aAdminPage.react';
 import B4aWebDeployment from './B4aWebDeployment/B4aWebDeployment.react';
-import B4aAppTemplates from './B4aAppTemplates/B4aAppTemplates.react';
 import { AsyncStatus } from 'lib/Constants';
 import { get } from 'lib/AJAX';
 import { setBasePath } from 'lib/AJAX';
 import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
-// // import createClass from 'create-react-class';
 import { Helmet } from 'react-helmet';
 import Playground from './Data/Playground/Playground.react';
 import axios from 'lib/axios';
 import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
-// // import EmptyState from 'components/EmptyState/EmptyState.react';
-import BlockchainPage from './BlockchainPage/BlockChainPage.react';
 import AccountView from './AccountView.react';
-import AnalyticsOverview from './Analytics/Overview/Overview.react';
 
 import Migration from './Data/Migration/Migration.react';
 import ParseApp from 'lib/ParseApp';
-import Performance from './Analytics/Performance/Performance.react';
 import PushAudiencesIndex from './Push/PushAudiencesIndex.react';
 import PushDetails from './Push/PushDetails.react';
 import PushIndex from './Push/PushIndex.react';
@@ -61,7 +51,6 @@ import PushNew from './Push/PushNew.react';
 import PushSettings from './Settings/PushSettings.react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RestConsole from './Data/ApiConsole/RestConsole.react';
-import Retention from './Analytics/Retention/Retention.react';
 import SchemaOverview from './Data/Browser/SchemaOverview.react';
 import SecuritySettings from './Settings/SecuritySettings.react';
 import SettingsData from './Settings/SettingsData.react';
@@ -71,7 +60,6 @@ import UsersSettings from './Settings/UsersSettings.react';
 import Webhooks from './Data/Webhooks/Webhooks.react';
 import baseStyles from 'stylesheets/base.scss';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
-import DashboardSettings from './Settings/DashboardSettings/DashboardSettings.react';
 import Security from './Settings/Security/Security.react';
 import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
@@ -254,12 +242,9 @@ class Dashboard extends React.Component {
           let updatedApp;
           try {
             const serverInfo = await (new ParseApp(app).apiRequest('GET', 'serverInfo', {}, { useMasterKey: true }));
-            //TODO: remove this timeout
-            setTimeout(() => {
-              app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
-              updatedApp = AppsManager.updateApp(app);
-              this.updateApp(updatedApp);
-            }, 5_000);
+            app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
+            updatedApp = AppsManager.updateApp(app);
+            this.updateApp(updatedApp);
           } catch (error) {
             if (error.code === 100) {
               app.serverInfo = {
