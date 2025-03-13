@@ -48,11 +48,97 @@
       gap: 32px;
       border-radius: 8px;
       border: 1px solid rgba($regal-blue, 0.4);
+      font-size: 14px;
 
       & hr {
         border-color: rgba($regal-blue, 0.4);
         margin: 12px 0;
       }
+
+      & .appInformationBox, & .appKeysBox {
+        flex: 1;
+      }
+      
+      & .appInfoCardHeader {
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: 16px;
+        line-height: 140%;;
+      }
+
+      & .appKeyWrapper {
+        display: flex;
+        justify-content: flex-start;
+        gap: 8px;
+
+        & > div {
+          flex: 1;
+        }
+
+        & .appKeyLabel {
+          font-size: 14px;
+          color: #ccc;
+        }
+
+        & .appKeySelect {
+          background: #1B3454;
+          padding: 4px 8px;
+          border-radius: 4px;
+          width: 100%;
+          outline: none;
+          border: none;
+          margin-bottom: 16px;
+        }
+      }
+
+      & .appContentBtn {
+        background: $white;
+        color: $dark-blue;
+        border: none;
+        outline: none;
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      & .greyText {
+        color: #ccc;
+      }
+    }
+
+    & .serverLogsWrapper {
+      margin: 1rem 0;
+      padding: 1.5rem;
+      border-radius: .5rem;
+      border: 1px solid #253348;
+      background: $dark-blue;
+
+      & .header {
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        & .headerText {
+          font-weight: 700;
+          font-size: 1rem;
+          line-height: 140%;
+        }
+  
+        & .logsLink {
+          font-size: 12px;
+          color: $old-blue;
+        }
+      }
+
+      & .logsBox {
+        max-height: 282px;
+        overflow-y: auto;
+        border-radius: 0.25rem;
+        background: #090909;
+        padding: 0.75rem 1rem;
+      }
+
     }
 
   }
