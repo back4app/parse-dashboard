@@ -1377,6 +1377,20 @@ export default class ParseApp {
     }
   }
 
+  async getSecurityReport() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/security-report/${this.slug}?fromdashboard=true`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
   async getAppBalance() {
     try {
       return (
