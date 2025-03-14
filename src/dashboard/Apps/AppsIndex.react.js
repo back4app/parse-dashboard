@@ -67,7 +67,7 @@ const Metric = props => {
 
 const AppCard = ({ app, icon }) => {
   const navigate = useNavigate();
-  const canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/browser`);
+  const canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/overview`);
   const versionMessage = app.serverInfo.error ?
     <div className={styles.serverVersion}>Server not reachable: <span className={styles.ago}>{app.serverInfo.error.toString()}</span></div>
     :
@@ -131,7 +131,7 @@ class AppsIndex extends React.Component {
     // If single app, then redirect to browser
     if (AppsManager.apps().length === 1) {
       const [app] = AppsManager.apps();
-      this.props.navigate(`/apps/${app.slug}/browser`);
+      this.props.navigate(`/apps/${app.slug}/overview`);
       return;
     }
     // compare nextProps with prevProps to know for which app's serverInfo changed
