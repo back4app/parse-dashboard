@@ -1391,6 +1391,21 @@ export default class ParseApp {
     }
   }
 
+  async getAppPlanData() {
+    try {
+      const headers = {
+        'X-Application-ID': this.applicationId,
+        'X-Application-Type': 'parse',
+        'Content-Type': 'application/json'
+      };
+      const config = { withCredentials: true, headers };
+      // eslint-disable-next-line no-undef
+      return (await axios.get(`${b4aSettings.BACK4APP_API_PATH}/getPlanData`, config)).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
   async getAppBalance() {
     try {
       return (

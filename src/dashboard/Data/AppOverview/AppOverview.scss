@@ -112,6 +112,7 @@
       border-radius: .5rem;
       border: 1px solid #253348;
       background: $dark-blue;
+      flex: 1;
 
       & .header {
         margin-bottom: 12px;
@@ -139,6 +140,97 @@
         padding: 0.75rem 1rem;
       }
 
+    }
+
+    & .cardsContainer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+
+      & .planDataBox {
+        flex: 1;
+        padding: 1rem;
+        border-radius: 0.25rem;
+
+        & .planUsageHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+
+          & .planBadge {
+            border-radius: 1rem;
+            background: #34506F;
+            color: #DCF2E1;
+            color: 14px;
+            padding: 2px 8px;
+          } 
+
+          & .planExpiry {
+            font-size: 12px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            & .planExpiryDate {
+              color: $white;
+            } 
+          }
+
+        } 
+
+        & .planUsageContainer {
+          display: flex;
+          flex-direction: column;
+          // gap: 1.5rem;
+
+          & .planUsageRow {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            & .planUsageLabel {
+              width: 110px;
+              font-size: 12px;
+              color: #ccc;
+            }
+
+            & .planUsageBarContainer {
+              display: flex;
+              align-items: center;
+              flex: 1;
+            } 
+
+            & .planUsageBar {
+              width: 80%;
+              flex: 1;
+              height: 8px;
+              background: #051127;
+              border-radius: 4px;
+              overflow: hidden;
+
+              & .usageBarFill {
+                height: 100%;
+                border-radius: 4px;
+              }
+            }
+
+            & .planUsageValue {
+              font-size: 12px;
+              text-align: right;
+              width: 110px;
+            }
+          }
+        }
+
+        & hr {
+          margin: 12px 0;
+          border-color: #253348;
+        }
+      }
     }
 
   }

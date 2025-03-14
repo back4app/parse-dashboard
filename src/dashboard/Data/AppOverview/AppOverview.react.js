@@ -11,8 +11,10 @@ import DashboardView from 'dashboard/DashboardView.react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
-import { useState } from 'react';
 import SystemLogsCard from './SystemLogsCard.react';
+import AppKeysComponent from './AppKeysComp.react';
+import AppPlanCard from './AppPlanCard.react';
+import AppSecurityCard from './AppSecurityCard.react';
 
 
 @withRouter
@@ -26,6 +28,12 @@ class AppOverview extends DashboardView {
       appKeys: new Map(),
       isLoadingServerLogs: true,
       serverLogs: '',
+
+      isLoadingAppPlanData: true,
+      appPlanData: undefined,
+
+      isLoadingSecurityReport: true,
+      securityReport: undefined
     };
     this.copyText = this.copyText.bind(this);
     this.loadCardInformation = this.loadCardInformation.bind(this);
@@ -69,13 +77,23 @@ class AppOverview extends DashboardView {
     );
 
     // load app plan information
-    // load app request informatio
+    currentApp.getAppPlanData().then(res => this.setState({
+      isLoadingAppPlanData: false,
+      appPlanData: res
+    }));
 
+    // load app security report
+    currentApp.getSecurityReport().then(res => this.setState({
+      isLoadingSecurityReport: false,
+      securityReport: res
+    }));
+
+    //TODO: load app request information
+    //TODO: load slow request count
   }
 
 
   renderContent() {
-    // const isLoading = this.context.serverInfo.status !== 'SUCCESS';
     return (
       <div className={styles.container}>
         <div className={styles.header}>
@@ -113,6 +131,13 @@ class AppOverview extends DashboardView {
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
+
+          <div className={styles.cardsContainer}>
+            {/* App plan card */}
+            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} />
+            {/* App Secutiry Card */}
+            <AppSecurityCard loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
+          </div>
         </div>
       </div>
     );
@@ -120,27 +145,3 @@ class AppOverview extends DashboardView {
 }
 
 export default AppOverview;
-
-
-const AppKeysComponent = ({appKeys, copyText}) => {
-  const [selectedKey, setSelectedKey] = useState('javascriptKey')
-
-  return <div className={styles.appKeyWrapper}>
-    <label htmlFor='appKeys'>Keys: </label>
-    <div className="">
-      <select name="appKeys" className={styles.appKeySelect} value={selectedKey} defaultValue={selectedKey} onChange={(e) => setSelectedKey(e.target.value)}>
-        {[...appKeys.entries()].map(([key]) => (
-          <option key={key} value={key}>
-            {key}
-          </option>
-        ))}
-      </select>
-      <div style={{ paddingLeft: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        {appKeys.get(selectedKey)}
-        <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => copyText(appKeys.get(selectedKey))}>
-          <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
-        </div>
-      </div>
-    </div>
-  </div>
-}
