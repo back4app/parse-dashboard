@@ -17,8 +17,8 @@ const AppPlanCard = ({ loading, planData }) => {
                 <span>{planData.planName.replace(' Plan', '')}</span>
               </div>
               <div className={styles.planExpiry}>
-                <div>Last Update <span className={styles.planExpiryDate}>{new Date(planData.planLastUpdate).toLocaleDateString()}</span></div>
-                <div>Expires <span className={styles.planExpiryDate}>{new Date(planData.planPeriod.expires).toLocaleDateString()}</span></div>
+                {planData.planLastUpdate && <div>Last Update <span className={styles.planExpiryDate}>{new Date(planData.planLastUpdate).toLocaleDateString()}</span></div>}
+                {planData.planPeriod?.expires && <div>Expires <span className={styles.planExpiryDate}>{new Date(planData.planPeriod.expires).toLocaleDateString()}</span></div>}
               </div>
             </div>
 
