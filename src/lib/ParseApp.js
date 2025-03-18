@@ -1406,6 +1406,48 @@ export default class ParseApp {
     }
   }
 
+  async fetchAvgResponseTime(limit = 60) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/avg-response?limit=${limit}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async fetchRequestStatus(limit = 60) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/request-status?limit=${limit}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async fetchAppHealthStatus(limit = 60) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/health-status?limit=${limit}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
   async getAppBalance() {
     try {
       return (

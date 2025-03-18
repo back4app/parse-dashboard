@@ -88,8 +88,30 @@ class AppOverview extends DashboardView {
       securityReport: res
     }));
 
+    // load slow request count
+    const date = new Date();
+    const { promise } = currentApp.getAnalyticsSlowQueries({
+      path: '',
+      method: '',
+      respStatus: '',
+      respTime: '',
+      from: new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate() - 31
+      ),
+      to: new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate() + 1
+      )
+    });
+    promise.then(res => console.log(res));
     //TODO: load app request information
-    //TODO: load slow request count
+
+    currentApp.fetchRequestStatus().then(res => console.log(res));
+    currentApp.fetchAppHealthStatus().then(res => console.log(res));
+    currentApp.fetchAvgResponseTime().then(res => console.log(res));
   }
 
 
