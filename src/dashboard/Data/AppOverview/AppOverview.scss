@@ -130,6 +130,12 @@
           font-size: 12px;
           color: $old-blue;
         }
+
+        & .upgradeBtn {
+          font-size: 14px;
+          font-weight: 600;
+          padding: 4px 12px;
+        }
       }
 
       & .logsBox {
@@ -428,6 +434,47 @@
           }
         } 
       } 
+    }
+
+    & .docsContainer {
+      margin: 40px 0;
+
+      & .docsHeader {
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 140%;
+        margin-bottom: 1rem;
+      }
+      
+      & .docsContent {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+
+        & .docsCard {
+          cursor: pointer;
+          max-width: 193px;
+          padding: 1.25rem 12px 12px;
+          border-radius: .5rem;
+          border: 1px solid #1B3454;
+
+          & .docsCardTitle {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 140%;
+            margin-bottom: .5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          & .docsCardDescription {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 140%;
+          }
+        }
+      }     
     }
   }
 }

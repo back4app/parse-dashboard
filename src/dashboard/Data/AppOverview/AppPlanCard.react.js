@@ -7,7 +7,7 @@ const AppPlanCard = ({ loading, planData, appId }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <Button type="primary" value="Upgrade" onClick={() => window.location.href = `${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse`} />
+        <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} onClick={() => window.location.href = `${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse`} />
       </div>
       <div className={styles.planDataBox}>
         {loading ? ('loading....') : (<>

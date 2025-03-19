@@ -190,6 +190,36 @@ class AppOverview extends DashboardView {
             {/* App Secutiry Card */}
             <AppSecurityCard loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
           </div>
+
+          <div className={styles.docsContainer}>
+            <div className={styles.docsHeader}>Docs & Support</div>
+            <div className={styles.docsContent}>
+              <div className={styles.docsCard}>
+                <div className={styles.docsCardTitle}>Documentation <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                <div className={styles.docsCardDescription}>Guides to help you solve any issues you find.</div>
+              </div>
+
+              <div className={styles.docsCard}>
+                <div className={styles.docsCardTitle}>Documentation <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                <div className={styles.docsCardDescription}>Guides to help you solve any issues you find.</div>
+              </div>
+
+              <div className={styles.docsCard}>
+                <div className={styles.docsCardTitle}>API Reference <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                <div className={styles.docsCardDescription}>Learn how to integrate our API.</div>
+              </div>
+
+              <div className={styles.docsCard}>
+                <div className={styles.docsCardTitle}>Join B4A Community <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                <div className={styles.docsCardDescription}>Most common questions and solutions.</div>
+              </div>
+
+              <div className={styles.docsCard}>
+                <div className={styles.docsCardTitle}>Open a Ticket <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                <div className={styles.docsCardDescription}>Get back from our support team.</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
