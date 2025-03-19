@@ -137,14 +137,13 @@ class AppOverview extends DashboardView {
   async pollSchemas() {
     try {
       const response = await this.context.apiRequest('GET', 'schemas', {}, { useMasterKey: true });
-      console.log('response schemas', response);
-      if (response.status === 200) {
+      if (Array.isArray(response.results)) {
         return true;
       }
     } catch (error) {
       console.error('Error polling schemas:', error);
-      return false;
     }
+    return false;
   }
 
   renderContent() {
