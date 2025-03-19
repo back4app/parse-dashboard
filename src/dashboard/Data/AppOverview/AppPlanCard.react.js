@@ -2,12 +2,12 @@ import React from 'react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { Button } from '@back4app2/react-components';
 
-const AppPlanCard = ({ loading, planData }) => {
+const AppPlanCard = ({ loading, planData, appId }) => {
   return (
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <Button type="primary" value="Upgrade" onClick={() => window.location.href = '/upgrade'} />
+        <Button type="primary" value="Upgrade" onClick={() => window.location.href = `${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse`} />
       </div>
       <div className={styles.planDataBox}>
         {loading ? ('loading....') : (<>

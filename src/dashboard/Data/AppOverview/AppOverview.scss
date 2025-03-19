@@ -133,6 +133,7 @@
       }
 
       & .logsBox {
+        min-height: 244px;
         max-height: 282px;
         overflow-y: auto;
         border-radius: 0.25rem;
@@ -162,7 +163,7 @@
             border-radius: 1rem;
             background: #34506F;
             color: #DCF2E1;
-            color: 14px;
+            font-size: 14px;
             padding: 2px 8px;
           } 
 
@@ -278,5 +279,176 @@
       
     }
 
+    & .performanceCard {
+      padding: 1.5rem;
+      border-radius: .5rem;
+      border: 1px solid #253348;
+
+      & .performanceCardHeader {
+        font-weight: 700;
+        line-height: 140%;
+        margin-bottom: 12px;
+      }
+
+      & .performanceCardContent {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 200px;
+
+        & .avgResponseTimeCard, & .responseStatusCard, & .slowQueriesCard {
+          flex: 1;
+          padding: 12px 16px;
+          border-radius: .5rem;
+          background: #1D293E;
+
+          & .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: calc(100% - 24px);
+          }
+
+          & .headerTextDiv {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+
+            & .headerText {
+              font-size: 12px;
+              font-weight: 600;
+              line-height: 140%;
+            }
+
+            & .rightText {
+              font-size: 11px;
+              color: #ccc;
+            }  
+          }            
+        }
+
+        & .avgResponseTimeCard {
+          min-width: 300px;
+          flex: 0;
+          & .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            height: calc(100% - 24px);
+          }
+
+          & .avgResponseTime {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 140%;
+          }
+
+          & .avgResponseTimeText {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 32px;
+            height: 24px;
+          }
+        } 
+
+        & .slowQueriesCard {
+          flex: 0;
+          min-width: 150px;
+
+          & .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: .5rem;
+            height: calc(100% - 24px);
+            flex-direction: column;
+            
+            & .slowQueriesNumber {
+              @include SoraFont;
+              font-size: 24px;
+              font-weight: 600;
+              line-height: 140%;
+              text-align: center
+            }
+
+            & .slowQueriesText {
+              @include SoraFont;
+              font-size: 12px;
+              color: #ccc;
+            }
+
+            & .avgSlowQueryTime {
+              @include SoraFont;
+              font-size: 24px;
+              font-weight: 600;
+              line-height: 140%;
+              text-align: center;
+            }
+          }
+        }
+
+        & .responseStatusCard {
+          & .statsRow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+
+            & .statusCode {
+              font-size: 12px;
+              color: #ccc;
+              width: 100px;
+            }
+            
+            & .progressBarContainer {
+              flex: 1;
+              height: 8px;
+              background: #051127;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+
+            & .progressBar {
+              height: 100%;
+              border-radius: 8px;
+            }
+
+            & .requestCount { 
+              font-size: 12px;
+              color: #ccc;
+              width: 50px;
+            }
+
+            & .percentage {
+              font-size: 12px;
+              color: #ccc;
+            }
+          }
+        } 
+      } 
+    }
+  }
+}
+
+.spinnerStatus {
+  animation: rotating 1s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }

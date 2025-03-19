@@ -15,7 +15,7 @@ import SystemLogsCard from './SystemLogsCard.react';
 import AppKeysComponent from './AppKeysComp.react';
 import AppPlanCard from './AppPlanCard.react';
 import AppSecurityCard from './AppSecurityCard.react';
-
+import AppPerformanceCard from './AppPerformanceCard.react';
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -33,7 +33,17 @@ class AppOverview extends DashboardView {
       appPlanData: undefined,
 
       isLoadingSecurityReport: true,
-      securityReport: undefined
+      securityReport: undefined,
+
+      isLoadingAvgResponseTime: true,
+      avgResponseTime: undefined,
+
+      isLoadingResponseStatus: true,
+      responseStatus: undefined,
+
+      isLoadingSlowQueries: true,
+      slowQueries: undefined,
+
     };
     this.copyText = this.copyText.bind(this);
     this.loadCardInformation = this.loadCardInformation.bind(this);
@@ -106,12 +116,21 @@ class AppOverview extends DashboardView {
         date.getDate() + 1
       )
     });
-    promise.then(res => console.log(res));
-    //TODO: load app request information
+    promise.then(res => this.setState({
+      isLoadingSlowQueries: false,
+      slowQueries: res
+    }));
 
-    currentApp.fetchRequestStatus().then(res => console.log(res));
-    currentApp.fetchAppHealthStatus().then(res => console.log(res));
-    currentApp.fetchAvgResponseTime().then(res => console.log(res));
+    currentApp.fetchRequestStatus().then(res => this.setState({
+      isLoadingResponseStatus: false,
+      responseStatus: res
+    }));
+
+    // currentApp.fetchAppHealthStatus().then(res => console.log(res));
+    currentApp.fetchAvgResponseTime().then(res => this.setState({
+      isLoadingAvgResponseTime: false,
+      avgResponseTime: res.avgResTime
+    }));
   }
 
 
@@ -154,9 +173,20 @@ class AppOverview extends DashboardView {
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
 
+          <AppPerformanceCard
+            isLoadingAvgResponseTime={this.state.isLoadingAvgResponseTime}
+            avgResponseTime={this.state.avgResponseTime}
+
+            isLoadingResponseStatus={this.state.isLoadingResponseStatus}
+            responseStatus={this.state.responseStatus}
+
+            isLoadingSlowQueries={this.state.isLoadingSlowQueries}
+            slowQueries={this.state.slowQueries}
+          />
+
           <div className={styles.cardsContainer}>
             {/* App plan card */}
-            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} />
+            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} />
             {/* App Secutiry Card */}
             <AppSecurityCard loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
           </div>
