@@ -476,6 +476,27 @@
         }
       }     
     }
+
+    & .loadingText {
+      @include InterFont;
+      font-weight: 600;
+      margin: 12px 0;
+      background: #112C4D;
+      border-radius: 8px;
+      border: 1px solid #253348;
+      padding: 12px 1rem;
+
+      & .loadingTextContent {
+        font-size: 14px;
+        color: $white;
+        opacity: 0;
+        animation: fadeInOut 2s ease-in-out forwards;
+
+        &.lastText {
+          animation: fadeInStay 1s ease-in-out forwards;
+        }
+      }
+    }
   }
 }
 
@@ -497,5 +518,35 @@
     -webkit-transform: rotate(360deg);
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInStay {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

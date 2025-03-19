@@ -16,7 +16,7 @@ import AppKeysComponent from './AppKeysComp.react';
 import AppPlanCard from './AppPlanCard.react';
 import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
-
+import AppLoadingText from './AppLoadingText.react';
 @withRouter
 class AppOverview extends DashboardView {
   constructor() {
@@ -47,6 +47,7 @@ class AppOverview extends DashboardView {
     };
     this.copyText = this.copyText.bind(this);
     this.loadCardInformation = this.loadCardInformation.bind(this);
+    this.pollSchemas = this.pollSchemas.bind(this);
   }
 
   componentWillMount() {
@@ -133,6 +134,18 @@ class AppOverview extends DashboardView {
     }));
   }
 
+  async pollSchemas() {
+    try {
+      const response = await this.currentApp.apiRequest('GET', 'schemas', {}, { useMasterKey: true });
+      console.log('response schemas', response);
+      if (response.status === 200) {
+        return true;
+      }
+    } catch (error) {
+      console.error('Error polling schemas:', error);
+      return false;
+    }
+  }
 
   renderContent() {
     return (
@@ -142,6 +155,9 @@ class AppOverview extends DashboardView {
         </div>
         <div className={styles.content}>
           <div className={styles.appName}>Welcome to your App: <strong>{this.context.name}</strong></div>
+
+          <AppLoadingText loading={this.context.serverInfo.status === 'LOADING'} appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
+
           <div className={styles.appInfoCard}>
             <div className={styles.appKeysBox}>
               <div className={styles.appInfoCardHeader}>App Name</div>
