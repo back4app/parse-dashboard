@@ -22,7 +22,7 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
   useEffect(() => {
     if (!loading) {
       const isNewApp = document.cookie.includes(`newApp-${appId}=true`);
-      document.cookie = `newApp-${appId}=; path=/; domain=back4app.com`;
+      document.cookie = `newApp-${appId}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=back4app.com`;
       setShouldPoll(isNewApp);
       if (isNewApp) {
         setStartTime(Date.now());
