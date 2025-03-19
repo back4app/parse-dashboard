@@ -17,6 +17,7 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
   const [isComplete, setIsComplete] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [shouldPoll, setShouldPoll] = useState(false);
+  const [failedPolling, setFailedPolling] = useState('');
 
   // Check for newApp cookie when loading is complete
   useEffect(() => {
@@ -32,7 +33,7 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
 
   // Effect for API polling - only runs when shouldPoll is true
   useEffect(() => {
-    if (!shouldPoll || !startTime) {
+    if (!shouldPoll || !startTime || failedPolling !== '') {
       return;
     }
 
@@ -41,7 +42,7 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
         setIsComplete(true);
       } else if (Date.now() - startTime >= MAX_POLLING_TIME) {
         setIsComplete(true);
-        // failed polling
+        setFailedPolling('Failed to load schemas');
       }
     };
 
@@ -82,6 +83,9 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
     }
     if (!shouldPoll) {
       return 'App information loaded successfully';
+    }
+    if (failedPolling !== '') {
+      return failedPolling;
     }
     return LOADING_TEXTS[currentTextIndex].text;
   };
