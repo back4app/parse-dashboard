@@ -251,6 +251,15 @@
       }
     }
 
+    & .securityReport {
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: calc(100% - 24px);
+      }
+    }
+
     & .securityContainer {
       padding: 12px;
       background: #1D293E;

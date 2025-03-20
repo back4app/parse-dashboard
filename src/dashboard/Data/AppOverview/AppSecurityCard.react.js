@@ -4,6 +4,30 @@ import { Link } from 'react-router-dom';
 import Icon from 'components/Icon/Icon.react';
 
 const AppSecurityCard = ({ loading, securityReport }) => {
+  let content = null;
+  if (loading) {
+    content = <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
+  } else if (securityReport instanceof Error) {
+    content = <div className={styles.loading}>Something went wrong</div>;
+  } else {
+    content = <div className={styles.securityContainer}>
+      <div className={styles.securityHeader}>
+        Errors & Warnings
+        <span className={styles.actionNeeded}>Action needed <Icon name="b4a-security-shield" width={16} height={16} fill="#E85C3E" /> </span>
+      </div>
+      {securityReport.length === 0 ? <div className={styles.noSecurity}>No security issues found</div> :
+        securityReport.slice(0, 2).map((item, index) => (
+          <div key={index} className={styles.securityItem}>
+            <div className={styles.securityText}>
+              {item.message}
+            </div>
+            <div className={styles.securityAction}>
+              <Icon name="b4a-right-arrrow-icon" width={16} height={16} fill="#f9f9f9" />
+            </div>
+          </div>
+        ))}
+    </div>
+  }
   return (
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
@@ -11,24 +35,7 @@ const AppSecurityCard = ({ loading, securityReport }) => {
         <Link to="/" role='button' className={styles.logsLink}>Go to Security</Link>
       </div>
       <div className={styles.securityReport}>
-        {loading ? ('loading....') : (<>
-          <div className={styles.securityContainer}>
-            <div className={styles.securityHeader}>
-              Errors & Warnings
-              <span className={styles.actionNeeded}>Action needed <Icon name="b4a-security-shield" width={16} height={16} fill="#E85C3E" /> </span>
-            </div>
-            {securityReport.slice(0, 2).map((item, index) => (
-              <div key={index} className={styles.securityItem}>
-                <div className={styles.securityText}>
-                  {item.message}
-                </div>
-                <div className={styles.securityAction}>
-                  <Icon name="b4a-right-arrrow-icon" width={16} height={16} fill="#f9f9f9" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </>)}
+        {content}
       </div>
     </div>
   )

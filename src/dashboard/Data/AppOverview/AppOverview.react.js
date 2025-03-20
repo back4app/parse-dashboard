@@ -192,8 +192,8 @@ class AppOverview extends DashboardView {
             <div className={styles.appInformationBox}>
               <div className={styles.appInfoCardHeader}>App Information</div>
               <div className="">
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseServerVersion}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>MongoDB</div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>{this.context.databaseType}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>North Virginia</div>
               </div>
@@ -224,30 +224,41 @@ class AppOverview extends DashboardView {
           <div className={styles.docsContainer}>
             <div className={styles.docsHeader}>Docs & Support</div>
             <div className={styles.docsContent}>
-              <div className={styles.docsCard}>
-                <div className={styles.docsCardTitle}>Documentation <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
-                <div className={styles.docsCardDescription}>Guides to help you solve any issues you find.</div>
-              </div>
+              <a href="https://www.back4app.com/docs/get-started/welcome" target="_blank" rel="noopener noreferrer">
+                <div className={styles.docsCard}>
+                  <div className={styles.docsCardTitle}>Documentation <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                  <div className={styles.docsCardDescription}>Guides to help you solve any issues you find.</div>
+                </div>
+              </a>
 
-              <div className={styles.docsCard}>
-                <div className={styles.docsCardTitle}>Documentation <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
-                <div className={styles.docsCardDescription}>Guides to help you solve any issues you find.</div>
-              </div>
+              <a href="https://dashboard.back4app.com/apidocs" target="_blank" rel="noopener noreferrer">
+                <div className={styles.docsCard}>
+                  <div className={styles.docsCardTitle}>API Reference <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                  <div className={styles.docsCardDescription}>Learn how to integrate our API.</div>
+                </div>
+              </a>
 
-              <div className={styles.docsCard}>
-                <div className={styles.docsCardTitle}>API Reference <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
-                <div className={styles.docsCardDescription}>Learn how to integrate our API.</div>
-              </div>
+              <a href="https://help.back4app.com/hc/en-us/sections/115000201712-FAQ" target="_blank" rel="noopener noreferrer">
+                <div className={styles.docsCard}>
+                  <div className={styles.docsCardTitle}>FAQ <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                  <div className={styles.docsCardDescription}>Most common questions and solutions.</div>
+                </div>
+              </a>
 
-              <div className={styles.docsCard}>
-                <div className={styles.docsCardTitle}>Join B4A Community <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
-                <div className={styles.docsCardDescription}>Most common questions and solutions.</div>
-              </div>
+              <a href="https://join.slack.com/t/back4appcommunity/shared_invite/zt-mul3jkwn-ny7E_6yLIocOmVUjR3mFHQ" target="_blank" rel="noopener noreferrer">
+                <div className={styles.docsCard}>
+                  <div className={styles.docsCardTitle}>Join B4A Community <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                  <div className={styles.docsCardDescription}>Most common questions and solutions.</div>
+                </div>
+              </a>
 
-              <div className={styles.docsCard}>
-                <div className={styles.docsCardTitle}>Open a Ticket <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
-                <div className={styles.docsCardDescription}>Get back from our support team.</div>
-              </div>
+              <a href="https://help.back4app.com/hc/en-us/requests/new" target="_blank" rel="noopener noreferrer">
+                <div className={styles.docsCard}>
+                  <div className={styles.docsCardTitle}>Open a Ticket <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
+                  <div className={styles.docsCardDescription}>Get back from our support team.</div>
+                </div>
+              </a>
+
             </div>
           </div>
         </div>
