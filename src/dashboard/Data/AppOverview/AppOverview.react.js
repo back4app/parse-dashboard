@@ -170,7 +170,7 @@ class AppOverview extends DashboardView {
         <div className={styles.content}>
           <div className={styles.appName}>Welcome to your App: <strong>{this.context.name}</strong></div>
 
-          {/* <AppLoadingText appId={this.context.applicationId} pollSchemas={this.pollSchemas} /> */}
+          <AppLoadingText appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
 
           <div className={styles.appInfoCard}>
             <div className={styles.appKeysBox}>
