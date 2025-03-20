@@ -1,8 +1,46 @@
 import React from 'react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { Button } from '@back4app2/react-components';
+import Icon from 'components/Icon/Icon.react';
+
+const formatDate = (dateString) => {
+  try {
+    if(dateString && Date.parse(dateString)) {
+      const date = new Date(dateString);
+      return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
+    } else {
+      return '(N.A.)';
+    }
+  } catch (error) {
+    return '(N.A.)';
+  }
+}
 
 const AppPlanCard = ({ loading, planData, appId }) => {
+  let content = null;
+  if (loading) {
+    content =  <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
+  } else if (planData instanceof Error) {
+    content = <div className={styles.loading}>Something went wrong</div>;
+  } else {
+    content = <div className={styles.planUsageContainer}>
+      <div className={styles.planUsageHeader}>
+        <div className={styles.planBadge}>
+          <span>{planData.planName.replace(' Plan', '')}</span>
+        </div>
+        <div className={styles.planExpiry}>
+          <div>Last Update <span className={styles.planExpiryDate}>{formatDate(planData.planLastUpdate)}</span></div>
+          <div>Expires <span className={styles.planExpiryDate}>{formatDate(planData.planValid)}</span></div>
+        </div>
+      </div>
+
+      <hr />
+
+      <UsageBar name="Requests / Month" usage={planData.apiCallUsed} limit={planData.apiCallLimit} />
+      <UsageBar name="Storage" usage={planData.fileStorageUsed} limit={planData.fileStorageLimit} />
+      <UsageBar name="Database Storage" usage={planData.dataStorageUsed} limit={planData.dataStorageLimit} />
+    </div>
+  }
   return (
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
@@ -10,25 +48,7 @@ const AppPlanCard = ({ loading, planData, appId }) => {
         <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} onClick={() => window.location.href = `${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse`} />
       </div>
       <div className={styles.planDataBox}>
-        {loading ? ('loading....') : (<>
-          <div className={styles.planUsageContainer}>
-            <div className={styles.planUsageHeader}>
-              <div className={styles.planBadge}>
-                <span>{planData.planName.replace(' Plan', '')}</span>
-              </div>
-              <div className={styles.planExpiry}>
-                {planData.planLastUpdate && <div>Last Update <span className={styles.planExpiryDate}>{new Date(planData.planLastUpdate).toLocaleDateString()}</span></div>}
-                {planData.planPeriod?.expires && <div>Expires <span className={styles.planExpiryDate}>{new Date(planData.planPeriod.expires).toLocaleDateString()}</span></div>}
-              </div>
-            </div>
-
-            <hr />
-
-            <UsageBar name="Requests / Month" usage={planData.apiCallUsed} limit={planData.apiCallLimit} />
-            <UsageBar name="Storage" usage={planData.fileStorageUsed} limit={planData.fileStorageLimit} />
-            <UsageBar name="Database Storage" usage={planData.dataStorageUsed} limit={planData.dataStorageLimit} />
-          </div>
-        </>)}
+        {content}
       </div>
     </div>
   )
@@ -71,7 +91,7 @@ const UsageBar = ({ name, usage, limit }) => {
         <div className={styles.planUsageBar}>
           <div className={styles.usageBarFill} style={{width: `${percentage}%`, background: fillColor}} />
         </div>
-        <div className={styles.planUsageValue}>{usage} / {limit}</div>
+        <div className={styles.planUsageValue}>{usage} / <span className={styles.planUsageLimit}>{limit}</span></div>
       </div>
     </div>
   )

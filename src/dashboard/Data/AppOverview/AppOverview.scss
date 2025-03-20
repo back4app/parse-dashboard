@@ -147,6 +147,13 @@
         padding: 0.75rem 1rem;
       }
 
+      & .loading {
+        min-height: 244px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
     }
 
     & .cardsContainer {
@@ -226,9 +233,13 @@
             }
 
             & .planUsageValue {
-              font-size: 12px;
+              font-size: 11px;
               text-align: right;
               width: 110px;
+            }
+
+            & .planUsageLimit {
+              color: #ccc;
             }
           }
         }

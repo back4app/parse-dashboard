@@ -84,19 +84,25 @@ class AppOverview extends DashboardView {
           isLoadingServerLogs: false
         });
       },
-      err => this.setState({ serverLogs: '', isLoadingServerLogs: false })
+      err => this.setState({ serverLogs: new Error(err.message || err.msg || 'Something went wrong'), isLoadingServerLogs: false })
     );
 
     // load app plan information
     currentApp.getAppPlanData().then(res => this.setState({
       isLoadingAppPlanData: false,
       appPlanData: res
+    })).catch(err => this.setState({
+      isLoadingAppPlanData: false,
+      appPlanData: new Error(err.message || err.msg || 'Something went wrong')
     }));
 
     // load app security report
     currentApp.getSecurityReport().then(res => this.setState({
       isLoadingSecurityReport: false,
       securityReport: res
+    })).catch(err => this.setState({
+      isLoadingSecurityReport: false,
+      securityReport: new Error(err.message || err.msg || 'Something went wrong')
     }));
 
     // load slow request count
@@ -120,17 +126,26 @@ class AppOverview extends DashboardView {
     promise.then(res => this.setState({
       isLoadingSlowQueries: false,
       slowQueries: res
+    })).catch(err => this.setState({
+      isLoadingSlowQueries: false,
+      slowQueries: new Error(err.message || err.msg || 'Something went wrong')
     }));
 
     currentApp.fetchRequestStatus().then(res => this.setState({
       isLoadingResponseStatus: false,
       responseStatus: res
+    })).catch(err => this.setState({
+      isLoadingResponseStatus: false,
+      responseStatus: new Error(err.message || err.msg || 'Something went wrong')
     }));
 
     // currentApp.fetchAppHealthStatus().then(res => console.log(res));
     currentApp.fetchAvgResponseTime().then(res => this.setState({
       isLoadingAvgResponseTime: false,
       avgResponseTime: res.avgResTime
+    })).catch(err => this.setState({
+      isLoadingAvgResponseTime: false,
+      avgResponseTime: new Error(err.message || err.msg || 'Something went wrong')
     }));
   }
 
