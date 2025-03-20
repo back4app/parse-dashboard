@@ -12,31 +12,31 @@ const MAX_POLLING_TIME = 30_000; // 30 seconds
 const INITIAL_TEXT_INTERVAL = 2_000; // 2 seconds per text
 const SPEED_UP_INTERVAL = 500; // 0.5 seconds when speeding up
 
-const AppLoadingText = ({ loading, appId, pollSchemas }) => {
+const AppLoadingText = ({ appId, pollSchemas }) => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-  const [shouldPoll, setShouldPoll] = useState(false);
   const [failedPolling, setFailedPolling] = useState('');
+  const shouldPoll = document.cookie.includes(`newApp-${appId}=true`);
 
-  // Check for newApp cookie when loading is complete
+  // Clear cookie and start polling if it exists
   useEffect(() => {
-    if (!loading) {
-      const isNewApp = document.cookie.includes(`newApp-${appId}=true`);
+    if (shouldPoll) {
       document.cookie = `newApp-${appId}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=back4app.com`;
-      setShouldPoll(isNewApp);
-      if (isNewApp) {
-        setStartTime(Date.now());
-      }
     }
-  }, [loading, appId]);
+  }, [appId, shouldPoll]);
 
-  // Effect for API polling - only runs when shouldPoll is true
+  // Return empty div if no cookie present
+  if (!shouldPoll) {
+    return <div />;
+  }
+
+  // Effect for API polling
   useEffect(() => {
-    if (!shouldPoll || !startTime || failedPolling !== '') {
+    if (!shouldPoll || failedPolling !== '') {
       return;
     }
 
+    const startTime = Date.now();
     const checkStatus = async () => {
       if (await pollSchemas()) {
         setIsComplete(true);
@@ -51,9 +51,9 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
     return () => {
       clearInterval(pollingInterval);
     };
-  }, [pollSchemas, shouldPoll, startTime]);
+  }, [pollSchemas, shouldPoll]);
 
-  // Effect for text rotation - only runs when shouldPoll is true
+  // Effect for text rotation
   useEffect(() => {
     if (!shouldPoll) {
       return;
@@ -76,24 +76,10 @@ const AppLoadingText = ({ loading, appId, pollSchemas }) => {
 
   const isLastText = currentTextIndex === LOADING_TEXTS.length - 1;
 
-  // Determine what text to show based on loading and polling states
-  const getDisplayText = () => {
-    if (loading) {
-      return 'Loading app information...';
-    }
-    if (!shouldPoll) {
-      return 'App information loaded successfully';
-    }
-    if (failedPolling !== '') {
-      return failedPolling;
-    }
-    return LOADING_TEXTS[currentTextIndex].text;
-  };
-
   return (
     <div className={styles.loadingText}>
-      <div className={`${styles.loadingTextContent} ${(isLastText || !shouldPoll) ? styles.lastText : ''}`}>
-        {getDisplayText()}
+      <div className={`${styles.loadingTextContent} ${isLastText ? styles.lastText : ''}`}>
+        {failedPolling || LOADING_TEXTS[currentTextIndex].text}
       </div>
     </div>
   );
