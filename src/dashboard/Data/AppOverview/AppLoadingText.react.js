@@ -17,7 +17,7 @@ const MAX_POLL_DURATION = 30_000;
 const POLL_INTERVAL = 2_000;
 const TEXT_INTERVAL = Math.floor(MAX_POLL_DURATION / (LOADING_TEXTS.length - 1));
 
-const AppLoadingText = ({ appId, pollSchemas }) => {
+const AppLoadingText = ({ appName, appId, pollSchemas }) => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -114,19 +114,22 @@ const AppLoadingText = ({ appId, pollSchemas }) => {
   const iconColor = hasError ? '#FF4D4D' : (!isLastText ? '#15A9FF' : '#27AE60');
 
   return (
-    <div className={styles.loadingText}>
-      <div
-        key={currentTextIndex}
-        className={`${styles.loadingTextContent} ${isLastText || hasError ? styles.lastText : ''}`}
-      >
-        <span
-          className={`${styles.loadingTextIcon} ${!isLastText && !hasError ? styles.loadingTextAnimate : ''}`}
+    <>
+      {shouldShow && <div className={styles.appName}>Welcome to your App: <strong>{appName}</strong></div>}
+      <div className={styles.loadingText}>
+        <div
+          key={currentTextIndex}
+          className={`${styles.loadingTextContent} ${isLastText || hasError ? styles.lastText : ''}`}
         >
-          <Icon name={displayIcon} width={18} height={18} fill={iconColor} />
-        </span>
-        {displayText}
+          <span
+            className={`${styles.loadingTextIcon} ${!isLastText && !hasError ? styles.loadingTextAnimate : ''}`}
+          >
+            <Icon name={displayIcon} width={18} height={18} fill={iconColor} />
+          </span>
+          {displayText}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

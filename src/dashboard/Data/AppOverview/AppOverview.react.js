@@ -173,13 +173,11 @@ class AppOverview extends DashboardView {
           <div className={styles.title}>Overview</div>
         </div>
         <div className={styles.content}>
-          <div className={styles.appName}>Welcome to your App: <strong>{this.context.name}</strong></div>
-
-          <AppLoadingText appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
+          <AppLoadingText appName={this.context.name} appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
 
           <div className={styles.appInfoCard}>
             <div className={styles.appKeysBox}>
-              <div className={styles.appInfoCardHeader}>App Name</div>
+              <div className={styles.appInfoCardHeader}>{this.context.name}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <span style={{ color: '#CCC'}}>App ID:</span> {' '}
