@@ -195,7 +195,7 @@ class AppOverview extends DashboardView {
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>{this.context.databaseType}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>North Virginia</div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region}</div>
               </div>
             </div>
           </div>
