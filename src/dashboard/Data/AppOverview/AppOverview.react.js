@@ -17,7 +17,7 @@ import AppPlanCard from './AppPlanCard.react';
 import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
-import PopperTooltip from 'components/Tooltip/PopperTooltip.react';
+import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -157,7 +157,7 @@ class AppOverview extends DashboardView {
     try {
       const response = await this.context.apiRequest('GET', 'schemas', {}, { useMasterKey: true });
       if (Array.isArray(response.results)) {
-        await new Promise(resolve => setTimeout(resolve, 29_000));
+        // await new Promise(resolve => setTimeout(resolve, 29_000));
         return true;
       }
     } catch (error) {
@@ -185,7 +185,7 @@ class AppOverview extends DashboardView {
                   <span style={{ color: '#CCC'}}>App ID:</span> {' '}
                   {this.context.applicationId}
                 </div>
-                <PopperTooltip tooltip={'Copied!'} visible={this.state.showCopiedTooltip} placement='top' theme='dark'>
+                <B4aTooltip value={'Copied!'} visible={this.state.showCopiedTooltip} placement='top' theme='dark'>
                   <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => {
                     this.copyText(this.context.applicationId);
                     this.setState({ showCopiedTooltip: true });
@@ -195,7 +195,7 @@ class AppOverview extends DashboardView {
                   }}>
                     <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
                   </div>
-                </PopperTooltip>
+                </B4aTooltip>
               </div>
               <hr />
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
