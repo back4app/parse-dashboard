@@ -46,6 +46,7 @@ const AppLoadingText = ({ appName, appId, pollSchemas }) => {
       clearInterval(pollIntervalRef.current);
     }
 
+    console.log('deleting cookie');
     try {
       document.cookie = `newApp-${appId}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=back4app.com`;
     } catch (error) {
