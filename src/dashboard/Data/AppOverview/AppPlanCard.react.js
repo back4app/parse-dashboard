@@ -36,9 +36,9 @@ const AppPlanCard = ({ loading, planData, appId }) => {
 
       <hr />
 
-      <UsageBar name="Requests / Month" usage={planData.apiCallUsed} limit={planData.apiCallLimit} />
-      <UsageBar name="Storage" usage={planData.fileStorageUsed} limit={planData.fileStorageLimit} />
-      <UsageBar name="Database Storage" usage={planData.dataStorageUsed} limit={planData.dataStorageLimit} />
+      <UsageBar name="Requests / Month" usage={`${planData.apiCallUsed || planData.apiCallUsedNormalized}`} limit={planData.apiCallLimit} />
+      <UsageBar name="Storage" usage={`${planData.fileStorageUsed || planData.fileStorageUsedNormalized}`} limit={planData.fileStorageLimit} />
+      <UsageBar name="Database Storage" usage={`${planData.dataStorageUsed || planData.dataStorageUsedNormalized}`} limit={planData.dataStorageLimit} />
     </div>
   }
   return (

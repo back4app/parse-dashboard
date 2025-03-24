@@ -229,7 +229,7 @@ class AppOverview extends DashboardView {
             {/* App plan card */}
             <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} />
             {/* App Secutiry Card */}
-            <AppSecurityCard loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
+            <AppSecurityCard appId={this.context.slug} loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
           </div>
 
           <div className={styles.docsContainer}>

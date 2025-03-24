@@ -1,9 +1,8 @@
 import React from 'react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
-import { Link } from 'react-router-dom';
 import Icon from 'components/Icon/Icon.react';
 
-const AppSecurityCard = ({ loading, securityReport }) => {
+const AppSecurityCard = ({ appId, loading, securityReport }) => {
   let content = null;
   if (loading) {
     content = <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
@@ -13,7 +12,6 @@ const AppSecurityCard = ({ loading, securityReport }) => {
     content = <div className={styles.securityContainer}>
       <div className={styles.securityHeader}>
         Errors & Warnings
-        <span className={styles.actionNeeded}>Action needed <Icon name="b4a-security-shield" width={16} height={16} fill="#E85C3E" /> </span>
       </div>
       {securityReport.length === 0 ? <div className={styles.noSecurity}>No security issues found</div> :
         securityReport.slice(0, 2).map((item, index) => (
@@ -32,7 +30,7 @@ const AppSecurityCard = ({ loading, securityReport }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Security</div>
-        <Link to="/" role='button' className={styles.logsLink}>Go to Security</Link>
+        <a href={`${b4aSettings.BACK4APP_API_PATH}/apps/status/${appId}`} role='button' className={styles.logsLink}>Go to Security</a>
       </div>
       <div className={styles.securityReport}>
         {content}
