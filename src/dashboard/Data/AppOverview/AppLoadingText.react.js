@@ -45,17 +45,17 @@ const AppLoadingText = ({ appName, appId, pollSchemas }) => {
     if (pollIntervalRef.current) {
       clearInterval(pollIntervalRef.current);
     }
-  };
-
-  useEffect(() => {
-    if (!shouldShow || !pollSchemas) {
-      return;
-    }
 
     try {
       document.cookie = `newApp-${appId}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=back4app.com`;
     } catch (error) {
       console.error('Error deleting cookie:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!shouldShow || !pollSchemas) {
+      return;
     }
 
     const rotateText = () => {
@@ -102,7 +102,7 @@ const AppLoadingText = ({ appName, appId, pollSchemas }) => {
     pollIntervalRef.current = setInterval(pollWithTimeout, POLL_INTERVAL);
 
     return cleanup;
-  }, [appId, shouldShow, pollSchemas, isComplete, hasError]);
+  }, [appId, pollSchemas, isComplete, hasError]);
 
   if (!shouldShow) {
     return null;
