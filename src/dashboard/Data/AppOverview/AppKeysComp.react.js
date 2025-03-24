@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Icon from 'components/Icon/Icon.react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
+import PopperTooltip from 'components/Tooltip/PopperTooltip.react';
 
-const AppKeysComponent = ({appKeys, copyText}) => {
+const AppKeysComponent = ({ appKeys, copyText }) => {
   const [selectedKey, setSelectedKey] = useState('javascriptKey');
+  const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
   return <div className={styles.appKeyWrapper}>
     <label htmlFor='appKeys'>Keys: </label>
@@ -17,9 +19,17 @@ const AppKeysComponent = ({appKeys, copyText}) => {
       </select>
       <div style={{ paddingLeft: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         {appKeys.get(selectedKey)}
-        <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => copyText(appKeys.get(selectedKey))}>
-          <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
-        </div>
+        <PopperTooltip tooltip={'Copied!'} visible={showCopiedTooltip} placement='top' theme='dark'>
+          <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => {
+            copyText(appKeys.get(selectedKey));
+            setShowCopiedTooltip(true);
+            setTimeout(() => {
+              setShowCopiedTooltip(false);
+            }, 2_000);
+          }}>
+            <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
+          </div>
+        </PopperTooltip>
       </div>
     </div>
   </div>

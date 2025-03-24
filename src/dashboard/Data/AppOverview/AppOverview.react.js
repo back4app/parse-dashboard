@@ -17,6 +17,8 @@ import AppPlanCard from './AppPlanCard.react';
 import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
+import PopperTooltip from 'components/Tooltip/PopperTooltip.react';
+
 @withRouter
 class AppOverview extends DashboardView {
   constructor() {
@@ -43,6 +45,8 @@ class AppOverview extends DashboardView {
 
       isLoadingSlowQueries: true,
       slowQueries: undefined,
+
+      showCopiedTooltip: false,
 
     };
     this.copyText = this.copyText.bind(this);
@@ -153,6 +157,7 @@ class AppOverview extends DashboardView {
     try {
       const response = await this.context.apiRequest('GET', 'schemas', {}, { useMasterKey: true });
       if (Array.isArray(response.results)) {
+        await new Promise(resolve => setTimeout(resolve, 29_000));
         return true;
       }
     } catch (error) {
@@ -180,9 +185,17 @@ class AppOverview extends DashboardView {
                   <span style={{ color: '#CCC'}}>App ID:</span> {' '}
                   {this.context.applicationId}
                 </div>
-                <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => this.copyText(this.context.applicationId)}>
-                  <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
-                </div>
+                <PopperTooltip tooltip={'Copied!'} visible={this.state.showCopiedTooltip} placement='top' theme='dark'>
+                  <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => {
+                    this.copyText(this.context.applicationId);
+                    this.setState({ showCopiedTooltip: true });
+                    setTimeout(() => {
+                      this.setState({ showCopiedTooltip: false });
+                    }, 2_000);
+                  }}>
+                    <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
+                  </div>
+                </PopperTooltip>
               </div>
               <hr />
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />

@@ -106,8 +106,8 @@ const AppLoadingText = ({ appId, pollSchemas }) => {
   }
 
   const isLastText = currentTextIndex === LOADING_TEXTS.length - 1;
-  const displayText = hasError ? 'Contact support' : LOADING_TEXTS[currentTextIndex].text;
-  const displayIcon = hasError ? 'b4a-error-icon' : LOADING_TEXTS[currentTextIndex].icon;
+  const displayText = hasError ? 'Contact support!' : LOADING_TEXTS[currentTextIndex].text;
+  const displayIcon = hasError ? 'b4a-cross-filled' : LOADING_TEXTS[currentTextIndex].icon;
   const iconColor = hasError ? '#FF4D4D' : (!isLastText ? '#15A9FF' : '#27AE60');
 
   return (
