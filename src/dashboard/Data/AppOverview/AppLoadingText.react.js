@@ -27,6 +27,9 @@ const AppLoadingText = ({ appId, pollSchemas }) => {
   const pollTimeoutRef = useRef(null);
   const pollIntervalRef = useRef(null);
 
+  console.log('shouldShow', shouldShow);
+  console.log('document.cookie', document.cookie);
+
   useEffect(() => {
     document.documentElement.style.setProperty('--text-interval', `${TEXT_INTERVAL}ms`);
     document.documentElement.style.setProperty('--fill-duration', `${TEXT_INTERVAL / 2}ms`);
