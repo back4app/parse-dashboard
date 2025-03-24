@@ -69,27 +69,95 @@
 
       & .appKeyWrapper {
         display: flex;
-        justify-content: flex-start;
+        // align-items: center;
         gap: 8px;
 
-        & > div {
-          flex: 1;
-        }
-
-        & .appKeyLabel {
+        & label {
           font-size: 14px;
-          color: #ccc;
+          color: $white;
+          margin-top: 8px;
+        }
+      }
+
+      & .appKeyContainer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        flex-direction: column;
+      }
+
+      & .dropdownContainer {
+        position: relative;
+        min-width: 100%;
+      }
+
+      & .dropdownTrigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #1b3454;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+        color: $white;
+
+        span {
+          margin-right: 8px;
+          font-size: 14px;
+          color: $white;
+        }
+      }
+
+      & .dropdownMenu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        width: 100%;
+        background: #1b3454;
+        border-radius: 4px;
+        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      & .dropdownItem {
+        padding: 8px 12px;
+        font-size: 14px;
+        color: $white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #114370;
         }
 
-        & .appKeySelect {
-          background: #1B3454;
-          padding: 4px 8px;
-          border-radius: 4px;
-          width: 100%;
-          outline: none;
-          border: none;
-          margin-bottom: 16px;
-        }
+      }
+
+      & .keyValueContainer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 8px;
+      }
+
+      & .keyValue {
+        font-size: 14px;
+        color: $white;
+        margin-left: 8px;
+      }
+
+      & .copyButton {
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
       }
 
       & .appContentBtn {
