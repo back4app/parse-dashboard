@@ -49,6 +49,7 @@
       border-radius: 8px;
       border: 1px solid rgba($regal-blue, 0.4);
       font-size: 14px;
+      flex-wrap: wrap;
 
       & hr {
         border-color: rgba($regal-blue, 0.4);
@@ -507,13 +508,41 @@
       padding: 12px 1rem;
 
       & .loadingTextContent {
+        display: flex;
+        align-items: center;
         font-size: 14px;
         color: $white;
         opacity: 0;
-        animation: fadeInOut 2s ease-in-out forwards;
+        animation: fadeInOut var(--text-interval) ease-in-out forwards;
 
         &.lastText {
           animation: fadeInStay 1s ease-in-out forwards;
+        }
+
+        & .loadingTextIcon {
+          margin-right: 12px;
+          height: 22px;
+        }
+
+        & .loadingTextAnimate {
+          padding: 0px 2px;
+          border-radius: 2px;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: rgba(21, 169, 255, 0.4);
+            animation: fillUp var(--fill-duration) ease-in-out forwards;
+          }
         }
       }
     }
@@ -568,5 +597,14 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fillUp {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 100%;
   }
 }
