@@ -67,7 +67,8 @@ const Metric = props => {
 
 const AppCard = ({ app, icon }) => {
   const navigate = useNavigate();
-  const canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/overview`);
+  // const canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/overview`);
+  const canBrowse = () => navigate(html`/apps/${app.slug}/overview`);
   const versionMessage = app.serverInfo.error ?
     <div className={styles.serverVersion}>Server not reachable: <span className={styles.ago}>{app.serverInfo.error.toString()}</span></div>
     :
@@ -80,10 +81,10 @@ const AppCard = ({ app, icon }) => {
   const appNameStyles = [styles.appname];
   const appIconStyle = [styles.icon];
 
-  if (app.serverInfo.status === 'LOADING') {
-    appStatusIcon = <img src={loadingImg} alt="loading..." className={styles.loadingIcon} />
-    appNameStyles.push(styles.loading);
-  }
+  // if (app.serverInfo.status === 'LOADING') {
+  //   appStatusIcon = <img src={loadingImg} alt="loading..." className={styles.loadingIcon} />
+  //   appNameStyles.push(styles.loading);
+  // }
 
   if (app.serverInfo.status === 'ERROR') {
     appStatusIcon = <Icon name='warn-triangle-outline' fill='#FBFF3B' width={16} height={16} />
