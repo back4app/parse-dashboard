@@ -60,9 +60,7 @@ class AppOverview extends DashboardView {
     this.setState({
       appKeys,
     });
-    if (currentApp.serverInfo.status === 'SUCCESS') {
     this.loadCardInformation();
-  }
   }
 
   copyText(copyText = '') {
@@ -72,8 +70,18 @@ class AppOverview extends DashboardView {
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    if (nextContext.serverInfo.status === 'SUCCESS') {
-      this.loadCardInformation(nextContext);
+    if (nextContext.applicationId !== this.context.applicationId) {
+      const appKeys = new Map(Object.entries(nextContext).filter(([k]) => k.includes('Key')));
+      this.setState({
+        appKeys,
+        isLoadingServerLogs: true,
+        isLoadingAppPlanData: true,
+        isLoadingSecurityReport: true,
+        isLoadingAvgResponseTime: true,
+        isLoadingResponseStatus: true,
+        isLoadingSlowQueries: true,
+      });
+      this.loadCardInformation();
     }
   }
 
