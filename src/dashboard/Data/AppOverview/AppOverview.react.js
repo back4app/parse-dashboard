@@ -61,8 +61,8 @@ class AppOverview extends DashboardView {
       appKeys,
     });
     if (currentApp.serverInfo.status === 'SUCCESS') {
-      this.loadCardInformation();
-    }
+    this.loadCardInformation();
+  }
   }
 
   copyText(copyText = '') {
