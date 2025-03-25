@@ -11,8 +11,8 @@ import AppsManager from 'lib/AppsManager';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
-import baseStyles from 'stylesheets/base.scss';
-import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+// import baseStyles from 'stylesheets/base.scss';
+// import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 
 function AppData() {
   const navigate = useNavigate();

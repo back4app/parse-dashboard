@@ -618,6 +618,163 @@
   }
 }
 
+.connectAppModal {
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vw;
+  max-height: 60vh;
+  background: #253348;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: width 0.5s cubic-bezier(1, 0, 0, 1);
+  overflow: auto;
+
+  & .closeIcon {
+    position: absolute;
+    top: 13px;
+    left: calc(100% - 40px);
+    cursor: pointer;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 4px;
+    padding: 3px 6px;
+  }
+
+  & .connectAppModalHeader {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    width: 100%;
+    top: 0;
+    background: #253348;
+  }
+
+  & .connectAppModalTitle {
+    @include SoraFont;
+    font-size: 22px;
+    color: $white;
+    margin: 0 1rem;
+  }
+
+  & .connectAppModalContent {
+    padding: 1.5rem;
+    color: $white;
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: $white;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 1.5rem 0 1rem;
+      color: $white;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: rgba($white, 0.8);
+    }
+
+    ul, ol {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+      
+      li {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+        color: rgba($white, 0.8);
+      }
+    }
+
+    pre {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+
+      code {
+        font-family: 'Fira Code', monospace;
+        font-size: 13px;
+        color: rgba($white, 0.9);
+      }
+    }
+
+    code {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      color: rgba($white, 0.9);
+    }
+  }
+}
+
+.dropdownContainer {
+  position: relative;
+  min-width: 300px;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  .selectedLanguage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $white;
+  }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #253348;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: $white;
+  transition: background-color 0.2s;
+  font-size: 14px;
+
+  &:hover {
+    background: rgba($dark-blue, 0.4);
+  }
+
+  &.selected {
+    background: rgba($dark-blue, 0.4);
+    color: $white;
+  }
+}
+
 .spinnerStatus {
   animation: rotating 1s linear infinite;
 }

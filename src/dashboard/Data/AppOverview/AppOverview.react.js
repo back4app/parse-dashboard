@@ -18,6 +18,7 @@ import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
 import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
+import ConnectAppModal from './ConnectAppModal.react';
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -47,6 +48,7 @@ class AppOverview extends DashboardView {
       slowQueries: undefined,
 
       showCopiedTooltip: false,
+      showConnectAppModal: false,
 
     };
     this.copyText = this.copyText.bind(this);
@@ -206,7 +208,7 @@ class AppOverview extends DashboardView {
               <hr />
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
               <hr />
-              <button className={styles.appContentBtn}>Connect App</button>
+              <button className={styles.appContentBtn} onClick={() => this.setState({ showConnectAppModal: true })}>Connect App</button>
             </div>
             <div className={styles.appInformationBox}>
               <div className={styles.appInfoCardHeader}>App Information</div>
@@ -281,6 +283,10 @@ class AppOverview extends DashboardView {
             </div>
           </div>
         </div>
+
+        {this.state.showConnectAppModal && (
+          <ConnectAppModal closeModal={() => this.setState({ showConnectAppModal: false })} />
+        )}
       </div>
     );
   }
