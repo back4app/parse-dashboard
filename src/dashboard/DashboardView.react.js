@@ -84,7 +84,7 @@ export default class DashboardView extends React.Component {
   }
 
   render() {
-    const isLocked = this.context.serverInfo.status === 'LOADING';
+    const isLocked = this.context.serverInfo.status !== 'SUCCESS';
     if (isLocked && window.location.pathname.split('/')[3] !== 'overview') {
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
@@ -356,21 +356,21 @@ export default class DashboardView extends React.Component {
     //   );
     // }
 
-    if (this.context.serverInfo.error) {
-      content = (
-        <div className={styles.empty}>
-          <div className={baseStyles.center}>
-            <div className={styles.cloud}>
-              <Icon width={110} height={110} name="cloud-surprise" fill="#1e3b4d" />
-            </div>
-            <div className={styles.loadingError}>
-              {this.context.serverInfo.error.replace(/-/g, '\u2011')}
-            </div>
-            <Button color="white" value="Reload" width="120px" onClick={() => location.reload()} />
-          </div>
-        </div>
-      );
-    }
+    // if (this.context.serverInfo.error) {
+    //   content = (
+    //     <div className={styles.empty}>
+    //       <div className={baseStyles.center}>
+    //         <div className={styles.cloud}>
+    //           <Icon width={110} height={110} name="cloud-surprise" fill="#1e3b4d" />
+    //         </div>
+    //         <div className={styles.loadingError}>
+    //           {this.context.serverInfo.error.replace(/-/g, '\u2011')}
+    //         </div>
+    //         <Button color="white" value="Reload" width="120px" onClick={() => location.reload()} />
+    //       </div>
+    //     </div>
+    //   );
+    // }
 
     return (
       <div className={styles.dashboard}>
