@@ -47,6 +47,14 @@ curl -X PUT \
   -d '{"score":1338}' \
   https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
 \`\`\`
+
+### Example: Delete Object
+\`\`\`bash
+curl -X DELETE \
+  -H "X-Parse-Application-Id: YOUR_APP_ID" \
+  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
+  https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
+\`\`\`
 `,
     icon: 'b4a-api-icon',
     name: 'REST API',
@@ -101,6 +109,44 @@ mutation CreateGameScore {
     gameScore {
       objectId
       createdAt
+    }
+  }
+}
+\`\`\`
+
+### Example: Update Object (Mutation)
+\`\`\`graphql
+mutation UpdateGameScore {
+  updateGameScore(
+    input: {
+      id: "OBJECT_ID"
+      fields: {
+        score: 1500
+        playerName: "John Smith"
+      }
+    }
+  ) {
+    gameScore {
+      objectId
+      playerName
+      score
+      updatedAt
+    }
+  }
+}
+\`\`\`
+
+### Example: Delete Object (Mutation)
+\`\`\`graphql
+mutation DeleteGameScore {
+  deleteGameScore(
+    input: {
+      id: "OBJECT_ID"
+    }
+  ) {
+    success
+    error {
+      message
     }
   }
 }
@@ -184,6 +230,93 @@ const Parse = require('parse/node');
 // Initialize with your Back4app keys
 Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
 Parse.serverURL = 'https://parseapi.back4app.com';
+\`\`\`
+
+### Basic CRUD Operations
+\`\`\`javascript
+// Create a new object
+async function createObject() {
+  const GameScore = Parse.Object.extend("GameScore");
+  const gameScore = new GameScore();
+  gameScore.set("score", 1337);
+  gameScore.set("playerName", "Sean Plott");
+  gameScore.set("cheatMode", false);
+  
+  try {
+    const result = await gameScore.save();
+    console.log('New object created with objectId: ' + result.id);
+    return result;
+  } catch (error) {
+    console.error('Failed to create new object:', error);
+  }
+}
+
+// Query objects
+async function queryObjects() {
+  const GameScore = Parse.Object.extend("GameScore");
+  const query = new Parse.Query(GameScore);
+  query.greaterThan("score", 1000);
+  
+  try {
+    const results = await query.find();
+    console.log("Successfully retrieved " + results.length + " scores");
+    return results;
+  } catch (error) {
+    console.error('Error querying objects:', error);
+  }
+}
+
+// Update an object
+async function updateObject(objectId) {
+  const GameScore = Parse.Object.extend("GameScore");
+  const query = new Parse.Query(GameScore);
+  
+  try {
+    const gameScore = await query.get(objectId);
+    gameScore.set("score", 1338);
+    const result = await gameScore.save();
+    console.log('Object updated successfully');
+    return result;
+  } catch (error) {
+    console.error('Error updating object:', error);
+  }
+}
+
+// Delete an object
+async function deleteObject(objectId) {
+  const GameScore = Parse.Object.extend("GameScore");
+  const query = new Parse.Query(GameScore);
+  
+  try {
+    const gameScore = await query.get(objectId);
+    await gameScore.destroy();
+    console.log('Object deleted successfully');
+  } catch (error) {
+    console.error('Error deleting object:', error);
+  }
+}
+
+// Example usage with async/await
+async function main() {
+  // Create
+  const newScore = await createObject();
+  
+  // Query
+  const scores = await queryObjects();
+  
+  // Update
+  if (newScore) {
+    await updateObject(newScore.id);
+  }
+  
+  // Delete
+  if (newScore) {
+    await deleteObject(newScore.id);
+  }
+}
+
+// Run the example
+main().catch(console.error);
 \`\`\`
 `,
     icon: 'node-js',
