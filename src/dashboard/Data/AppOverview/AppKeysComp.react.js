@@ -8,6 +8,9 @@ const formatCamelCase = (str) => {
   if (!str) {
     return '';
   }
+  if (str === 'windowsKey') {
+    return '.NET Key';
+  }
   // Add space before capital letters and convert to lowercase
   return str
     .replace(/([A-Z])/g, ' $1') // Add space before capital letters
