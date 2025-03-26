@@ -10,8 +10,7 @@ import customPrisma from 'stylesheets/b4a-prisma.css';
 
 const LanguageDocMap = {
   'rest': {
-    content: `## REST API Quick Reference
-
+    content: `
 No SDK installation required. Use standard HTTP requests with appropriate headers.
 
 ### Authentication Headers
@@ -54,7 +53,7 @@ curl -X PUT \
     iconColor: '#cccccc'
   },
   'graphql': {
-    content: `## GraphQL API Quick Reference
+    content: `
 
 ### Step 1: Enable GraphQL on your Parse Server
 Make sure GraphQL is enabled in your Parse Server configuration.
@@ -186,61 +185,6 @@ const Parse = require('parse/node');
 Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
 Parse.serverURL = 'https://parseapi.back4app.com';
 \`\`\`
-
-## React.js / Next.js
-
-### Step 1: Install Parse SDK
-\`\`\`bash
-npm install parse --save
-\`\`\`
-
-### Step 2: Initialize Parse SDK
-\`\`\`javascript
-// Import Parse SDK
-import Parse from 'parse';
-
-// Initialize Parse on component/app mount
-function initializeParse() {
-  Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
-  Parse.serverURL = 'https://parseapi.back4app.com';
-}
-
-// For Next.js, you might initialize in a useEffect hook or in _app.js
-useEffect(() => {
-  initializeParse();
-}, []);
-
-// OR in _app.js / App.jsx:
-// initializeParse();
-\`\`\`
-
-### Basic CRUD Operations
-\`\`\`javascript
-// Create a new object
-const GameScore = Parse.Object.extend("GameScore");
-const gameScore = new GameScore();
-gameScore.set("score", 1337);
-gameScore.set("playerName", "Sean Plott");
-gameScore.set("cheatMode", false);
-await gameScore.save();
-
-// Query objects
-const query = new Parse.Query(GameScore);
-query.greaterThan("score", 1000);
-const results = await query.find();
-
-// Update an object
-const objectId = "xWMyZ4YEGZ";
-const query = new Parse.Query(GameScore);
-const gameScore = await query.get(objectId);
-gameScore.set("score", 1338);
-await gameScore.save();
-
-// Delete an object
-const query = new Parse.Query(GameScore);
-const gameScore = await query.get(objectId);
-await gameScore.destroy();
-\`\`\`
 `,
     icon: 'node-js',
     name: 'JavaScript (Node.js)',
@@ -259,64 +203,6 @@ await gameScore.destroy();
 // Initialize with your Back4app keys
 Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
 Parse.serverURL = 'https://parseapi.back4app.com';
-\`\`\`
-
-### Basic CRUD Operations
-\`\`\`javascript
-// Create a new object
-const GameScore = Parse.Object.extend("GameScore");
-const gameScore = new GameScore();
-gameScore.set("score", 1337);
-gameScore.set("playerName", "Sean Plott");
-gameScore.set("cheatMode", false);
-gameScore.save()
-  .then((gameScore) => {
-    console.log('New object created with objectId: ' + gameScore.id);
-  }, (error) => {
-    console.log('Failed to create new object, with error code: ' + error.message);
-  });
-
-// Query objects
-const GameScore = Parse.Object.extend("GameScore");
-const query = new Parse.Query(GameScore);
-query.greaterThan("score", 1000);
-query.find()
-  .then((results) => {
-    console.log("Successfully retrieved " + results.length + " scores.");
-    // Do something with the returned Parse.Object values
-    for (let i = 0; i < results.length; i++) {
-      const object = results[i];
-      console.log(object.id + ' - ' + object.get('playerName'));
-    }
-  }, (error) => {
-    console.log("Error: " + error.code + " " + error.message);
-  });
-
-// Update an object
-const query = new Parse.Query(GameScore);
-query.get("xWMyZ4YEGZ")
-  .then((gameScore) => {
-    // The object was retrieved successfully.
-    gameScore.set("score", 1338);
-    return gameScore.save();
-  })
-  .then((gameScore) => {
-    console.log('Object updated successfully');
-  }, (error) => {
-    console.log("Error: " + error.code + " " + error.message);
-  });
-
-// Delete an object
-const query = new Parse.Query(GameScore);
-query.get("xWMyZ4YEGZ")
-  .then((gameScore) => {
-    return gameScore.destroy();
-  })
-  .then(() => {
-    console.log('Object deleted successfully');
-  }, (error) => {
-    console.log("Error: " + error.code + " " + error.message);
-  });
 \`\`\`
 
 ### Basic CRUD Operations

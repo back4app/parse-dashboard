@@ -663,6 +663,16 @@
     padding: 1.5rem;
     color: $white;
 
+    h1, h2, h3 {
+      margin-top: .8rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: .5rem;
+      font-size: 14px;
+    }
+
     pre {
       background: #111214 !important;
       border-radius: 4px;
