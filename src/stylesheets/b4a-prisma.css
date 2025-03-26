@@ -1,0 +1,6 @@
+.react-syntax-highlighter-line-number {
+  margin-right: 1.25rem !important;
+  /* padding: 0 1.25rem !important; */
+  border-right: 1px solid #cccccc47 !important;
+  min-width: 2.5rem !important;
+}

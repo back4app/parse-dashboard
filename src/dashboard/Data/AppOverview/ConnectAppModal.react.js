@@ -4,6 +4,9 @@ import Position from 'lib/Position';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import customPrisma from 'stylesheets/b4a-prisma.css';
 
 const LanguageDocMap = {
   'rest': {
@@ -46,8 +49,9 @@ curl -X PUT \
   https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
 \`\`\`
 `,
-    icon: 'b4a-connect-rest',
+    icon: 'b4a-api-icon',
     name: 'REST API',
+    iconColor: '#cccccc'
   },
   'graphql': {
     content: `## GraphQL API Quick Reference
@@ -105,6 +109,7 @@ mutation CreateGameScore {
 `,
     icon: 'graphql',
     name: 'GraphQL API',
+    iconColor: '#f6009c',
   },
 
   'react': {
@@ -163,6 +168,7 @@ await gameScore.destroy();
 `,
     icon: 'react',
     name: 'React.js / Next.js',
+    iconColor: '#58c4dc',
   },
 
   'js-node': {
@@ -236,7 +242,7 @@ const gameScore = await query.get(objectId);
 await gameScore.destroy();
 \`\`\`
 `,
-    icon: 'js-node',
+    icon: 'node-js',
     name: 'JavaScript (Node.js)',
   },
 
@@ -364,8 +370,9 @@ query.get("xWMyZ4YEGZ")
   });
 \`\`\`
 `,
-    icon: 'js-browser',
+    icon: 'js-icon',
     name: 'JavaScript (Browser)',
+    iconColor: '#f7df1c',
   },
   'flutter': {
     content: `### Step 1: Install Parse SDK
@@ -468,6 +475,7 @@ Future<void> deleteObject(String objectId) async {
 `,
     icon: 'flutter',
     name: 'Flutter',
+    iconColor: '#4fe6ff'
   },
 
   'js-react-native': {
@@ -559,8 +567,9 @@ async function deleteObject(objectId) {
 }
 \`\`\`
 `,
-    icon: 'js-react-native',
+    icon: 'react',
     name: 'React Native',
+    iconColor: '#58c4dc',
   },
 
   'ios': {
@@ -677,8 +686,9 @@ func deleteObject(objectId: String) {
 }
 \`\`\`
 `,
-    icon: 'ios',
+    icon: 'apple',
     name: 'iOS Swift',
+    iconColor: '#a0a0a0',
   },
   'android': {
     content: `### Step 1: Install Parse SDK
@@ -814,9 +824,8 @@ public void deleteObject(String objectId) {
 `,
     icon: 'android',
     name: 'Android Java/kotlin',
+    iconColor: '#a4c639',
   },
-
-
   'php': {
     content: `### Step 1: Install Parse SDK
 \`\`\`json
@@ -906,6 +915,7 @@ function deleteObject($objectId) {
 `,
     icon: 'php',
     name: 'PHP',
+    iconColor: '#4f5b93',
   },
 }
 const origin = new Position(0, 0);
@@ -925,7 +935,7 @@ const ConnectAppModal = ({ closeModal }) => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className={styles.selectedLanguage}>
-                  <Icon name={selectedLanguage.icon} width={20} height={20} />
+                  <Icon name={selectedLanguage.icon} fill={selectedLanguage.iconColor || ''} width={20} height={20} />
                   <span>{selectedLanguage.name}</span>
                 </div>
                 <Icon name="b4a-chevron-down" width={16} height={16} fill="#f9f9f9" />
@@ -941,7 +951,7 @@ const ConnectAppModal = ({ closeModal }) => {
                         setIsDropdownOpen(false);
                       }}
                     >
-                      <Icon name={value.icon} width={20} height={20} />
+                      <Icon name={value.icon} fill={value.iconColor || ''} width={20} height={20} />
                       <span>{value.name}</span>
                     </div>
                   ))}
@@ -954,7 +964,16 @@ const ConnectAppModal = ({ closeModal }) => {
           </div>
         </div>
         <div className={styles.connectAppModalContent} style={{ overflow: 'auto' }}>
-          <ReactMarkdown>{selectedLanguage.content}</ReactMarkdown>
+          <ReactMarkdown renderers={{
+            code: ({ language, value }) => {
+              return (
+                <SyntaxHighlighter language={language} style={oneDark} showLineNumbers={true}>
+                  {value}
+                </SyntaxHighlighter>
+              )
+            }
+          }}
+          children={selectedLanguage.content} />
         </div>
       </div>
     </Popover>

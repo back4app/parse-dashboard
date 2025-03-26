@@ -657,67 +657,30 @@
     @include SoraFont;
     font-size: 22px;
     color: $white;
-    margin: 0 1rem;
   }
 
   & .connectAppModalContent {
     padding: 1.5rem;
     color: $white;
 
-    h1 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      color: $white;
-    }
-
-    h2 {
-      font-size: 20px;
-      font-weight: 600;
-      margin: 1.5rem 0 1rem;
-      color: $white;
-    }
-
-    p {
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-      color: rgba($white, 0.8);
-    }
-
-    ul, ol {
-      margin-bottom: 1rem;
-      padding-left: 1.5rem;
-      
-      li {
-        font-size: 14px;
-        line-height: 1.6;
-        margin-bottom: 0.5rem;
-        color: rgba($white, 0.8);
-      }
-    }
-
     pre {
-      background: rgba(0, 0, 0, 0.2);
+      background: #111214 !important;
       border-radius: 4px;
-      padding: 1rem;
+      padding: 1rem 1.5rem 1rem 0!important;
       margin: 1rem 0;
       overflow-x: auto;
 
       code {
         font-family: 'Fira Code', monospace;
         font-size: 13px;
-        color: rgba($white, 0.9);
+        background: #111214 !important;
       }
     }
 
     code {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 0.2rem 0.4rem;
-      border-radius: 3px;
       font-family: 'Fira Code', monospace;
       font-size: 13px;
-      color: rgba($white, 0.9);
+      background: #111214 !important;
     }
   }
 }
