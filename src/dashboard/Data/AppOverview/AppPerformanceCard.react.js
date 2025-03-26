@@ -48,33 +48,15 @@ function formatNumber(num) {
   return num.toString();
 }
 
-function formatMilliseconds(ms) {
+function formatMiliToSeconds(ms) {
   // Handle invalid inputs
   if (ms === null || ms === undefined || isNaN(ms)) {
-    return '0 s';
+    return '0';
   }
 
-  // Convert milliseconds to seconds
-  const seconds = ms / 1000;
-
-  // Define time units in seconds and their symbols
-  const units = [
-    { value: 86400, symbol: 'd' },   // days
-    { value: 3600, symbol: 'h' },    // hours
-    { value: 60, symbol: 'm' },      // minutes
-    { value: 1, symbol: 's' }        // seconds
-  ];
-
-  // Find the appropriate unit
-  for (const { value, symbol } of units) {
-    if (Math.abs(seconds) >= value) {
-      // Convert to the unit and round to 1 decimal place
-      const converted = (seconds / value).toFixed(1).replace(/\.0$/, '');
-      return `${converted}${symbol}`;
-    }
-  }
-
-  return '0s';
+  // Convert milliseconds to seconds and round to 2 decimal place
+  const seconds = (ms / 1000).toFixed(2).replace(/\.0$/, '');
+  return seconds;
 }
 
 const AvgResponseTimeCard = ({ isLoadingAvgResponseTime, avgResponseTime }) => {
@@ -87,8 +69,8 @@ const AvgResponseTimeCard = ({ isLoadingAvgResponseTime, avgResponseTime }) => {
     content = <div className={styles.loading}>Error loading average response time</div>;
   } else {
     content = <div className={styles.content}>
-      <div className={styles.avgResponseTime}>{avgResponseTime}</div>
-      <div className={styles.avgResponseTimeText}>ms</div>
+      <div className={styles.avgResponseTime}>{formatMiliToSeconds(+avgResponseTime)}</div>
+      <div className={styles.avgResponseTimeText}>s</div>
     </div>;
   }
   return <div className={styles.avgResponseTimeCard}>
@@ -156,7 +138,7 @@ const SlowQueriesCard = ({ isLoadingSlowQueries, slowQueries }) => {
       <div className={styles.slowQueriesText}>Count</div>
       <div className={styles.slowQueriesNumber}>{slowQueries.length}</div>
       <div className={styles.slowQueriesText}>Avg. duration</div>
-      <div className={styles.avgSlowQueryTime}>{formatMilliseconds(slowQueries.reduce((sum, query) => sum + query[6], 0) / slowQueries.length)}</div>
+      <div className={styles.avgSlowQueryTime}>{formatMiliToSeconds(slowQueries.reduce((sum, query) => sum + query[6], 0) / slowQueries.length)}s</div>
     </div>;
   }
   return <div className={styles.slowQueriesCard}>
