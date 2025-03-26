@@ -3,6 +3,18 @@ import Icon from 'components/Icon/Icon.react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 
+const formatCamelCase = (str) => {
+  // Handle empty or invalid input
+  if (!str) {
+    return '';
+  }
+  // Add space before capital letters and convert to lowercase
+  return str
+    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+    .replace(/^./, str => str.toUpperCase()) // Capitalize first letter
+    .trim(); // Remove any leading/trailing spaces
+};
+
 const AppKeysComponent = ({ appKeys, copyText }) => {
   const [selectedKey, setSelectedKey] = useState('javascriptKey');
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
@@ -29,7 +41,7 @@ const AppKeysComponent = ({ appKeys, copyText }) => {
           className={`${styles.dropdownTrigger} ${isDropdownOpen ? styles.active : ''}`}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
-          <span>{selectedKey}</span>
+          <span>{formatCamelCase(selectedKey)}</span>
           <Icon
             name='b4a-chevron-down'
             width={16}
@@ -48,7 +60,7 @@ const AppKeysComponent = ({ appKeys, copyText }) => {
                   setIsDropdownOpen(false);
                 }}
               >
-                {key}
+                {formatCamelCase(key)}
               </div>
             ))}
           </div>
