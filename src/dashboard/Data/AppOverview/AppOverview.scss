@@ -651,6 +651,7 @@
     width: 100%;
     top: 0;
     background: #253348;
+    z-index: 1;
   }
 
   & .connectAppModalTitle {
@@ -662,6 +663,23 @@
   & .connectAppModalContent {
     padding: 1.5rem;
     color: $white;
+
+    & .codeBlockContainer {
+      position: relative;
+      padding-top: 0.5rem;
+      background: #111214;
+      border-radius: 4px;
+
+      & .copyButton {
+        position: absolute;
+        top: 5px;
+        right: 12px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, .08);
+        border-radius: 4px;
+        padding: 0 6px;
+      }
+    }
 
     h1, h2, h3 {
       margin-top: .8rem;

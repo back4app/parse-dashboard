@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import customPrisma from 'stylesheets/b4a-prisma.css';
+// import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 
 const LanguageDocMap = {
   'rest': {
@@ -295,28 +296,6 @@ async function deleteObject(objectId) {
     console.error('Error deleting object:', error);
   }
 }
-
-// Example usage with async/await
-async function main() {
-  // Create
-  const newScore = await createObject();
-  
-  // Query
-  const scores = await queryObjects();
-  
-  // Update
-  if (newScore) {
-    await updateObject(newScore.id);
-  }
-  
-  // Delete
-  if (newScore) {
-    await deleteObject(newScore.id);
-  }
-}
-
-// Run the example
-main().catch(console.error);
 \`\`\`
 `,
     icon: 'node-js',
@@ -940,6 +919,37 @@ function deleteObject($objectId) {
 }
 const origin = new Position(0, 0);
 
+const CodeBlock = ({ language, value }) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      // setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  return (
+    <div className={styles.codeBlockContainer}>
+      <button
+        className={styles.copyButton}
+        onClick={copyToClipboard}
+        title="Copy to clipboard"
+      >
+        <Icon name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`} fill={copied ? '#27AE60' : '#15A9FF'} width={14} height={14} />
+        {/* <B4aTooltip value={'Copied!'} visible={copied} placement='top' theme='dark'>
+        </B4aTooltip> */}
+      </button>
+      <SyntaxHighlighter language={language} style={oneDark} showLineNumbers={true}>
+        {value}
+      </SyntaxHighlighter>
+    </div>
+  );
+};
+
 const ConnectAppModal = ({ closeModal }) => {
   const [selectedLanguage, setSelectedLanguage] = useState(LanguageDocMap['rest']);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -985,13 +995,7 @@ const ConnectAppModal = ({ closeModal }) => {
         </div>
         <div className={styles.connectAppModalContent} style={{ overflow: 'auto' }}>
           <ReactMarkdown renderers={{
-            code: ({ language, value }) => {
-              return (
-                <SyntaxHighlighter language={language} style={oneDark} showLineNumbers={true}>
-                  {value}
-                </SyntaxHighlighter>
-              )
-            }
+            code: CodeBlock
           }}
           children={selectedLanguage.content} />
         </div>
