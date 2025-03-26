@@ -166,7 +166,7 @@ const gameScore = await query.get(objectId);
 await gameScore.destroy();
 \`\`\`
 `,
-    icon: 'react',
+    icon: 'react-icon',
     name: 'React.js / Next.js',
     iconColor: '#58c4dc',
   },
@@ -244,6 +244,7 @@ await gameScore.destroy();
 `,
     icon: 'node-js',
     name: 'JavaScript (Node.js)',
+    iconColor: '#21a366',
   },
 
   'js-browser': {
@@ -567,7 +568,7 @@ async function deleteObject(objectId) {
 }
 \`\`\`
 `,
-    icon: 'react',
+    icon: 'react-icon',
     name: 'React Native',
     iconColor: '#58c4dc',
   },
