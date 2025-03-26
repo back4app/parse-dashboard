@@ -51,28 +51,30 @@ function formatNumber(num) {
 function formatMilliseconds(ms) {
   // Handle invalid inputs
   if (ms === null || ms === undefined || isNaN(ms)) {
-    return '0 ms';
+    return '0 s';
   }
 
-  // Define time units in milliseconds and their symbols
+  // Convert milliseconds to seconds
+  const seconds = ms / 1000;
+
+  // Define time units in seconds and their symbols
   const units = [
-    { value: 86400000, symbol: 'd' },   // days
-    { value: 3600000, symbol: 'h' },    // hours
-    { value: 60000, symbol: 'm' },      // minutes
-    { value: 1000, symbol: 's' },       // seconds
-    { value: 1, symbol: 'ms' }          // milliseconds
+    { value: 86400, symbol: 'd' },   // days
+    { value: 3600, symbol: 'h' },    // hours
+    { value: 60, symbol: 'm' },      // minutes
+    { value: 1, symbol: 's' }        // seconds
   ];
 
   // Find the appropriate unit
   for (const { value, symbol } of units) {
-    if (Math.abs(ms) >= value) {
+    if (Math.abs(seconds) >= value) {
       // Convert to the unit and round to 1 decimal place
-      const converted = (ms / value).toFixed(1).replace(/\.0$/, '');
+      const converted = (seconds / value).toFixed(1).replace(/\.0$/, '');
       return `${converted}${symbol}`;
     }
   }
 
-  return '0ms';
+  return '0s';
 }
 
 const AvgResponseTimeCard = ({ isLoadingAvgResponseTime, avgResponseTime }) => {
