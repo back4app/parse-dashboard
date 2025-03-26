@@ -45,7 +45,9 @@ const AppPlanCard = ({ loading, planData, appId }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} onClick={() => window.location.href = `${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse`} />
+        <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${appId}&type=parse`} target="_blank" rel="noopener noreferrer">
+          <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
+        </a>
       </div>
       <div className={styles.planDataBox}>
         {content}
