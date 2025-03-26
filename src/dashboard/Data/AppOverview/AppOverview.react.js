@@ -266,7 +266,7 @@ class AppOverview extends DashboardView {
                 </div>
               </a>
 
-              <a href="https://join.slack.com/t/back4appcommunity/shared_invite/zt-mul3jkwn-ny7E_6yLIocOmVUjR3mFHQ" target="_blank" rel="noopener noreferrer">
+              <a href="https://join.slack.com/t/back4appcommunity/shared_invite/zt-32f7hyyz6-MB4DUQbqJ2QAdbFexKE9XA" target="_blank" rel="noopener noreferrer">
                 <div className={styles.docsCard}>
                   <div className={styles.docsCardTitle}>Join B4A Community <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
                   <div className={styles.docsCardDescription}>Most common questions and solutions.</div>
