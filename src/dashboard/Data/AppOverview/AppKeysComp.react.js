@@ -19,7 +19,10 @@ const formatCamelCase = (str) => {
 };
 
 const AppKeysComponent = ({ appKeys, copyText }) => {
-  const [selectedKey, setSelectedKey] = useState('javascriptKey');
+  const [selectedKey, setSelectedKey] = useState(() => {
+    const keys = [...appKeys.entries()];
+    return keys.find(([key, value]) => value !== null)?.[0] || 'javascriptKey';
+  });
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
