@@ -6,103 +6,105 @@ import Icon from 'components/Icon/Icon.react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+// eslint-disable-next-line no-unused-vars
 import customPrisma from 'stylesheets/b4a-prisma.css';
 // import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 
 const LanguageDocMap = {
-  'rest': {
-    content: `
-No SDK installation required. Use standard HTTP requests with appropriate headers.
+  rest: {
+    content: `Since no SDK installation is required, you can simply use HTTP requests with the proper headers.
 
 ### Authentication Headers
-\`\`\`
-X-Parse-Application-Id: YOUR_APP_ID
-X-Parse-REST-API-Key: YOUR_REST_API_KEY
-Content-Type: application/json
-\`\`\`
+~~~bash
+X-Parse-Application-Id: YOUR_APP_ID  
+X-Parse-REST-API-Key: YOUR_REST_API_KEY  
+Content-Type: application/json  
+~~~
 
-### Example: Fetch Objects
-\`\`\`bash
-curl -X GET \
-  -H "X-Parse-Application-Id: YOUR_APP_ID" \
-  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
-  https://parseapi.back4app.com/classes/GameScore
-\`\`\`
-
-### Example: Create Object
-\`\`\`bash
+### Create Object
+~~~bash
 curl -X POST \
   -H "X-Parse-Application-Id: YOUR_APP_ID" \
   -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"score":1337,"playerName":"Sean Plott","cheatMode":false}' \
   https://parseapi.back4app.com/classes/GameScore
-\`\`\`
+~~~
 
-### Example: Update Object
-\`\`\`bash
+### Read (Query) Objects
+~~~bash
+curl -X GET \
+  -H "X-Parse-Application-Id: YOUR_APP_ID" \
+  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
+  https://parseapi.back4app.com/classes/GameScore
+~~~
+
+### Update Object
+~~~bash
 curl -X PUT \
   -H "X-Parse-Application-Id: YOUR_APP_ID" \
   -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"score":1338}' \
   https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
-\`\`\`
+~~~
 
-### Example: Delete Object
-\`\`\`bash
+### Delete Object
+~~~bash
 curl -X DELETE \
   -H "X-Parse-Application-Id: YOUR_APP_ID" \
   -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
   https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
-\`\`\`
+~~~
 `,
     icon: 'b4a-api-icon',
     name: 'REST API',
-    iconColor: '#cccccc'
+    iconColor: '#cccccc',
   },
-  'graphql': {
-    content: `
+  graphql: {
+    content: `Make sure GraphQL is enabled on your Parse Server.
 
-### Step 1: Enable GraphQL on your Parse Server
-Make sure GraphQL is enabled in your Parse Server configuration.
+### Endpoint & Headers
+- **Endpoint:**  
+  \`\`\`bash
+  https://parseapi.back4app.com/graphql
+  \`\`\`
+- **Headers:**  
+  \`\`\`bash
+  X-Parse-Application-Id: YOUR_APP_ID  
+  X-Parse-REST-API-Key: YOUR_REST_API_KEY
+  Content-Type: application/json
+  \`\`\`
 
-### Step 2: Use GraphQL Endpoint
-The GraphQL endpoint is typically at:
-\`\`\`
-https://parseapi.back4app.com/graphql
-\`\`\`
-
-### Authentication Headers
-\`\`\`
-X-Parse-Application-Id: YOUR_APP_ID
-X-Parse-Client-Key: YOUR_CLIENT_KEY
-\`\`\`
-
-### Example: Query Objects
+### Create Object (Mutation)
 \`\`\`graphql
-query {
-  gameScores {
-    edges {
-      node {
-        objectId
-        playerName
-        score
-        createdAt
+
+# Create a class first
+mutation CreateClass {
+  createClass(input:{
+    name: "GameScore"
+    schemaFields: {
+      addNumbers: [{name: "score"}]
+      addStrings: [{name: "playerName"}]
+      addBooleans: [{name:  "cheatMode"}]
+    }
+  }){
+    class{
+      schemaFields{
+        name
+        __typename
       }
     }
   }
 }
-\`\`\`
 
-### Example: Create Object (Mutation)
-\`\`\`graphql
+# Create an object
 mutation CreateGameScore {
   createGameScore(
     input: {
       fields: {
-        playerName: "John Doe"
-        score: 1200
+        playerName: "John Doe",
+        score: 1200,
         cheatMode: false
       }
     }
@@ -115,39 +117,50 @@ mutation CreateGameScore {
 }
 \`\`\`
 
-### Example: Update Object (Mutation)
+### Read (Query) Objects
+\`\`\`graphql
+query {
+  gameScores {
+    edges {
+      node {
+        id
+        objectId
+        playerName
+        score
+        createdAt
+      }
+    }
+  }
+}
+\`\`\`
+
+### Update Object (Mutation)
 \`\`\`graphql
 mutation UpdateGameScore {
   updateGameScore(
     input: {
-      id: "OBJECT_ID"
+      id: "OBJECT_ID",
       fields: {
-        score: 1500
-        playerName: "John Smith"
+        score: 1338
       }
     }
   ) {
     gameScore {
       objectId
-      playerName
-      score
       updatedAt
     }
   }
 }
 \`\`\`
 
-### Example: Delete Object (Mutation)
+### Delete Object (Mutation)
 \`\`\`graphql
-mutation DeleteGameScore {
-  deleteGameScore(
-    input: {
-      id: "OBJECT_ID"
-    }
-  ) {
-    success
-    error {
-      message
+mutation DeleteObject {
+  deleteHero(input: {
+    id: "SGVybzpVRm5TVDM1YnBp"
+  }) {
+    hero {
+      id
     }
   }
 }
@@ -158,59 +171,61 @@ mutation DeleteGameScore {
     iconColor: '#f6009c',
   },
 
-  'react': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`bash
+  react: {
+    content: `### Installation
+~~~bash
 npm install parse --save
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`javascript
-// Import Parse SDK
+### Initialization
+~~~javascript
 import Parse from 'parse';
 
-// Initialize Parse on component/app mount
 function initializeParse() {
-  Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
+  Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
   Parse.serverURL = 'https://parseapi.back4app.com';
 }
 
-// For Next.js, you might initialize in a useEffect hook or in _app.js
+// Call initializeParse() in your useEffect (or in _app.js for Next.js)
 useEffect(() => {
   initializeParse();
 }, []);
+~~~
 
-// OR in _app.js / App.jsx:
-// initializeParse();
-\`\`\`
+### CRUD Operations
 
-### Basic CRUD Operations
-\`\`\`javascript
-// Create a new object
-const GameScore = Parse.Object.extend("GameScore");
-const gameScore = new GameScore();
+#### Create
+~~~javascript
+const gameScore = new Parse.Object("GameScore");
 gameScore.set("score", 1337);
 gameScore.set("playerName", "Sean Plott");
 gameScore.set("cheatMode", false);
 await gameScore.save();
+~~~
 
-// Query objects
-const query = new Parse.Query(GameScore);
+#### Read
+~~~javascript
+const query = new Parse.Query("GameScore");
 query.greaterThan("score", 1000);
 const results = await query.find();
+console.log("Retrieved", results.length, "objects");
+~~~
 
-// Update an object
-const objectId = "xWMyZ4YEGZ";
-const query = new Parse.Query(GameScore);
-const gameScore = await query.get(objectId);
-gameScore.set("score", 1338);
-await gameScore.save();
+#### Update
+~~~javascript
+const objectId = "OBJECT_ID";
+const queryUpdate = new Parse.Query("GameScore");
+const gameScoreToUpdate = await queryUpdate.get(objectId);
+gameScoreToUpdate.set("score", 1338);
+await gameScoreToUpdate.save();
+~~~
 
-// Delete an object
-const query = new Parse.Query(GameScore);
-const gameScore = await query.get(objectId);
-await gameScore.destroy();
-\`\`\`
+#### Delete
+~~~javascript
+const queryDelete = new Parse.Query("GameScore");
+const gameScoreToDelete = await queryDelete.get("OBJECT_ID");
+await gameScoreToDelete.destroy();
+~~~
 `,
     icon: 'react-icon',
     name: 'React.js / Next.js',
@@ -218,85 +233,58 @@ await gameScore.destroy();
   },
 
   'js-node': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`bash
+    content: `### Installation
+~~~bash
 npm install parse --save
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`javascript
-// Import Parse SDK
+### Initialization
+~~~javascript
 const Parse = require('parse/node');
-
-// Initialize with your Back4app keys
-Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
+Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
 Parse.serverURL = 'https://parseapi.back4app.com';
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`javascript
-// Create a new object
-async function createObject() {
-  const GameScore = Parse.Object.extend("GameScore");
-  const gameScore = new GameScore();
-  gameScore.set("score", 1337);
-  gameScore.set("playerName", "Sean Plott");
-  gameScore.set("cheatMode", false);
-  
-  try {
-    const result = await gameScore.save();
-    console.log('New object created with objectId: ' + result.id);
-    return result;
-  } catch (error) {
-    console.error('Failed to create new object:', error);
-  }
-}
+### CRUD Operations
 
-// Query objects
-async function queryObjects() {
-  const GameScore = Parse.Object.extend("GameScore");
-  const query = new Parse.Query(GameScore);
-  query.greaterThan("score", 1000);
-  
-  try {
-    const results = await query.find();
-    console.log("Successfully retrieved " + results.length + " scores");
-    return results;
-  } catch (error) {
-    console.error('Error querying objects:', error);
-  }
-}
+#### Create
+~~~javascript
+const gameScore = new Parse.Object("GameScore");
+gameScore.set("score", 1337);
+gameScore.set("playerName", "Sean Plott");
+gameScore.set("cheatMode", false);
+gameScore.save().then(result => {
+  console.log('Created object:', result.id);
+}).catch(error => console.error('Error:', error.message));
+~~~
 
-// Update an object
-async function updateObject(objectId) {
-  const GameScore = Parse.Object.extend("GameScore");
-  const query = new Parse.Query(GameScore);
-  
-  try {
-    const gameScore = await query.get(objectId);
-    gameScore.set("score", 1338);
-    const result = await gameScore.save();
-    console.log('Object updated successfully');
-    return result;
-  } catch (error) {
-    console.error('Error updating object:', error);
-  }
-}
+#### Read
+~~~javascript
+const query = new Parse.Query("GameScore");
+query.greaterThan("score", 1000);
+query.find().then(results => {
+  results.forEach(obj => console.log(obj.id, obj.get("playerName")));
+}).catch(error => console.error('Error:', error.message));
+~~~
 
-// Delete an object
-async function deleteObject(objectId) {
-  const GameScore = Parse.Object.extend("GameScore");
-  const query = new Parse.Query(GameScore);
-  
-  try {
-    const gameScore = await query.get(objectId);
-    await gameScore.destroy();
-    console.log('Object deleted successfully');
-  } catch (error) {
-    console.error('Error deleting object:', error);
-  }
-}
-\`\`\`
+#### Update
+~~~javascript
+const queryUpdate = new Parse.Query("GameScore");
+queryUpdate.get("OBJECT_ID").then(gameScore => {
+  gameScore.set("score", 1338);
+  return gameScore.save();
+}).then(() => console.log('Updated object'))
+.catch(error => console.error('Error:', error.message));
+~~~
+
+#### Delete
+~~~javascript
+const queryDelete = new Parse.Query("GameScore");
+queryDelete.get("OBJECT_ID").then(gameScore => {
+  return gameScore.destroy();
+}).then(() => console.log('Deleted object'))
+.catch(error => console.error('Error:', error.message));
+~~~
 `,
     icon: 'node-js',
     name: 'JavaScript (Node.js)',
@@ -304,223 +292,192 @@ async function deleteObject(objectId) {
   },
 
   'js-browser': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`html
-<!-- Include Parse SDK via CDN -->
+    content: `### Installation
+Include the Parse SDK via CDN:
+~~~html
 <script type="text/javascript" src="https://unpkg.com/parse/dist/parse.min.js"></script>
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`javascript
-// Initialize with your Back4app keys
-Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
+### Initialization
+~~~javascript
+Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
 Parse.serverURL = 'https://parseapi.back4app.com';
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`javascript
-// Create a new object
-const GameScore = Parse.Object.extend("GameScore");
-const gameScore = new GameScore();
+### CRUD Operations
+
+#### Create
+~~~javascript
+const gameScore = new Parse.Object("GameScore");
 gameScore.set("score", 1337);
 gameScore.set("playerName", "Sean Plott");
 gameScore.set("cheatMode", false);
-gameScore.save()
-  .then((gameScore) => {
-    console.log('New object created with objectId: ' + gameScore.id);
-  }, (error) => {
-    console.log('Failed to create new object, with error code: ' + error.message);
-  });
+gameScore.save().then((result) => {
+  console.log('Created object:', result.id);
+}).catch(error => console.error('Error:', error.message));
+~~~
 
-// Query objects
-const GameScore = Parse.Object.extend("GameScore");
-const query = new Parse.Query(GameScore);
+#### Read
+~~~javascript
+const query = new Parse.Query("GameScore");
 query.greaterThan("score", 1000);
-query.find()
-  .then((results) => {
-    console.log("Successfully retrieved " + results.length + " scores.");
-    // Do something with the returned Parse.Object values
-    for (let i = 0; i < results.length; i++) {
-      const object = results[i];
-      console.log(object.id + ' - ' + object.get('playerName'));
-    }
-  }, (error) => {
-    console.log("Error: " + error.code + " " + error.message);
-  });
+query.find().then((results) => {
+  results.forEach(obj => console.log(obj.id, obj.get("playerName")));
+}).catch(error => console.error('Error:', error.message));
+~~~
 
-// Update an object
-const query = new Parse.Query(GameScore);
-query.get("xWMyZ4YEGZ")
-  .then((gameScore) => {
-    // The object was retrieved successfully.
-    gameScore.set("score", 1338);
-    gameScore.save();
-  }, (error) => {
-    console.log("Error: " + error.code + " " + error.message);
-  });
+#### Update
+~~~javascript
+const queryUpdate = new Parse.Query("GameScore");
+queryUpdate.get("OBJECT_ID").then((gameScore) => {
+  gameScore.set("score", 1338);
+  return gameScore.save();
+}).then(() => {
+  console.log('Updated object');
+}).catch(error => console.error('Error:', error.message));
+~~~
 
-// Delete an object
-const query = new Parse.Query(GameScore);
-query.get("xWMyZ4YEGZ")
-  .then((gameScore) => {
-    gameScore.destroy();
-  }, (error) => {
-    console.log("Error: " + error.code + " " + error.message);
-  });
-\`\`\`
+#### Delete
+~~~javascript
+const queryDelete = new Parse.Query("GameScore");
+queryDelete.get("OBJECT_ID").then((gameScore) => {
+  return gameScore.destroy();
+}).then(() => {
+  console.log('Deleted object');
+}).catch(error => console.error('Error:', error.message));
+~~~
 `,
     icon: 'js-icon',
     name: 'JavaScript (Browser)',
     iconColor: '#f7df1c',
   },
-  'flutter': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`yaml
-# In pubspec.yaml
+  flutter: {
+    content: `### Installation
+Add to your \`pubspec.yaml\`:
+~~~yaml
 dependencies:
   parse_server_sdk_flutter: ^latest_version
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`dart
-// Import Parse SDK
+### Initialization
+~~~dart
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-// Initialize Parse SDK
 void main() async {
-  const keyApplicationId = 'YOUR_APP_ID_HERE';
-  const keyClientKey = 'YOUR_CLIENT_KEY_HERE';
-  const keyParseServerUrl = 'https://parseapi.back4app.com';
-  
   await Parse().initialize(
-    keyApplicationId, 
-    keyParseServerUrl,
-    clientKey: keyClientKey, 
-    debug: true
+    'YOUR_APP_ID',
+    'https://parseapi.back4app.com',
+    clientKey: 'YOUR_CLIENT_KEY',
+    debug: true,
   );
 }
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`dart
-// Create a new object
+### CRUD Operations
+
+#### Create
+~~~dart
 Future<void> createObject() async {
   final gameScore = ParseObject('GameScore')
     ..set('score', 1337)
     ..set('playerName', 'Sean Plott')
     ..set('cheatMode', false);
-  
-  try {
-    final response = await gameScore.save();
-    if (response.success) {
-      print('Object created successfully: \${response.result.objectId}');
-    }
-  } catch (e) {
-    print('Error creating object: $e');
+    
+  final response = await gameScore.save();
+  if (response.success) {
+    print('Created object: \${response.result.objectId}');
   }
 }
+~~~
 
-// Query objects
+#### Read
+~~~dart
 Future<void> queryObjects() async {
   final query = QueryBuilder<ParseObject>(ParseObject('GameScore'))
     ..whereGreaterThan('score', 1000);
-  
-  try {
-    final response = await query.query();
-    if (response.success && response.results != null) {
-      for (var gameScore in response.results!) {
-        print('\${gameScore.objectId} - \${gameScore.get<String>('playerName')}');
-      }
+    
+  final response = await query.query();
+  if (response.success && response.results != null) {
+    for (var gameScore in response.results!) {
+      print('\${gameScore.objectId} - \${gameScore.get < String > 'playerName'}');
     }
-  } catch (e) {
-    print('Error querying objects: $e');
   }
 }
+~~~
 
-// Update an object
+#### Update
+~~~dart
 Future<void> updateObject(String objectId) async {
   final query = QueryBuilder<ParseObject>(ParseObject('GameScore'))
     ..whereEqualTo('objectId', objectId);
-  
-  try {
-    final response = await query.query();
-    if (response.success && response.results != null && response.results!.isNotEmpty) {
-      final gameScore = response.results!.first;
-      gameScore.set('score', 1338);
-      final updateResponse = await gameScore.save();
-      if (updateResponse.success) {
-        print('Object updated successfully');
-      }
-    }
-  } catch (e) {
-    print('Error updating object: $e');
+    
+  final response = await query.query();
+  if (response.success && response.results?.isNotEmpty == true) {
+    final gameScore = response.results!.first;
+    gameScore.set('score', 1338);
+    await gameScore.save();
+    print('Updated object successfully');
   }
 }
+~~~
 
-// Delete an object
+#### Delete
+~~~dart
 Future<void> deleteObject(String objectId) async {
   final gameScore = ParseObject('GameScore')..objectId = objectId;
-  
-  try {
-    final response = await gameScore.delete();
-    if (response.success) {
-      print('Object deleted successfully');
-    }
-  } catch (e) {
-    print('Error deleting object: $e');
+  final response = await gameScore.delete();
+  if (response.success) {
+    print('Deleted object successfully');
   }
 }
-\`\`\`
+~~~
 `,
     icon: 'flutter',
     name: 'Flutter',
-    iconColor: '#4fe6ff'
+    iconColor: '#4fe6ff',
   },
 
   'js-react-native': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`bash
-# Install Parse and AsyncStorage for React Native
+    content: `### Installation
+~~~bash
 npm install parse @react-native-async-storage/async-storage --save
-
-# Run pod install for iOS
+~~~
+For iOS, run:
+~~~bash
 cd ios && pod install
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`javascript
-// Import Parse SDK
+### Initialization
+~~~javascript
 import Parse from 'parse/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Set AsyncStorage
 Parse.setAsyncStorage(AsyncStorage);
-
-// Initialize Parse
-Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");  // Replace with your App ID and JS Key
+Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
 Parse.serverURL = 'https://parseapi.back4app.com';
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`javascript
-// Create a new object
+### CRUD Operations
+
+#### Create
+~~~javascript
 async function createObject() {
-  const GameScore = Parse.Object.extend("GameScore");
-  const gameScore = new GameScore();
+  const gameScore = new Parse.Object("GameScore");
   gameScore.set("score", 1337);
   gameScore.set("playerName", "Sean Plott");
   gameScore.set("cheatMode", false);
   
   try {
     const result = await gameScore.save();
-    console.log('New object created with objectId: ' + result.id);
-    return result;
+    console.log('Created object:', result.id);
   } catch (error) {
-    console.error('Failed to create new object:', error);
+    console.error('Error:', error);
   }
 }
+~~~
 
-// Query objects
+#### Read
+~~~javascript
 async function queryObjects() {
   const GameScore = Parse.Object.extend("GameScore");
   const query = new Parse.Query(GameScore);
@@ -528,14 +485,15 @@ async function queryObjects() {
   
   try {
     const results = await query.find();
-    console.log("Successfully retrieved " + results.length + " scores");
-    return results;
+    results.forEach(obj => console.log(obj.id, obj.get("playerName")));
   } catch (error) {
-    console.error('Error querying objects:', error);
+    console.error('Error:', error);
   }
 }
+~~~
 
-// Update an object
+#### Update
+~~~javascript
 async function updateObject(objectId) {
   const GameScore = Parse.Object.extend("GameScore");
   const query = new Parse.Query(GameScore);
@@ -543,15 +501,16 @@ async function updateObject(objectId) {
   try {
     const gameScore = await query.get(objectId);
     gameScore.set("score", 1338);
-    const result = await gameScore.save();
-    console.log('Object updated successfully');
-    return result;
+    await gameScore.save();
+    console.log('Updated object');
   } catch (error) {
-    console.error('Error updating object:', error);
+    console.error('Error:', error);
   }
 }
+~~~
 
-// Delete an object
+#### Delete
+~~~javascript
 async function deleteObject(objectId) {
   const GameScore = Parse.Object.extend("GameScore");
   const query = new Parse.Query(GameScore);
@@ -559,31 +518,29 @@ async function deleteObject(objectId) {
   try {
     const gameScore = await query.get(objectId);
     await gameScore.destroy();
-    console.log('Object deleted successfully');
+    console.log('Deleted object');
   } catch (error) {
-    console.error('Error deleting object:', error);
+    console.error('Error:', error);
   }
 }
-\`\`\`
+~~~
 `,
     icon: 'react-icon',
     name: 'React Native',
     iconColor: '#58c4dc',
   },
 
-  'ios': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`swift
-// Install via Swift Package Manager (SPM) in Xcode:
-// File > Add Packages... > https://github.com/parse-community/Parse-Swift
-\`\`\`
+  ios: {
+    content: `### Installation
+Install via Swift Package Manager (SPM) in Xcode:
+~~~
+File > Add Packages... > https://github.com/parse-community/Parse-Swift
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`swift
-// Import the Parse SDK
+### Initialization
+~~~swift
 import ParseSwift
 
-// Initialize Parse SDK
 @main
 struct MyApp: App {
     init() {
@@ -599,100 +556,103 @@ struct MyApp: App {
         }
     }
 }
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`swift
-// Create a new object
+### CRUD Operations
+
+#### Create
+~~~swift
 func createObject() {
-    var gameScore = GameScore()
-    gameScore.score = 1337
-    gameScore.playerName = "Sean Plott"
-    gameScore.cheatMode = false
-    
+    var gameScore = ParseObject(className: "GameScore")
+    gameScore["score"] = 1337
+    gameScore["playerName"] = "Sean Plott"
+    gameScore["cheatMode"] = false
+
     gameScore.save { result in
         switch result {
         case .success(let savedScore):
-            print("Object created with ID: \(savedScore.objectId!)")
+            print("Created object: \(savedScore.objectId ?? "unknown")")
         case .failure(let error):
-            print("Error saving: \(error)")
+            print("Error:", error)
         }
     }
 }
+~~~
 
-// Query objects
+#### Read
+~~~swift
 func queryObjects() {
-    let query = GameScore.query("score" > 1000)
-    
+    let query = ParseQuery(className: "GameScore").where("score" > 1000)
+
     query.find { result in
         switch result {
         case .success(let scores):
-            print("Retrieved \(scores.count) scores")
-            for score in scores {
-                print("\(score.objectId!) - \(score.playerName ?? "unknown")")
+            scores.forEach { score in
+                print("\(score.objectId ?? "unknown") - \(score["playerName"] ?? "unknown")")
             }
         case .failure(let error):
-            print("Error querying: \(error)")
+            print("Error:", error)
         }
     }
 }
+~~~
 
-// Update an object
+#### Update
+~~~swift
 func updateObject(objectId: String) {
-    let query = GameScore.query("objectId" == objectId)
-    
-    query.first { result in
-        switch result {
-        case .success(let gameScore):
-            if var gameScore = gameScore {
-                gameScore.score = 1338
-                gameScore.save { saveResult in
-                    switch saveResult {
-                    case .success:
-                        print("Object updated successfully")
-                    case .failure(let error):
-                        print("Error updating: \(error)")
-                    }
-                }
-            }
-        case .failure(let error):
-            print("Error fetching: \(error)")
-        }
-    }
-}
+    let query = ParseQuery(className: "GameScore").where("objectId" == objectId)
 
-// Delete an object
-func deleteObject(objectId: String) {
-    let query = GameScore.query("objectId" == objectId)
-    
     query.first { result in
         switch result {
-        case .success(let gameScore):
-            if let gameScore = gameScore {
-                gameScore.delete { deleteResult in
-                    switch deleteResult {
-                    case .success:
-                        print("Object deleted successfully")
-                    case .failure(let error):
-                        print("Error deleting: \(error)")
-                    }
+        case .success(var gameScore):  // ✅ \`var\` só aqui, pois é necessário para modificar
+            gameScore["score"] = 1338
+            gameScore.save { saveResult in
+                switch saveResult {
+                case .success:
+                    print("Updated object successfully")
+                case .failure(let error):
+                    print("Error:", error)
                 }
             }
         case .failure(let error):
-            print("Error fetching: \(error)")
+            print("Error:", error)
         }
     }
 }
-\`\`\`
+~~~
+
+#### Delete
+~~~swift
+func deleteObject(objectId: String) {
+    let query = ParseQuery(className: "GameScore").where("objectId" == objectId)
+
+    query.first { result in
+        switch result {
+        case .success(let gameScore):
+            gameScore.delete { deleteResult in
+                switch deleteResult {
+                case .success:
+                    print("Deleted object successfully")
+                case .failure(let error):
+                    print("Error:", error)
+                }
+            }
+        case .failure(let error):
+            print("Error:", error)
+        }
+    }
+}
+~~~
 `,
     icon: 'apple',
     name: 'iOS Swift',
     iconColor: '#a0a0a0',
   },
-  'android': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`groovy
-// In build.gradle
+  android: {
+    content: `### Installation
+
+Add the following in your \`build.gradle\`:
+~~~groovy
 repositories {
     mavenCentral()
     jcenter()
@@ -702,14 +662,12 @@ repositories {
 dependencies {
     implementation 'com.github.parse-community.Parse-SDK-Android:parse:latest_version'
 }
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`java
-// Import Parse SDK
+### Initialization
+~~~java
 import com.parse.Parse;
 
-// Initialize Parse SDK (in Application class)
 public class MyApp extends Application {
     @Override
     public void onCreate() {
@@ -722,137 +680,117 @@ public class MyApp extends Application {
         );
     }
 }
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`java
-// Create a new object
+### CRUD Operations
+
+#### Create
+~~~java
 public void createObject() {
     ParseObject gameScore = new ParseObject("GameScore");
     gameScore.put("score", 1337);
     gameScore.put("playerName", "Sean Plott");
     gameScore.put("cheatMode", false);
-    gameScore.saveInBackground(new SaveCallback() {
-        @Override
-        public void done(ParseException e) {
-            if (e == null) {
-                // Success
-                Log.d("CREATE", "Object saved: " + gameScore.getObjectId());
-            } else {
-                // Error
-                Log.e("CREATE", "Error: " + e.getMessage());
-            }
+    gameScore.saveInBackground(e -> {
+        if (e == null) {
+            Log.d("CREATE", "Created object: " + gameScore.getObjectId());
+        } else {
+            Log.e("CREATE", "Error: " + e.getMessage());
         }
     });
 }
+~~~
 
-// Query objects
+#### Read
+~~~java
 public void queryObjects() {
     ParseQuery<ParseObject> query = ParseQuery.getQuery("GameScore");
     query.whereGreaterThan("score", 1000);
-    query.findInBackground(new FindCallback<ParseObject>() {
-        @Override
-        public void done(List<ParseObject> objects, ParseException e) {
-            if (e == null) {
-                // Success
-                Log.d("QUERY", "Retrieved " + objects.size() + " objects");
-                for (ParseObject object : objects) {
-                    Log.d("QUERY", object.getObjectId() + " - " + object.getString("playerName"));
-                }
-            } else {
-                // Error
-                Log.e("QUERY", "Error: " + e.getMessage());
+    query.findInBackground((objects, e) -> {
+        if (e == null) {
+            for (ParseObject object : objects) {
+                Log.d("QUERY", object.getObjectId() + " - " + object.getString("playerName"));
             }
+        } else {
+            Log.e("QUERY", "Error: " + e.getMessage());
         }
     });
 }
+~~~
 
-// Update an object
+#### Update
+~~~java
 public void updateObject(String objectId) {
     ParseQuery<ParseObject> query = ParseQuery.getQuery("GameScore");
-    query.getInBackground(objectId, new GetCallback<ParseObject>() {
-        @Override
-        public void done(ParseObject object, ParseException e) {
-            if (e == null) {
-                // Success
-                object.put("score", 1338);
-                object.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Log.d("UPDATE", "Object updated successfully");
-                        } else {
-                            Log.e("UPDATE", "Error: " + e.getMessage());
-                        }
-                    }
-                });
-            } else {
-                // Error
-                Log.e("UPDATE", "Error: " + e.getMessage());
-            }
+    query.getInBackground(objectId, (object, e) -> {
+        if (e == null) {
+            object.put("score", 1338);
+            object.saveInBackground(e1 -> {
+                if (e1 == null) {
+                    Log.d("UPDATE", "Updated object successfully");
+                } else {
+                    Log.e("UPDATE", "Error: " + e1.getMessage());
+                }
+            });
+        } else {
+            Log.e("UPDATE", "Error: " + e.getMessage());
         }
     });
 }
+~~~
 
-// Delete an object
+#### Delete
+~~~java
 public void deleteObject(String objectId) {
     ParseQuery<ParseObject> query = ParseQuery.getQuery("GameScore");
-    query.getInBackground(objectId, new GetCallback<ParseObject>() {
-        @Override
-        public void done(ParseObject object, ParseException e) {
-            if (e == null) {
-                // Success
-                object.deleteInBackground(new DeleteCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Log.d("DELETE", "Object deleted successfully");
-                        } else {
-                            Log.e("DELETE", "Error: " + e.getMessage());
-                        }
-                    }
-                });
-            } else {
-                // Error
-                Log.e("DELETE", "Error: " + e.getMessage());
-            }
+    query.getInBackground(objectId, (object, e) -> {
+        if (e == null) {
+            object.deleteInBackground(e1 -> {
+                if (e1 == null) {
+                    Log.d("DELETE", "Deleted object successfully");
+                } else {
+                    Log.e("DELETE", "Error: " + e1.getMessage());
+                }
+            });
+        } else {
+            Log.e("DELETE", "Error: " + e.getMessage());
         }
     });
 }
-\`\`\`
+~~~
 `,
     icon: 'android',
     name: 'Android Java/kotlin',
     iconColor: '#a4c639',
   },
-  'php': {
-    content: `### Step 1: Install Parse SDK
-\`\`\`json
-// In composer.json
+  php: {
+    content: `### Installation
+
+Add to your \`composer.json\`:
+~~~json
 {
   "require": {
     "parse/php-sdk": "*"
   }
 }
-\`\`\`
-\`\`\`bash
-# Terminal command to install
+~~~
+Then run:
+~~~bash
 composer install
-\`\`\`
+~~~
 
-### Step 2: Initialize Parse SDK
-\`\`\`php
-// Import Parse SDK
+### Initialization
+~~~php
 use Parse\ParseClient;
 
-// Initialize Parse SDK
 ParseClient::initialize('YOUR_APP_ID', 'YOUR_REST_KEY', 'YOUR_MASTER_KEY');
 ParseClient::setServerURL('https://parseapi.back4app.com', '/');
-\`\`\`
+~~~
 
-### Basic CRUD Operations
-\`\`\`php
-// Create a new object
+### CRUD Operations
+
+#### Create
+~~~php
 function createObject() {
     $gameScore = new ParseObject("GameScore");
     $gameScore->set("score", 1337);
@@ -861,30 +799,33 @@ function createObject() {
     
     try {
         $gameScore->save();
-        echo 'New object created with objectId: ' . $gameScore->getObjectId() . "\n";
+        echo 'Created object with objectId: ' . $gameScore->getObjectId() . "\n";
     } catch (ParseException $ex) {
-        echo 'Failed to create new object, with error message: ' . $ex->getMessage() . "\n";
+        echo 'Error: ' . $ex->getMessage() . "\n";
     }
 }
+~~~
 
-// Query objects
+#### Read
+~~~php
 function queryObjects() {
     $query = new ParseQuery("GameScore");
     $query->greaterThan("score", 1000);
     
     try {
         $results = $query->find();
-        echo "Successfully retrieved " . count($results) . " scores.\n";
-        
+        echo "Retrieved " . count($results) . " objects.\n";
         foreach ($results as $object) {
-            echo $object->getObjectId() . ' - ' . $object->get("playerName") . "\n";
+            echo $object->getObjectId() . " - " . $object->get("playerName") . "\n";
         }
     } catch (ParseException $ex) {
-        echo 'Failed to retrieve objects, with error message: ' . $ex->getMessage() . "\n";
+        echo 'Error: ' . $ex->getMessage() . "\n";
     }
 }
+~~~
 
-// Update an object
+#### Update
+~~~php
 function updateObject($objectId) {
     $query = new ParseQuery("GameScore");
     
@@ -892,31 +833,32 @@ function updateObject($objectId) {
         $gameScore = $query->get($objectId);
         $gameScore->set("score", 1338);
         $gameScore->save();
-        echo "Object updated successfully\n";
+        echo "Updated object successfully\n";
     } catch (ParseException $ex) {
-        echo 'Failed to update object, with error message: ' . $ex->getMessage() . "\n";
+        echo 'Error: ' . $ex->getMessage() . "\n";
     }
 }
+~~~
 
-// Delete an object
+#### Delete
+~~~php
 function deleteObject($objectId) {
     $query = new ParseQuery("GameScore");
     
     try {
         $gameScore = $query->get($objectId);
         $gameScore->destroy();
-        echo "Object deleted successfully\n";
+        echo "Deleted object successfully\n";
     } catch (ParseException $ex) {
-        echo 'Failed to delete object, with error message: ' . $ex->getMessage() . "\n";
+        echo 'Error: ' . $ex->getMessage() . "\n";
     }
 }
-\`\`\`
-`,
+~~~`,
     icon: 'php',
     name: 'PHP',
     iconColor: '#4f5b93',
   },
-}
+};
 const origin = new Position(0, 0);
 
 const CodeBlock = ({ language, value }) => {
@@ -934,15 +876,19 @@ const CodeBlock = ({ language, value }) => {
 
   return (
     <div className={styles.codeBlockContainer}>
-      <button
-        className={styles.copyButton}
-        onClick={copyToClipboard}
-        title="Copy to clipboard"
-      >
-        <Icon name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`} fill={copied ? '#27AE60' : '#15A9FF'} width={14} height={14} />
-        {/* <B4aTooltip value={'Copied!'} visible={copied} placement='top' theme='dark'>
-        </B4aTooltip> */}
-      </button>
+      <div className={styles.codeBlockHeader}>
+        <div className={styles.languageLabel}>{language}</div>
+        <button className={styles.copyButton} onClick={copyToClipboard} title="Copy to clipboard">
+          <Icon
+            name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`}
+            fill={copied ? '#27AE60' : '#C1E2FF'}
+            width={14}
+            height={14}
+          />
+          {/* <B4aTooltip value={'Copied!'} visible={copied} placement='top' theme='dark'>
+          </B4aTooltip> */}
+        </button>
+      </div>
       <SyntaxHighlighter language={language} style={oneDark} showLineNumbers={true}>
         {value}
       </SyntaxHighlighter>
@@ -965,7 +911,12 @@ const ConnectAppModal = ({ closeModal }) => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className={styles.selectedLanguage}>
-                  <Icon name={selectedLanguage.icon} fill={selectedLanguage.iconColor || ''} width={20} height={20} />
+                  <Icon
+                    name={selectedLanguage.icon}
+                    fill={selectedLanguage.iconColor || ''}
+                    width={20}
+                    height={20}
+                  />
                   <span>{selectedLanguage.name}</span>
                 </div>
                 <Icon name="b4a-chevron-down" width={16} height={16} fill="#f9f9f9" />
@@ -975,7 +926,9 @@ const ConnectAppModal = ({ closeModal }) => {
                   {Object.entries(LanguageDocMap).map(([key, value]) => (
                     <div
                       key={key}
-                      className={`${styles.dropdownItem} ${selectedLanguage.name === value.name ? styles.selected : ''}`}
+                      className={`${styles.dropdownItem} ${
+                        selectedLanguage.name === value.name ? styles.selected : ''
+                      }`}
                       onClick={() => {
                         setSelectedLanguage(value);
                         setIsDropdownOpen(false);
@@ -994,14 +947,16 @@ const ConnectAppModal = ({ closeModal }) => {
           </div>
         </div>
         <div className={styles.connectAppModalContent} style={{ overflow: 'auto' }}>
-          <ReactMarkdown renderers={{
-            code: CodeBlock
-          }}
-          children={selectedLanguage.content} />
+          <ReactMarkdown
+            renderers={{
+              code: CodeBlock,
+            }}
+            children={selectedLanguage.content}
+          />
         </div>
       </div>
     </Popover>
-  )
-}
+  );
+};
 
 export default ConnectAppModal;
