@@ -18,14 +18,21 @@
   color: var(--tooltipColor);
   display: flex;
   flex-direction: column;
-  padding: 0.3rem 0.4rem;
+  padding: .625rem 1rem;
   transition: opacity 0.3s;
   z-index: 9999;
   font-size: 12px;
   font-family: 'Inter', sans-serif;
   line-height: 14px;
   box-shadow: 0px 6px 16px 0px #0000001A;
+}
 
+.dark .tooltip-container,
+.tooltip-container.dark {
+  --tooltipBackground: #303338;
+  --tooltipBorder: #303338;
+  --tooltipColor: #f9f9f9;
+  border: none;
 }
 
 .tooltip-container[data-popper-interactive='false'] {
@@ -66,7 +73,7 @@
 
 .tooltip-container[data-popper-placement*='bottom'] .tooltip-arrow::before {
   border-color: transparent transparent var(--tooltipBorder) transparent;
-  border-width: 0 0.5rem 0.4rem 0.5rem;
+  border-width: 0 0.2rem 0.6rem 0.2rem;
   position: absolute;
   top: -1px;
 }

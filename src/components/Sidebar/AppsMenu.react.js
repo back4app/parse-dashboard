@@ -33,7 +33,7 @@ const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
         }
         return (
           <Link
-            to={html`/apps/${app.slug}/browser`}
+            to={html`/apps/${app.slug}/overview`}
             key={app.slug}
             className={styles.menuRow}
             onClick={onSelect.bind(null, current.slug)}

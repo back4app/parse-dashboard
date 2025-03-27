@@ -11,9 +11,8 @@ import AppsManager from 'lib/AppsManager';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
-import baseStyles from 'stylesheets/base.scss';
-import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
-import B4aLoader from 'components/B4aLoader/B4aLoader.react';
+// import baseStyles from 'stylesheets/base.scss';
+// import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 
 function AppData() {
   const navigate = useNavigate();
@@ -32,25 +31,21 @@ function AppData() {
     }
 
     current.setParseKeys();
-    if (current.serverInfo.status === 'LOADING') {
-      return (
-        <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
-          <B4aLoader />
-        </div>
-      );
-    } else if (current.serverInfo.error) {
-      return (
-        <div className={baseStyles.pageCenter}>
-          <EmptyGhostState
-            title={'Couldn\'t load this app'}
-            description={
-              'Something went wrong while loading this app, could you please try opening another app.'
-            }
-            cta={'Go to apps'}
-            action={() => (window.location = '/apps')}
-          ></EmptyGhostState>
-        </div>
-      );
+    if (current.serverInfo.error && window.location.pathname.split('/')[3] !== 'overview') {
+      navigate(`/apps/${current.slug}/overview`, { replace: true });
+      return <div />;
+      // return (
+      //   <div className={baseStyles.pageCenter}>
+      //     <EmptyGhostState
+      //       title={'Couldn\'t load this app'}
+      //       description={
+      //         'Something went wrong while loading this app, could you please try opening another app.'
+      //       }
+      //       cta={'Go to apps'}
+      //       action={() => (window.location = '/apps')}
+      //     ></EmptyGhostState>
+      //   </div>
+      // );
     }
   } else {
     navigate('/apps', { replace: true });

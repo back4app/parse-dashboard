@@ -57,7 +57,10 @@ export default class ParseApp {
     scripts,
     classPreference,
     enableSecurityChecks,
-    useLatestDashboardVersion
+    useLatestDashboardVersion,
+    parseVersion,
+    databaseType,
+    region
   }) {
     this.name = appName;
     this.parseOptions = parseOptions;
@@ -91,7 +94,9 @@ export default class ParseApp {
     this.scripts = scripts;
     this.enableSecurityChecks = !!enableSecurityChecks;
     this.useLatestDashboardVersion = useLatestDashboardVersion !== false;
-
+    this.parseVersion = parseVersion;
+    this.databaseType = databaseType;
+    this.region = region;
     if (!supportedPushLocales) {
       console.warn('Missing push locales for \'' + appName + '\', see this link for details on setting localizations up. https://github.com/parse-community/parse-dashboard#configuring-localized-push-notifications');
     }
@@ -1369,6 +1374,77 @@ export default class ParseApp {
         await axios.get(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/logs`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async getSecurityReport() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/security-report/${this.slug}?fromdashboard=true`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async getAppPlanData() {
+    try {
+      const headers = {
+        'X-Application-ID': this.applicationId,
+        'X-Application-Type': 'parse',
+        'Content-Type': 'application/json'
+      };
+      const config = { withCredentials: true, headers };
+      // eslint-disable-next-line no-undef
+      return (await axios.get(`${b4aSettings.BACK4APP_API_PATH}/getPlanData`, config)).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async fetchAvgResponseTime(limit = 60) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/avg-response?limit=${limit}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async fetchRequestStatus(limit = 60) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/request-status?limit=${limit}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async fetchAppHealthStatus(limit = 60) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/health-status?limit=${limit}`,
           { withCredentials: true }
         )
       ).data;

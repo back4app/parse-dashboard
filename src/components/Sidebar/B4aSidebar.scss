@@ -298,6 +298,12 @@ $footerHeight: 57px;
       fill: $light-blue;
     }
   }
+
+  &.locked {
+    cursor: progress;
+    pointer-events: none;
+    opacity: .4;
+  }
 }
 
 .active {

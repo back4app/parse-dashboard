@@ -17,6 +17,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import AccountManager from 'lib/AccountManager';
 import { post } from 'lib/AJAX';
+import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 // Alert parameters
 const MySwal = withReactContent(Swal);
@@ -83,6 +84,15 @@ export default class DashboardView extends React.Component {
   }
 
   render() {
+    const isLocked = this.context.serverInfo.status !== 'SUCCESS';
+    if (isLocked && window.location.pathname.split('/')[3] !== 'overview') {
+      return (
+        <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
+          <B4aLoader />
+        </div>
+      );
+    }
+
     let sidebarChildren = null;
     if (typeof this.renderSidebar === 'function') {
       sidebarChildren = this.renderSidebar();
@@ -101,7 +111,7 @@ export default class DashboardView extends React.Component {
     // const { showAdminPage } = this.context.custom;
 
     const databaseSubsections = [];
-    if (features.schemas &&
+    if (!isLocked && features.schemas &&
       features.schemas.addField &&
       features.schemas.removeField &&
       features.schemas.addClass &&
@@ -144,14 +154,14 @@ export default class DashboardView extends React.Component {
     });
     // }
 
-    if (features.cloudCode && features.cloudCode.jobs) {
+    if (!isLocked && features.cloudCode && features.cloudCode.jobs) {
       cloudCodeSubSections.push({
         name: 'Jobs',
         link: '/jobs',
       });
     }
 
-    if (features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
+    if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
       cloudCodeSubSections.push({
         name: 'Logs',
         link: '/logs',
@@ -177,7 +187,7 @@ export default class DashboardView extends React.Component {
     });
 
     const moreSubSection = [];
-    if (features.globalConfig &&
+    if (!isLocked && features.globalConfig &&
       features.globalConfig.create &&
       features.globalConfig.read &&
       features.globalConfig.update &&
@@ -189,14 +199,14 @@ export default class DashboardView extends React.Component {
     }
 
     //webhooks requires removal of heroku link code, then it should work.
-    if (features.hooks && features.hooks.create && features.hooks.read && features.hooks.update && features.hooks.delete) {
+    if (!isLocked && features.hooks && features.hooks.create && features.hooks.read && features.hooks.update && features.hooks.delete) {
       moreSubSection.push({
         name: 'Webhooks',
         link: '/webhooks'
       });
     }
 
-    if (features.push) {
+    if (!isLocked && features.push) {
       moreSubSection.push({
         name: 'Push',
         link: '/push'
@@ -227,7 +237,7 @@ export default class DashboardView extends React.Component {
     //   link: '/settings/dashboard'
     // });
 
-    const pushSubsections = [];
+    // const pushSubsections = [];
 
     const settingsSections = [];
 
@@ -259,6 +269,12 @@ export default class DashboardView extends React.Component {
 
 
     const appSidebarSections = [];
+
+    appSidebarSections.push({
+      name: 'Overview',
+      icon: 'b4a-app-overview-icon',
+      link: '/overview',
+    })
 
     if (databaseSubsections.length > 0) {
       appSidebarSections.push({
@@ -340,21 +356,21 @@ export default class DashboardView extends React.Component {
     //   );
     // }
 
-    if (this.context.serverInfo.error) {
-      content = (
-        <div className={styles.empty}>
-          <div className={baseStyles.center}>
-            <div className={styles.cloud}>
-              <Icon width={110} height={110} name="cloud-surprise" fill="#1e3b4d" />
-            </div>
-            <div className={styles.loadingError}>
-              {this.context.serverInfo.error.replace(/-/g, '\u2011')}
-            </div>
-            <Button color="white" value="Reload" width="120px" onClick={() => location.reload()} />
-          </div>
-        </div>
-      );
-    }
+    // if (this.context.serverInfo.error) {
+    //   content = (
+    //     <div className={styles.empty}>
+    //       <div className={baseStyles.center}>
+    //         <div className={styles.cloud}>
+    //           <Icon width={110} height={110} name="cloud-surprise" fill="#1e3b4d" />
+    //         </div>
+    //         <div className={styles.loadingError}>
+    //           {this.context.serverInfo.error.replace(/-/g, '\u2011')}
+    //         </div>
+    //         <Button color="white" value="Reload" width="120px" onClick={() => location.reload()} />
+    //       </div>
+    //     </div>
+    //   );
+    // }
 
     return (
       <div className={styles.dashboard}>

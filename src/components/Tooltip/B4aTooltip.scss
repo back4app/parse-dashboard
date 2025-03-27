@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.tooltipWrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+
+  .tooltipContent {
+    position: relative;
+    background: #303338;
+    border: none;
+    border-radius: 5px;
+    padding: .625rem 1rem;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    line-height: 14px;
+    color: #f9f9f9;
+    white-space: nowrap;
+    box-shadow: 0px 6px 16px 0px #0000001A;
+    transition: opacity 0.3s;
+  }
+
+  .tooltipArrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #303338;
+    border: none;
+  }
+
+  // Light theme styles
+  &:not(.dark) {
+    .tooltipContent {
+      background: #CCCCCC;
+      border: 1px solid #CCCCCC;
+      color: #303338;
+    }
+
+    .tooltipArrow {
+      background: #CCCCCC;
+      border: 1px solid #CCCCCC;
+      border-left: 0;
+      border-top: 0;
+    }
+  }
+}
+
+:global(.dark) .tooltip,
+.tooltip.dark {
+  .tooltipContent {
+    background: #303338;
+    border: none;
+    color: #f9f9f9;
+  }
+
+  .tooltipArrow {
+    background: #303338;
+    border: none;
+  }
+}
+ 
