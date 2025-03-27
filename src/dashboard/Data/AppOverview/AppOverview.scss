@@ -667,23 +667,28 @@
     & .codeBlockContainer {
       position: relative;
       padding-top: 0.5rem;
-      background: #111214;
+      background: $regal-blue;
       border-radius: 4px;
 
+      & .codeBlockHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0rem 1.5rem;
+      }
+
       & .copyButton {
-        position: absolute;
-        top: 5px;
-        right: 12px;
         cursor: pointer;
-        background: rgba(255, 255, 255, .08);
-        border-radius: 4px;
-        padding: 0 6px;
       }
     }
 
     h1, h2, h3 {
-      margin-top: .8rem;
+      margin: .8rem 0;
       font-weight: 600;
+    }
+    h4 {
+      font-weight: 500;
+      margin-bottom: .5rem;
     }
 
     p {
@@ -697,16 +702,20 @@
       padding: 1rem 1.5rem 1rem 0!important;
       margin: 1rem 0;
       overflow-x: auto;
+      margin: none !important;
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+      font-family: 'Roboto Mono', monospace !important;
 
       code {
-        font-family: 'Fira Code', monospace;
+        font-family: 'Roboto Mono', monospace !important;
         font-size: 13px;
         background: #111214 !important;
       }
     }
 
     code {
-      font-family: 'Fira Code', monospace;
+      font-family: 'Roboto Mono', monospace !important;
       font-size: 13px;
       background: #111214 !important;
     }
