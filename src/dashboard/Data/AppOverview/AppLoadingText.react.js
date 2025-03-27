@@ -114,7 +114,7 @@ const AppLoadingText = ({ appName, appId, pollSchemas }) => {
 
   return (
     <>
-      {shouldShow && <div className={styles.appName}>Welcome to your App: <strong>{appName}</strong></div>}
+      {shouldShow && <div className={styles.appName}>Welcome to your App: <strong className={styles.appNameText}>{appName}</strong></div>}
       <div className={styles.loadingText}>
         <div
           key={currentTextIndex}

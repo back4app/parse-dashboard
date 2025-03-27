@@ -54,18 +54,22 @@ const AppKeysComponent = ({ appKeys, copyText }) => {
         </div>
         {isDropdownOpen && (
           <div className={styles.dropdownMenu}>
-            {[...appKeys.entries()].map(([key]) => (
-              <div
-                key={key}
-                className={`${styles.dropdownItem} ${selectedKey === key ? styles.selected : ''}`}
-                onClick={() => {
-                  setSelectedKey(key);
-                  setIsDropdownOpen(false);
-                }}
-              >
-                {formatCamelCase(key)}
-              </div>
-            ))}
+            {[...appKeys.entries()].map(([key, value]) => {
+              if (!value) {
+                return null;
+              }
+              return(
+                <div
+                  key={key}
+                  className={`${styles.dropdownItem} ${selectedKey === key ? styles.selected : ''}`}
+                  onClick={() => {
+                    setSelectedKey(key);
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  {formatCamelCase(key)}
+                </div>
+              )})}
           </div>
         )}
       </div>

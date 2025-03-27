@@ -39,6 +39,13 @@
       color: 18px;
     }
 
+    & .appNameText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
     & .appInfoCard {
       @include InterFont;
       margin-top: 18px;
@@ -58,13 +65,18 @@
 
       & .appInformationBox, & .appKeysBox {
         flex: 1;
+        min-width: 350px;
+        overflow: hidden;
       }
       
       & .appInfoCardHeader {
         font-weight: 600;
         margin-bottom: 12px;
         font-size: 16px;
-        line-height: 140%;;
+        line-height: 140%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       & .appKeyWrapper {
