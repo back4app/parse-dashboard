@@ -16,44 +16,44 @@ const LanguageDocMap = {
 
 ### Authentication Headers
 ~~~bash
-X-Parse-Application-Id: YOUR_APP_ID  
-X-Parse-REST-API-Key: YOUR_REST_API_KEY  
+X-Parse-Application-Id: APP_ID  
+X-Parse-REST-API-Key: REST_API_KEY  
 Content-Type: application/json  
 ~~~
 
 ### Create Object
 ~~~bash
-curl -X POST \
-  -H "X-Parse-Application-Id: YOUR_APP_ID" \
-  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"score":1337,"playerName":"Sean Plott","cheatMode":false}' \
+curl -X POST \\
+  -H "X-Parse-Application-Id: APP_ID" \\
+  -H "X-Parse-REST-API-Key: REST_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"score":1337,"playerName":"Sean Plott","cheatMode":false}' \\
   https://parseapi.back4app.com/classes/GameScore
 ~~~
 
 ### Read (Query) Objects
 ~~~bash
-curl -X GET \
-  -H "X-Parse-Application-Id: YOUR_APP_ID" \
-  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
+curl -X GET \\
+  -H "X-Parse-Application-Id: APP_ID" \\
+  -H "X-Parse-REST-API-Key: REST_API_KEY" \\
   https://parseapi.back4app.com/classes/GameScore
 ~~~
 
 ### Update Object
 ~~~bash
-curl -X PUT \
-  -H "X-Parse-Application-Id: YOUR_APP_ID" \
-  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"score":1338}' \
+curl -X PUT \\
+  -H "X-Parse-Application-Id: APP_ID" \\
+  -H "X-Parse-REST-API-Key: REST_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"score":1338}' \\
   https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
 ~~~
 
 ### Delete Object
 ~~~bash
-curl -X DELETE \
-  -H "X-Parse-Application-Id: YOUR_APP_ID" \
-  -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
+  curl -X DELETE \\
+  -H "X-Parse-Application-Id: APP_ID" \\
+  -H "X-Parse-REST-API-Key: REST_API_KEY" \\
   https://parseapi.back4app.com/classes/GameScore/OBJECT_ID
 ~~~
 `,
@@ -71,8 +71,8 @@ curl -X DELETE \
   \`\`\`
 - **Headers:**  
   \`\`\`bash
-  X-Parse-Application-Id: YOUR_APP_ID  
-  X-Parse-REST-API-Key: YOUR_REST_API_KEY
+  X-Parse-Application-Id: APP_ID  
+  X-Parse-REST-API-Key: REST_API_KEY
   Content-Type: application/json
   \`\`\`
 
@@ -182,7 +182,7 @@ npm install parse --save
 import Parse from 'parse';
 
 function initializeParse() {
-  Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
+  Parse.initialize("APP_ID", "JS_KEY");
   Parse.serverURL = 'https://parseapi.back4app.com';
 }
 
@@ -228,7 +228,7 @@ await gameScoreToDelete.destroy();
 ~~~
 `,
     icon: 'react-icon',
-    name: 'React.js / Next.js',
+    name: 'React.js',
     iconColor: '#58c4dc',
   },
 
@@ -241,7 +241,7 @@ npm install parse --save
 ### Initialization
 ~~~javascript
 const Parse = require('parse/node');
-Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
+Parse.initialize("APP_ID", "JS_KEY");
 Parse.serverURL = 'https://parseapi.back4app.com';
 ~~~
 
@@ -300,7 +300,7 @@ Include the Parse SDK via CDN:
 
 ### Initialization
 ~~~javascript
-Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
+Parse.initialize("APP_ID", "JS_KEY");
 Parse.serverURL = 'https://parseapi.back4app.com';
 ~~~
 
@@ -365,9 +365,9 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 void main() async {
   await Parse().initialize(
-    'YOUR_APP_ID',
+    'APP_ID',
     'https://parseapi.back4app.com',
-    clientKey: 'YOUR_CLIENT_KEY',
+    clientKey: 'CLIENT_KEY',
     debug: true,
   );
 }
@@ -453,7 +453,7 @@ import Parse from 'parse/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 Parse.setAsyncStorage(AsyncStorage);
-Parse.initialize("YOUR_APP_ID", "YOUR_JS_KEY");
+Parse.initialize("APP_ID", "JS_KEY");
 Parse.serverURL = 'https://parseapi.back4app.com';
 ~~~
 
@@ -479,8 +479,7 @@ async function createObject() {
 #### Read
 ~~~javascript
 async function queryObjects() {
-  const GameScore = Parse.Object.extend("GameScore");
-  const query = new Parse.Query(GameScore);
+  const gameScore = new Parse.Object("GameScore");
   query.greaterThan("score", 1000);
   
   try {
@@ -495,8 +494,7 @@ async function queryObjects() {
 #### Update
 ~~~javascript
 async function updateObject(objectId) {
-  const GameScore = Parse.Object.extend("GameScore");
-  const query = new Parse.Query(GameScore);
+  const gameScore = new Parse.Object("GameScore");
   
   try {
     const gameScore = await query.get(objectId);
@@ -512,8 +510,7 @@ async function updateObject(objectId) {
 #### Delete
 ~~~javascript
 async function deleteObject(objectId) {
-  const GameScore = Parse.Object.extend("GameScore");
-  const query = new Parse.Query(GameScore);
+  const gameScore = new Parse.Object("GameScore");
   
   try {
     const gameScore = await query.get(objectId);
@@ -523,8 +520,7 @@ async function deleteObject(objectId) {
     console.error('Error:', error);
   }
 }
-~~~
-`,
+~~~`,
     icon: 'react-icon',
     name: 'React Native',
     iconColor: '#58c4dc',
@@ -545,8 +541,8 @@ import ParseSwift
 struct MyApp: App {
     init() {
         ParseSwift.initialize(
-            applicationId: "YOUR_APP_ID",
-            clientKey: "YOUR_CLIENT_KEY",
+            applicationId: "APP_ID",
+            clientKey: "CLIENT_KEY",
             serverURL: URL(string: "https://parseapi.back4app.com")!
         )
     }
@@ -673,8 +669,8 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         Parse.initialize(new Parse.Configuration.Builder(this)
-            .applicationId("YOUR_APP_ID")
-            .clientKey("YOUR_CLIENT_KEY")
+            .applicationId("APP_ID")
+            .clientKey("CLIENT_KEY")
             .server("https://parseapi.back4app.com")
             .build()
         );
@@ -783,7 +779,7 @@ composer install
 ~~~php
 use Parse\ParseClient;
 
-ParseClient::initialize('YOUR_APP_ID', 'YOUR_REST_KEY', 'YOUR_MASTER_KEY');
+ParseClient::initialize('APP_ID', 'REST_KEY', 'MASTER_KEY');
 ParseClient::setServerURL('https://parseapi.back4app.com', '/');
 ~~~
 
