@@ -1,0 +1,886 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.container {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  padding: 0 5rem;
+  & .header {
+    & .title {
+      position: relative;
+      font-family: 'Sora', sans-serif;
+      font-size: 2.1875rem;
+      font-weight: 600;
+      line-height: 130%;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: calc(100% - 1.5rem);
+        width: 1.5rem;
+        height: 3px;
+        border-radius: 0.25rem;
+        background: linear-gradient(90deg, $light-blue -8.33%, $cta-green 100%);
+        box-shadow: 0px 0px 7px 0px rgba(193, 226, 255, 0.16);
+      }
+    }
+  }
+
+  & .content {
+    & .appName {
+      color: 18px;
+    }
+
+    & .appNameText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    & .appInfoCard {
+      @include InterFont;
+      margin-top: 18px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba($regal-blue, 0.4);
+      font-size: 14px;
+      flex-wrap: wrap;
+
+      & hr {
+        border-color: rgba($regal-blue, 0.4);
+        margin: 12px 0;
+      }
+
+      & .appInformationBox, & .appKeysBox {
+        flex: 1;
+        min-width: 350px;
+      }
+      
+      & .appInfoCardHeader {
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: 16px;
+        line-height: 140%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      & .appKeyWrapper {
+        display: flex;
+        // align-items: center;
+        gap: 8px;
+
+        & label {
+          font-size: 14px;
+          color: $white;
+          margin-top: 8px;
+        }
+      }
+
+      & .appKeyContainer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        flex-direction: column;
+      }
+
+      & .dropdownContainer {
+        position: relative;
+        min-width: 100%;
+      }
+
+      & .dropdownTrigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #1b3454;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+        color: $white;
+
+        span {
+          margin-right: 8px;
+          font-size: 14px;
+          color: $white;
+        }
+      }
+
+      & .dropdownMenu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        width: 100%;
+        background: #1b3454;
+        border-radius: 4px;
+        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      & .dropdownItem {
+        padding: 8px 12px;
+        font-size: 14px;
+        color: $white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #114370;
+        }
+
+      }
+
+      & .keyValueContainer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 8px;
+      }
+
+      & .keyValue {
+        font-size: 14px;
+        color: $white;
+        margin-left: 8px;
+      }
+
+      & .copyButton {
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+      }
+
+      & .appContentBtn {
+        background: $white;
+        color: $dark-blue;
+        border: none;
+        outline: none;
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      & .greyText {
+        color: #ccc;
+      }
+    }
+
+    & .serverLogsWrapper {
+      margin: 1rem 0;
+      padding: 1.5rem;
+      border-radius: .5rem;
+      border: 1px solid #253348;
+      background: $dark-blue;
+      flex: 1;
+
+      & .header {
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        & .headerText {
+          font-weight: 700;
+          font-size: 1rem;
+          line-height: 140%;
+        }
+  
+        & .logsLink {
+          font-size: 12px;
+          color: $old-blue;
+        }
+
+        & .upgradeBtn {
+          font-size: 14px;
+          font-weight: 600;
+          padding: 4px 12px;
+        }
+      }
+
+      & .logsBox {
+        min-height: 244px;
+        max-height: 282px;
+        overflow-y: auto;
+        border-radius: 0.25rem;
+        background: #090909;
+        padding: 0.75rem 1rem;
+      }
+
+      & .loading {
+        min-height: 244px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+    }
+
+    & .cardsContainer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+
+      & .planDataBox {
+        flex: 1;
+        padding: 1rem;
+        border-radius: 0.25rem;
+
+        & .planUsageHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+
+          & .planBadge {
+            border-radius: 1rem;
+            background: #34506F;
+            color: #DCF2E1;
+            font-size: 14px;
+            padding: 2px 8px;
+          } 
+
+          & .planExpiry {
+            font-size: 12px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            & .planExpiryDate {
+              color: $white;
+            } 
+          }
+
+        } 
+
+        & .planUsageContainer {
+          display: flex;
+          flex-direction: column;
+          // gap: 1.5rem;
+
+          & .planUsageRow {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            & .planUsageLabel {
+              width: 110px;
+              font-size: 12px;
+              color: #ccc;
+            }
+
+            & .planUsageBarContainer {
+              display: flex;
+              align-items: center;
+              flex: 1;
+            } 
+
+            & .planUsageBar {
+              width: 80%;
+              flex: 1;
+              height: 8px;
+              background: #051127;
+              border-radius: 4px;
+              overflow: hidden;
+
+              & .usageBarFill {
+                height: 100%;
+                border-radius: 4px;
+              }
+            }
+
+            & .planUsageValue {
+              font-size: 11px;
+              text-align: right;
+              width: 110px;
+            }
+
+            & .planUsageLimit {
+              color: #ccc;
+            }
+          }
+        }
+
+        & hr {
+          margin: 12px 0;
+          border-color: #253348;
+        }
+      }
+    }
+
+    & .securityReport {
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: calc(100% - 24px);
+      }
+    }
+
+    & .securityContainer {
+      padding: 12px;
+      background: #1D293E;
+      border-radius: 8px;
+
+      & .securityHeader {
+        display: flex;
+        align-items: center;            
+        font-weight: 600;
+        font-size: 12px;
+        justify-content: space-between;
+        margin-bottom: 12px;
+
+        & .actionNeeded svg {
+          margin-left: 6px;
+        }
+      } 
+      
+      & .securityItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .5rem 1rem;
+        border-radius: 4px;
+        font-size: 12px;
+        background: #253348;
+        margin-bottom: 4px;
+
+        & .securityText {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: normal;
+          word-break: break-word;
+          flex: 1;
+          margin-right: 8px;
+          // max-height: 2.4em;
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          line-clamp: 1;
+          -webkit-box-orient: vertical;
+        }
+      }
+      
+    }
+
+    & .performanceCard {
+      padding: 1.5rem;
+      border-radius: .5rem;
+      border: 1px solid #253348;
+
+      & .performanceCardHeader {
+        font-weight: 700;
+        line-height: 140%;
+        margin-bottom: 12px;
+      }
+
+      & .performanceCardContent {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 200px;
+
+        & .avgResponseTimeCard, & .responseStatusCard, & .slowQueriesCard {
+          flex: 1;
+          padding: 12px 16px;
+          border-radius: .5rem;
+          background: #1D293E;
+
+          & .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: calc(100% - 24px);
+          }
+
+          & .headerTextDiv {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+
+            & .headerText {
+              font-size: 12px;
+              font-weight: 600;
+              line-height: 140%;
+            }
+
+            & .rightText {
+              font-size: 11px;
+              color: #ccc;
+            }  
+          }            
+        }
+
+        & .avgResponseTimeCard {
+          min-width: 300px;
+          flex: 0;
+          & .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            height: calc(100% - 24px);
+          }
+
+          & .avgResponseTime {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 140%;
+          }
+
+          & .avgResponseTimeText {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 32px;
+            height: 24px;
+          }
+        } 
+
+        & .slowQueriesCard {
+          flex: 0;
+          min-width: 150px;
+
+          & .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: .5rem;
+            height: calc(100% - 24px);
+            flex-direction: column;
+            
+            & .slowQueriesNumber {
+              @include SoraFont;
+              font-size: 24px;
+              font-weight: 600;
+              line-height: 140%;
+              text-align: center
+            }
+
+            & .slowQueriesText {
+              @include SoraFont;
+              font-size: 12px;
+              color: #ccc;
+            }
+
+            & .avgSlowQueryTime {
+              @include SoraFont;
+              font-size: 24px;
+              font-weight: 600;
+              line-height: 140%;
+              text-align: center;
+            }
+          }
+        }
+
+        & .responseStatusCard {
+          & .statsRow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+
+            & .statusCode {
+              font-size: 12px;
+              color: #ccc;
+              width: 100px;
+            }
+            
+            & .progressBarContainer {
+              flex: 1;
+              height: 8px;
+              background: #051127;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+
+            & .progressBar {
+              height: 100%;
+              border-radius: 8px;
+            }
+
+            & .requestCount { 
+              font-size: 12px;
+              color: #ccc;
+              width: 50px;
+            }
+
+            & .percentage {
+              font-size: 12px;
+              color: #ccc;
+            }
+          }
+        } 
+      } 
+    }
+
+    & .docsContainer {
+      margin: 40px 0;
+
+      & .docsHeader {
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 140%;
+        margin-bottom: 1rem;
+      }
+      
+      & .docsContent {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+
+        & .docsCard {
+          cursor: pointer;
+          max-width: 193px;
+          padding: 1.25rem 12px 12px;
+          border-radius: .5rem;
+          border: 1px solid #1B3454;
+          height: 100%;
+
+          & .docsCardTitle {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 140%;
+            margin-bottom: .5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          & .docsCardDescription {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 140%;
+          }
+        }
+      }     
+    }
+
+    & .loadingText {
+      @include InterFont;
+      font-weight: 600;
+      margin: 12px 0;
+      background: #112C4D;
+      border-radius: 8px;
+      border: 1px solid #253348;
+      padding: 12px 1rem;
+
+      & .loadingTextContent {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: $white;
+        opacity: 0;
+        animation: fadeInOut var(--text-interval) ease-in-out forwards;
+
+        &.lastText {
+          animation: fadeInStay 1s ease-in-out forwards;
+        }
+
+        & .loadingTextIcon {
+          margin-right: 8px;
+          height: 22px;
+        }
+
+        & .loadingTextAnimate {
+          padding: 0px 2px;
+          border-radius: 2px;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: rgba(21, 169, 255, 0.4);
+            animation: fillUp var(--fill-duration) ease-in-out forwards;
+          }
+        }
+      }
+    }
+  }
+}
+
+.connectAppModal {
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vw;
+  max-height: 60vh;
+  background: #253348;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: width 0.5s cubic-bezier(1, 0, 0, 1);
+  overflow: auto;
+
+  & .closeIcon {
+    position: absolute;
+    top: 13px;
+    left: calc(100% - 40px);
+    cursor: pointer;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 4px;
+    padding: 3px 6px;
+  }
+
+  & .connectAppModalHeader {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    width: 100%;
+    top: 0;
+    background: #253348;
+    z-index: 1;
+  }
+
+  & .connectAppModalTitle {
+    @include SoraFont;
+    font-size: 22px;
+    color: $white;
+  }
+
+  & .connectAppModalContent {
+    padding: 1.5rem;
+    color: $white;
+
+    & .codeBlockContainer {
+      position: relative;
+      padding-top: 0.5rem;
+      background: $regal-blue;
+      border-radius: 4px;
+
+      & .codeBlockHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0rem 1.5rem;
+      }
+
+      .copyButtonWrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .copyTooltip {
+        position: absolute;
+        right: 50%;
+        bottom: calc(100% + 8px);
+        transform: translateX(50%);
+        background: $dark-grey;
+        color: $white;
+        border-radius: 5px;
+        padding: .625rem 1rem;
+        font-size: 12px;
+        white-space: nowrap;
+        box-shadow: 0px 6px 16px 0px #0000001A;
+        animation: fadeIn 0.2s ease-in-out;
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 50%;
+          bottom: -4px;
+          transform: translateX(-50%) rotate(45deg);
+          width: 8px;
+          height: 8px;
+          background: $dark-grey;
+        }
+      }
+
+      h1, h2, h3 {
+        margin: .8rem 0;
+        font-weight: 600;
+      }
+      h4 {
+        font-weight: 500;
+        margin-bottom: .5rem;
+      }
+
+      p {
+        margin-bottom: .5rem;
+        font-size: 14px;
+      }
+
+      pre {
+        background: #111214 !important;
+        border-radius: 4px;
+        padding: 1rem 1.5rem 1rem 0!important;
+        margin: 1rem 0;
+        overflow-x: auto;
+        margin: none !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+        font-family: 'Roboto Mono', monospace !important;
+
+        code {
+          font-family: 'Roboto Mono', monospace !important;
+          font-size: 13px;
+          background: #111214 !important;
+        }
+      }
+
+      code {
+        font-family: 'Roboto Mono', monospace !important;
+        font-size: 13px;
+        background: #111214 !important;
+      }
+    }
+  }
+}
+
+.dropdownContainer {
+  position: relative;
+  min-width: 300px;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  .selectedLanguage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $white;
+  }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #253348;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: $white;
+  transition: background-color 0.2s;
+  font-size: 14px;
+
+  &:hover {
+    background: rgba($dark-blue, 0.4);
+  }
+
+  &.selected {
+    background: rgba($dark-blue, 0.4);
+    color: $white;
+  }
+}
+
+.spinnerStatus {
+  animation: rotating 1s linear infinite;
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInStay {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fillUp {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(50%, 0);
+  }
+}

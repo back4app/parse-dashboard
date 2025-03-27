@@ -13,15 +13,13 @@ import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
 import Browser from './Data/Browser/Browser.react';
 import CloudCode from './Data/CloudCode/B4ACloudCode.react';
-// import CloudCode from './Data/CloudCode/CloudCode.react';
+import AppOverview from './Data/AppOverview/AppOverview.react';
 import Config from './Data/Config/Config.react';
-import Explorer from './Analytics/Explorer/Explorer.react';
 import FourOhFour from 'components/FourOhFour/FourOhFour.react';
 import GeneralSettings from './Settings/GeneralSettings.react';
 import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
 import HostingSettings from './Settings/HostingSettings.react';
 import HubConnections from './Hub/HubConnections.react';
-// import Icon from 'components/Icon/Icon.react';
 import IndexManager from './IndexManager/IndexManager.react'
 import JobEdit from 'dashboard/Data/Jobs/JobEdit.react';
 import Jobs from './Data/Jobs/Jobs.react';
@@ -31,27 +29,21 @@ import InfoLogs from './Data/Logs/InfoLogs.react';
 import ErrorLogs from './Data/Logs/ErrorLogs.react';
 import AccessLogs from './Data/Logs/AccessLogs.react';
 import SystemLogs from './Data/Logs/SystemLogs.react';
-// import B4aHubPublishPage from './B4aHubPublishPage/B4aHubPublishPage.react';
 import B4aAdminPage from './B4aAdminPage/B4aAdminPage.react';
-import B4aAppTemplates from './B4aAppTemplates/B4aAppTemplates.react';
+import B4aWebDeployment from './B4aWebDeployment/B4aWebDeployment.react';
 import { AsyncStatus } from 'lib/Constants';
 import { get } from 'lib/AJAX';
 import { setBasePath } from 'lib/AJAX';
 import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
-// // import createClass from 'create-react-class';
 import { Helmet } from 'react-helmet';
 import Playground from './Data/Playground/Playground.react';
 import axios from 'lib/axios';
 import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
-// // import EmptyState from 'components/EmptyState/EmptyState.react';
-import BlockchainPage from './BlockchainPage/BlockChainPage.react';
 import AccountView from './AccountView.react';
-import AnalyticsOverview from './Analytics/Overview/Overview.react';
 
 import Migration from './Data/Migration/Migration.react';
 import ParseApp from 'lib/ParseApp';
-import Performance from './Analytics/Performance/Performance.react';
 import PushAudiencesIndex from './Push/PushAudiencesIndex.react';
 import PushDetails from './Push/PushDetails.react';
 import PushIndex from './Push/PushIndex.react';
@@ -59,7 +51,6 @@ import PushNew from './Push/PushNew.react';
 import PushSettings from './Settings/PushSettings.react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RestConsole from './Data/ApiConsole/RestConsole.react';
-import Retention from './Analytics/Retention/Retention.react';
 import SchemaOverview from './Data/Browser/SchemaOverview.react';
 import SecuritySettings from './Settings/SecuritySettings.react';
 import SettingsData from './Settings/SettingsData.react';
@@ -69,11 +60,11 @@ import UsersSettings from './Settings/UsersSettings.react';
 import Webhooks from './Data/Webhooks/Webhooks.react';
 import baseStyles from 'stylesheets/base.scss';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
-import DashboardSettings from './Settings/DashboardSettings/DashboardSettings.react';
 import Security from './Settings/Security/Security.react';
 import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
 import { initializeAmplitude, initializeLogRocketSession } from 'lib/amplitudeEvents';
+import { setUser as setSentryUser } from '@sentry/react';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -227,6 +218,12 @@ class Dashboard extends React.Component {
       }
 
       initializeAmplitude(user.email);
+      setSentryUser({
+        id: user.email,
+        email: user.email,
+        username: user.email,
+        ip_address: '{{auto}}',
+      });
       waitForScriptToLoad(() => typeof window.LogRocket !== 'undefined').then(() => {
         // eslint-disable-next-line no-undef
         initializeLogRocketSession(user.email);
@@ -385,9 +382,10 @@ class Dashboard extends React.Component {
 
     const AppRoute = (
       <Route element={<AppData />}>
-        <Route index element={<Navigate replace to="browser" />} />
+        <Route index element={<Navigate replace to="overview" />} />
 
         <Route path="getting_started" element={<Empty />} />
+        <Route path="overview" element={<AppOverview />} />
 
         <Route path="browser/:className/:entityId/:relationName" element={<BrowserRoute />} />
         <Route path="browser/:className" element={<BrowserRoute />} />
@@ -414,7 +412,7 @@ class Dashboard extends React.Component {
         <Route path="push/:pushId" element={<PushDetails />} />
 
         <Route path="connect" element={<B4aConnectPage />} />
-        {/* <Route path="admin" element={<B4aAdminPage />} /> */}
+        <Route path="admin" element={<B4aAdminPage />} />
         {/* <Route path="app-templates" element={<B4aAppTemplates />} /> */}
 
         <Route path="server-settings/" element={<ServerSettings />} />
@@ -428,6 +426,7 @@ class Dashboard extends React.Component {
         <Route path="connections" element={<HubConnections />} />
         <Route path="analytics">{AnalyticsRoute}</Route>
         <Route path="settings">{SettingsRoute}</Route>
+        <Route path="web-deployment" element={<B4aWebDeployment />} />
         {/* {user.allowHubPublish && <Route path="hub-publish" element={<B4aHubPublishPage />} />} */}
       </Route>
     );
@@ -489,7 +488,7 @@ const NavbarWrapper = () => {
         window.location.replace(`${b4aSettings.BACK4APP_SITE_PATH}/login?return-url=${encodeURIComponent(window.location.href)}`);
 
         return;
-      };
+      }
 
       setUser(user);
 
@@ -501,7 +500,7 @@ const NavbarWrapper = () => {
         console.error('unexpected error when finding apps plans', e);
 
         return;
-      };
+      }
 
       setAppsPlans(appsPlans);
     })();
@@ -541,11 +540,12 @@ const NavbarWrapper = () => {
     overLimitAppsPlansCount={(appsPlans && appsPlans.filter(appPlan => appPlan.status === 'OVER_LIMITS').length) || undefined}
     router={router}
     Link={LinkImpl}
-    parseDashboardURL={b4aSettings.PARSE_DASHBOARD_PATH}
+    parseDashboardURL={b4aSettings.BACKEND_DASHBOARD_PATH}
     containersDashboardURL={b4aSettings.CONTAINERS_DASHBOARD_PATH}
     back4appDotComSiteURL={b4aSettings.BACK4APP_SITE_PATH}
     back4appDotComOldSiteURL={b4aSettings.BACK4APP_SITE_PATH}
     back4appDotComDashboardURL={b4aSettings.DASHBOARD_PATH}
+    back4appContainersApiURL={b4aSettings.CONTAINERS_API_PATH}
   />
 }
 
@@ -553,9 +553,11 @@ const DashboardWrapper = () => {
   return (
     <BrowserRouter basename={window.PARSE_DASHBOARD_PATH || '/'}>
       <Helmet>
-        <title>Parse Dashboard</title>
+        <title>Backend Dashboard</title>
       </Helmet>
-      <NavbarWrapper />
+      <div style={{ overflowX: 'clip' }}>
+        <NavbarWrapper />
+      </div>
       <Dashboard />
     </BrowserRouter>
   );

@@ -1,22 +1,21 @@
-import React            from 'react'
-import { ActionTypes }  from 'lib/stores/SchemaStore';
-import Parse            from 'parse';
-import axios            from 'axios'
-import DashboardView    from 'dashboard/DashboardView.react';
-import subscribeTo      from 'lib/subscribeTo';
-import B4aLoaderContainer  from 'components/B4aLoaderContainer/B4aLoaderContainer.react'
-import Field            from 'components/Field/Field.react';
-import Fieldset         from 'components/Fieldset/Fieldset.react';
-import FormNote         from 'components/FormNote/FormNote.react';
-import Label            from 'components/Label/Label.react';
-import Button           from 'components/Button/Button.react';
-import styles           from 'dashboard/B4aAdminPage/B4aAdminPage.scss'
-import B4aAdminModal    from 'dashboard/B4aAdminPage/B4aAdminModal'
-import B4aAdminParams   from 'dashboard/B4aAdminPage/B4aAdminParams'
-import Toolbar          from 'components/Toolbar/Toolbar.react';
-import Icon             from 'components/Icon/Icon.react';
-import ReactPlayer      from 'react-player';
+import React from 'react'
+import Parse from 'parse';
+import DashboardView from 'dashboard/DashboardView.react';
+import subscribeTo from 'lib/subscribeTo';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react'
+import Field from 'components/Field/Field.react';
+import Fieldset from 'components/Fieldset/Fieldset.react';
+import FormNote from 'components/FormNote/FormNote.react';
+import Label from 'components/Label/Label.react';
+import Button from 'components/Button/Button.react';
+import styles from 'dashboard/B4aAdminPage/B4aAdminPage.scss'
+import B4aAdminModal from 'dashboard/B4aAdminPage/B4aAdminModal'
+import B4aAdminParams from 'dashboard/B4aAdminPage/B4aAdminParams'
+import Toolbar from 'components/Toolbar/Toolbar.react';
+import Icon from 'components/Icon/Icon.react';
+// import ReactPlayer from 'react-player';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import swalCssStyles from 'stylesheets/swalCustom.css';
 
 // const EMAIL_VERIFICATION_URL = `${b4aSettings.BACK4APP_API_PATH}/email-verification`;
 
@@ -34,7 +33,7 @@ class B4aAdminPage extends DashboardView {
       username: '',
       password: '',
       host: '',
-      adminURL: '',
+      adminURL: 'https://www.back4app.com',
       isRoleCreated: false,
       adminParams: {}
     }
@@ -141,8 +140,8 @@ class B4aAdminPage extends DashboardView {
       </Toolbar>
     );
 
-    const fields = <Fieldset legend={this.legend} description={this.description}>
-      <ReactPlayer
+    const fields = <Fieldset legend="" description="" width="650px">
+      {/* <ReactPlayer
         url='https://www.youtube.com/watch?v=7CHdIniAACE'
         controls
         width="650px"
@@ -150,30 +149,33 @@ class B4aAdminPage extends DashboardView {
           border: '1px solid #000',
           borderRadius: '4px',
           marginBottom: '20'
-        }} />
+        }} /> */}
       <Field
         height='120px'
         textAlign='center'
-        label={<Label text='Is Enabled?' description="Enabling will automatically add three new classes, new indexes and a new role to your application’s schema." />}
-        input={<div
-          style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-          className={styles['input']}>
+        label={<Label dark={true} text='Is Enabled?' description="Enabling will automatically add three new classes, new indexes and a new role to your application’s schema." />}
+        input={<div style={{ padding: '0 1rem', width: '100%' }}
+        >
           {
             isAdminHostEnabled
-              ? <Icon name='admin-app-check' width={50} height={50}
-                fill='#4CAF50' className={styles['input-child']}></Icon>
+              ? <Icon width={24} height={24} fill="#27AE60" name="b4a-success-check" color="#27AE60" />
               : this.renderButtonToEnable()
           }
         </div>
-        }>
+        }
+        theme={Field.Theme.BLUE}
+      >
       </Field>
       {
         isAdminHostEnabled
           ? <Field
+            theme={Field.Theme.BLUE}
             height='120px'
             textAlign='center'
-            label={<Label text='Admin App URL' description='Use this address to share your Admin App with trusted users. Only users with the B4aAdminUser role will be allowed to log in.' />}
-            input={<div className={styles['input']}><a target='_blank' href={adminURL} className={styles['input-child']}>{adminURL}</a></div>}>
+            label={<Label dark={true} text='Admin App URL' description='Use this address to share your Admin App with trusted users. Only users with the B4aAdminUser role will be allowed to log in.' />}
+            input={<div style={{ padding: '0 1rem', width: '100%' }}>
+              <a target='_blank'rel="noopener noreferrer" href={adminURL} className={styles.adminURL}>{adminURL}</a>
+            </div>}>
           </Field>
           : ''
       }
@@ -181,9 +183,15 @@ class B4aAdminPage extends DashboardView {
 
     return (
       <B4aLoaderContainer className={styles.loading} loading={this.state.loading} hideAnimation={false} solid={true}>
-        <div className={styles['admin-page']}>
+        <div className={styles.content}>
           {toolbar}
-          {fields}
+          <div className={styles.mainContent}>
+            <div className={styles.header}>
+              <div className={styles.title}>{this.legend}</div>
+              <div className={styles.subtitle}>{this.description}</div>
+            </div>
+            {fields}
+          </div>
         </div>
       </B4aLoaderContainer>
     )

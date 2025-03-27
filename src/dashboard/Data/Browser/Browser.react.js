@@ -17,7 +17,6 @@ import { isMobile } from 'lib/browserUtils';
 // import * as queryString from 'query-string';
 // import PropTypes from 'lib/PropTypes';
 // import ParseApp from 'lib/ParseApp';
-import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import postgresqlImg from './postgresql.png';
@@ -61,6 +60,7 @@ import generatePath from 'lib/generatePath';
 import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { pushGTMEvent } from 'lib/gtm.js'
 
 const BROWSER_LAST_LOCATION = 'b4a_brower_last_location';
 // The initial and max amount of rows fetched by lazy loading
@@ -130,7 +130,6 @@ class Browser extends DashboardView {
       keepAddingCols: false,
       showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
       renderFooterMenu: !isMobile(),
-      showPostgresqlModal: !!Cookies.get('isPostgresql'),
       openSecurityDialog: false,
 
       markRequiredFieldRow: 0,
@@ -258,7 +257,6 @@ class Browser extends DashboardView {
       MySwal.fire({
         ...postgresqlAlert,
         onAfterClose: () => {
-          Cookies.remove('isPostgresql', { domain: 'back4app.com' });
           this.setState({
             showPostgresqlModal: false
           });
@@ -745,6 +743,7 @@ class Browser extends DashboardView {
   }
 
   createClass(className, isProtected, shouldContinue = false) {
+    pushGTMEvent('create_app_backend', true);
     let clp = isProtected ? protectedCLPs : defaultCLPS;
     if (semver.lte(this.context.serverInfo.parseServerVersion, '3.1.1')) {
       clp = {};
@@ -2012,7 +2011,7 @@ class Browser extends DashboardView {
   async confirmExportSelectedRows(rows, type, indentation) {
     this.setState({ rowsToExport: null, exporting: true, exportingCount: 0 });
     const className = this.props.params.className;
-    const query = new Parse.Query(className);
+    let query = new Parse.Query(className);
 
     if (!rows['*']) {
       // Export selected
@@ -2024,7 +2023,7 @@ class Browser extends DashboardView {
       query.limit(objectIds.length);
     }
 
-    if (!this.state.filters.isEmpty()) {
+    if (!this.state.filters.isEmpty() && !rows['*']) {
       // Export filtered
       const objectIds = [];
       for (const obj of this.state.data) {
@@ -2052,14 +2051,16 @@ class Browser extends DashboardView {
         const element = document.createElement('a');
         const file = new Blob(
           [
-            JSON.stringify(
-              objects.map(obj => {
+            JSON.stringify({
+              results: objects.map(obj => {
                 const json = obj._toFullJSON();
                 delete json.__type;
+                delete json.className
                 return json;
-              }),
-              null,
-              indentation ? 2 : null
+              })
+            },
+            null,
+            indentation ? 2 : null
             ),
           ],
           { type: 'application/json' }
@@ -2108,6 +2109,9 @@ class Browser extends DashboardView {
                 } else if (colValue.includes(',')) {
                   // Has delimiter in data, surround with quote (which the value doesn't already contain)
                   return `"${colValue}"`;
+                } else if (colValue.includes('\n') || colValue.includes('\r')) {
+                  // Has newline in data, enclose in quotes
+                  return `"${colValue}"`;
                 } else {
                   // No quote or delimiter, just include plainly
                   return `${colValue}`;
@@ -2134,11 +2138,15 @@ class Browser extends DashboardView {
       document.body.removeChild(element);
     };
 
-    if (!rows['*'] || !this.state.filters.isEmpty()) {
+    if (!rows['*']) {
       const objects = await query.find({ useMasterKey: true });
       processObjects(objects);
       this.setState({ exporting: false, exportingCount: objects.length });
     } else {
+      // export all selected filtered data
+      if (!this.state.filters.isEmpty()) {
+        query = queryFromFilters(this.props.params.className, this.state.filters);
+      }
       let batch = [];
       query.eachBatch(
         obj => {
@@ -2523,6 +2531,7 @@ class Browser extends DashboardView {
         <ImportDialog
           className={className}
           onCancel={() => this.setState({ showImportDialog: false })}
+          showNote={this.showNote}
           onConfirm={(file) => this.importClass(className, file)} />
       );
     } else if (this.state.showImportRelationDialog) {
@@ -2730,7 +2739,7 @@ class Browser extends DashboardView {
     }
 
     let notification = null;
-    const pageTitle = `${this.props.params.className} - Parse Dashboard`;
+    const pageTitle = `${this.props.params.className} - Backend Dashboard`;
 
     if (this.state.lastError) {
       notification = <B4aNotification note={this.state.lastError} isErrorNote={true} />;

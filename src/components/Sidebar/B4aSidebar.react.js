@@ -251,6 +251,7 @@ const B4aSidebar = ({
                 primaryBackgroundColor={primaryBackgroundColor}
                 secondaryBackgroundColor={secondaryBackgroundColor}
                 badge={badge}
+                locked={name !== 'Overview' ? currentApp.serverInfo.status !== 'SUCCESS' : false}
               >
                 {active ? _subMenu(subsections) : null}
               </B4aSidebarSection>

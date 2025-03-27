@@ -19,7 +19,7 @@ const sendEvent = () => {
   amplitudeLogEvent('at API Reference Introduction');
 }
 
-const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge }) => {
+const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge, locked }) => {
   const classes = [styles.section, 'section']; // Adding 'section' for the Tour to be able to select
   const [showPopoverSection, setShowPopoverSection] = useState(false);
   const [position, setPosition] = useState(null);
@@ -56,6 +56,10 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
     popover = <Popover fixed={true} position={position} contentId={`POPOVER_CONTENT_${name}`} color="#102542">
       <div className={`${styles.section_contents} ${styles.popover}`} id="section_contents" style={{ background: secondaryBackgroundColor}}>{children}</div>
     </Popover>
+  }
+
+  if (locked) {
+    classes.push(styles.locked);
   }
 
   return (

@@ -67,7 +67,8 @@ const Metric = props => {
 
 const AppCard = ({ app, icon }) => {
   const navigate = useNavigate();
-  const canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/browser`);
+  // const canBrowse = app.serverInfo.error ? null : () => navigate(html`/apps/${app.slug}/overview`);
+  const canBrowse = () => navigate(html`/apps/${app.slug}/overview`);
   const versionMessage = app.serverInfo.error ?
     <div className={styles.serverVersion}>Server not reachable: <span className={styles.ago}>{app.serverInfo.error.toString()}</span></div>
     :
@@ -80,10 +81,10 @@ const AppCard = ({ app, icon }) => {
   const appNameStyles = [styles.appname];
   const appIconStyle = [styles.icon];
 
-  if (app.serverInfo.status === 'LOADING') {
-    appStatusIcon = <img src={loadingImg} alt="loading..." className={styles.loadingIcon} />
-    appNameStyles.push(styles.loading);
-  }
+  // if (app.serverInfo.status === 'LOADING') {
+  //   appStatusIcon = <img src={loadingImg} alt="loading..." className={styles.loadingIcon} />
+  //   appNameStyles.push(styles.loading);
+  // }
 
   if (app.serverInfo.status === 'ERROR') {
     appStatusIcon = <Icon name='warn-triangle-outline' fill='#FBFF3B' width={16} height={16} />
@@ -131,7 +132,7 @@ class AppsIndex extends React.Component {
     // If single app, then redirect to browser
     if (AppsManager.apps().length === 1) {
       const [app] = AppsManager.apps();
-      this.props.navigate(`/apps/${app.slug}/browser`);
+      this.props.navigate(`/apps/${app.slug}/overview`);
       return;
     }
     // compare nextProps with prevProps to know for which app's serverInfo changed
@@ -206,7 +207,7 @@ class AppsIndex extends React.Component {
           <a href="https://www.npmjs.com/package/parse-dashboard" target="_blank">
             latest version
           </a>{' '}
-          of Parse Dashboard to get access to: {joinWithFinal('', newFeaturesNodes, ', ', ' and ')}.
+          of Backend Dashboard to get access to: {joinWithFinal('', newFeaturesNodes, ', ', ' and ')}.
         </FlowFooter>
       );
     }

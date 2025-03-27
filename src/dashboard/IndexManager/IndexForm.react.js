@@ -43,7 +43,7 @@ class IndexForm extends Component {
       unique: false,
       sparse: false,
       // expireAfterSeconds: '',
-      weights: {}
+      //weights: {}
     }
     this.onChangeIndexName = this.onChangeIndexName.bind(this)
     this.createIndex = this.createIndex.bind(this)
@@ -221,15 +221,15 @@ class IndexForm extends Component {
       sparse,
       unique,
       // expireAfterSeconds,
-      weights: Object.entries(weights).reduce((acc, [key, value]) => {
-        if (typeof value === 'string') {
-          acc[key] = parseInt(value)
-        } else {
-          acc[key] = value
-        }
-        return acc
-      }, {})
     }
+
+    if (weights && Object.keys(weights).length > 0) {
+        indexOptions.weights = Object.entries(weights).reduce((acc, [key, value]) => {
+          acc[key] = typeof value === 'string' ? parseInt(value, 10) : value;
+          return acc;
+        }, {});
+      }
+
     const indexConfiguration = {
       index,
       indexOptions

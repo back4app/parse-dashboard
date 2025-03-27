@@ -8,6 +8,7 @@
 const configuration = require('./base.config.js');
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const settings = require('@back4app/back4app-settings');
+const webpack = require('webpack');
 
 configuration.mode = 'production';
 configuration.entry = {
@@ -18,13 +19,19 @@ configuration.entry = {
 };
 configuration.output.path = require('path').resolve('./production/bundles');
 
-// configuration.plugins.push(
-//   new HtmlWebpackExternalsPlugin({
-//     externals: [{
-//       module: '@back4app/back4app-navigation',
-//       entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
-//     }]
-//   })
-// );
+configuration.plugins.push(
+  new webpack.DefinePlugin({
+    'process.env': {
+      'NODE_ENV': JSON.stringify('production'),
+      'SENTRY_ENV': JSON.stringify('production')
+    }
+  }),
+  // new HtmlWebpackExternalsPlugin({
+  //   externals: [{
+  //     module: '@back4app/back4app-navigation',
+  //     entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
+  //   }]
+  // })
+);
 
 module.exports = configuration;
