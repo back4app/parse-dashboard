@@ -677,47 +677,75 @@
         margin: 0rem 1.5rem;
       }
 
-      & .copyButton {
-        cursor: pointer;
+      .copyButtonWrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
       }
-    }
 
-    h1, h2, h3 {
-      margin: .8rem 0;
-      font-weight: 600;
-    }
-    h4 {
-      font-weight: 500;
-      margin-bottom: .5rem;
-    }
+      .copyTooltip {
+        position: absolute;
+        right: 50%;
+        bottom: calc(100% + 8px);
+        transform: translateX(50%);
+        background: $dark-grey;
+        color: $white;
+        border-radius: 5px;
+        padding: .625rem 1rem;
+        font-size: 12px;
+        white-space: nowrap;
+        box-shadow: 0px 6px 16px 0px #0000001A;
+        animation: fadeIn 0.2s ease-in-out;
 
-    p {
-      margin-bottom: .5rem;
-      font-size: 14px;
-    }
+        &::after {
+          content: '';
+          position: absolute;
+          left: 50%;
+          bottom: -4px;
+          transform: translateX(-50%) rotate(45deg);
+          width: 8px;
+          height: 8px;
+          background: $dark-grey;
+        }
+      }
 
-    pre {
-      background: #111214 !important;
-      border-radius: 4px;
-      padding: 1rem 1.5rem 1rem 0!important;
-      margin: 1rem 0;
-      overflow-x: auto;
-      margin: none !important;
-      border-top-left-radius: 0 !important;
-      border-top-right-radius: 0 !important;
-      font-family: 'Roboto Mono', monospace !important;
+      h1, h2, h3 {
+        margin: .8rem 0;
+        font-weight: 600;
+      }
+      h4 {
+        font-weight: 500;
+        margin-bottom: .5rem;
+      }
+
+      p {
+        margin-bottom: .5rem;
+        font-size: 14px;
+      }
+
+      pre {
+        background: #111214 !important;
+        border-radius: 4px;
+        padding: 1rem 1.5rem 1rem 0!important;
+        margin: 1rem 0;
+        overflow-x: auto;
+        margin: none !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+        font-family: 'Roboto Mono', monospace !important;
+
+        code {
+          font-family: 'Roboto Mono', monospace !important;
+          font-size: 13px;
+          background: #111214 !important;
+        }
+      }
 
       code {
         font-family: 'Roboto Mono', monospace !important;
         font-size: 13px;
         background: #111214 !important;
       }
-    }
-
-    code {
-      font-family: 'Roboto Mono', monospace !important;
-      font-size: 13px;
-      background: #111214 !important;
     }
   }
 }
@@ -832,5 +860,16 @@
   }
   100% {
     height: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(50%, 0);
   }
 }

@@ -878,16 +878,21 @@ const CodeBlock = ({ language, value }) => {
     <div className={styles.codeBlockContainer}>
       <div className={styles.codeBlockHeader}>
         <div className={styles.languageLabel}>{language}</div>
-        <button className={styles.copyButton} onClick={copyToClipboard} title="Copy to clipboard">
-          <Icon
-            name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`}
-            fill={copied ? '#27AE60' : '#C1E2FF'}
-            width={14}
-            height={14}
-          />
-          {/* <B4aTooltip value={'Copied!'} visible={copied} placement='top' theme='dark'>
-          </B4aTooltip> */}
-        </button>
+        <div className={styles.copyButtonWrapper}>
+          {copied && (
+            <div className={styles.copyTooltip}>
+              Copied!
+            </div>
+          )}
+          <button className={styles.copyButton} onClick={copyToClipboard} title="Copy to clipboard">
+            <Icon
+              name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`}
+              fill={copied ? '#27AE60' : '#C1E2FF'}
+              width={14}
+              height={14}
+            />
+          </button>
+        </div>
       </div>
       <SyntaxHighlighter language={language} style={oneDark} showLineNumbers={true}>
         {value}
