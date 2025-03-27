@@ -201,7 +201,7 @@ class AppOverview extends DashboardView {
                       this.setState({ showCopiedTooltip: false });
                     }, 2_000);
                   }}>
-                    <Icon name='b4a-copy-icon' fill="#15A9FF" width={14} height={14} />
+                    <Icon name={`${this.state.showCopiedTooltip ? 'b4a-check-icon' : 'b4a-copy-icon'}`} fill={this.state.showCopiedTooltip ? '#27AE60' : '#15A9FF'} width={14} height={14} />
                   </div>
                 </B4aTooltip>
               </div>
