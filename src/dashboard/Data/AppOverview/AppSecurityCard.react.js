@@ -19,9 +19,9 @@ const AppSecurityCard = ({ appId, loading, securityReport }) => {
             <div className={styles.securityText}>
               {item.message}
             </div>
-            <div className={styles.securityAction}>
+            {/* <div className={styles.securityAction}>
               <Icon name="b4a-right-arrrow-icon" width={16} height={16} fill="#f9f9f9" />
-            </div>
+            </div> */}
           </div>
         ))}
     </div>
