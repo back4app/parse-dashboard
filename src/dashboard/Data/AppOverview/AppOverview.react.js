@@ -83,7 +83,7 @@ class AppOverview extends DashboardView {
         isLoadingResponseStatus: true,
         isLoadingSlowQueries: true,
       });
-      this.loadCardInformation();
+      this.loadCardInformation(nextContext);
     }
   }
 
