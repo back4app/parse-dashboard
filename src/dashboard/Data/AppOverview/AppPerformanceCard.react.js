@@ -54,8 +54,8 @@ function formatMiliToSeconds(ms) {
     return '0';
   }
 
-  // Convert milliseconds to seconds and round to 2 decimal place
-  const seconds = (ms / 1000).toFixed(2).replace(/\.0$/, '');
+  // Convert milliseconds to seconds and round to 3 decimal place
+  const seconds = (ms / 1000).toFixed(3).replace(/\.0$/, '');
   return seconds;
 }
 
