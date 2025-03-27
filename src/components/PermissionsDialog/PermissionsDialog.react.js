@@ -50,7 +50,7 @@ function resolvePermission(perms, rowId, column) {
   };
 }
 
-function resolvePointerPermission(perms, pointerPerms, rowId, column, parseVersion) {
+function resolvePointerPermission(perms, pointerPerms, rowId, column, isDeletedColumn) {
   const publicAccess = perms.get(column) && perms.get(column).get('*');
   const auth = perms.get(column).get('requiresAuthentication');
 
@@ -73,7 +73,7 @@ function resolvePointerPermission(perms, pointerPerms, rowId, column, parseVersi
   //  - Public row: always
   //  - Authn row:  always
   //  - Entry row:  when requires auth OR not Public
-  const editable = !forceChecked;
+  const editable = isDeletedColumn ? false : !forceChecked;
 
   return {
     checked,
@@ -301,14 +301,14 @@ function renderSimpleCheckboxes(rowId, perms, onChange) {
   ];
 }
 
-function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange) {
-  const get = resolvePointerPermission(perms, pointerPerms, rowId, 'get');
-  const find = resolvePointerPermission(perms, pointerPerms, rowId, 'find');
-  const count = resolvePointerPermission(perms, pointerPerms, rowId, 'count');
-  const create = resolvePointerPermission(perms, pointerPerms, rowId, 'create');
-  const update = resolvePointerPermission(perms, pointerPerms, rowId, 'update');
-  const del = resolvePointerPermission(perms, pointerPerms, rowId, 'delete');
-  const addField = resolvePointerPermission(perms, pointerPerms, rowId, 'addField');
+function renderPointerCheckboxes(rowId, perms, pointerPerms, advanced, onChange, isDeletedColumn) {
+  const get = resolvePointerPermission(perms, pointerPerms, rowId, 'get', isDeletedColumn);
+  const find = resolvePointerPermission(perms, pointerPerms, rowId, 'find', isDeletedColumn);
+  const count = resolvePointerPermission(perms, pointerPerms, rowId, 'count', isDeletedColumn);
+  const create = resolvePointerPermission(perms, pointerPerms, rowId, 'create', isDeletedColumn);
+  const update = resolvePointerPermission(perms, pointerPerms, rowId, 'update', isDeletedColumn);
+  const del = resolvePointerPermission(perms, pointerPerms, rowId, 'delete', isDeletedColumn);
+  const addField = resolvePointerPermission(perms, pointerPerms, rowId, 'addField', isDeletedColumn);
 
   // whether this field is listed under readUserFields[]
   const readUserFields = pointerPerms.get('read');
@@ -1006,6 +1006,7 @@ export default class PermissionsDialog extends React.Component {
         </a>
       </span>
     );
+    let isDeletedColumn = false;
 
     if (type.user) {
       label = (
@@ -1055,19 +1056,31 @@ export default class PermissionsDialog extends React.Component {
       );
     } else if (pointer) {
       // get class info from schema
-      const { type, targetClass } = columns[key];
-
-      const pillText = type + (targetClass ? `<${targetClass}>` : '');
-
-      label = (
-        <span>
-          <p>
-            {key}
-            {pill(pillText)}
-          </p>
-          <p className={styles.hint}>Only users pointed to by this field</p>
-        </span>
-      );
+      const selectedColumn = columns.find(col => col.name === key);
+      const isColumnTypeChanged = selectedColumn && selectedColumn.type !== 'Pointer';
+      if (selectedColumn && selectedColumn.type === 'Pointer') {
+        const { type, targetClass } = selectedColumn;
+        const pillText = type + (targetClass ? `<${targetClass}>` : '');
+        label = (
+          <span>
+            <p>
+              {key}
+              {pill(pillText)}
+            </p>
+            <p className={styles.hint}>Only users pointed to by this field</p>
+          </span>
+        );
+      } else {
+        isDeletedColumn = true;
+        label = (
+          <span>
+            <p>
+              {key}
+            </p>
+            <p className={styles.hint}>{isColumnTypeChanged ? 'The column type has been changed' : 'The column has been deleted'}</p>
+          </span>
+        );
+      }
     }
 
     let content = null;
@@ -1078,7 +1091,8 @@ export default class PermissionsDialog extends React.Component {
           this.state.perms,
           this.state.pointerPerms.get(key),
           this.state.level === 'Advanced',
-          this.togglePointer.bind(this)
+          this.togglePointer.bind(this),
+          isDeletedColumn
         );
       } else if (this.props.advanced) {
         content = renderAdvancedCheckboxes(

@@ -21,7 +21,6 @@ export const ManageAppFields = ({
   dashboardAPI,
   databaseURL,
   parseVersion,
-  mongoVersion,
   errors,
   isGDPR,
   permissions,
@@ -30,8 +29,6 @@ export const ManageAppFields = ({
   setUseLatestDashboardVersion,
   backendBetaUser
 }) => {
-
-  const checkDB = databaseURL?.split('://')[0];
 
   return (
     <Fieldset
@@ -100,7 +97,7 @@ export const ManageAppFields = ({
                   description={
                     <>
                       <span>
-                        {checkDB.split('+srv')[0]} {!databaseVersion ? mongoVersion : databaseVersion}
+                        {databaseVersion}
                       </span>
                     </>
                   }
