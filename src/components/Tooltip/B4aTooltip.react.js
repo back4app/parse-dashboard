@@ -27,7 +27,7 @@ const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme
       let top = rect.top;
       let left = rect.left + (rect.width / 2);
 
-      const OFFSET = 12; // Distance between tooltip and parent element
+      const OFFSET = 4; // Distance between tooltip and parent element
 
       switch (placement) {
         case 'top':
@@ -109,9 +109,9 @@ const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme
     <div className={styles.tooltipWrapper}>
       {children}
       {visible && (
-        <div 
-          ref={tooltipRef} 
-          className={`${styles.tooltip} ${theme === 'dark' ? styles.dark : ''}`} 
+        <div
+          ref={tooltipRef}
+          className={`${styles.tooltip} ${theme === 'dark' ? styles.dark : ''}`}
           style={tooltipStyle}
         >
           <div className={styles.tooltipContent}>
