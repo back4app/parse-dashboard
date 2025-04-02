@@ -64,7 +64,7 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       />
-      <hr className={styles.fieldHr} />
+      {/* <hr className={styles.fieldHr} /> */}
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
