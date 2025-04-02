@@ -385,7 +385,15 @@ export default class Collaborators extends React.Component {
         }
         input={
           <div style={{ width: '100%', padding: '0 1rem' }}>
-            {maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
+            {maxCollaborators === 0 || maxCollaborators === null  || maxCollaborators === false ? (
+              <a
+                href="https://www.back4app.com/pricing/backend-as-a-service"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Upgrade Plan
+              </a>
+            ) : maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
               <a
                 href="https://www.back4app.com/pricing/backend-as-a-service"
                 target="_blank"
