@@ -79,7 +79,7 @@ export const ManageAppFields = ({
                 </B4aKeyField>
               </div>}
             <FieldSettings
-              containerStyles={{ borderBottom: 'none' }}
+              containerStyles={{ borderBottom: 'none', borderTop: 'none' }}
               padding="16px 0px"
               labelWidth="50%"
               label={(
