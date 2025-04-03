@@ -162,6 +162,7 @@ class Dashboard extends React.Component {
   componentDidMount() {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
       fetchHubUser().then(userDetail => {
+        user.createdAt = userDetail.createdAt;
         const now = moment();
         const hourDiff = now.diff(userDetail.createdAt, 'hours');
         if(hourDiff === 0){
