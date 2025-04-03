@@ -21,6 +21,7 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import ConnectAppModal from './ConnectAppModal.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -63,6 +64,7 @@ class AppOverview extends DashboardView {
   }
 
   componentWillMount() {
+    amplitudeLogEvent('At App Overview - Backend');
     const currentApp = this.context;
     const appKeys = new Map(Object.entries(currentApp).filter(([k]) => k.includes('Key')));
     this.setState({

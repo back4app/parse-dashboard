@@ -56,6 +56,8 @@ export default class GeneralSettings extends DashboardView {
     const webUrl = this.props.initialFields.urls.find(({ platform }) => platform === 'web');
     const otherURL = this.props.initialFields.urls.find(({ platform }) => platform === 'other');
 
+    const opendb_connection_string = this.context.settings.fields.fields.opendb_connection_string;
+
     return {
       requestLimit: this.props.initialFields.pricing_plan.request_limit,
       appName: this.context.name,
@@ -67,7 +69,7 @@ export default class GeneralSettings extends DashboardView {
       otherURL: otherURL ? otherURL.url : '',
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
-      mongoURL: this.context.settings.fields.fields.opendb_connection_string,
+      mongoURL: opendb_connection_string ? opendb_connection_string : '',
       parseOptions: this.context.settings.fields.fields.parseOptions,
       dashboardAPI: this.context.settings.fields.fields.dashboardAPI,
       databaseURL: this.context.settings.fields.fields.databaseURL,
