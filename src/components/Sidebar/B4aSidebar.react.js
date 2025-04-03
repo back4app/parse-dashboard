@@ -174,6 +174,7 @@ const B4aSidebar = ({
               primaryBackgroundColor={primaryBackgroundColor}
               isCollapsed={true}
               onClick={() => {}}
+              locked={name !== 'Overview' ? currentApp.serverInfo.status !== 'SUCCESS' : false}
             >
               {_subMenu(subsections)}
             </B4aSidebarSection>

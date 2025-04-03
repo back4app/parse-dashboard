@@ -52,7 +52,7 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
 
   let popover = null;
 
-  if (showPopoverSection) {
+  if (showPopoverSection && children && !locked) {
     popover = <Popover fixed={true} position={position} contentId={`POPOVER_CONTENT_${name}`} color="#102542">
       <div className={`${styles.section_contents} ${styles.popover}`} id="section_contents" style={{ background: secondaryBackgroundColor}}>{children}</div>
     </Popover>
@@ -65,7 +65,7 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
   return (
     <div className={classes.join(' ')} title={isCollapsed && name} ref={subSectionRef} onMouseEnter={isCollapsed ? () => setShowPopoverSection(true) : null} onMouseLeave={isCollapsed ? () => setShowPopoverSection(false) : null}>
       {sectionContent}
-      {!isCollapsed && children ? <div className={`${styles.section_contents}`} id="section_contents" style={{ background: secondaryBackgroundColor}}>{children}</div> : null}
+      {!isCollapsed && children && !locked ? <div className={`${styles.section_contents}`} id="section_contents" style={{ background: secondaryBackgroundColor}}>{children}</div> : null}
       {popover}
     </div>
   );
