@@ -795,6 +795,10 @@
         gap: 1rem;
         flex-wrap: wrap;
         padding: 0 1rem;
+        & > a {
+          display: inline-block;
+          flex: 1;
+        }
         
         & .featureBox {
           flex: 1;
