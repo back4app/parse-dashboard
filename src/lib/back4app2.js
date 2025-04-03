@@ -114,6 +114,38 @@ const back4app2 = {
     );
 
     return result.data.data.apps;
+  },
+  redirectToAgent: async (query) => {
+    const result = await axios.post(
+      b4aSettings.CONTAINERS_API_PATH,
+      {
+        query: `
+          mutation RedirectToAgent($query: String!) {
+            redirectToAgent(query: $query) {
+              id
+              mainChat {
+                id
+                error {
+                  code
+                  message
+                }
+              }
+              name
+              status
+            }
+          }
+        `,
+        variables: { query },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      }
+    );
+
+    return result.data.data.redirectToAgent;
   }
 };
 

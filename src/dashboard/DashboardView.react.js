@@ -18,6 +18,7 @@ import withReactContent from 'sweetalert2-react-content';
 import AccountManager from 'lib/AccountManager';
 import { post } from 'lib/AJAX';
 import B4aLoader from 'components/B4aLoader/B4aLoader.react';
+import { canAccess } from 'lib/serverInfo';
 
 // Alert parameters
 const MySwal = withReactContent(Swal);
@@ -85,7 +86,7 @@ export default class DashboardView extends React.Component {
 
   render() {
     const isLocked = this.context.serverInfo.status !== 'SUCCESS';
-    if (isLocked && window.location.pathname.split('/')[3] !== 'overview') {
+    if (isLocked && !canAccess(this.context.serverInfo, window.location.pathname.split('/')[3])) {
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
           <B4aLoader />

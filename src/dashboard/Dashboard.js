@@ -162,6 +162,7 @@ class Dashboard extends React.Component {
   componentDidMount() {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
       fetchHubUser().then(userDetail => {
+        user.createdAt = userDetail.createdAt;
         const now = moment();
         const hourDiff = now.diff(userDetail.createdAt, 'hours');
         if(hourDiff === 0){
@@ -259,6 +260,14 @@ class Dashboard extends React.Component {
                 enabledFeatures: {},
                 parseServerVersion: 'unknown',
                 status: 'ERROR'
+              }
+            } else if (error.code === 402) {
+              app.serverInfo = {
+                error: 'This application has exceeded the plan\'s limits and payment is required.',
+                enabledFeatures: {},
+                parseServerVersion: 'unknown',
+                status: 'ERROR',
+                code: 402
               }
             } else {
               app.serverInfo = {

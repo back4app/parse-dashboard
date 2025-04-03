@@ -18,7 +18,7 @@ import B4aBadge from 'components/B4aBadge/B4aBadge.react';
 import AppsMenu from 'components/Sidebar/AppsMenu.react';
 import AppName from 'components/Sidebar/AppName.react';
 import { CurrentApp } from 'context/currentApp';
-
+import { canAccess } from 'lib/serverInfo';
 // let isSidebarFixed = !isMobile();
 let isSidebarCollapsed = undefined;
 
@@ -174,6 +174,7 @@ const B4aSidebar = ({
               primaryBackgroundColor={primaryBackgroundColor}
               isCollapsed={true}
               onClick={() => {}}
+              locked={!canAccess(currentApp.serverInfo, name)}
             >
               {_subMenu(subsections)}
             </B4aSidebarSection>
@@ -251,7 +252,7 @@ const B4aSidebar = ({
                 primaryBackgroundColor={primaryBackgroundColor}
                 secondaryBackgroundColor={secondaryBackgroundColor}
                 badge={badge}
-                locked={name !== 'Overview' ? currentApp.serverInfo.status !== 'SUCCESS' : false}
+                locked={!canAccess(currentApp.serverInfo, name)}
               >
                 {active ? _subMenu(subsections) : null}
               </B4aSidebarSection>

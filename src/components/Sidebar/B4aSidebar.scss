@@ -48,6 +48,12 @@ $footerHeight: 57px;
       text-align: center;
     }
 
+    &.locked {
+      .section_header {
+        pointer-events: none;
+      }
+    }
+
     .section_header > svg {
       margin: 0;
     }
@@ -291,11 +297,19 @@ $footerHeight: 57px;
   }
 
   &.collapsed {
-    cursor: pointer;
-
+    cursor: not-allowed;
     .section_header > svg {
+      pointer-events: none;
       margin: 0;
-      fill: $light-blue;
+    }
+
+    &:not(.locked) {
+      cursor: pointer;
+
+      .section_header > svg {
+        margin: 0;
+        fill: $light-blue;
+      }
     }
   }
 

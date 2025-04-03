@@ -19,6 +19,8 @@ import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
 import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import ConnectAppModal from './ConnectAppModal.react';
+import OnboardingBoxes from './OnboardingBoxes.react';
+import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 
 @withRouter
@@ -27,6 +29,8 @@ class AppOverview extends DashboardView {
     super();
     this.section = 'Overview';
     this.noteTimeout = null;
+
+    const user = AccountManager.currentUser();
 
     this.state = {
       appKeys: new Map(),
@@ -50,6 +54,8 @@ class AppOverview extends DashboardView {
 
       showCopiedTooltip: false,
       showConnectAppModal: false,
+
+      currentUser: user,
 
     };
     this.copyText = this.copyText.bind(this);
@@ -222,6 +228,13 @@ class AppOverview extends DashboardView {
               </div>
             </div>
           </div>
+
+          {/* Onboarding boxes */}
+          {this.state.currentUser.createdAt && (
+            (new Date() - new Date(this.state.currentUser.createdAt)) / (1000 * 60 * 60 * 24) <= 7 && (
+              <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
+            )
+          )}
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
