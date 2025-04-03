@@ -230,7 +230,7 @@ class AppOverview extends DashboardView {
           {/* Onboarding boxes */}
           {this.state.currentUser.createdAt && (
             (new Date() - new Date(this.state.currentUser.createdAt)) / (1000 * 60 * 60 * 24) <= 7 && (
-              <OnboardingBoxes appId={this.context.slug} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
+              <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
             )
           )}
 
