@@ -260,6 +260,14 @@ class Dashboard extends React.Component {
                 parseServerVersion: 'unknown',
                 status: 'ERROR'
               }
+            } else if (error.code === 402) {
+              app.serverInfo = {
+                error: 'This application has exceeded the plan\'s limits and payment is required.',
+                enabledFeatures: {},
+                parseServerVersion: 'unknown',
+                status: 'ERROR',
+                code: 402
+              }
             } else {
               app.serverInfo = {
                 error: error.message || 'unknown error',

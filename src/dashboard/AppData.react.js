@@ -10,7 +10,7 @@ import AppSelector from 'dashboard/AppSelector.react';
 import AppsManager from 'lib/AppsManager';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
-
+import { canAccess } from 'lib/serverInfo';
 // import baseStyles from 'stylesheets/base.scss';
 // import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 
@@ -31,7 +31,8 @@ function AppData() {
     }
 
     current.setParseKeys();
-    if (current.serverInfo.error && window.location.pathname.split('/')[3] !== 'overview') {
+    const curPathName = window.location.pathname.split('/')[3];
+    if (current.serverInfo.error && !canAccess(current.serverInfo, curPathName)) {
       navigate(`/apps/${current.slug}/overview`, { replace: true });
       return <div />;
       // return (
