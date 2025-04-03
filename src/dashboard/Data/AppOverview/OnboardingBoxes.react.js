@@ -53,7 +53,9 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
     try {
       setAgentLoading(type);
       const response = await back4app2.redirectToAgent(queryText(type, appName, appId));
-      console.log(response);
+      if (response.error) {
+        throw new Error(response.error);
+      }
       window.location.href = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents/${response.id}`;
     } catch (err) {
       console.error(err);
