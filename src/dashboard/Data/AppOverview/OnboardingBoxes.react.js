@@ -4,16 +4,28 @@ import Icon from 'components/Icon/Icon.react';
 import AIAgentIcon from './AIAgentIcon.react';
 import OnboardingIcons from './OnboardingIcons.react';
 import { Link } from 'react-router-dom';
+import back4app2 from 'lib/back4app2';
 
-const OnboardingBoxes = ({ appId, openConnectModal }) => {
+const queryText = (type, appName, appId) => {
+  switch (type) {
+    case 'database':
+      return `Create a database schema suggestion to demonstrate back4app capabilities and populate it with sample data. The App Name is: ${appName} and appID:${appId}`;
+    case 'cloud-code':
+      return `Create and deploy some cloud code function suggestions to demonstrate back4app/parse cloud code capabilities. The App Name is: ${appName} and appID:${appId}`;
+    default:
+      return '';
+  }
+}
+
+const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
   const [showOnboardingBoxes, setShowOnboardingBoxes] = useState(true);
   const [featuresBox, setFeaturesBox] = useState(true);
   const [hideOnboarding, setHideOnboarding] = useState(false);
   const [hideFeatures, setHideFeatures] = useState(false);
 
   useEffect(() => {
-    const hideOnboardingValue = localStorage.getItem(`onboarding-app-${appId}`);
-    const hideFeaturesValue = localStorage.getItem(`features-app-${appId}`);
+    const hideOnboardingValue = localStorage.getItem(`onboarding-app-${slug}`);
+    const hideFeaturesValue = localStorage.getItem(`features-app-${slug}`);
     if (hideOnboardingValue === 'hide') {
       setHideOnboarding(true);
     } else {
@@ -24,16 +36,26 @@ const OnboardingBoxes = ({ appId, openConnectModal }) => {
     } else {
       setHideFeatures(false);
     }
-  }, [appId]);
+  }, [slug]);
 
   const handleHideOnboarding = () => {
-    localStorage.setItem(`onboarding-app-${appId}`, 'hide');
+    localStorage.setItem(`onboarding-app-${slug}`, 'hide');
     setHideOnboarding(true);
   };
 
   const handleHideFeatures = () => {
-    localStorage.setItem(`features-app-${appId}`, 'hide');
+    localStorage.setItem(`features-app-${slug}`, 'hide');
     setHideFeatures(true);
+  };
+
+  const handleGenerateWithAI = async (type) => {
+    try {
+      const response = await back4app2.redirectToAgent(queryText(type, appName, appId));
+      console.log(response);
+      window.location.href = `${back4appSettings.CONTAINERS_DASHBOARD_PATH}/agents/${response.id}`;
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -63,10 +85,10 @@ const OnboardingBoxes = ({ appId, openConnectModal }) => {
                       Define your classes (tables), fields, and relationships manually, or let our AI Agent generate a smart suggestion for you. Whether you prefer full control or a head start, we've got you covered!
                     </div>
                     <div className={styles.onboardingActions}>
-                      <Link to={`/apps/${appId}/browser`}>
+                      <Link to={`/apps/${slug}/browser`}>
                         <button className={styles.primaryButton}>Start from scratch</button>
                       </Link>
-                      <button className={styles.secondaryButton}>
+                      <button className={styles.secondaryButton} onClick={() => handleGenerateWithAI('database')}>
                         <AIAgentIcon />
                       Generate with AI
                       </button>
@@ -87,10 +109,10 @@ const OnboardingBoxes = ({ appId, openConnectModal }) => {
                           Write and deploy your Cloud Code manually, or let our AI Agent generate and deploy it for you. Choose the approach that fits your workflow—full control or AI-powered efficiency!
                     </div>
                     <div className={styles.onboardingActions}>
-                      <Link to={`/apps/${appId}/cloud_code`}>
+                      <Link to={`/apps/${slug}/cloud_code`}>
                         <button className={styles.primaryButton}>Write & Deploy Yourself</button>
                       </Link>
-                      <button className={styles.secondaryButton}>
+                      <button className={styles.secondaryButton} onClick={() => handleGenerateWithAI('cloud-code')}>
                         <AIAgentIcon />
                       Deploy with AI
                       </button>
@@ -137,7 +159,7 @@ const OnboardingBoxes = ({ appId, openConnectModal }) => {
           {featuresBox && (
             <>
               <div className={styles.featureBoxContainer}>
-                <Link to={`/apps/${appId}/admin`} className={styles.featureCard}>
+                <Link to={`/apps/${slug}/admin`} className={styles.featureCard}>
                   <div className={styles.featureBox}>
                     <div className={styles.featureIcon}>
                       <Icon name="b4a-admin-app-icon" width={24} height={24} fill="#C1E2FF" />
@@ -148,7 +170,7 @@ const OnboardingBoxes = ({ appId, openConnectModal }) => {
                     </div>
                   </div>
                 </Link>
-                <Link to={`/apps/${appId}/web-deployment`} className={styles.featureCard}>
+                <Link to={`/apps/${slug}/web-deployment`} className={styles.featureCard}>
                   <div className={styles.featureBox}>
                     <div className={styles.featureIcon}>
                       <Icon name="b4a-web-dep-icon" width={24} height={24} fill="#C1E2FF" />
@@ -159,7 +181,7 @@ const OnboardingBoxes = ({ appId, openConnectModal }) => {
                     </div>
                   </div>
                 </Link>
-                <Link to={`/apps/${appId}/push`} className={styles.featureCard}>
+                <Link to={`/apps/${slug}/push`} className={styles.featureCard}>
                   <div className={styles.featureBox}>
                     <div className={styles.featureIcon}>
                       <Icon name="b4a-notification-icon" width={24} height={24} fill="#C1E2FF" />
