@@ -127,15 +127,17 @@ export default class PermissionsCollaboratorDialog extends React.Component {
     for (const feature in this.props.defaultFeaturesPermissions) {
       const text = this.state.features.label[index]
       const description = this.state.features.description[index]
-      const collaboratorsCanWrite = this.state.features.collaboratorsCanWrite[index]
-      const label = <Label key={text  + (isDefaultFeatures ? 'Label' : 'Input')} text={text} description={description} />
-      let content = null;
-      if (isDefaultFeatures) {content = renderSimpleLabels(this.props.defaultFeaturesPermissions[feature]);}
-      else {content = renderSimpleCheckboxes(feature, this.state.customFeaturesPermissions, collaboratorsCanWrite, this.setPermissions.bind(this));}
-      rows.push((<div key={feature + (isDefaultFeatures ? 'Label' : 'Input')}>
-        <Field labelWidth={50} className={styles.label} label={label} input={content} />
-        {/* <Field labelWidth={100} className={[styles.label, styles.permission].join(' ')} label={content} /> */}
-      </div>))
+      if (text && description) {
+        const collaboratorsCanWrite = this.state.features.collaboratorsCanWrite[index]
+        const label = <Label key={text  + (isDefaultFeatures ? 'Label' : 'Input')} text={text} description={description} />
+        let content = null;
+        if (isDefaultFeatures) {content = renderSimpleLabels(this.props.defaultFeaturesPermissions[feature]);}
+        else {content = renderSimpleCheckboxes(feature, this.state.customFeaturesPermissions, collaboratorsCanWrite, this.setPermissions.bind(this));}
+        rows.push((<div key={feature + (isDefaultFeatures ? 'Label' : 'Input')}>
+          <Field labelWidth={50} className={styles.label} label={label} input={content} />
+          {/* <Field labelWidth={100} className={[styles.label, styles.permission].join(' ')} label={content} /> */}
+        </div>))
+      }
       index++
     }
     return rows;
@@ -157,7 +159,7 @@ export default class PermissionsCollaboratorDialog extends React.Component {
   }
 
   renderRows (isFeaturesSelected) {
-    const selectedTab = isFeaturesSelected ? this.state.selectedFeaturesTab : this.state.selectedClassesTab
+    const selectedTab = isFeaturesSelected ? this.state.selectedFeaturesTab : this.state.selectedClassesTab;
     switch (selectedTab) {
       case 'Default':
         return this.renderFeaturesRows(true)
