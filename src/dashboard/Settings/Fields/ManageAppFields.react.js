@@ -25,6 +25,7 @@ export const ManageAppFields = ({
   parseVersion,
   errors,
   isGDPR,
+  permissions,
   databaseVersion,
   useLatestDashboardVersion,
   setUseLatestDashboardVersion,
@@ -63,7 +64,7 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       />
-      <hr className={styles.fieldHr} />
+      {/* <hr className={styles.fieldHr} /> */}
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
@@ -71,14 +72,14 @@ export const ManageAppFields = ({
         input={
           <div style={{ flex: 1 }}>
             {
-              (isGDPR !== true) &&
+              (isGDPR !== true && permissions.hideDatabaseURL !== true) &&
               <div style={{ padding: '11px 0' }}>
                 <B4aKeyField name="Show Database" hidden={true} showKeyName={true} keyText="URI">
                   {databaseURL}
                 </B4aKeyField>
               </div>}
             <FieldSettings
-              containerStyles={{ borderBottom: 'none' }}
+              containerStyles={{ borderBottom: 'none', borderTop: 'none' }}
               padding="16px 0px"
               labelWidth="50%"
               label={(
@@ -311,5 +312,6 @@ ManageAppFields.propTypes = {
   databaseVersion: PropTypes.string.describe('Database version'),
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
-  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier')
+  isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
+  permissions: PropTypes.object.describe('App permissions')
 }
