@@ -96,7 +96,8 @@ module.exports = {
       'process.env': {
         'version' : JSON.stringify(version),
         'BACKEND_URL':  JSON.stringify(BACK4APP_API_PATH),
-        'SOLUCX_API_KEY': JSON.stringify(settings.SOLUCX_API_KEY)
+        'SOLUCX_API_KEY': JSON.stringify(settings.SOLUCX_API_KEY),
+        'SENTRY_DSN': JSON.stringify(settings.SENTRY_DSN)
       },
       b4aSettings: JSON.stringify(settings)
     }),
