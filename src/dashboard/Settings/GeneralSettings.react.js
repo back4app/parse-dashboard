@@ -69,7 +69,7 @@ export default class GeneralSettings extends DashboardView {
       otherURL: otherURL ? otherURL.url : '',
       collaborators: this.props.initialFields.collaborators,
       waiting_collaborators: this.props.initialFields.waiting_collaborators,
-      mongoURL: opendb_connection_string ? opendb_connection_string : '',
+      // mongoURL: opendb_connection_string ? opendb_connection_string : '',
       parseOptions: this.context.settings.fields.fields.parseOptions,
       dashboardAPI: this.context.settings.fields.fields.dashboardAPI,
       databaseURL: this.context.settings.fields.fields.databaseURL,
@@ -154,7 +154,7 @@ export default class GeneralSettings extends DashboardView {
               editCollaborator={this.setCollaborators.bind(undefined, initialFields, setField)}/>
             <ManageAppFields
               errors={errors}
-              mongoURL={fields.mongoURL}
+              // mongoURL={fields.mongoURL}
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
               hasCollaborators={fields.collaborators.length > 0}
               appSlug={this.context.slug}
@@ -176,7 +176,7 @@ export default class GeneralSettings extends DashboardView {
               setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}/>
             <DangerzoneFields
               errors={errors}
-              mongoURL={fields.mongoURL}
+              // mongoURL={fields.mongoURL}
               isCollaborator={AccountManager.currentUser().email !== this.props.initialFields.owner_email}
               hasCollaborators={fields.collaborators.length > 0}
               appSlug={this.context.slug}
