@@ -38,7 +38,7 @@
     "@amplitude/analytics-browser": "2.6.1",
     "@babel/runtime": "7.20.13",
     "@babel/runtime-corejs3": "7.20.13",
-    "@back4app/back4app-settings": "^1.6.0",
+    "@back4app/back4app-settings": "latest",
     "@back4app2/react-components": "1.0.0-beta.288",
     "@codemirror/lang-css": "6.3.0",
     "@codemirror/lang-html": "6.4.9",

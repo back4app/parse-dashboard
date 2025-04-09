@@ -7,6 +7,7 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
+
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
