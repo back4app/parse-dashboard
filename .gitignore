@@ -17,3 +17,5 @@ test_logs
 
 # visual studio code
 .vscode
+
+package-lock.json
