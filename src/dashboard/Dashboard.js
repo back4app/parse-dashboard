@@ -7,60 +7,24 @@
  */
 import AccountManager from 'lib/AccountManager'; // user workaround
 // import AccountOverview from './Account/AccountOverview.react';
-import ApiConsole from './Data/ApiConsole/ApiConsole.react';
 import AppData from './AppData.react';
 import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
-import Browser from './Data/Browser/Browser.react';
-import CloudCode from './Data/CloudCode/B4ACloudCode.react';
 import AppOverview from './Data/AppOverview/AppOverview.react';
-import Config from './Data/Config/Config.react';
 import FourOhFour from 'components/FourOhFour/FourOhFour.react';
-import GeneralSettings from './Settings/GeneralSettings.react';
-import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
-import HostingSettings from './Settings/HostingSettings.react';
-import HubConnections from './Hub/HubConnections.react';
-import IndexManager from './IndexManager/IndexManager.react'
-import JobEdit from 'dashboard/Data/Jobs/JobEdit.react';
-import Jobs from './Data/Jobs/Jobs.react';
-import JobsData from 'dashboard/Data/Jobs/JobsData.react';
 import B4aLoader from 'components/B4aLoader/B4aLoader.react';
-import InfoLogs from './Data/Logs/InfoLogs.react';
-import ErrorLogs from './Data/Logs/ErrorLogs.react';
-import AccessLogs from './Data/Logs/AccessLogs.react';
-import SystemLogs from './Data/Logs/SystemLogs.react';
-import B4aAdminPage from './B4aAdminPage/B4aAdminPage.react';
-import B4aWebDeployment from './B4aWebDeployment/B4aWebDeployment.react';
 import { AsyncStatus } from 'lib/Constants';
 import { get } from 'lib/AJAX';
 import { setBasePath } from 'lib/AJAX';
-import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
 import { Helmet } from 'react-helmet';
-import Playground from './Data/Playground/Playground.react';
 import axios from 'lib/axios';
 import moment from 'moment';
-import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
 import AccountView from './AccountView.react';
-
-import Migration from './Data/Migration/Migration.react';
 import ParseApp from 'lib/ParseApp';
-import PushAudiencesIndex from './Push/PushAudiencesIndex.react';
-import PushDetails from './Push/PushDetails.react';
-import PushIndex from './Push/PushIndex.react';
-import PushNew from './Push/PushNew.react';
-import PushSettings from './Settings/PushSettings.react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import RestConsole from './Data/ApiConsole/RestConsole.react';
-import SchemaOverview from './Data/Browser/SchemaOverview.react';
-import SecuritySettings from './Settings/SecuritySettings.react';
-import SettingsData from './Settings/SettingsData.react';
-import SlowQueries from './Analytics/SlowQueries/SlowQueries.react';
+import React, { useCallback, useEffect, useMemo, useState, Suspense } from 'react';
 import styles from 'dashboard/Apps/AppsIndex.scss';
-import UsersSettings from './Settings/UsersSettings.react';
-import Webhooks from './Data/Webhooks/Webhooks.react';
 import baseStyles from 'stylesheets/base.scss';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
-import Security from './Settings/Security/Security.react';
 import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
 import { initializeAmplitude } from 'lib/amplitudeEvents';
@@ -142,6 +106,57 @@ const waitForScriptToLoad = async conditionFn => {
   }
   throw new Error('Script not loaded yet!');
 };
+
+// Lazy load components that aren't needed for the overview route
+const ApiConsoleLazy = React.lazy(() => import('./Data/ApiConsole/ApiConsole.react'));
+const BrowserLazy = React.lazy(() => import('./Data/Browser/Browser.react'));
+const CloudCodeLazy = React.lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
+const ConfigLazy = React.lazy(() => import('./Data/Config/Config.react'));
+const GeneralSettingsLazy = React.lazy(() => import('./Settings/GeneralSettings.react'));
+const GraphQLConsoleLazy = React.lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
+const HostingSettingsLazy = React.lazy(() => import('./Settings/HostingSettings.react'));
+const HubConnectionsLazy = React.lazy(() => import('./Hub/HubConnections.react'));
+const IndexManagerLazy = React.lazy(() => import('./IndexManager/IndexManager.react'));
+const JobEditLazy = React.lazy(() => import('dashboard/Data/Jobs/JobEdit.react'));
+const JobsLazy = React.lazy(() => import('./Data/Jobs/Jobs.react'));
+const JobsDataLazy = React.lazy(() => import('dashboard/Data/Jobs/JobsData.react'));
+const InfoLogsLazy = React.lazy(() => import('./Data/Logs/InfoLogs.react'));
+const ErrorLogsLazy = React.lazy(() => import('./Data/Logs/ErrorLogs.react'));
+const AccessLogsLazy = React.lazy(() => import('./Data/Logs/AccessLogs.react'));
+const SystemLogsLazy = React.lazy(() => import('./Data/Logs/SystemLogs.react'));
+const B4aAdminPageLazy = React.lazy(() => import('./B4aAdminPage/B4aAdminPage.react'));
+const B4aWebDeploymentLazy = React.lazy(() => import('./B4aWebDeployment/B4aWebDeployment.react'));
+const ServerSettingsLazy = React.lazy(() => import('dashboard/ServerSettings/ServerSettings.react'));
+const PlaygroundLazy = React.lazy(() => import('./Data/Playground/Playground.react'));
+const B4aConnectPageLazy = React.lazy(() => import('./B4aConnectPage/B4aConnectPage.react'));
+const MigrationLazy = React.lazy(() => import('./Data/Migration/Migration.react'));
+const PushAudiencesIndexLazy = React.lazy(() => import('./Push/PushAudiencesIndex.react'));
+const PushDetailsLazy = React.lazy(() => import('./Push/PushDetails.react'));
+const PushIndexLazy = React.lazy(() => import('./Push/PushIndex.react'));
+const PushNewLazy = React.lazy(() => import('./Push/PushNew.react'));
+const PushSettingsLazy = React.lazy(() => import('./Settings/PushSettings.react'));
+const RestConsoleLazy = React.lazy(() => import('./Data/ApiConsole/RestConsole.react'));
+const SchemaOverviewLazy = React.lazy(() => import('./Data/Browser/SchemaOverview.react'));
+const SecuritySettingsLazy = React.lazy(() => import('./Settings/SecuritySettings.react'));
+const SettingsDataLazy = React.lazy(() => import('./Settings/SettingsData.react'));
+const SlowQueriesLazy = React.lazy(() => import('./Analytics/SlowQueries/SlowQueries.react'));
+const UsersSettingsLazy = React.lazy(() => import('./Settings/UsersSettings.react'));
+const WebhooksLazy = React.lazy(() => import('./Data/Webhooks/Webhooks.react'));
+const SecurityLazy = React.lazy(() => import('./Settings/Security/Security.react'));
+
+// Add a loading component for Suspense fallback
+const LoadingComponent = () => (
+  <div className={baseStyles.center}>
+    <B4aLoader />
+  </div>
+);
+
+// Wrap the component that needs code splitting with Suspense
+const LazyComponentWrapper = ({ children }) => (
+  <Suspense fallback={<LoadingComponent />}>
+    {children}
+  </Suspense>
+);
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -330,58 +345,52 @@ class Dashboard extends React.Component {
     );
 
     const SettingsRoute = (
-      <Route element={<SettingsData />}>
-        {/* <Route path='dashboard' element={<DashboardSettings />} /> */}
-        <Route path='security' element={<Security />} />
-        <Route path='general' element={<GeneralSettings />} />
-        <Route path='keys' element={<SecuritySettings />} />
-        <Route path='users' element={<UsersSettings />} />
-        <Route path='push' element={<PushSettings />} />
-        <Route path='hosting' element={<HostingSettings />} />
+      <Route element={<LazyComponentWrapper><SettingsDataLazy /></LazyComponentWrapper>}>
+        <Route path='security' element={<LazyComponentWrapper><SecurityLazy /></LazyComponentWrapper>} />
+        <Route path='general' element={<LazyComponentWrapper><GeneralSettingsLazy /></LazyComponentWrapper>} />
+        <Route path='keys' element={<LazyComponentWrapper><SecuritySettingsLazy /></LazyComponentWrapper>} />
+        <Route path='users' element={<LazyComponentWrapper><UsersSettingsLazy /></LazyComponentWrapper>} />
+        <Route path='push' element={<LazyComponentWrapper><PushSettingsLazy /></LazyComponentWrapper>} />
+        <Route path='hosting' element={<LazyComponentWrapper><HostingSettingsLazy /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to='general' />} />
       </Route>
     );
 
     const JobsRoute = (
-      <Route element={<JobsData />}>
-        <Route path="new" element={<JobEdit />} />
-        <Route path="edit/:jobId" element={<JobEdit />} />
-        <Route path=":section" element={<Jobs />} />
+      <Route element={<LazyComponentWrapper><JobsDataLazy /></LazyComponentWrapper>}>
+        <Route path="new" element={<LazyComponentWrapper><JobEditLazy /></LazyComponentWrapper>} />
+        <Route path="edit/:jobId" element={<LazyComponentWrapper><JobEditLazy /></LazyComponentWrapper>} />
+        <Route path=":section" element={<LazyComponentWrapper><JobsLazy /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to="all" />} />
       </Route>
     );
 
     const AnalyticsRoute = (
       <Route>
-        {/* <Route path="overview" element={<AnalyticsOverview />} />
-        <Route path="explorer/:displayType" element={<Explorer />} />
-        <Route path="retention" element={<Retention />} />
-        <Route path="performance" element={<Performance />} /> */}
-        {/* <Route path="slow_queries" element={<SlowQueries />} /> */}
-        <Route path="slow_requests" element={<SlowQueries />} />
+        <Route path="slow_requests" element={<LazyComponentWrapper><SlowQueriesLazy /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to="slow_requests" />} />
-        {/* <Route index element={<Navigate replace to="performance" />} /> */}
-        {/* <Route path="explorer" element={<Navigate replace to="chart" />} /> */}
       </Route>
     );
 
     const LogsRoute = (
       <Route>
-        <Route path="info" element={<InfoLogs />} />
-        <Route path="error" element={<ErrorLogs />} />
+        <Route path="info" element={<LazyComponentWrapper><InfoLogsLazy /></LazyComponentWrapper>} />
+        <Route path="error" element={<LazyComponentWrapper><ErrorLogsLazy /></LazyComponentWrapper>} />
+        <Route path="system" element={<LazyComponentWrapper><SystemLogsLazy /></LazyComponentWrapper>} />
+        <Route path="access" element={<LazyComponentWrapper><AccessLogsLazy /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to="system" />} />
-        <Route path="system" element={<SystemLogs />} />
-        <Route path="access" element={<AccessLogs /> } />
       </Route>
     );
 
-    const BrowserRoute = ShowSchemaOverview ? SchemaOverview : Browser;
+    const BrowserRoute = ShowSchemaOverview ? 
+      <LazyComponentWrapper><SchemaOverviewLazy /></LazyComponentWrapper> : 
+      <LazyComponentWrapper><BrowserLazy /></LazyComponentWrapper>;
 
     const ApiConsoleRoute = (
-      <Route element={<ApiConsole />}>
-        <Route path="rest" element={<RestConsole />} />
-        <Route path="graphql" element={<GraphQLConsole />} />
-        <Route path="js_console" element={<Playground />} />
+      <Route element={<LazyComponentWrapper><ApiConsoleLazy /></LazyComponentWrapper>}>
+        <Route path="rest" element={<LazyComponentWrapper><RestConsoleLazy /></LazyComponentWrapper>} />
+        <Route path="graphql" element={<LazyComponentWrapper><GraphQLConsoleLazy /></LazyComponentWrapper>} />
+        <Route path="js_console" element={<LazyComponentWrapper><PlaygroundLazy /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to="rest" />} />
       </Route>
     );
@@ -389,51 +398,42 @@ class Dashboard extends React.Component {
     const AppRoute = (
       <Route element={<AppData />}>
         <Route index element={<Navigate replace to="overview" />} />
-
-        <Route path="getting_started" element={<Empty />} />
         <Route path="overview" element={<AppOverview />} />
 
-        <Route path="browser/:className/:entityId/:relationName" element={<BrowserRoute />} />
-        <Route path="browser/:className" element={<BrowserRoute />} />
-        <Route path="browser" element={<BrowserRoute />} />
+        <Route path="browser/:className/:entityId/:relationName" element={BrowserRoute} />
+        <Route path="browser/:className" element={BrowserRoute} />
+        <Route path="browser" element={BrowserRoute} />
 
-        <Route path="cloud_code" element={<CloudCode />} />
-        <Route path="webhooks" element={<Webhooks />} />
+        <Route path="cloud_code" element={<LazyComponentWrapper><CloudCodeLazy /></LazyComponentWrapper>} />
+        <Route path="webhooks" element={<LazyComponentWrapper><WebhooksLazy /></LazyComponentWrapper>} />
+        <Route path="config" element={<LazyComponentWrapper><ConfigLazy /></LazyComponentWrapper>} />
 
         <Route path="jobs">{JobsRoute}</Route>
         <Route path="logs">{LogsRoute}</Route>
-
-        <Route path="config" element={<Config />} />
-
         <Route path="api_console">{ApiConsoleRoute}</Route>
 
-        <Route path="migration" element={<Migration />} />
+        <Route path="migration" element={<LazyComponentWrapper><MigrationLazy /></LazyComponentWrapper>} />
 
         <Route path="push" element={<Navigate replace to="new" />} />
         <Route path="push/activity" element={<Navigate replace to="all" />} />
+        <Route path="push/activity/:category" element={<LazyComponentWrapper><PushIndexLazy /></LazyComponentWrapper>} />
+        <Route path="push/audiences" element={<LazyComponentWrapper><PushAudiencesIndexLazy /></LazyComponentWrapper>} />
+        <Route path="push/new" element={<LazyComponentWrapper><PushNewLazy /></LazyComponentWrapper>} />
+        <Route path="push/:pushId" element={<LazyComponentWrapper><PushDetailsLazy /></LazyComponentWrapper>} />
 
-        <Route path="push/activity/:category" element={<PushIndex />} />
-        <Route path="push/audiences" element={<PushAudiencesIndex />} />
-        <Route path="push/new" element={<PushNew />} />
-        <Route path="push/:pushId" element={<PushDetails />} />
+        <Route path="connect" element={<LazyComponentWrapper><B4aConnectPageLazy /></LazyComponentWrapper>} />
+        <Route path="admin" element={<LazyComponentWrapper><B4aAdminPageLazy /></LazyComponentWrapper>} />
 
-        <Route path="connect" element={<B4aConnectPage />} />
-        <Route path="admin" element={<B4aAdminPage />} />
-        {/* <Route path="app-templates" element={<B4aAppTemplates />} /> */}
+        <Route path="server-settings/" element={<LazyComponentWrapper><ServerSettingsLazy /></LazyComponentWrapper>} />
+        <Route path="server-settings/:targetPage" element={<LazyComponentWrapper><ServerSettingsLazy /></LazyComponentWrapper>} />
 
-        <Route path="server-settings/" element={<ServerSettings />} />
-        <Route path="server-settings/:targetPage" element={<ServerSettings />} />
+        <Route path="index/:className" element={<LazyComponentWrapper><IndexManagerLazy /></LazyComponentWrapper>} />
+        <Route path="index" element={<LazyComponentWrapper><IndexManagerLazy /></LazyComponentWrapper>} />
 
-        <Route path="index/:className" element={<IndexManager />} />
-        <Route path="index" element={<IndexManager />} />
-
-        {/* <Route path="blockchain" element={<BlockchainPage /> } /> */}
-
-        <Route path="connections" element={<HubConnections />} />
+        <Route path="connections" element={<LazyComponentWrapper><HubConnectionsLazy /></LazyComponentWrapper>} />
         <Route path="analytics">{AnalyticsRoute}</Route>
         <Route path="settings">{SettingsRoute}</Route>
-        <Route path="web-deployment" element={<B4aWebDeployment />} />
-        {/* {user.allowHubPublish && <Route path="hub-publish" element={<B4aHubPublishPage />} />} */}
+        <Route path="web-deployment" element={<LazyComponentWrapper><B4aWebDeploymentLazy /></LazyComponentWrapper>} />
       </Route>
     );
 
