@@ -9,10 +9,10 @@ const configuration = require('./base.config.js');
 
 configuration.entry = {
   dashboard: './dashboard/index.js',
-  login: './login/index.js',
-  signup: './signup/index.js',
-  PIG: './parse-interface-guide/index.js',
-  quickstart: './quickstart/index.js',
+  // login: './login/index.js',
+  // signup: './signup/index.js',
+  // PIG: './parse-interface-guide/index.js',
+  // quickstart: './quickstart/index.js',
 };
 configuration.output.path = require('path').resolve('./bundles');
 
@@ -23,12 +23,36 @@ configuration.optimization = {
     minSize: 20000,
     maxSize: 244000,
     cacheGroups: {
-      vendor: {
+      // React and related packages
+      react: {
+        test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|react-helmet)[\\/]/,
+        name: 'vendor.react',
+        chunks: 'all',
+        priority: 40
+      },
+      // UI related packages
+      ui: {
+        test: /[\\/]node_modules[\\/](@back4app2|@sentry|graphiql)[\\/]/,
+        name: 'vendor.ui',
+        chunks: 'all',
+        priority: 30
+      },
+      // Data handling and utilities
+      utils: {
+        test: /[\\/]node_modules[\\/](immutable|moment|axios|core-js)[\\/]/,
+        name: 'vendor.utils',
+        chunks: 'all',
+        priority: 20
+      },
+      // Remaining vendor packages
+      vendors: {
         test: /[\\/]node_modules[\\/]/,
         name: 'vendors',
         chunks: 'all',
-        priority: -10
+        priority: -10,
+        reuseExistingChunk: true
       },
+      // Common application code
       common: {
         name: 'common',
         minChunks: 2,
