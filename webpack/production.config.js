@@ -6,14 +6,12 @@
  * the root directory of this source tree.
  */
 const configuration = require('./base.config.js');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-const settings = require('@back4app/back4app-settings');
 const webpack = require('webpack');
 
 configuration.mode = 'production';
 configuration.entry = {
   dashboard: './dashboard/index.js',
-  login: './login/index.js',
+  // login: './login/index.js',
   PIG: './parse-interface-guide/index.js',
   quickstart: './quickstart/index.js',
 };
@@ -26,12 +24,6 @@ configuration.plugins.push(
       'SENTRY_ENV': JSON.stringify('production')
     }
   }),
-  // new HtmlWebpackExternalsPlugin({
-  //   externals: [{
-  //     module: '@back4app/back4app-navigation',
-  //     entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
-  //   }]
-  // })
 );
 
 module.exports = configuration;

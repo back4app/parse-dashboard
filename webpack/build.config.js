@@ -8,8 +8,6 @@
 const configuration = require('./base.config.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-const settings = require('@back4app/back4app-settings');
 
 configuration.mode = 'development';
 configuration.entry = {

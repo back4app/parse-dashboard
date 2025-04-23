@@ -8,14 +8,11 @@
 const configuration = require('./base.config.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-const settings = require('@back4app/back4app-settings');
 const webpack = require('webpack');
 
 configuration.mode = 'production';
 configuration.entry = {
   dashboard: './dashboard/index.js',
-  login: './login/index.js',
 };
 configuration.output.path = path.resolve('./Parse-Dashboard/public/bundles');
 configuration.output.filename = '[name].[chunkhash].js';
@@ -24,20 +21,15 @@ configuration.output.filename = '[name].[chunkhash].js';
 configuration.plugins.push(
   new HtmlWebpackPlugin({
     template: '../Parse-Dashboard/index.ejs',
-    filename: path.resolve('./Parse-Dashboard/public/index.html')
+    filename: path.resolve('./Parse-Dashboard/public/index.html'),
+    chunks: ['dashboard'], // Explicitly include only dashboard chunk
+    inject: true
   }),
   new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('production')
     }
   }),
-  //,
-  // new HtmlWebpackExternalsPlugin({
-  //   externals: [{
-  //     module: '@back4app/back4app-navigation',
-  //     entry: settings.BACK4APP_NAVIGATION_PATH + '/back4app-navigation.bundle.js'
-  //   }]
-  // })
 );
 
 module.exports = configuration;
