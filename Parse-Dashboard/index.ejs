@@ -8,10 +8,66 @@
     </script>
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-W79Z9T');</script>
     <title>Backend Dashboard</title>
+    <style>
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0f1c32;
+            z-index: 9999;
+            color: #ffffff;
+        }
+        .loader {
+            position: relative;
+            display: block;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .loading-text {
+            position: absolute;
+            bottom: 5%;
+            right: 0;
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
+        }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        #browser_mount:not(:empty) + .loading-container {
+            display: none;
+        }
+    </style>
 </head>
 <html>
-<body>
-<div id="browser_mount"></div>
+<body style="background-color: #0f1c32;">
+    <div id="browser_mount"></div>
+    <div class="loading-container">
+        <div class="loader">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading</div>
+        </div>
+    </div>
 <!--Start of Zopim Live Chat Script-->
 <script>
     window.zEmbed||(function(){
@@ -27,7 +83,7 @@
   </script>
   <script src="https://assets.zendesk.com/embeddable_framework/main.js" data-ze-csp="true" async defer></script>
   <!--End of Zopim Live Chat Script-->
-  <script src="https://survey.solucx.com.br/widget.js"></script>
+  <script src="https://survey.solucx.com.br/widget.js" async defer></script>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W79Z9T" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>    
 </body>
 </html>
