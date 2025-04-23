@@ -18,7 +18,7 @@ import Config from './Data/Config/Config.react';
 import FourOhFour from 'components/FourOhFour/FourOhFour.react';
 import GeneralSettings from './Settings/GeneralSettings.react';
 import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
-import HostingSettings from './Settings/HostingSettings.react';
+// import HostingSettings from './Settings/HostingSettings.react';
 import HubConnections from './Hub/HubConnections.react';
 import IndexManager from './IndexManager/IndexManager.react'
 import JobEdit from 'dashboard/Data/Jobs/JobEdit.react';
@@ -42,13 +42,13 @@ import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
 import AccountView from './AccountView.react';
 
-import Migration from './Data/Migration/Migration.react';
+// import Migration from './Data/Migration/Migration.react';
 import ParseApp from 'lib/ParseApp';
 import PushAudiencesIndex from './Push/PushAudiencesIndex.react';
 import PushDetails from './Push/PushDetails.react';
 import PushIndex from './Push/PushIndex.react';
 import PushNew from './Push/PushNew.react';
-import PushSettings from './Settings/PushSettings.react';
+// import PushSettings from './Settings/PushSettings.react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RestConsole from './Data/ApiConsole/RestConsole.react';
 import SchemaOverview from './Data/Browser/SchemaOverview.react';
@@ -56,11 +56,11 @@ import SecuritySettings from './Settings/SecuritySettings.react';
 import SettingsData from './Settings/SettingsData.react';
 import SlowQueries from './Analytics/SlowQueries/SlowQueries.react';
 import styles from 'dashboard/Apps/AppsIndex.scss';
-import UsersSettings from './Settings/UsersSettings.react';
+// import UsersSettings from './Settings/UsersSettings.react';
 import Webhooks from './Data/Webhooks/Webhooks.react';
 import baseStyles from 'stylesheets/base.scss';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
-import Security from './Settings/Security/Security.react';
+// import Security from './Settings/Security/Security.react';
 import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
 import { initializeAmplitude } from 'lib/amplitudeEvents';
@@ -68,11 +68,11 @@ import { setUser as setSentryUser } from '@sentry/react';
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
-class Empty extends React.Component {
-  render() {
-    return <div>Not yet implemented</div>;
-  }
-}
+// class Empty extends React.Component {
+//   render() {
+//     return <div>Not yet implemented</div>;
+//   }
+// }
 
 const AccountSettingsPage = () => (
   <AccountView section="Account Settings">
@@ -332,12 +332,12 @@ class Dashboard extends React.Component {
     const SettingsRoute = (
       <Route element={<SettingsData />}>
         {/* <Route path='dashboard' element={<DashboardSettings />} /> */}
-        <Route path='security' element={<Security />} />
+        {/* <Route path='security' element={<Security />} /> */}
         <Route path='general' element={<GeneralSettings />} />
         <Route path='keys' element={<SecuritySettings />} />
-        <Route path='users' element={<UsersSettings />} />
-        <Route path='push' element={<PushSettings />} />
-        <Route path='hosting' element={<HostingSettings />} />
+        {/* <Route path='users' element={<UsersSettings />} /> */}
+        {/* <Route path='push' element={<PushSettings />} /> */}
+        {/* <Route path='hosting' element={<HostingSettings />} /> */}
         <Route index element={<Navigate replace to='general' />} />
       </Route>
     );
@@ -390,7 +390,7 @@ class Dashboard extends React.Component {
       <Route element={<AppData />}>
         <Route index element={<Navigate replace to="overview" />} />
 
-        <Route path="getting_started" element={<Empty />} />
+        {/* <Route path="getting_started" element={<Empty />} /> */}
         <Route path="overview" element={<AppOverview />} />
 
         <Route path="browser/:className/:entityId/:relationName" element={<BrowserRoute />} />
@@ -407,7 +407,7 @@ class Dashboard extends React.Component {
 
         <Route path="api_console">{ApiConsoleRoute}</Route>
 
-        <Route path="migration" element={<Migration />} />
+        {/* <Route path="migration" element={<Migration />} /> */}
 
         <Route path="push" element={<Navigate replace to="new" />} />
         <Route path="push/activity" element={<Navigate replace to="all" />} />
