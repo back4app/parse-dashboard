@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import jstree from 'jstree';
 // 🚫🚫 DO NOT REMOVE ABOVE LINE, as the scripts needs to be loaded that allows to use $('#tree').jstree for proper tree rendering, it took me a whole day to debug 🤯🤯🤯.
 import $ from 'jquery';
@@ -9,7 +10,7 @@ import Button from 'components/Button/Button.react';
 import B4ACloudCodeView from 'components/B4ACloudCodeView/B4ACloudCodeView.react';
 import B4ATreeActions from 'components/B4ACodeTree/B4ATreeActions';
 import Swal from 'sweetalert2';
-import B4ACloudCodeInfo from 'components/B4ACodeTree/B4ACloudCodeInfo.react';
+// import B4ACloudCodeInfo from 'components/B4ACodeTree/B4ACloudCodeInfo.react';
 import folderInfoIcon from './icons/folder-info.png';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 // import CloudCodeChanges from 'lib/CloudCodeChanges';

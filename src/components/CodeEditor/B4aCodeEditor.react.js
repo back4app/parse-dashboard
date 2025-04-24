@@ -9,7 +9,6 @@ import { linter, lintGutter } from '@codemirror/lint';
 import globals from 'globals';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
-import * as eslint from 'eslint-linter-browserify';
 // import { StreamLanguage } from '@codemirror/language';
 
 const myTheme = createTheme({
@@ -61,8 +60,37 @@ const config = {
   }
 };
 
+const loadEslint = () => {
+  return new Promise((resolve, reject) => {
+    if (window.eslint) {
+      resolve(window.eslint);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/eslint-linter-browserify/linter.min.js';
+    script.async = true;
+    script.onload = () => resolve(window.eslint);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+};
+
 const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode }, ref) => {
   const [code, setCode] = useState(initialCode);
+  const [eslintInstance, setEslintInstance] = useState(null);
+
+  useEffect(() => {
+    if (mode === 'javascript' || mode === 'js') {
+      loadEslint()
+        .then(eslint => {
+          setEslintInstance(new eslint.Linter());
+        })
+        .catch(error => {
+          console.error('Failed to load ESLint:', error);
+        });
+    }
+  }, [mode]);
 
   useEffect(() => {
     if (window && window.document.querySelector('.cm-theme')) {
@@ -94,8 +122,10 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode }, ref
         return [json()];
       case 'javascript':
       case 'js':
-        return [javascript(),
-          linter(esLint(new eslint.Linter(), config))];
+        return [
+          javascript(),
+          ...(eslintInstance ? [linter(esLint(eslintInstance, config))] : [])
+        ];
       default:
         return [];
     }
