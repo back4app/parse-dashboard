@@ -84,7 +84,7 @@
     "moment": "2.29.4",
     "otpauth": "8.0.3",
     "package-json": "7.0.0",
-    "parse": "git+https://github.com/back4app/Parse-SDK-JS.git#back4app-upstream-3.4.2",
+    "parse": "3.4.2",
     "passport": "0.5.3",
     "passport-local": "1.0.0",
     "prismjs": "1.29.0",
@@ -163,6 +163,7 @@
     "svg-prep": "1.0.4",
     "terser-webpack-plugin": "5.3.9",
     "webpack": "5.75.0",
+    "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "5.0.1",
     "yaml": "1.10.0"
   },

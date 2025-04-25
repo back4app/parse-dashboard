@@ -9,7 +9,7 @@ const configuration = require('./base.config.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 configuration.mode = 'production';
 configuration.entry = {
@@ -20,18 +20,12 @@ configuration.output.filename = '[name].[chunkhash].js';
 
 // Enable tree shaking and optimizations
 configuration.optimization = {
-  usedExports: true, // Enable tree shaking
+  usedExports: true,
   minimize: true,
-  concatenateModules: true, // Enable module concatenation
-  sideEffects: true, // Respect sideEffects flag in package.json
-  providedExports: true, // Help tree shaking by determining which exports are provided by modules
-  innerGraph: true, // Enable inner graph analysis for better tree shaking
-  splitChunks: {
-    chunks: 'all',
-    minSize: 20000,
-    maxAsyncRequests: 30,
-    maxInitialRequests: 30
-  }
+  concatenateModules: true,
+  sideEffects: true,
+  providedExports: true,
+  innerGraph: true,
 };
 
 configuration.plugins.push(
@@ -57,7 +51,7 @@ configuration.plugins.push(
       'SENTRY_ENV': JSON.stringify('production')
     }
   }),
-  // new BundleAnalyzerPlugin()
+  new BundleAnalyzerPlugin()
 );
 
 // Add module rules to help with tree shaking
