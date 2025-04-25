@@ -20,12 +20,12 @@ configuration.output.filename = '[name].[chunkhash].js';
 
 // Enable tree shaking and optimizations
 configuration.optimization = {
-  usedExports: true, // Enable tree shaking
+  usedExports: true, 
   minimize: true,
-  concatenateModules: true, // Enable module concatenation
-  sideEffects: true, // Respect sideEffects flag in package.json
-  providedExports: true, // Help tree shaking by determining which exports are provided by modules
-  innerGraph: true, // Enable inner graph analysis for better tree shaking
+  concatenateModules: true, 
+  sideEffects: true, 
+  providedExports: true, 
+  innerGraph: true, 
   splitChunks: {
     chunks: 'all',
     minSize: 20000,
@@ -38,18 +38,6 @@ configuration.plugins.push(
   new HtmlWebpackPlugin({
     template: '../Parse-Dashboard/index.ejs',
     filename: path.resolve('./Parse-Dashboard/public/index.html'),
-    minify: {
-      removeComments: true,
-      collapseWhitespace: true,
-      removeRedundantAttributes: true,
-      useShortDoctype: true,
-      removeEmptyAttributes: true,
-      removeStyleLinkTypeAttributes: true,
-      keepClosingSlash: true,
-      minifyJS: true,
-      minifyCSS: true,
-      minifyURLs: true,
-    }
   }),
   new webpack.DefinePlugin({
     'process.env': {
