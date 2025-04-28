@@ -80,6 +80,10 @@ module.exports = {
         type: 'asset/resource',
       },
       {
+        test: /\.webp$/,
+        type: 'asset/resource',
+      },
+      {
         test: /\.flow$/,
         use: 'null-loader'
       }, {
