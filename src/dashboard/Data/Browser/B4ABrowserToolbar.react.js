@@ -12,7 +12,7 @@ import styles from 'dashboard/Data/Browser/Browser.scss';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import Toggle from 'components/Toggle/Toggle.react';
 import Button from 'components/Button/Button.react'
-import VideoTutorialButton from 'components/VideoTutorialButton/VideoTutorialButton.react';
+// import VideoTutorialButton from 'components/VideoTutorialButton/VideoTutorialButton.react';
 import B4aColumnsConfiguration from 'components/ColumnsConfiguration/B4aColumnsConfiguration.react';
 import SubMenuItem from 'components/BrowserMenu/SubMenuItem.react';
 import { AmplitudeEvent, amplitudeLogEvent } from 'lib/amplitudeEvents';
@@ -291,13 +291,13 @@ const B4ABrowserToolbar = ({
     />
   }
   // TODO: Set the videoTutorialUrl
-  const videoTutorialUrl = 'https://youtu.be/0Ym9-BHI8Fg';
-  const helpsection = (
-    <span className="toolbar-help-section">
-      {/* {apiDocsButton} */}
-      <VideoTutorialButton url={videoTutorialUrl} additionalStyles={ { marginLeft: '8px', marginBottom: '4px' } } />
-    </span>
-  );
+  // const videoTutorialUrl = 'https://youtu.be/0Ym9-BHI8Fg';
+  // const helpsection = (
+  //   <span className="toolbar-help-section">
+  //     {/* {apiDocsButton} */}
+  //     <VideoTutorialButton url={videoTutorialUrl} additionalStyles={ { marginLeft: '8px', marginBottom: '4px' } } />
+  //   </span>
+  // );
 
   const clpDialogRef = useRef(null);
   const showCLP = () => {
@@ -316,7 +316,8 @@ const B4ABrowserToolbar = ({
       subsection="Browser"
       details={relation ? details.join(' \u2022 ') : details.join(' \u2022 ')}
       className={subsection}
-      helpsection={helpsection}>
+      // helpsection={helpsection}
+    >
       {onAddRow && (
         <a className={classes.join(' ')} onClick={onClick}>
           <Icon name='add-outline' width={14} height={14} />

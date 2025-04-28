@@ -8,14 +8,12 @@
 const configuration = require('./base.config.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-const settings = require('@back4app/back4app-settings');
 const webpack = require('webpack');
 
 configuration.mode = 'production';
 configuration.entry = {
   dashboard: './dashboard/index.js',
-  login: './login/index.js',
+  // login: './login/index.js',
 };
 configuration.output.path = path.resolve('./Parse-Dashboard/public/bundles');
 configuration.output.filename = '[name].[chunkhash].js';
