@@ -6,7 +6,7 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import DashboardView from 'dashboard/DashboardView.react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { withRouter } from 'lib/withRouter';
@@ -18,10 +18,12 @@ import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
 import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
-import ConnectAppModal from './ConnectAppModal.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+
+// Lazy load ConnectAppModal
+const ConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -71,6 +73,11 @@ class AppOverview extends DashboardView {
       appKeys,
     });
     this.loadCardInformation();
+  }
+
+  componentDidMount() {
+    // Preload ConnectAppModal component after component mounts
+    import('./ConnectAppModal.react');
   }
 
   copyText(copyText = '') {
@@ -300,7 +307,9 @@ class AppOverview extends DashboardView {
         </div>
 
         {this.state.showConnectAppModal && (
-          <ConnectAppModal closeModal={() => this.setState({ showConnectAppModal: false })} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <ConnectAppModal closeModal={() => this.setState({ showConnectAppModal: false })} />
+          </Suspense>
         )}
       </div>
     );

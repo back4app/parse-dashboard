@@ -9,9 +9,9 @@ import AccountManager from 'lib/AccountManager'; // user workaround
 // import AccountOverview from './Account/AccountOverview.react';
 import ApiConsole from './Data/ApiConsole/ApiConsole.react';
 import AppData from './AppData.react';
-import AppsIndex from './Apps/AppsIndex.react';
+// import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
-import Browser from './Data/Browser/Browser.react';
+// import Browser from './Data/Browser/Browser.react';
 import AppOverview from './Data/AppOverview/AppOverview.react';
 // import Config from './Data/Config/Config.react';
 import FourOhFour from 'components/FourOhFour/FourOhFour.react';
@@ -19,7 +19,7 @@ import FourOhFour from 'components/FourOhFour/FourOhFour.react';
 // import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
 // import HostingSettings from './Settings/HostingSettings.react';
 // import HubConnections from './Hub/HubConnections.react';
-import IndexManager from './IndexManager/IndexManager.react'
+// import IndexManager from './IndexManager/IndexManager.react'
 import JobEdit from 'dashboard/Data/Jobs/JobEdit.react';
 import Jobs from './Data/Jobs/Jobs.react';
 import JobsData from 'dashboard/Data/Jobs/JobsData.react';
@@ -84,6 +84,9 @@ const HubConnectionsLazy = React.lazy(() => import('./Hub/HubConnections.react')
 const SlowQueriesLazy = React.lazy(() => import('./Analytics/SlowQueries/SlowQueries.react'));
 const GeneralSettingsLazy = React.lazy(() => import('./Settings/GeneralSettings.react'));
 const SecuritySettingsLazy = React.lazy(() => import('./Settings/SecuritySettings.react'));
+const AppsIndexLazy = React.lazy(() => import('./Apps/AppsIndex.react'));
+const IndexManagerLazy = React.lazy(() => import('./IndexManager/IndexManager.react'));
+const BrowserLazy = React.lazy(() => import('./Data/Browser/Browser.react'));
 
 // const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -165,6 +168,7 @@ const waitForScriptToLoad = async conditionFn => {
 
 // Preload map for all lazy-loaded components
 const preloadMap = {
+  browser: () => import('./Data/Browser/Browser.react'),
   cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
   webhooks: () => import('./Data/Webhooks/Webhooks.react'),
   config: () => import('./Data/Config/Config.react'),
@@ -183,7 +187,9 @@ const preloadMap = {
   hubConnections: () => import('./Hub/HubConnections.react'),
   slowQueries: () => import('./Analytics/SlowQueries/SlowQueries.react'),
   generalSettings: () => import('./Settings/GeneralSettings.react'),
-  securitySettings: () => import('./Settings/SecuritySettings.react')
+  securitySettings: () => import('./Settings/SecuritySettings.react'),
+  appsIndex: () => import('./Apps/AppsIndex.react'),
+  indexManager: () => import('./IndexManager/IndexManager.react')
 };
 
 // Preload all routes
@@ -401,7 +407,9 @@ class Dashboard extends React.Component {
 
     const AppsIndexPage = (
       <AccountView section="Your Apps" style={{top: '0px'}}>
-        <AppsIndex apps={this.state.apps} updateApp={this.updateApp} newFeaturesInLatestVersion={this.state.newFeaturesInLatestVersion} />
+        <LazyComponentWrapper>
+          <AppsIndexLazy apps={this.state.apps} updateApp={this.updateApp} newFeaturesInLatestVersion={this.state.newFeaturesInLatestVersion} />
+        </LazyComponentWrapper>
       </AccountView>
     );
 
@@ -452,7 +460,7 @@ class Dashboard extends React.Component {
     );
 
     // const BrowserRoute = ShowSchemaOverview ? SchemaOverview : Browser;
-    const BrowserRoute = Browser;
+    const BrowserRoute = <LazyComponentWrapper><BrowserLazy /></LazyComponentWrapper>;
 
     const ApiConsoleRoute = (
       <Route element={<ApiConsole />}>
@@ -501,8 +509,8 @@ class Dashboard extends React.Component {
         <Route path="server-settings/" element={<LazyComponentWrapper><ServerSettingsLazy /></LazyComponentWrapper>} />
         <Route path="server-settings/:targetPage" element={<LazyComponentWrapper><ServerSettingsLazy /></LazyComponentWrapper>} />
 
-        <Route path="index/:className" element={<IndexManager />} />
-        <Route path="index" element={<IndexManager />} />
+        <Route path="index/:className" element={<LazyComponentWrapper><IndexManagerLazy /></LazyComponentWrapper>} />
+        <Route path="index" element={<LazyComponentWrapper><IndexManagerLazy /></LazyComponentWrapper>} />
 
         {/* <Route path="blockchain" element={<BlockchainPage /> } /> */}
 
