@@ -20,12 +20,12 @@ configuration.output.filename = '[name].[chunkhash].js';
 
 // Enable tree shaking and optimizations
 configuration.optimization = {
-  usedExports: true, 
+  usedExports: true,
   minimize: true,
-  concatenateModules: true, 
-  sideEffects: true, 
-  providedExports: true, 
-  innerGraph: true, 
+  concatenateModules: true,
+  sideEffects: true,
+  providedExports: true,
+  innerGraph: true,
   splitChunks: {
     chunks: 'all',
     minSize: 20000,

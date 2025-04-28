@@ -26,24 +26,18 @@ configuration.optimization = {
   sideEffects: true,
   providedExports: true,
   innerGraph: true,
+  splitChunks: {
+    chunks: 'all',
+    minSize: 20000,
+    maxAsyncRequests: 30,
+    maxInitialRequests: 30
+  }
 };
 
 configuration.plugins.push(
   new HtmlWebpackPlugin({
     template: '../Parse-Dashboard/index.ejs',
     filename: path.resolve('./Parse-Dashboard/public/index.html'),
-    minify: {
-      removeComments: true,
-      collapseWhitespace: true,
-      removeRedundantAttributes: true,
-      useShortDoctype: true,
-      removeEmptyAttributes: true,
-      removeStyleLinkTypeAttributes: true,
-      keepClosingSlash: true,
-      minifyJS: true,
-      minifyCSS: true,
-      minifyURLs: true,
-    }
   }),
   new webpack.DefinePlugin({
     'process.env': {
