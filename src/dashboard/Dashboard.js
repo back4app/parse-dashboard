@@ -460,7 +460,11 @@ class Dashboard extends React.Component {
     );
 
     // const BrowserRoute = ShowSchemaOverview ? SchemaOverview : Browser;
-    const BrowserRoute = <LazyComponentWrapper><BrowserLazy /></LazyComponentWrapper>;
+    const BrowserRoute = (props) => (
+      <LazyComponentWrapper>
+        <BrowserLazy {...props} />
+      </LazyComponentWrapper>
+    );
 
     const ApiConsoleRoute = (
       <Route element={<ApiConsole />}>
