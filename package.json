@@ -173,7 +173,7 @@
     "dev": "nodemon ./Parse-Dashboard/index.js & webpack --config webpack/build.config.js --devtool eval-source-map --progress --watch",
     "dashboard": "node ./Parse-Dashboard/index.js & webpack --config webpack/build.config.js --progress --watch",
     "pig": "http-server ./PIG -p 4041 -s & webpack --config webpack/PIG.config.js --progress --watch",
-    "build": "webpack --node-env=production --config webpack/production.config.js && webpack --config webpack/PIG.config.js && cross-env NODE_ENV=production webpack --config webpack/publish.config.js --progress",
+    "build": "webpack --node-env=production --config webpack/production.config.js --progress",
     "build-homolog": "cross-env NODE_ENV=homolog webpack --config webpack/homolog.config.js",
     "build-dev": "cross-env NODE_ENV=dev webpack --config webpack/homolog.config.js",
     "test": "jest",
