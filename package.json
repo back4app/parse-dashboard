@@ -64,7 +64,6 @@
     "crypto-js": "4.2.0",
     "csurf": "1.11.0",
     "csvtojson": "2.0.10",
-    "eslint-linter-browserify": "9.14.0",
     "express": "4.19.2",
     "file-loader": "6.2.0",
     "globals": "15.12.0",
