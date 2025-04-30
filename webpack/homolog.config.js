@@ -9,7 +9,7 @@ const configuration = require('./base.config.js');
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 configuration.mode = 'production';
 configuration.entry = {
@@ -45,7 +45,7 @@ configuration.plugins.push(
       'SENTRY_ENV': JSON.stringify('homolog')
     }
   }),
-  new BundleAnalyzerPlugin()
+  // new BundleAnalyzerPlugin()
 );
 
 configuration.module = configuration.module || {};
