@@ -38,7 +38,7 @@ import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
 import { Helmet } from 'react-helmet';
 import Playground from './Data/Playground/Playground.react';
 import axios from 'lib/axios';
-import moment from 'moment';
+// import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
 import AccountView from './AccountView.react';
 
@@ -126,12 +126,12 @@ const PARSE_DOT_COM_SERVER_INFO = {
   status: 'SUCCESS',
 }
 
-const monthQuarter = {
-  '0': 'Q1',
-  '1': 'Q2',
-  '2': 'Q3',
-  '3': 'Q4'
-};
+// const monthQuarter = {
+//   '0': 'Q1',
+//   '1': 'Q2',
+//   '2': 'Q3',
+//   '3': 'Q4'
+// };
 
 const waitForScriptToLoad = async conditionFn => {
   for (let i = 1; i <= 20; i++) {
@@ -163,20 +163,22 @@ class Dashboard extends React.Component {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
       fetchHubUser().then(userDetail => {
         user.createdAt = userDetail.createdAt;
-        const now = moment();
-        const hourDiff = now.diff(userDetail.createdAt, 'hours');
-        if(hourDiff === 0){
+        const now = new Date();
+        const createdAt = new Date(userDetail.createdAt);
+        const hourDiff = Math.floor((now - createdAt) / (1000 * 60 * 60));
+        if (hourDiff === 0) {
           return;
         }
         if (userDetail.disableSolucxForm) {
           return;
         }
         // Flow1 are users who signed up less than 30 days ago (720 hours)
-        const isFlow1 = hourDiff <= 720 ? true : false;
+        const isFlow1 = hourDiff <= 720;
         let transactionId = userDetail.id;
-        if(!isFlow1){
-          const quarter = monthQuarter[parseInt(now.month() / 3)];
-          transactionId += `${now.year()}${quarter}`;
+        if (!isFlow1) {
+          const monthQuarter = ['Q1', 'Q2', 'Q3', 'Q4'];
+          const quarter = monthQuarter[Math.floor(now.getMonth() / 3)];
+          transactionId += `${now.getFullYear()}${quarter}`;
         }
         const options = {
           transaction_id: transactionId,

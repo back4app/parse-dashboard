@@ -81,7 +81,6 @@
     "js-cookie": "3.0.5",
     "jstree": "3.3.16",
     "lottie-react": "2.4.0",
-    "moment": "2.29.4",
     "otpauth": "8.0.3",
     "package-json": "7.0.0",
     "parse": "git+https://github.com/back4app/Parse-SDK-JS.git#back4app-upstream-3.4.2",

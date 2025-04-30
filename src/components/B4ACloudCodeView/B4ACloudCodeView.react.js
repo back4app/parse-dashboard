@@ -7,7 +7,7 @@ import React from 'react';
 import B4aCodeEditor from '../CodeEditor/B4aCodeEditor.react';
 import { getExtension } from '../B4ACodeTree/B4ATreeActions';
 
-const pageSize = 4000;
+// const pageSize = 4000;
 export default class B4ACloudCodeView extends React.Component {
   constructor(props){
     super(props);
