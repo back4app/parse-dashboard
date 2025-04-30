@@ -224,5 +224,10 @@
       "eslint --fix --cache",
       "git add"
     ]
-  }
+  },
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "./src/components/B4ACodeTree/B4ACodeTree.react.js"
+  ]
 }

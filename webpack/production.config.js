@@ -19,7 +19,18 @@ configuration.output.path = path.resolve('./Parse-Dashboard/public/bundles');
 configuration.output.filename = '[name].[chunkhash].js';
 
 configuration.optimization = {
+  usedExports: true,
   minimize: true,
+  concatenateModules: true,
+  sideEffects: true,
+  providedExports: true,
+  innerGraph: true,
+  splitChunks: {
+    chunks: 'all',
+    minSize: 20000,
+    maxAsyncRequests: 30,
+    maxInitialRequests: 30
+  }
 };
 
 configuration.plugins.push(
@@ -34,5 +45,23 @@ configuration.plugins.push(
     }
   }),
 );
+
+configuration.module = configuration.module || {};
+configuration.module.rules = configuration.module.rules || [];
+
+// Ensure babel-loader is configured for tree shaking
+const babelRule = configuration.module.rules.find(rule => rule.use && rule.use.includes('babel-loader'));
+if (babelRule) {
+  babelRule.use = {
+    loader: 'babel-loader',
+    options: {
+      presets: [
+        ['@babel/preset-env', {
+          modules: false // This is important for tree shaking
+        }]
+      ]
+    }
+  };
+}
 
 module.exports = configuration;
