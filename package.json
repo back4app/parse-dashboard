@@ -82,6 +82,7 @@
     "lottie-react": "2.4.0",
     "otpauth": "8.0.3",
     "package-json": "7.0.0",
+    "papaparse": "5.5.2",
     "parse": "git+https://github.com/back4app/Parse-SDK-JS.git#back4app-upstream-3.4.2",
     "passport": "0.5.3",
     "passport-local": "1.0.0",

@@ -9,7 +9,7 @@ import * as AJAX from 'lib/AJAX';
 import encodeFormData from 'lib/encodeFormData';
 import Parse from 'parse';
 import axios from 'lib/axios';
-import csv from 'csvtojson';
+import Papa from 'papaparse';
 // import * as CSRFManager from 'lib/CSRFManager';
 import deepmerge from 'deepmerge';
 import { updatePreferences, getPreferences } from 'lib/ClassPreferences';
@@ -491,39 +491,22 @@ export default class ParseApp {
     if (className) {
       const schema = await (new Parse.Schema(className)).get();
 
-      const customParser = {};
-      Object.keys(schema.fields).forEach(fieldName => {
-        customParser[fieldName] = function (item) {
-          if (schema.fields[fieldName].type === 'Number') {return Number(item);}
-          if (schema.fields[fieldName].type === 'Boolean') {return item.toLowerCase() === 'false' ? false :  true;}
-          if (schema.fields[fieldName].type === 'Array'){
-            item = item.replaceAll('“', '"');
-            item = item.replaceAll('”', '"');
-            return JSON.parse(item);
-          }
-          if (schema.fields[fieldName].type === 'Object'){
-            item = item.replaceAll('“', '"');
-            item = item.replaceAll('”', '"');
-            return JSON.parse(item);
-          }
-          return item;
-        };
+      // Parse the CSV file using PapaParse
+      const parseResult = Papa.parse(text, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        transformHeader: header => header.trim()
       });
 
-      jsonArray = await csv({
-        delimiter: 'auto',
-        ignoreEmpty: true,
-        nullObject: true,
-        checkType: true,
-        colParser: customParser
-      })
-        .on('header', header => (fieldNames = header))
-        .fromString(text);
+      fieldNames = parseResult.meta.fields;
+      jsonArray = parseResult.data;
 
-      const fields = fieldNames.filter(fieldName => fieldName.indexOf('.') < 0).reduce((fields, fieldName) => ({
+      // Handle custom field type conversions based on the schema
+      const fields = fieldNames.filter(fieldName => fieldName.indexOf('.') < 0).reduce((fields, fieldName) => {debugger; return({
         ...fields,
         [fieldName]: schema.fields[fieldName] || { type: undefined }
-      }), {});
+      })}, {});
 
       jsonArray.forEach(json => {
         Object.keys(json).forEach(fieldName => {
@@ -535,6 +518,23 @@ export default class ParseApp {
           const fieldType = field.type;
           if (fieldType === 'String') {
             json[fieldName] = fieldValue.toString();
+          } else if (fieldType === 'Number') {
+            json[fieldName] = Number(fieldValue);
+          } else if (fieldType === 'Boolean') {
+            if (typeof fieldValue === 'string') {
+              json[fieldName] = fieldValue.toLowerCase() !== 'false';
+            }
+          } else if (fieldType === 'Array' || fieldType === 'Object') {
+            // Handle JSON strings that need to be parsed
+            if (typeof fieldValue === 'string') {
+              try {
+                const cleanedValue = fieldValue.replaceAll('“', '"').replaceAll('”', '"');
+                json[fieldName] = JSON.parse(cleanedValue);
+              } catch (e) {
+                console.log('failed parsing', fieldValue, fieldType);
+                // Keep as is if parsing fails
+              }
+            }
           } else if (fieldType === undefined) {
             const fieldDataType = field.dataType;
             if (fieldDataType === 'string') {
@@ -553,15 +553,17 @@ export default class ParseApp {
           }
         });
       });
-    } else{
-      jsonArray = await csv({
-        delimiter: 'auto',
-        ignoreEmpty: true,
-        nullObject: true,
-        checkType: true
-      })
-        .on('header', header => (fieldNames = header))
-        .fromString(text);
+    } else {
+      // Simple CSV to JSON conversion without schema
+      const parseResult = Papa.parse(text, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        transformHeader: header => header.trim()
+      });
+
+      fieldNames = parseResult.meta.fields;
+      jsonArray = parseResult.data;
     }
 
     return new Blob([JSON.stringify({ results: jsonArray })], { type: 'text/plain' });
@@ -649,7 +651,7 @@ export default class ParseApp {
   sendEmailToInviteCollaborator(email, featuresPermission, classesPermission, owner) {
     const path = '/apps/' + this.slug + '/collaborations/saveInvite';
     const promise = axios.post(path, {email: email, featuresPermission: featuresPermission, classesPermission: classesPermission, owner: owner});
-    promise.then(({ data }) => { 
+    promise.then(({ data }) => {
       this.settings.fields.fields.collaboratorUsage = data.data.collaboratorUsage
     });
     return promise;
