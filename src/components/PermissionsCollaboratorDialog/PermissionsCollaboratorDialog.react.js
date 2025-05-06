@@ -17,8 +17,8 @@ import Field from '../Field/Field.react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'components/PermissionsCollaboratorDialog/Tabs.css'
 import B4aToggle from 'components/Toggle/B4aToggle.react';
-import lodash from 'lodash'
 
+import { isEqual, mapValues } from 'lib/lodash';
 
 const origin = new Position(0, 0);
 
@@ -93,7 +93,7 @@ export default class PermissionsCollaboratorDialog extends React.Component {
   }) {
     super();
 
-    const isDefaultFeatures = lodash.isEqual(customFeaturesPermissions, defaultFeaturesPermissions);
+    const isDefaultFeatures = isEqual(customFeaturesPermissions, defaultFeaturesPermissions);
     const selectedClassesTab = customFeaturesPermissions === undefined || !customFeaturesPermissions['classes'] ? 'Write' : (customFeaturesPermissions['classes'] === 'Custom' ? 'CustomClasses' :  customFeaturesPermissions['classes'])
 
     this.state = {
@@ -305,10 +305,10 @@ export default class PermissionsCollaboratorDialog extends React.Component {
                   }
                   // Set classes permissions
                   if (this.state.selectedClassesTab === 'CustomClasses') {
-                    classesPermissions = Object.assign(this.state.classesPermissions)
+                    classesPermissions = Object.assign({}, this.state.classesPermissions)
                     featuresPermissions['classes'] = 'Custom'
                   } else {
-                    classesPermissions = lodash.mapValues(this.state.classesPermissions, () => this.state.selectedClassesTab)
+                    classesPermissions = mapValues(this.state.classesPermissions, () => this.state.selectedClassesTab)
                     featuresPermissions['classes'] = this.state.selectedClassesTab
                   }
                   this.props.onConfirm(featuresPermissions, classesPermissions)

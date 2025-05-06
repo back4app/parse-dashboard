@@ -9,7 +9,7 @@ import FormTableCollab from 'components/FormTableCollab/FormTableCollab.react';
 import PermissionsCollaboratorDialog from 'components/PermissionsCollaboratorDialog/PermissionsCollaboratorDialog.react';
 import Swal from 'sweetalert2'
 
-import lodash from 'lodash'
+import { mapValues } from 'lib/lodash'
 import AccountManager from 'lib/AccountManager';
 import Field from 'components/Field/Field.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
@@ -98,7 +98,7 @@ export default class Collaborators extends React.Component {
   getDefaultClasses() {
     return this.context.classCounts &&
       this.context.classCounts.counts &&
-      lodash.mapValues(this.context.classCounts.counts, () => 'Write')
+      mapValues(this.context.classCounts.counts, () => 'Write')
   }
 
   handleAdd() {
