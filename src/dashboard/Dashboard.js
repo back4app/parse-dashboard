@@ -147,6 +147,32 @@ const waitForScriptToLoad = async conditionFn => {
   throw new Error('Script not loaded yet!');
 };
 
+const preloadMap = {
+  cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
+  graphqlConsole: () => import('./Data/ApiConsole/GraphQLConsole.react'),
+  playground: () => import('./Data/Playground/Playground.react'),
+};
+
+// Preload all routes with proper error handling and logging
+const preloadRoute = async (routeName, preloadFn) => {
+  try {
+    await preloadFn();
+    console.log(`Successfully preloaded route: ${routeName}`);
+  } catch (err) {
+    console.error(`Error preloading route ${routeName}:`, err);
+  }
+};
+
+// Preload all routes in parallel
+const preloadAllRoutes = () => {
+  console.log('Preloading routes...');
+  return Promise.all(
+    Object.entries(preloadMap).map(([routeName, preloadFn]) =>
+      preloadRoute(routeName, preloadFn)
+    )
+  );
+};
+
 const LoadingComponent = () => (
   <div className={baseStyles.center} style={{ background: '#0F1C32' }}>
     <B4aLoader />
@@ -176,6 +202,11 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
+    // Start preloading routes immediately but don't block on it
+    preloadAllRoutes().finally(() => {
+      console.log('Route preloading complete');
+    });
+
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
       fetchHubUser().then(userDetail => {
         user.createdAt = userDetail.createdAt;
