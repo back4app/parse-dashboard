@@ -12,12 +12,12 @@ import AppData from './AppData.react';
 import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
 import Browser from './Data/Browser/Browser.react';
-import CloudCode from './Data/CloudCode/B4ACloudCode.react';
+// import CloudCode from './Data/CloudCode/B4ACloudCode.react';
 import AppOverview from './Data/AppOverview/AppOverview.react';
 import Config from './Data/Config/Config.react';
 import FourOhFour from 'components/FourOhFour/FourOhFour.react';
 import GeneralSettings from './Settings/GeneralSettings.react';
-import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
+// import GraphQLConsole from './Data/ApiConsole/GraphQLConsole.react';
 // import HostingSettings from './Settings/HostingSettings.react';
 import HubConnections from './Hub/HubConnections.react';
 import IndexManager from './IndexManager/IndexManager.react'
@@ -36,7 +36,7 @@ import { get } from 'lib/AJAX';
 import { setBasePath } from 'lib/AJAX';
 import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
 import { Helmet } from 'react-helmet';
-import Playground from './Data/Playground/Playground.react';
+// import Playground from './Data/Playground/Playground.react';
 import axios from 'lib/axios';
 // import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
@@ -49,7 +49,7 @@ import PushDetails from './Push/PushDetails.react';
 import PushIndex from './Push/PushIndex.react';
 import PushNew from './Push/PushNew.react';
 // import PushSettings from './Settings/PushSettings.react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, Suspense, lazy } from 'react';
 import RestConsole from './Data/ApiConsole/RestConsole.react';
 // import SchemaOverview from './Data/Browser/SchemaOverview.react';
 import SecuritySettings from './Settings/SecuritySettings.react';
@@ -65,6 +65,10 @@ import { Navbar } from '@back4app2/react-components';
 import back4app2 from '../lib/back4app2';
 import { initializeAmplitude } from 'lib/amplitudeEvents';
 import { setUser as setSentryUser } from '@sentry/react';
+
+const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
+const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
+const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -143,6 +147,44 @@ const waitForScriptToLoad = async conditionFn => {
   throw new Error('Script not loaded yet!');
 };
 
+const preloadMap = {
+  cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
+  graphqlConsole: () => import('./Data/ApiConsole/GraphQLConsole.react'),
+  playground: () => import('./Data/Playground/Playground.react'),
+};
+
+// Preload all routes with proper error handling and logging
+const preloadRoute = async (routeName, preloadFn) => {
+  try {
+    await preloadFn();
+    console.log(`Successfully preloaded route: ${routeName}`);
+  } catch (err) {
+    console.error(`Error preloading route ${routeName}:`, err);
+  }
+};
+
+// Preload all routes in parallel
+const preloadAllRoutes = () => {
+  console.log('Preloading routes...');
+  return Promise.all(
+    Object.entries(preloadMap).map(([routeName, preloadFn]) =>
+      preloadRoute(routeName, preloadFn)
+    )
+  );
+};
+
+const LoadingComponent = () => (
+  <div className={baseStyles.center} style={{ background: '#0F1C32' }}>
+    <B4aLoader />
+  </div>
+);
+
+const LazyComponentWrapper = ({ children }) => (
+  <Suspense fallback={<LoadingComponent />}>
+    {children}
+  </Suspense>
+);
+
 class Dashboard extends React.Component {
   constructor(props) {
     super();
@@ -160,6 +202,11 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
+    // Start preloading routes immediately but don't block on it
+    preloadAllRoutes().finally(() => {
+      console.log('Route preloading complete');
+    });
+
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
       fetchHubUser().then(userDetail => {
         user.createdAt = userDetail.createdAt;
@@ -383,8 +430,8 @@ class Dashboard extends React.Component {
     const ApiConsoleRoute = (
       <Route element={<ApiConsole />}>
         <Route path="rest" element={<RestConsole />} />
-        <Route path="graphql" element={<GraphQLConsole />} />
-        <Route path="js_console" element={<Playground />} />
+        <Route path="graphql" element={<LazyComponentWrapper><LazyGraphQLConsole /></LazyComponentWrapper>} />
+        <Route path="js_console" element={<LazyComponentWrapper><LazyPlayground /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to="rest" />} />
       </Route>
     );
@@ -400,7 +447,7 @@ class Dashboard extends React.Component {
         <Route path="browser/:className" element={<BrowserRoute />} />
         <Route path="browser" element={<BrowserRoute />} />
 
-        <Route path="cloud_code" element={<CloudCode />} />
+        <Route path="cloud_code" element={<LazyComponentWrapper><LazyCloudCode /></LazyComponentWrapper>} />
         <Route path="webhooks" element={<Webhooks />} />
 
         <Route path="jobs">{JobsRoute}</Route>
