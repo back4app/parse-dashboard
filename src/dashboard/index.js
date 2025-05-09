@@ -9,14 +9,18 @@ import './instrument';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import Immutable from 'immutable';
-import installDevTools from 'immutable-devtools';
+// import installDevTools from 'immutable-devtools';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Dashboard from './Dashboard';
 
 require('stylesheets/fonts.scss');
 require('graphiql/graphiql.min.css');
-installDevTools(Immutable);
+
+if (process.env.NODE_ENV !== 'production') {
+  const installDevTools = require('immutable-devtools');
+  installDevTools(Immutable);
+}
 
 const path = window.PARSE_DASHBOARD_PATH || '/';
 ReactDOM.render(<Dashboard path={path} />, document.getElementById('browser_mount'));
