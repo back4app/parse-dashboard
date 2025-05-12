@@ -242,7 +242,6 @@ class Dashboard extends React.Component {
           let updatedApp;
           try {
             const serverInfo = await (new ParseApp(app).apiRequest('GET', 'serverInfo', {}, { useMasterKey: true }));
-            console.log('serverInfoLoaded', app.appId);
             app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
             updatedApp = AppsManager.updateApp(app);
             this.updateApp(updatedApp);

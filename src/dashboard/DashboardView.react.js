@@ -84,10 +84,7 @@ export default class DashboardView extends React.Component {
 
   render() {
     const isLocked = !canAccess(this.context.serverInfo, window.location.pathname.split('/')[3]);
-    console.log(window.location.pathname.split('/')[3]);
-    console.log(this.context.serverInfo);
     if (isLocked) {
-      console.log('serverInfo not loaded...', isLocked);
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
           <B4aLoader />
