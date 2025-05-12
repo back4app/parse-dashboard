@@ -174,6 +174,7 @@ class PushNew extends DashboardView {
   }
 
   componentWillMount() {
+    console.log('PUSH NEW mounting??/');
     this.props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
     const options = { xhrKey: XHR_KEY };
     const query = new URLSearchParams(this.props.location.search);

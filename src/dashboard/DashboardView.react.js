@@ -88,7 +88,6 @@ export default class DashboardView extends React.Component {
     console.log(this.context.serverInfo);
     if (isLocked) {
       console.log('serverInfo not loaded...', isLocked);
-      console.log()
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
           <B4aLoader />
