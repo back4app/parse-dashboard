@@ -56,8 +56,7 @@ export default class GeneralSettings extends DashboardView {
     const webUrl = this.props.initialFields.urls.find(({ platform }) => platform === 'web');
     const otherURL = this.props.initialFields.urls.find(({ platform }) => platform === 'other');
 
-    console.log(this.context.settings.fields);
-    const opendb_connection_string = this.context.settings.fields.fields.opendb_connection_string;
+    // const opendb_connection_string = this.context.settings.fields.fields.opendb_connection_string;
 
     return {
       requestLimit: this.props.initialFields.pricing_plan.request_limit,

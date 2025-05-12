@@ -45,9 +45,6 @@ export default class SettingsData extends React.Component {
         const prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.params.appId);
         const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
         if (!shouldUpdate) {return;}
-
-        console.log('changes should we make another api call?');
-
       }
 
       // when app is changed
