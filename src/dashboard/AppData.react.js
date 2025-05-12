@@ -32,7 +32,6 @@ function AppData() {
 
     current.setParseKeys();
     const curPathName = window.location.pathname.split('/')[3];
-    console.log('[APPDATA]');
     if (current.serverInfo.error && !canAccess(current.serverInfo, curPathName)) {
       navigate(`/apps/${current.slug}/overview`, { replace: true });
       return <div />;

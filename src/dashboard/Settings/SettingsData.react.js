@@ -36,6 +36,12 @@ export default class SettingsData extends React.Component {
     });
   }
 
+  componentDidUpdate(prev, prevState) {
+    console.log('componentDidUpdate settings');
+    console.log(prev);
+    console.log(prevState)
+  }
+
   componentWillReceiveProps(nextProps, nextContext) {
     if (this.context !== nextContext) {
       // check if the changes are in currentApp serverInfo status
