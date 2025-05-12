@@ -405,6 +405,7 @@ export default class ParseApp {
   }
 
   async fetchSettingsFields() {
+    console.log('calling fetchSettings');
     // Cache it for a minute
     if (new Date() - this.settings.lastFetched < 60000) {
       return Promise.resolve(this.settings.fields);
