@@ -21,6 +21,7 @@ export default class SettingsData extends React.Component {
   }
 
   componentDidMount() {
+    console.log('mounting settings API CALLED!')
     this.context.fetchSettingsFields().then(({ fields }) => {
       this.setState({ fields });
     });
@@ -36,6 +37,7 @@ export default class SettingsData extends React.Component {
         const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
         if (!shouldUpdate) {return;}
       }
+      console.log('received props settings API CALLED!')
       this.setState({ fields: undefined });
       nextContext.fetchSettingsFields().then(({ fields }) => {
         this.setState({ fields });
