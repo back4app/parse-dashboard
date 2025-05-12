@@ -26,6 +26,7 @@ import { DeleteAppModal } from 'dashboard/Settings/Modals/deleteAppModal.react';
 import { generalFieldsOptions, compareCollaborators, verifyEditedCollaborators, getPromiseList, renderModal } from './Util';
 import GeneralSettingsValidataions from 'dashboard/Settings/GeneralSettingsValidataions';
 import { withRouter } from 'lib/withRouter';
+// import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 @withRouter
 export default class GeneralSettings extends DashboardView {
@@ -200,6 +201,6 @@ export default class GeneralSettings extends DashboardView {
           </div>;
         }} />
       <Toolbar section='App Settings' subsection='General' />
-    </div>;
+    </div>
   }
 }

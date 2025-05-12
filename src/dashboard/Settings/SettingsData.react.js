@@ -8,15 +8,6 @@
 import React from 'react';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet } from 'react-router-dom';
-import B4aLoader from 'components/B4aLoader/B4aLoader.react';
-
-const loaderContainerStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  height: 'calc(100vh - 80px)',
-  flexDirection: 'column'
-};
 
 export default class SettingsData extends React.Component {
   static contextType = CurrentApp;
@@ -67,19 +58,12 @@ export default class SettingsData extends React.Component {
   }
 
   render() {
-    if (this.state.loadingSettings) {
-      return (
-        <div style={loaderContainerStyle}>
-          <B4aLoader />
-        </div>
-      );
-    }
-
     return (
       <Outlet
         context={{
           initialFields: this.state.fields,
           saveChanges: this.saveChanges.bind(this),
+          loadingSettings: this.state.loadingSettings,
         }}
       />
     );
