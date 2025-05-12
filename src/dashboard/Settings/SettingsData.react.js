@@ -8,7 +8,7 @@
 import React from 'react';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet } from 'react-router-dom';
-import B4aLoader from 'components/B4aLoader/B4aLoader.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 
 export default class SettingsData extends React.Component {
   static contextType = CurrentApp;
@@ -59,17 +59,15 @@ export default class SettingsData extends React.Component {
   }
 
   render() {
-    if (this.state.loadingSettings) {
-      return <B4aLoader />;
-    }
-
     return (
-      <Outlet
-        context={{
-          initialFields: this.state.fields,
-          saveChanges: this.saveChanges.bind(this),
-        }}
-      />
+      <B4aLoaderContainer loading={this.state.loadingSettings}>
+        <Outlet
+          context={{
+            initialFields: this.state.fields,
+            saveChanges: this.saveChanges.bind(this),
+          }}
+        />
+      </B4aLoaderContainer>
     );
   }
 }
