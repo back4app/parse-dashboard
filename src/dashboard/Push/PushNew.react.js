@@ -173,7 +173,7 @@ class PushNew extends DashboardView {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     console.log('PUSH NEW mounting??/');
     this.props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
     const options = { xhrKey: XHR_KEY };
