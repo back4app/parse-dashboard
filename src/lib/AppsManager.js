@@ -26,6 +26,7 @@ const AppsManager = {
     const appIdx = appsStore.findIndex(ap => ap.applicationId === app.appId);
     if (appIdx === -1) {return;}
     const parseApp = new ParseApp(app);
+    debugger;
     // copy previous fetched settings to avoid fetching twice
     parseApp.settings = { ...app.settings };
     appsStore[appIdx] = parseApp;
