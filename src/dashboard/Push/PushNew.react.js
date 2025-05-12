@@ -173,8 +173,7 @@ class PushNew extends DashboardView {
     };
   }
 
-  componentDidMount() {
-    console.log('PUSH NEW mounting??/');
+  componentWillMount() {
     this.props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
     const options = { xhrKey: XHR_KEY };
     const query = new URLSearchParams(this.props.location.search);
