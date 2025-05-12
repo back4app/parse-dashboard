@@ -8,6 +8,7 @@
 import React from 'react';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet } from 'react-router-dom';
+import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 export default class SettingsData extends React.Component {
   static contextType = CurrentApp;
@@ -16,14 +17,15 @@ export default class SettingsData extends React.Component {
 
     this.state = {
       fields: undefined,
-      appSettings: undefined
+      appSettings: undefined,
+      loadingSettings: true,
     };
   }
 
   componentDidMount() {
     console.log('mounting settings API CALLED!')
     this.context.fetchSettingsFields().then(({ fields }) => {
-      this.setState({ fields });
+      this.setState({ fields, loadingSettings: false });
     });
   }
 
@@ -39,9 +41,9 @@ export default class SettingsData extends React.Component {
       // }
       if (this.context.applicationId !== nextContext.applicationId) {
         console.log('received props settings API CALLED!')
-        this.setState({ fields: undefined });
+        this.setState({ fields: undefined, loadingSettings: true });
         nextContext.fetchSettingsFields().then(({ fields }) => {
-          this.setState({ fields });
+          this.setState({ fields, loadingSettings: false });
         });
       }
     }
@@ -57,6 +59,10 @@ export default class SettingsData extends React.Component {
   }
 
   render() {
+    if (this.state.loadingSettings) {
+      return <B4aLoader />;
+    }
+
     return (
       <Outlet
         context={{
