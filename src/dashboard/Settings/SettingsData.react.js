@@ -15,6 +15,7 @@ const loaderContainerStyle = {
   justifyContent: 'center',
   alignItems: 'center',
   height: 'calc(100vh - 80px)',
+  flexDirection: 'column'
 };
 
 export default class SettingsData extends React.Component {
