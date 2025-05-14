@@ -62,7 +62,7 @@ const B4aModal = ({
 
   const footer = customFooter || (
     <div style={{ textAlign: buttonsInCenter ? 'center' : 'right' }} className={styles.footer}>
-      {showCancel && <Button color="white" width="auto" additionalStyles={{ border: '1px solid #ccc', color: '#303338' }} value={cancelText} onClick={onCancel} disabled={!canCancel} />}
+      {showCancel && <Button color="white" width="auto" additionalStyles={{ border: '1px solid #ccc', color: '#303338' }} value={cancelText} onClick={onCancel} disabled={!canCancel || !!disableCancel} />}
       {showContinue && (
         <Button
           primary={true}
@@ -78,7 +78,7 @@ const B4aModal = ({
         primary={true}
         value={confirmText}
         color={buttonColors[type]}
-        disabled={!!disabled}
+        disabled={!!disabled || !!disableConfirm}
         onClick={onConfirm}
         progress={progress}
         eventName={confirmButtonTrackEventName}
