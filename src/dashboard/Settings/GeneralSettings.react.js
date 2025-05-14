@@ -26,6 +26,7 @@ import { DeleteAppModal } from 'dashboard/Settings/Modals/deleteAppModal.react';
 import { generalFieldsOptions, compareCollaborators, verifyEditedCollaborators, getPromiseList, renderModal } from './Util';
 import GeneralSettingsValidataions from 'dashboard/Settings/GeneralSettingsValidataions';
 import { withRouter } from 'lib/withRouter';
+// import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 
 @withRouter
 export default class GeneralSettings extends DashboardView {
@@ -56,7 +57,7 @@ export default class GeneralSettings extends DashboardView {
     const webUrl = this.props.initialFields.urls.find(({ platform }) => platform === 'web');
     const otherURL = this.props.initialFields.urls.find(({ platform }) => platform === 'other');
 
-    const opendb_connection_string = this.context.settings.fields.fields.opendb_connection_string;
+    // const opendb_connection_string = this.context.settings.fields.fields.opendb_connection_string;
 
     return {
       requestLimit: this.props.initialFields.pricing_plan.request_limit,
@@ -200,6 +201,6 @@ export default class GeneralSettings extends DashboardView {
           </div>;
         }} />
       <Toolbar section='App Settings' subsection='General' />
-    </div>;
+    </div>
   }
 }

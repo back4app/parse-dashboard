@@ -25,6 +25,10 @@ export const DeleteAppModal = ({ context, setParentState }) => {
     buttonsInCenter={false}
     onCancel={() => setParentState({ showDeleteAppModal: false })}
     onConfirm={() => {
+      if (!agreed) {
+        setNote('Please check the box to confirm');
+        return;
+      }
       if (name !== context.name) {
         setNote('App name doesn\'t match');
         return;
