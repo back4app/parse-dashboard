@@ -13,7 +13,7 @@ import styles from 'components/Sidebar/B4aSidebar.scss';
 import baseStyles from 'stylesheets/base.scss';
 import Icon from 'components/Icon/Icon.react';
 
-const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
+const AppsMenu = ({ apps, current, height, onSelect, onPinClick, isAiToolsOpen }) => (
   <div style={{ height }} className={[styles.appsMenu, baseStyles.unselectable].join(' ')}>
     <AppName
       name={current.name}
@@ -21,7 +21,7 @@ const AppsMenu = ({ apps, current, height, onSelect, onPinClick }) => (
       onPinClick={onPinClick}
     />
     <div className={styles.menuSection}>All Apps</div>
-    <div className={styles.appListContainer}>
+    <div className={styles.appListContainer + ' ' + (isAiToolsOpen ? styles.aiToolsOpen : '')}>
       {apps.map(app => {
         if (app.slug === current.slug) {
           return null;

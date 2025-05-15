@@ -39,6 +39,7 @@ const B4aSidebar = ({
 }) => {
   const currentApp = useContext(CurrentApp);
   const [appsMenuOpen, setAppsMenuOpen] = useState(false);
+  const [aiToolsMenuOpen, setAiToolsMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     return isSidebarCollapsed !== undefined ? isSidebarCollapsed : isMobile();
   });
@@ -193,7 +194,7 @@ const B4aSidebar = ({
       // eslint-disable-next-line no-undef
       onClick={() => zE && zE.activate()}
       key={0}
-    ><Icon width={24} height={24} name="support-icon" /> Support</button>
+    >Support <Icon width={20} height={20} name="support-icon" fill="#C1E2FF" /></button>
   ];
   if (footerMenuButtons) {
     footerButtons.push(<FooterMenu key={1}>{footerMenuButtons}</FooterMenu>);
@@ -214,6 +215,7 @@ const B4aSidebar = ({
         current={currentApp}
         onPinClick={onPinClick}
         onSelect={() => setAppsMenuOpen(false)}
+        isAiToolsOpen={aiToolsMenuOpen}
       />
     );
   } else {
@@ -228,7 +230,7 @@ const B4aSidebar = ({
             />
           </div>
         )}
-        <div className={styles.content} style={contentStyle}>
+        <div className={styles.content + ' ' + (aiToolsMenuOpen ? styles.aiToolsOpen : '')} style={contentStyle}>
           {sections.map(({
             name,
             icon,
@@ -265,6 +267,24 @@ const B4aSidebar = ({
 
   return <div className={sidebarClasses.join(' ')} id="sidebar">
     {sidebarContent}
+    <div className={`${styles.aiTools} ${aiToolsMenuOpen ? styles.open : ''}`}>
+      <div className={styles.aiToolsContainer}>
+        <div className={styles.aiToolsHeader} onClick={() => setAiToolsMenuOpen(!aiToolsMenuOpen)}>
+          <span>AI Tools</span>
+          <Icon name="b4a-chevron-down" width={16} height={16} />
+        </div>
+        <div className={`${styles.aiToolsMenu} ${aiToolsMenuOpen ? styles.visible : ''}`}>
+          <a href={`${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents`} className={styles.aiToolItem}>
+            <Icon name="b4a-agent" width={20} height={20} />
+            <span>B4A Agent</span>
+          </a>
+          <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer" className={styles.aiToolItem + ' ' + styles.mcp}>
+            <Icon name="b4a-mcp" width={20} height={20} />
+            <span>Model Context Protocol</span>
+          </a>
+        </div>
+      </div>
+    </div>
     <div className={styles.footer + ' footer'}>{footerButtons}</div>
   </div>
 
