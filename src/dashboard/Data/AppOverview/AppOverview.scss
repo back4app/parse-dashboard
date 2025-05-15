@@ -698,6 +698,10 @@
         display: flex;
         gap: 1rem;
 
+        & > svg {
+          min-width: 155px;
+        }
+
         &:last-child {
           border-bottom: none;
         }

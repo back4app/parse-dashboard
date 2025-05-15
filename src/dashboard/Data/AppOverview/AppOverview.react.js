@@ -233,11 +233,11 @@ class AppOverview extends DashboardView {
           </div>
 
           {/* Onboarding boxes */}
-          {this.state.currentUser.createdAt && (
+          {/* {this.state.currentUser.createdAt && (
             (new Date() - new Date(this.state.currentUser.createdAt)) / (1000 * 60 * 60 * 24) <= 7 && (
-              <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
             )
-          )}
+          )} */}
+          <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />

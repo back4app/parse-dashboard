@@ -115,7 +115,7 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
 
                 <div style={{ flex: 1 }}>
                   <div className={styles.onboardingBoxHeader}>
-                    <div className={styles.onboardingNumber}>1.</div>
+                    {/* <div className={styles.onboardingNumber}>1.</div> */}
                     <div className={styles.onboardingTitle}>Let's create your database schema.</div>
                   </div>
                   <div className={styles.onboardingContent}>
@@ -139,7 +139,7 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
                 <OnboardingIcons name="cloud-code" />
                 <div style={{ flex: 1 }}>
                   <div className={styles.onboardingBoxHeader}>
-                    <div className={styles.onboardingNumber}>2.</div>
+                    {/* <div className={styles.onboardingNumber}>2.</div> */}
                     <div className={styles.onboardingTitle}>Deploy Cloud Code Functions</div>
                   </div>
                   <div className={styles.onboardingContent}>
@@ -163,7 +163,7 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
                 <OnboardingIcons name="connect-app" />
                 <div style={{ flex: 1 }}>
                   <div className={styles.onboardingBoxHeader}>
-                    <div className={styles.onboardingNumber}>3.</div>
+                    {/* <div className={styles.onboardingNumber}>3.</div> */}
                     <div className={styles.onboardingTitle}>Connect Your Front-End</div>
                   </div>
                   <div className={styles.onboardingContent}>
@@ -171,7 +171,27 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
                       Seamlessly integrate your app with our backend using your preferred technology. Get started quickly and power your app with robust backend connectivity!
                     </div>
                     <div className={styles.onboardingActions}>
-                      <button className={styles.appContentBtn} onClick={openConnectModal}>Connect App</button>
+                      <button className={styles.primaryButton} onClick={openConnectModal}>Connect App</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.onboardingBox}>
+                <OnboardingIcons name="mcp" />
+                <div style={{ flex: 1 }}>
+                  <div className={styles.onboardingBoxHeader}>
+                    {/* <div className={styles.onboardingNumber}>4.</div> */}
+                    <div className={styles.onboardingTitle}> Model Context Protocol (MCP)</div>
+                  </div>
+                  <div className={styles.onboardingContent}>
+                    <div className={styles.onboardingDescription}>
+                      Connect your own agent, like GPT or Claude, to power your app with context-aware intelligence. Follow our guide to generate API keys, define model prompts, and start building your way.
+                    </div>
+                    <div className={styles.onboardingActions}>
+                      <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer">
+                        <button className={styles.primaryButton}>MCP Setup</button>
+                      </a>
                     </div>
                   </div>
                 </div>
