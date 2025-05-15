@@ -11,7 +11,9 @@
 $headerHeight: 80px;
 $menuSectionHeight: 24px;
 $sidebarMenuItemHeight: 79px;
-$footerHeight: 57px;
+$footerHeight: 36px;
+$aiToolsHeight: 36px;
+$aiToolsOpenHeight: 110px;
 
 .sidebar {
   @include SoraFont;
@@ -31,7 +33,7 @@ $footerHeight: 57px;
     width: $b4aSidebarCollapsedWidth;
 
     .footer {
-      height: 79px;
+      height: $footerHeight;
       justify-content: center;
       cursor: pointer;
 
@@ -74,16 +76,20 @@ $footerHeight: 57px;
   overflow-y: auto;
   top: 79px;
   right: 0;
-  bottom: 61px;
+  bottom: calc($footerHeight + $aiToolsHeight);
   left: 0;
+
+  &.aiToolsOpen {
+    bottom: calc($footerHeight + $aiToolsOpenHeight);
+  }
 }
 
 .footer {
   position: absolute;
-  background: rgba(249, 249, 249, 0.06);
+  background: #253348;
   // height: 61px;
   line-height: 140%;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   // text-align: center;
   bottom: 0;
   left: 0;
@@ -100,7 +106,7 @@ $footerHeight: 57px;
     border: none;
     background: transparent;
     display: flex;
-    align-content: center;
+    align-items: center;
     gap: 0.5rem;
 
     & svg {
@@ -255,6 +261,10 @@ $footerHeight: 57px;
   .appListContainer {
     overflow-y: auto;
     height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight});
+
+    &.aiToolsOpen {
+      height: calc(100vh - #{$headerHeight} - #{$menuSectionHeight} - #{$sidebarMenuItemHeight} - #{$footerHeight} - #{$aiToolsOpenHeight});
+    }
   }
 }
 
@@ -545,5 +555,86 @@ a.subitem {
     height: 24px;
     width: 24px;
     fill: $white;
+  }
+}
+
+.aiTools {
+  position: absolute;
+  bottom: 36px;
+  left: 0;
+  right: 0;
+  background: #253348;
+  border-bottom: 1px solid rgb(249, 249, 249, 0.06);
+  z-index: 1;
+
+  & .aiToolsContainer {
+    position: relative;
+    width: 100%;
+  }
+
+  .aiToolsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    color: $light-blue;
+    font-size: 14px;
+    line-height: 140%;
+    transition: transform 0.2s ease-in-out;
+
+    svg {
+      fill: $light-blue;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    &:hover {
+      background: rgba(16, 32, 58, 0.3);
+    }
+  }
+
+  &.open {
+    .aiToolsHeader {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .aiToolsMenu {
+    background: #112C4D;
+    transition: transform 0.2s ease-in-out;
+    visibility: hidden;
+    height: 0;
+
+    &.visible {
+      visibility: visible;
+      height: auto;
+    }
+
+    .aiToolItem {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      color: $light-blue;
+      font-size: 14px;
+      line-height: 140%;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(249, 249, 249, 0.06);
+      background: #1c293e;
+
+      svg {
+        fill: $light-blue;
+      }
+
+      &.mcp {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: rgba(28, 41, 62, 0.8);
+      }
+    }
   }
 }
