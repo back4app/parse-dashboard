@@ -276,7 +276,7 @@ const B4aSidebar = ({
         <div className={`${styles.aiToolsMenu} ${aiToolsMenuOpen ? styles.visible : ''}`}>
           <a href={`${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents`} className={styles.aiToolItem}>
             <Icon name="b4a-agent" width={20} height={20} />
-            <span>B4A Agent</span>
+            <span>AI Agent</span>
           </a>
           <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer" className={styles.aiToolItem + ' ' + styles.mcp}>
             <Icon name="b4a-mcp" width={20} height={20} />

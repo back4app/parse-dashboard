@@ -186,7 +186,7 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
                   </div>
                   <div className={styles.onboardingContent}>
                     <div className={styles.onboardingDescription}>
-                      Connect your own agent, like GPT or Claude, to power your app with context-aware intelligence. Follow our guide to generate API keys, define model prompts, and start building your way.
+                      Connect any MCP-ready AI agent to Back4App and let it design your database, deploy serverless code, secure data, manage users, and publish a web front-end—full stack live in seconds.
                     </div>
                     <div className={styles.onboardingActions}>
                       <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer">
