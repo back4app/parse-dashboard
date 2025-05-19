@@ -125,6 +125,13 @@ const PARSE_DOT_COM_SERVER_INFO = {
     playground: {
       evalCode: true,
     },
+    push: {
+      immediatePush: true,
+      scheduledPush: false,
+      storedPushData: true,
+      pushAudiences: true,
+      localization: true
+    },
   },
   parseServerVersion: 'Parse.com',
   status: 'SUCCESS',
@@ -255,7 +262,7 @@ class Dashboard extends React.Component {
 
       const stateApps = [];
       apps.forEach(app => {
-        app.serverInfo = { status: 'LOADING' };
+        app.serverInfo = { status: 'LOADING', features: PARSE_DOT_COM_SERVER_INFO.features };
         AppsManager.addApp(app);
         stateApps.push(new ParseApp(app));
       });

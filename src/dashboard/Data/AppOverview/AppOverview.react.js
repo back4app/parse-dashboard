@@ -222,6 +222,9 @@ class AppOverview extends DashboardView {
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
               <hr />
               <button className={styles.appContentBtn} onClick={() => this.setState({ showConnectAppModal: true })}>Connect App</button>
+              <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer">
+                <button className={styles.appMCPBtn}>MCP Setup</button>
+              </a>
             </div>
             <div className={styles.appInformationBox}>
               <div className={styles.appInfoCardHeader}>App Information</div>
@@ -235,11 +238,11 @@ class AppOverview extends DashboardView {
           </div>
 
           {/* Onboarding boxes */}
-          {this.state.currentUser.createdAt && (
+          {/* {this.state.currentUser.createdAt && (
             (new Date() - new Date(this.state.currentUser.createdAt)) / (1000 * 60 * 60 * 24) <= 7 && (
-              <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
             )
-          )}
+          )} */}
+          <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />

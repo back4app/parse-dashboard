@@ -16,13 +16,14 @@ export default class SettingsData extends React.Component {
 
     this.state = {
       fields: undefined,
-      appSettings: undefined
+      appSettings: undefined,
+      loadingSettings: true,
     };
   }
 
   componentDidMount() {
     this.context.fetchSettingsFields().then(({ fields }) => {
-      this.setState({ fields });
+      this.setState({ fields, loadingSettings: false });
     });
   }
 
@@ -36,10 +37,14 @@ export default class SettingsData extends React.Component {
         const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
         if (!shouldUpdate) {return;}
       }
-      this.setState({ fields: undefined });
-      nextContext.fetchSettingsFields().then(({ fields }) => {
-        this.setState({ fields });
-      });
+
+      // when app is changed
+      if (this.context.applicationId !== nextContext.applicationId) {
+        this.setState({ fields: undefined, loadingSettings: true });
+        nextContext.fetchSettingsFields().then(({ fields }) => {
+          this.setState({ fields, loadingSettings: false });
+        });
+      }
     }
   }
 
@@ -58,6 +63,7 @@ export default class SettingsData extends React.Component {
         context={{
           initialFields: this.state.fields,
           saveChanges: this.saveChanges.bind(this),
+          loadingSettings: this.state.loadingSettings,
         }}
       />
     );

@@ -1240,8 +1240,10 @@ class Browser extends DashboardView {
     }
 
     query.limit(MAX_ROWS_FETCHED);
-    semver.gt(this.context.serverInfo.parseServerVersion, '3.6.0') &&
-      this.excludeFields(query, source);
+    if(this.context.serverInfo.parseServerVersion) {
+      semver.gt(this.context.serverInfo.parseServerVersion, '3.6.0') &&
+        this.excludeFields(query, source);
+    }
 
     let promise = query.find({ useMasterKey });
     let isUnique = false;

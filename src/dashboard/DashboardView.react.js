@@ -8,9 +8,7 @@
 import React from 'react';
 import B4aSidebar from 'components/Sidebar/B4aSidebar.react';
 import styles from 'dashboard/Dashboard.scss';
-import Icon from 'components/Icon/Icon.react';
 import baseStyles from 'stylesheets/base.scss';
-import Button from 'components/Button/Button.react';
 import { CurrentApp } from 'context/currentApp';
 
 import Swal from 'sweetalert2';
@@ -85,8 +83,8 @@ export default class DashboardView extends React.Component {
   }
 
   render() {
-    const isLocked = this.context.serverInfo.status !== 'SUCCESS';
-    if (isLocked && !canAccess(this.context.serverInfo, window.location.pathname.split('/')[3])) {
+    const isLocked = !canAccess(this.context.serverInfo, window.location.pathname.split('/')[3]);
+    if (isLocked) {
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
           <B4aLoader />
@@ -107,44 +105,26 @@ export default class DashboardView extends React.Component {
       );
     }
 
-    const features = this.context.serverInfo.features;
+    // const features = this.context.serverInfo.features;
 
     // const { showAdminPage } = this.context.custom;
 
     const databaseSubsections = [];
-    if (!isLocked && features.schemas &&
-      features.schemas.addField &&
-      features.schemas.removeField &&
-      features.schemas.addClass &&
-      features.schemas.removeClass) {
-      databaseSubsections.push({
-        name: 'Browser',
-        link: '/browser',
-      });
-    }
-
-    // coreSubsections.push({
-    //   name: 'Connections',
-    //   link: '/connections',
-    //   badge: {
-    //     label: 'NEW',
-    //     color: 'green'
+    // if (!isLocked && features.schemas &&
+    //   features.schemas.addField &&
+    //   features.schemas.removeField &&
+    //   features.schemas.addClass &&
+    //   features.schemas.removeClass) {
     //   }
-    // })
+    databaseSubsections.push({
+      name: 'Browser',
+      link: '/browser',
+    });
 
     databaseSubsections.push({
       name: 'Index Manager',
       link: '/index'
     })
-
-    // databaseSubsections.push({
-    //   name: 'Blockchain',
-    //   link: '/blockchain',
-    //   badge: {
-    //     label: 'NEW',
-    //     color: 'green'
-    //   }
-    // })
 
     const cloudCodeSubSections = [];
     // Show cloud code to all parse versions
@@ -155,19 +135,17 @@ export default class DashboardView extends React.Component {
     });
     // }
 
-    if (!isLocked && features.cloudCode && features.cloudCode.jobs) {
-      cloudCodeSubSections.push({
-        name: 'Jobs',
-        link: '/jobs',
-      });
-    }
+    cloudCodeSubSections.push({
+      name: 'Jobs',
+      link: '/jobs',
+    });
 
-    if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
-      cloudCodeSubSections.push({
-        name: 'Logs',
-        link: '/logs',
-      });
-    }
+    // if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
+    cloudCodeSubSections.push({
+      name: 'Logs',
+      link: '/logs',
+    });
+    // }
 
     const apiSubSections = [];
 
@@ -188,31 +166,31 @@ export default class DashboardView extends React.Component {
     });
 
     const moreSubSection = [];
-    if (!isLocked && features.globalConfig &&
-      features.globalConfig.create &&
-      features.globalConfig.read &&
-      features.globalConfig.update &&
-      features.globalConfig.delete) {
-      moreSubSection.push({
-        name: 'Config',
-        link: '/config',
-      });
-    }
+    // if (!isLocked && features.globalConfig &&
+    //   features.globalConfig.create &&
+    //   features.globalConfig.read &&
+    //   features.globalConfig.update &&
+    //   features.globalConfig.delete) {
+    //   }
+    moreSubSection.push({
+      name: 'Config',
+      link: '/config',
+    });
 
     //webhooks requires removal of heroku link code, then it should work.
-    if (!isLocked && features.hooks && features.hooks.create && features.hooks.read && features.hooks.update && features.hooks.delete) {
-      moreSubSection.push({
-        name: 'Webhooks',
-        link: '/webhooks'
-      });
-    }
+    // if (!isLocked && features.hooks && features.hooks.create && features.hooks.read && features.hooks.update && features.hooks.delete) {
+    // }
+    moreSubSection.push({
+      name: 'Webhooks',
+      link: '/webhooks'
+    });
 
-    if (!isLocked && features.push) {
-      moreSubSection.push({
-        name: 'Push',
-        link: '/push'
-      });
-    }
+    moreSubSection.push({
+      name: 'Push',
+      link: '/push'
+    });
+    // if (!isLocked && features.push) {
+    // }
 
     moreSubSection.push({
       name: 'Analytics',
@@ -339,7 +317,7 @@ export default class DashboardView extends React.Component {
       </B4aSidebar>
     );
 
-    let content = <div className={styles.content}>{this.renderContent()}</div>;
+    const content = <div className={styles.content}>{this.renderContent()}</div>;
     // const canRoute = [...databaseSubsections, ...pushSubsections, ...settingsSections, ...appSidebarSections, ...moreSubSection]
     //   .map(({ link }) => link.split('/')[1])
     //   .includes(this.state.route);
