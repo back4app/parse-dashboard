@@ -474,6 +474,78 @@ export default class ParseApp {
     return path;
   }
 
+  processNestedFields = (row, headers) => {
+    const result = {};
+    const nestedFields = new Map(); // Map to store field hierarchies
+    const dateFields = new Set(); // Track date fields
+
+    // First pass: identify all nested fields and potential date fields
+    headers.forEach(header => {
+      const parts = header.split('.');
+      if (parts.length > 1) {
+        const baseField = parts[0];
+        // Check for date fields
+        if (parts[1] === 'iso' || (parts[1] === '__type' && row[header] === 'Date')) {
+          dateFields.add(baseField);
+        }
+        if (!nestedFields.has(baseField)) {
+          nestedFields.set(baseField, new Set());
+        }
+        nestedFields.get(baseField).add(header);
+      } else {
+        // Direct field, copy as is
+        result[header] = row[header];
+      }
+    });
+
+    // Second pass: process nested fields
+    nestedFields.forEach((fields, baseField) => {
+      // Handle date fields first
+      if (dateFields.has(baseField)) {
+        const isoValue = row[`${baseField}.iso`];
+        if (isoValue) {
+          result[baseField] = {
+            __type: 'Date',
+            iso: isoValue
+          };
+        }
+        return;
+      }
+
+      const nestedObj = {};
+
+      fields.forEach(fullField => {
+        const parts = fullField.split('.');
+        let current = nestedObj;
+
+        // Build the nested structure
+        for (let i = 1; i < parts.length - 1; i++) {
+          const part = parts[i];
+          if (!current[part]) {
+            current[part] = {};
+          }
+          current = current[part];
+        }
+
+        // Set the final value
+        const lastPart = parts[parts.length - 1];
+        const value = row[fullField];
+
+        // Skip undefined/null values
+        if (value !== undefined && value !== null) {
+          current[lastPart] = value;
+        }
+      });
+
+      // Only add the nested object if it's not empty
+      if (Object.keys(nestedObj).length > 0) {
+        result[baseField] = nestedObj;
+      }
+    });
+
+    return result;
+  };
+
   async transformCSVtoJSON(file, className) {
     let text;
     await (new Promise(resolve => {
@@ -500,13 +572,17 @@ export default class ParseApp {
       });
 
       fieldNames = parseResult.meta.fields;
-      jsonArray = parseResult.data;
+      jsonArray = parseResult.data.map(row =>
+        this.processNestedFields(row, parseResult.meta.fields)
+      );
 
       // Handle custom field type conversions based on the schema
-      const fields = fieldNames.filter(fieldName => fieldName.indexOf('.') < 0).reduce((fields, fieldName) => {debugger; return({
-        ...fields,
-        [fieldName]: schema.fields[fieldName] || { type: undefined }
-      })}, {});
+      const fields = fieldNames.filter(fieldName => fieldName.indexOf('.') < 0).reduce((fields, fieldName) => {
+        return({
+          ...fields,
+          [fieldName]: schema.fields[fieldName] || { type: undefined }
+        })
+      }, {});
 
       jsonArray.forEach(json => {
         Object.keys(json).forEach(fieldName => {
@@ -563,7 +639,9 @@ export default class ParseApp {
       });
 
       fieldNames = parseResult.meta.fields;
-      jsonArray = parseResult.data;
+      jsonArray = parseResult.data.map(row =>
+        this.processNestedFields(row, parseResult.meta.fields)
+      );
     }
 
     return new Blob([JSON.stringify({ results: jsonArray })], { type: 'text/plain' });
