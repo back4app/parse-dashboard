@@ -38,7 +38,7 @@
 
     & .appOverviewActionsContainer {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
 
       & .appOverviewActionsTitle {
@@ -87,6 +87,7 @@
           overflow: hidden;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
           padding: 0.5rem 0.75rem;
+          margin-top: 0 !important;
 
           &.open {
             border-top-left-radius: 0;
