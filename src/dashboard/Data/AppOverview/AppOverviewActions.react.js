@@ -6,7 +6,7 @@ import { CloneAppModal } from 'dashboard/Settings/Modals/cloneAppModal.react';
 import { DeleteAppModal } from 'dashboard/Settings/Modals/deleteAppModal.react';
 import { RestartAppModal } from 'dashboard/Settings/Modals/restartAppModal.react';
 
-const AppOverviewActions = ({ appName, appUrlName, context }) => {
+const AppOverviewActions = ({ appUrlName, context }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
   const [isRestartModalOpen, setIsRestartModalOpen] = useState(false);
@@ -59,7 +59,7 @@ const AppOverviewActions = ({ appName, appUrlName, context }) => {
 
   return (
     <div className={styles.appOverviewActionsContainer}>
-      <div className={styles.appOverviewActionsTitle}>{appName}</div>
+      {/* <div className={styles.appOverviewActionsTitle}>{appName}</div> */}
       <div className={styles.dropdownContainer} ref={dropdownRef}>
         <div
           className={styles.dropdownTrigger + (isDropdownOpen ? ` ${styles.open}` : '')}

@@ -198,7 +198,6 @@ class AppOverview extends DashboardView {
         </div>
         <div className={styles.content}>
           <AppOverviewActions
-            appName={this.context.name}
             appUrlName={this.context.slug}
             context={this.context}
           />
