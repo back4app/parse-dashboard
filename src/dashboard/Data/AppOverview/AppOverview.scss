@@ -174,6 +174,57 @@
         flex-direction: column;
       }
 
+      & .dropdownContainer {
+        position: relative;
+        min-width: 100%;
+      }
+
+      & .dropdownTrigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #1b3454;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+        color: $white;
+
+        span {
+          margin-right: 8px;
+          font-size: 14px;
+          color: $white;
+        }
+      }
+
+      & .dropdownMenu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        width: 100%;
+        background: #1b3454;
+        border-radius: 4px;
+        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      & .dropdownItem {
+        padding: 8px 12px;
+        font-size: 14px;
+        color: $white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #114370;
+        }
+
+      }
+
       & .keyValueContainer {
         display: flex;
         align-items: center;
@@ -1005,6 +1056,59 @@
         background: #111214 !important;
       }
     }
+  }
+}
+
+.dropdownContainer {
+  position: relative;
+  min-width: 300px;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  .selectedLanguage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $white;
+  }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #253348;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: $white;
+  transition: background-color 0.2s;
+  font-size: 14px;
+
+  &:hover {
+    background: rgba($dark-blue, 0.4);
+  }
+
+  &.selected {
+    background: rgba($dark-blue, 0.4);
+    color: $white;
   }
 }
 
