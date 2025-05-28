@@ -22,6 +22,7 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import AppOverviewActions from './AppOverviewActions.react';
 
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 @withRouter
@@ -196,6 +197,11 @@ class AppOverview extends DashboardView {
           <div className={styles.title}>Overview</div>
         </div>
         <div className={styles.content}>
+          <AppOverviewActions
+            appUrlName={this.context.slug}
+            context={this.context}
+          />
+
           <AppLoadingText appName={this.context.name} appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
 
           <div className={styles.appInfoCard}>

@@ -425,7 +425,7 @@ export default class ParseApp {
   }
 
   restartApp() {
-    const path = `/parse-app/${this.slug}/restart`;
+    const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/restart`;
     return AJAX.post(path);
   }
 
@@ -455,7 +455,7 @@ export default class ParseApp {
   }
 
   async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false) {
-    const path = `/parse-app/${this.slug}/clone`;
+    const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
     return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs })
   }
 
