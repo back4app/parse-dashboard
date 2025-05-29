@@ -97,6 +97,7 @@ module.exports = {
         'version' : JSON.stringify(version),
         'BACKEND_URL':  JSON.stringify(BACK4APP_API_PATH),
         'SOLUCX_API_KEY': JSON.stringify(settings.SOLUCX_API_KEY),
+        'BUILD_TIMESTAMP': JSON.stringify(new Date().toISOString()),
       },
       b4aSettings: JSON.stringify(settings)
     }),

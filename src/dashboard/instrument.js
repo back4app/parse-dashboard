@@ -7,12 +7,18 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
+// const isLessThan2Hours = new Date(process.env.BUILD_TIMESTAMP) > new Date(Date.now() - 1000 * 60 * 60 * b4aSettings.SENTRY_RECORD_X_HOURS);
+const isLessThan2Hours = new Date(process.env.BUILD_TIMESTAMP) > new Date(Date.now() - 1000 * 60 * 3);
+const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
+
+console.log('isLessThan2Hours', isLessThan2Hours);
+console.log('isRecordEverySession', isRecordEverySession);
 
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
+  replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0.1,
   replaysOnErrorSampleRate: 1.0,
   maxBreadcrumbs: 100,
   integrations: [
