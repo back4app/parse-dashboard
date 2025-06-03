@@ -560,6 +560,22 @@ export default class ParseApp {
     let fieldNames;
     let jsonArray;
 
+    // Helper function to check if a header is valid (not empty and not auto-generated)
+    const isValidHeader = (header) => {
+      if (!header || typeof header !== 'string') {
+        return false;
+      }
+      const trimmed = header.trim();
+      if (!trimmed) {
+        return false;
+      }
+      // Check if it's an auto-generated header like "_1", "_2", etc.
+      if (/^_\d+$/.test(trimmed)) {
+        return false;
+      }
+      return true;
+    };
+
     if (className) {
       const schema = await (new Parse.Schema(className)).get();
 
@@ -571,10 +587,21 @@ export default class ParseApp {
         transformHeader: header => header.trim()
       });
 
-      fieldNames = parseResult.meta.fields;
-      jsonArray = parseResult.data.map(row =>
-        this.processNestedFields(row, parseResult.meta.fields)
-      );
+      // Filter out invalid headers
+      const validFieldNames = parseResult.meta.fields.filter(isValidHeader);
+      fieldNames = validFieldNames;
+
+      // Process data and filter out columns with invalid headers
+      jsonArray = parseResult.data.map(row => {
+        // Create a new row object with only valid fields
+        const filteredRow = {};
+        validFieldNames.forEach(fieldName => {
+          if (row.hasOwnProperty(fieldName)) {
+            filteredRow[fieldName] = row[fieldName];
+          }
+        });
+        return this.processNestedFields(filteredRow, validFieldNames);
+      });
 
       // Handle custom field type conversions based on the schema
       const fields = fieldNames.filter(fieldName => fieldName.indexOf('.') < 0).reduce((fields, fieldName) => {
@@ -638,10 +665,21 @@ export default class ParseApp {
         transformHeader: header => header.trim()
       });
 
-      fieldNames = parseResult.meta.fields;
-      jsonArray = parseResult.data.map(row =>
-        this.processNestedFields(row, parseResult.meta.fields)
-      );
+      // Filter out invalid headers
+      const validFieldNames = parseResult.meta.fields.filter(isValidHeader);
+      fieldNames = validFieldNames;
+
+      // Process data and filter out columns with invalid headers
+      jsonArray = parseResult.data.map(row => {
+        // Create a new row object with only valid fields
+        const filteredRow = {};
+        validFieldNames.forEach(fieldName => {
+          if (row.hasOwnProperty(fieldName)) {
+            filteredRow[fieldName] = row[fieldName];
+          }
+        });
+        return this.processNestedFields(filteredRow, validFieldNames);
+      });
     }
 
     return new Blob([JSON.stringify({ results: jsonArray })], { type: 'text/plain' });
