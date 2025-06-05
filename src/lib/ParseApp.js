@@ -1639,4 +1639,17 @@ export default class ParseApp {
     }
   }
 
+  async fetchDeployments() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
 }

@@ -140,6 +140,11 @@ export default class DashboardView extends React.Component {
       link: '/jobs',
     });
 
+    cloudCodeSubSections.push({
+      name: 'Deployments',
+      link: '/deployments',
+    });
+
     // if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
     cloudCodeSubSections.push({
       name: 'Logs',
