@@ -207,13 +207,15 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
         <td style={{ width: '70%' }}>
           <div className={styles.descriptionContainer}>
             <div className={styles.description}>{value.description}</div>
-            <button
-              className={styles.rollbackButton}
-              onClick={onClick}
-              disabled={startRollingBack || isLoading}
-            >
-              {startRollingBack ? 'Rolling back...' : 'Rollback'}
-            </button>
+            {!isCurrentRelease && (
+              <button
+                className={styles.rollbackButton}
+                onClick={onClick}
+                disabled={startRollingBack || isLoading}
+              >
+                {startRollingBack ? 'Rolling back...' : 'Rollback'}
+              </button>
+            )}
           </div>
         </td>
       </tr>
