@@ -13,6 +13,8 @@ import TableView from 'dashboard/TableView.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import { withRouter } from 'lib/withRouter';
+import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
+import styles from './Deployments.scss';
 
 @withRouter
 class Deployments extends TableView {
@@ -31,6 +33,7 @@ class Deployments extends TableView {
         sort: 'desc',
       },
       totalReturned: 0,
+      notification: null
     };
   }
 
@@ -59,11 +62,49 @@ class Deployments extends TableView {
   loadData() {
     this.setState({ loading: true });
     this.context.fetchDeployments().then(data => {
-      console.log('data', data);
-      this.setState({ releases: data.data, loading: false, pagination: data.pagination, totalReturned: data.pagination.totalReturned });
+      this.setState({ releases: data.data, loading: false, pagination: data.pagination, totalReturned: data.pagination.totalReturned, currentRelease: data.data[0] });
     }).catch(error => {
       console.error('Error fetching deployments:', error);
       this.setState({ loading: false, error: error.message });
+    });
+  }
+
+  handleRollback(releaseId) {
+    this.context.rollbackDeployment(releaseId).then((response) => {
+      if (response.success) {
+        this.setState({
+          notification: {
+            message: 'Rollback successful',
+            isErrorNote: false
+          }
+        });
+      } else {
+        this.setState({
+          notification: {
+            message: 'Rollback failed!',
+            isErrorNote: true
+          }
+        });
+      }
+      this.loadData();
+      setTimeout(() => {
+        this.setState({
+          notification: null
+        });
+      }, 3500);
+    }).catch(error => {
+      console.error('Rollback failed:', error);
+      this.setState({
+        notification: {
+          message: 'Rollback failed!',
+          isErrorNote: true
+        }
+      });
+      setTimeout(() => {
+        this.setState({
+          notification: null
+        });
+      }, 3500);
     });
   }
 
@@ -79,19 +120,43 @@ class Deployments extends TableView {
 
   renderRow(data) {
     const value = data;
-
     return (
-      <tr key={value.releaseId}>
-        <td style={{ width: '10%' }}>
-          {value.releaseId}
-        </td>
-        <td style={{ width: '20%' }}>
-          {new Date(value.deployedAt).toLocaleString()}
-        </td>
-        <td style={{ width: '70%' }}>
-          <div style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{value.description}</div>
-        </td>
-      </tr>
+      <>
+        {value.releaseId === this.state.currentRelease.releaseId && (
+          <tr>
+            <td className={styles.subHeader} colSpan={3}>
+              Current
+            </td>
+          </tr>
+        )}
+        <tr key={value.releaseId} className={styles.row}>
+          <td style={{ width: '10%' }}>
+            {value.releaseId}
+          </td>
+          <td style={{ width: '20%' }}>
+            {new Date(value.deployedAt).toLocaleString()}
+          </td>
+          <td style={{ width: '70%' }}>
+            <div className={styles.descriptionContainer}>
+              <div className={styles.description}>{value.description}</div>
+              <button
+                className={styles.rollbackButton}
+                onClick={() => this.handleRollback(value._id)}
+              >
+                Rollback
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        {value.releaseId === this.state.currentRelease.releaseId && this.state.releases.length > 1 &&  (
+          <tr>
+            <td className={styles.subHeader} colSpan={3}>
+              History
+            </td>
+          </tr>
+        )}
+      </>
     );
   }
 
@@ -117,6 +182,15 @@ class Deployments extends TableView {
         icon="b4a-app-settings-icon"
         cta="Create your first deployment"
         action={() => this.props.navigate(`/apps/${this.props.match.params.appId}/cloud_code`)}
+      />
+    );
+  }
+
+  renderExtras() {
+    return (
+      <B4aNotification
+        message={this.state.notification?.message}
+        isErrorNote={this.state.notification?.isErrorNote}
       />
     );
   }
