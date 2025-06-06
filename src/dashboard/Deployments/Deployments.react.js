@@ -151,13 +151,17 @@ class Deployments extends DashboardView {
     );
   }
 
-  renderRow(data) {
+  renderRow(data, index) {
     const value = data;
+    const isCurrentRelease = index === 0 && this.state.currentRelease;
+    const isFirstHistoryItem = index === 1 && this.state.currentRelease;
+
     return (
       <ReleaseRow
+        key={value._id || value.releaseId}
         value={value}
-        isCurrentRelease={value.releaseId === this.state.currentRelease.releaseId}
-        isHistory={value.releaseId === this.state.currentRelease.releaseId && this.state.releases.length > 1}
+        isCurrentRelease={isCurrentRelease}
+        isFirstHistoryItem={isFirstHistoryItem}
         handleRollback={this.handleRollback.bind(this)}
         isLoading={this.state.isRollingBack}
       />
@@ -215,7 +219,14 @@ class Deployments extends DashboardView {
   }
 
   tableData() {
-    return this.state.releases;
+    const currentRelease = this.state.currentRelease;
+    const releases = this.state.releases || [];
+
+    // Return current deployment first, then paginated releases
+    if (currentRelease) {
+      return [currentRelease, ...releases];
+    }
+    return releases;
   }
 
   renderContent() {
@@ -233,7 +244,7 @@ class Deployments extends DashboardView {
           content = (
             <div className={stylesTable.rows}>
               <table>
-                <tbody>{data.map(row => this.renderRow(row))}</tbody>
+                <tbody>{data.map((row, index) => this.renderRow(row, index))}</tbody>
               </table>
             </div>
           );
@@ -261,7 +272,7 @@ class Deployments extends DashboardView {
 export default Deployments;
 
 
-const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoading }) => {
+const ReleaseRow = ({ value, isCurrentRelease, isFirstHistoryItem, handleRollback, isLoading }) => {
   const [startRollingBack, setStartRollingBack] = useState(false);
   const onClick = () => {
     setStartRollingBack(true);
@@ -301,7 +312,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
         </td>
       </tr>
 
-      {isHistory && (
+      {isFirstHistoryItem && (
         <tr key={`${Math.random()}`}>
           <td className={styles.subHeader} colSpan={3}>
               History
