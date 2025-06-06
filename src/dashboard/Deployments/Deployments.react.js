@@ -9,15 +9,18 @@ import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import Icon from 'components/Icon/Icon.react';
 import React, { useState } from 'react';
 import TableHeader from 'components/Table/TableHeader.react';
-import TableView from 'dashboard/TableView.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import { withRouter } from 'lib/withRouter';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import styles from './Deployments.scss';
+import DashboardView from 'dashboard/DashboardView.react';
+import stylesTable from 'dashboard/TableView.scss';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+
 
 @withRouter
-class Deployments extends TableView {
+class Deployments extends DashboardView {
   constructor() {
     super();
     this.section = 'Cloud Code';
@@ -34,7 +37,8 @@ class Deployments extends TableView {
       },
       totalReturned: 0,
       notification: null,
-      isRollingBack: false
+      isRollingBack: false,
+      loadingMore: false,
     };
   }
 
@@ -57,17 +61,42 @@ class Deployments extends TableView {
   }
 
   onRefresh() {
-    this.loadData();
+    this.loadData(true);
   }
 
-  loadData() {
-    this.setState({ loading: true });
-    this.context.fetchDeployments().then(data => {
-      this.setState({ releases: data.data, loading: false, pagination: data.pagination, totalReturned: data.pagination.totalReturned, currentRelease: data.data[0] });
+  loadData(refresh = false) {
+    const isRefresh = refresh || this.state.releases.length === 0;
+    this.setState({ loading: isRefresh, loadingMore: !isRefresh });
+
+    const cursor = isRefresh ? null : this.state.pagination.nextCursor;
+    const limit = this.state.pagination.limit;
+    const sort = this.state.pagination.sort;
+
+    this.context.fetchDeployments(limit, cursor, sort).then(data => {
+      const newReleases = isRefresh ? data.data : [...this.state.releases, ...data.data];
+
+      this.setState({
+        releases: newReleases,
+        loading: false,
+        loadingMore: false,
+        pagination: {
+          ...this.state.pagination,
+          hasMore: data.pagination?.hasMore || false,
+          nextCursor: data.pagination?.nextCursor || null,
+        },
+        totalReturned: data.pagination?.totalReturned || newReleases.length,
+        currentRelease: newReleases[0]
+      });
     }).catch(error => {
       console.error('Error fetching deployments:', error);
-      this.setState({ loading: false, error: error.message });
+      this.setState({ loading: false, loadingMore: false, error: error.message });
     });
+  }
+
+  loadMore() {
+    if (!this.state.loadingMore && this.state.pagination.hasMore) {
+      this.loadData(false);
+    }
   }
 
   handleRollback(releaseId) {
@@ -156,24 +185,76 @@ class Deployments extends TableView {
         description="Deploy your code to the cloud"
         icon="b4a-app-settings-icon"
         cta="Create your first deployment"
-        action={() => this.props.navigate(`/apps/${this.props.match.params.appId}/cloud_code`)}
+        action={() => this.props.navigate(`/apps/${this.props.params.appId}/cloud_code`)}
       />
     );
   }
 
   renderExtras() {
+    const loadMoreButton = this.state.pagination.hasMore && (
+      <button
+        className={styles.loadMoreButton}
+        onClick={() => this.loadMore()}
+        disabled={this.state.loadingMore}
+      >
+        {this.state.loadingMore ? 'Loading...' : 'Load More'}
+      </button>
+    );
+
     return (
-      this.state.notification?.message && (
-        <B4aNotification
-          note={this.state.notification.message}
-          isErrorNote={this.state.notification.isErrorNote}
-        />
-      )
+      <>
+        {this.state.notification?.message && (
+          <B4aNotification
+            note={this.state.notification.message}
+            isErrorNote={this.state.notification.isErrorNote}
+          />
+        )}
+        {loadMoreButton}
+      </>
     );
   }
 
   tableData() {
     return this.state.releases;
+  }
+
+  renderContent() {
+    const toolbar = this.renderToolbar();
+    const data = this.tableData();
+    let content = null;
+    let headers = null;
+    if (data !== undefined) {
+      if (!Array.isArray(data)) {
+        console.warn('tableData() needs to return an array of objects');
+      } else {
+        if (data.length === 0) {
+          content = <div className={stylesTable.empty}>{this.renderEmpty()}</div>;
+        } else {
+          content = (
+            <div className={stylesTable.rows}>
+              <table>
+                <tbody>{data.map(row => this.renderRow(row))}</tbody>
+              </table>
+            </div>
+          );
+          headers = this.renderHeaders();
+        }
+      }
+    }
+    const extras = this.renderExtras ? this.renderExtras() : null;
+    const loading = this.state ? this.state.loading : false;
+    return (
+      <div>
+        <B4aLoaderContainer loading={loading}>
+          <div className={stylesTable.content}>
+            {content}
+            {extras}
+          </div>
+        </B4aLoaderContainer>
+        {toolbar}
+        <div className={stylesTable.headers}>{headers}</div>
+      </div>
+    );
   }
 }
 
@@ -191,7 +272,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
   return (
     <>
       {isCurrentRelease && (
-        <tr>
+        <tr key={`${Math.random()}`}>
           <td className={styles.subHeader} colSpan={3}>
               Current
           </td>
@@ -221,7 +302,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
       </tr>
 
       {isHistory && (
-        <tr>
+        <tr key={`${Math.random()}`}>
           <td className={styles.subHeader} colSpan={3}>
               History
           </td>
