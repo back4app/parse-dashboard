@@ -184,7 +184,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
   const [startRollingBack, setStartRollingBack] = useState(false);
   const onClick = () => {
     setStartRollingBack(true);
-    handleRollback(value._id).then(() => {
+    handleRollback(value._id).finally(() => {
       setStartRollingBack(false);
     });
   };
