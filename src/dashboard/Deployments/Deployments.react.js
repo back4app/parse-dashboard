@@ -76,14 +76,14 @@ class Deployments extends TableView {
       if (response.success) {
         this.setState({
           notification: {
-            message: 'Rollback successful',
+            message: 'Rollback successful!',
             isErrorNote: false
           }
         });
       } else {
         this.setState({
           notification: {
-            message: 'Rollback failed!',
+            message: response.message || response.error || 'Rollback failed!',
             isErrorNote: true
           }
         });
@@ -98,7 +98,7 @@ class Deployments extends TableView {
       console.error('Rollback failed:', error);
       this.setState({
         notification: {
-          message: 'Rollback failed!',
+          message: error || 'Rollback failed!',
           isErrorNote: true
         }
       });
