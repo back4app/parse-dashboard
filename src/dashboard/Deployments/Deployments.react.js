@@ -151,17 +151,14 @@ class Deployments extends DashboardView {
     );
   }
 
-  renderRow(data, index) {
+  renderRow(data) {
     const value = data;
-    const isCurrentRelease = index === 0 && this.state.currentRelease;
-    const isFirstHistoryItem = index === 1 && this.state.currentRelease;
 
     return (
       <ReleaseRow
         key={value._id || value.releaseId}
         value={value}
-        isCurrentRelease={isCurrentRelease}
-        isFirstHistoryItem={isFirstHistoryItem}
+        isCurrentRelease={false}
         handleRollback={this.handleRollback.bind(this)}
         isLoading={this.state.isRollingBack}
       />
@@ -218,33 +215,32 @@ class Deployments extends DashboardView {
     );
   }
 
-  tableData() {
-    const currentRelease = this.state.currentRelease;
-    const releases = this.state.releases || [];
-
-    // Return current deployment first, then paginated releases
-    if (currentRelease) {
-      return [currentRelease, ...releases];
-    }
-    return releases;
-  }
-
   renderContent() {
     const toolbar = this.renderToolbar();
-    const data = this.tableData();
+    const data = this.state.releases;
     let content = null;
     let headers = null;
     if (data !== undefined) {
       if (!Array.isArray(data)) {
         console.warn('tableData() needs to return an array of objects');
       } else {
-        if (data.length === 0) {
+        if (data.length === 0 && !this.state.currentRelease) {
           content = <div className={stylesTable.empty}>{this.renderEmpty()}</div>;
         } else {
           content = (
             <div className={stylesTable.rows}>
               <table>
-                <tbody>{data.map((row, index) => this.renderRow(row, index))}</tbody>
+                <tbody>
+                  <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} />
+                  {data.length > 1 && (
+                    <tr key={`${Math.random()}`}>
+                      <td className={styles.subHeader} colSpan={3}>
+                          History
+                      </td>
+                    </tr>
+                  )}
+                  {data.map((row) => this.renderRow(row))}
+                </tbody>
               </table>
             </div>
           );
@@ -272,7 +268,7 @@ class Deployments extends DashboardView {
 export default Deployments;
 
 
-const ReleaseRow = ({ value, isCurrentRelease, isFirstHistoryItem, handleRollback, isLoading }) => {
+const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
   const [startRollingBack, setStartRollingBack] = useState(false);
   const onClick = () => {
     setStartRollingBack(true);
@@ -311,14 +307,6 @@ const ReleaseRow = ({ value, isCurrentRelease, isFirstHistoryItem, handleRollbac
           </div>
         </td>
       </tr>
-
-      {isFirstHistoryItem && (
-        <tr key={`${Math.random()}`}>
-          <td className={styles.subHeader} colSpan={3}>
-              History
-          </td>
-        </tr>
-      )}
     </>
   );
 };
