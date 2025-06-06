@@ -1639,12 +1639,21 @@ export default class ParseApp {
     }
   }
 
-  async fetchDeployments() {
+  async fetchDeployments(limit = 10, cursor = null, sort = 'desc') {
     try {
+      const params = new URLSearchParams({
+        limit: limit.toString(),
+        sort: sort
+      });
+
+      if (cursor) {
+        params.append('cursor', cursor);
+      }
+
       return (
         await axios.get(
           // eslint-disable-next-line no-undef
-          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases`,
+          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases?${params.toString()}`,
           { withCredentials: true }
         )
       ).data;
@@ -1664,6 +1673,7 @@ export default class ParseApp {
         )
       ).data;
     } catch (err) {
+      console.log('err', err);
       throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
     }
   }
