@@ -85,7 +85,7 @@ class Deployments extends DashboardView {
           nextCursor: data.pagination?.nextCursor || null,
         },
         totalReturned: data.pagination?.totalReturned || newReleases.length,
-        currentRelease: newReleases[0]
+        currentRelease: data.currentDeployment,
       });
     }).catch(error => {
       console.error('Error fetching deployments:', error);
@@ -266,7 +266,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
   const onClick = () => {
     setStartRollingBack(true);
     handleRollback(value._id).finally(() => {
-      setStartRollingBack(false);
+      // setStartRollingBack(false);
     });
   };
   return (
@@ -278,7 +278,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
           </td>
         </tr>
       )}
-      <tr key={value.releaseId} className={styles.row}>
+      <tr key={value.releaseId} className={`${styles.row} ${startRollingBack ? styles.rollingBack : ''}`  }>
         <td style={{ width: '10%' }}>
           {value.releaseId}
         </td>
@@ -290,7 +290,7 @@ const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoad
             <div className={styles.description}>{value.description}</div>
             {!isCurrentRelease && (
               <button
-                className={styles.rollbackButton}
+                className={`${styles.rollbackButton} ${startRollingBack || isLoading ? styles.disabledRollbackButton : ''}`}
                 onClick={onClick}
                 disabled={startRollingBack || isLoading}
               >

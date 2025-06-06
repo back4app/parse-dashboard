@@ -19,6 +19,17 @@
       display: block;
     }
   }
+
+  &.rollingBack {
+    box-shadow: 0px 1px 0px 0px rgba(193, 226, 255, 0.16);
+    background-color: #1B3454;
+
+    .rollbackButton {
+      opacity: 0.5;
+      cursor: not-allowed;
+      display: block;
+    }
+  }
 }
 td.subHeader {
   background-color: #051127;
@@ -54,7 +65,7 @@ td.subHeader {
       box-shadow: 0px 1px 0px 0px rgba(193, 226, 255, 0.16);
     }
 
-    &:disabled {
+    &.disabledRollbackButton {
       opacity: 0.5;
       cursor: not-allowed;
     }
