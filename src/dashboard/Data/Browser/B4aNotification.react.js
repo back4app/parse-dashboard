@@ -28,10 +28,13 @@ export default class B4aNotification extends React.Component {
 
   componentDidMount() {
     const node = this.notificationRef.current;
-    const { width, height } = node.getBoundingClientRect();
-    this.setState({
-      pos: new Position((window.innerWidth / 2) + width, height + 32)
-    })
+
+    if (node) {
+      const { width, height } = node.getBoundingClientRect();
+      this.setState({
+        pos: new Position((window.innerWidth / 2) + width, height + 32)
+      });
+    }
   }
 
   componentWillUnmount() {

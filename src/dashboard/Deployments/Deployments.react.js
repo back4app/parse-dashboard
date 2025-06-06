@@ -7,7 +7,7 @@
  */
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import Icon from 'components/Icon/Icon.react';
-import React from 'react';
+import React, { useState } from 'react';
 import TableHeader from 'components/Table/TableHeader.react';
 import TableView from 'dashboard/TableView.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -33,7 +33,8 @@ class Deployments extends TableView {
         sort: 'desc',
       },
       totalReturned: 0,
-      notification: null
+      notification: null,
+      isRollingBack: false
     };
   }
 
@@ -70,7 +71,8 @@ class Deployments extends TableView {
   }
 
   handleRollback(releaseId) {
-    this.context.rollbackDeployment(releaseId).then((response) => {
+    this.setState({ isRollingBack: true });
+    return this.context.rollbackDeployment(releaseId).then((response) => {
       if (response.success) {
         this.setState({
           notification: {
@@ -105,6 +107,8 @@ class Deployments extends TableView {
           notification: null
         });
       }, 3500);
+    }).finally(() => {
+      this.setState({ isRollingBack: false });
     });
   }
 
@@ -121,42 +125,13 @@ class Deployments extends TableView {
   renderRow(data) {
     const value = data;
     return (
-      <>
-        {value.releaseId === this.state.currentRelease.releaseId && (
-          <tr>
-            <td className={styles.subHeader} colSpan={3}>
-              Current
-            </td>
-          </tr>
-        )}
-        <tr key={value.releaseId} className={styles.row}>
-          <td style={{ width: '10%' }}>
-            {value.releaseId}
-          </td>
-          <td style={{ width: '20%' }}>
-            {new Date(value.deployedAt).toLocaleString()}
-          </td>
-          <td style={{ width: '70%' }}>
-            <div className={styles.descriptionContainer}>
-              <div className={styles.description}>{value.description}</div>
-              <button
-                className={styles.rollbackButton}
-                onClick={() => this.handleRollback(value._id)}
-              >
-                Rollback
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        {value.releaseId === this.state.currentRelease.releaseId && this.state.releases.length > 1 &&  (
-          <tr>
-            <td className={styles.subHeader} colSpan={3}>
-              History
-            </td>
-          </tr>
-        )}
-      </>
+      <ReleaseRow
+        value={value}
+        isCurrentRelease={value.releaseId === this.state.currentRelease.releaseId}
+        isHistory={value.releaseId === this.state.currentRelease.releaseId && this.state.releases.length > 1}
+        handleRollback={this.handleRollback.bind(this)}
+        isLoading={this.state.isRollingBack}
+      />
     );
   }
 
@@ -188,10 +163,12 @@ class Deployments extends TableView {
 
   renderExtras() {
     return (
-      <B4aNotification
-        message={this.state.notification?.message}
-        isErrorNote={this.state.notification?.isErrorNote}
-      />
+      this.state.notification?.message && (
+        <B4aNotification
+          note={this.state.notification.message}
+          isErrorNote={this.state.notification.isErrorNote}
+        />
+      )
     );
   }
 
@@ -201,3 +178,53 @@ class Deployments extends TableView {
 }
 
 export default Deployments;
+
+
+const ReleaseRow = ({ value, isCurrentRelease, isHistory, handleRollback, isLoading }) => {
+  const [startRollingBack, setStartRollingBack] = useState(false);
+  const onClick = () => {
+    setStartRollingBack(true);
+    handleRollback(value._id).then(() => {
+      setStartRollingBack(false);
+    });
+  };
+  return (
+    <>
+      {isCurrentRelease && (
+        <tr>
+          <td className={styles.subHeader} colSpan={3}>
+              Current
+          </td>
+        </tr>
+      )}
+      <tr key={value.releaseId} className={styles.row}>
+        <td style={{ width: '10%' }}>
+          {value.releaseId}
+        </td>
+        <td style={{ width: '20%' }}>
+          {new Date(value.deployedAt).toLocaleString()}
+        </td>
+        <td style={{ width: '70%' }}>
+          <div className={styles.descriptionContainer}>
+            <div className={styles.description}>{value.description}</div>
+            <button
+              className={styles.rollbackButton}
+              onClick={onClick}
+              disabled={startRollingBack || isLoading}
+            >
+              {startRollingBack ? 'Rolling back...' : 'Rollback'}
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      {isHistory && (
+        <tr>
+          <td className={styles.subHeader} colSpan={3}>
+              History
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
