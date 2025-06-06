@@ -1658,7 +1658,8 @@ export default class ParseApp {
       return (
         await axios.post(
           // eslint-disable-next-line no-undef
-          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases/${releaseId}/rollback`,
+          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/rollback`,
+          { releaseId },
           { withCredentials: true }
         )
       ).data;
