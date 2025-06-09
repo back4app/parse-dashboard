@@ -158,7 +158,7 @@ class Deployments extends DashboardView {
       <ReleaseRow
         key={value._id || value.releaseId}
         value={value}
-        isCurrentRelease={false}
+        isCurrentRelease={this.state.currentRelease?._id === value._id}
         handleRollback={this.handleRollback.bind(this)}
         isLoading={this.state.isRollingBack}
       />
@@ -231,8 +231,17 @@ class Deployments extends DashboardView {
             <div className={stylesTable.rows}>
               <table>
                 <tbody>
-                  <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} />
-                  {data.length > 1 && (
+                  {this.state.currentRelease && (
+                    <tr key={`${Math.random()}`}>
+                      <td className={styles.subHeader} colSpan={3}>
+                          Current
+                      </td>
+                    </tr>
+                  )}
+                  {this.state.currentRelease && (
+                    <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} />
+                  )}
+                  {data.length > 0 && (
                     <tr key={`${Math.random()}`}>
                       <td className={styles.subHeader} colSpan={3}>
                           History
@@ -278,13 +287,6 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
   };
   return (
     <>
-      {isCurrentRelease && (
-        <tr key={`${Math.random()}`}>
-          <td className={styles.subHeader} colSpan={3}>
-              Current
-          </td>
-        </tr>
-      )}
       <tr key={value.releaseId} className={`${styles.row} ${startRollingBack ? styles.rollingBack : ''}`  }>
         <td style={{ width: '10%' }}>
           {value.releaseId}
