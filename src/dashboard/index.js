@@ -6,6 +6,9 @@
  * the root directory of this source tree.
  */
 import './instrument';
+import instrument from './instrument';
+
+instrument();
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import Immutable from 'immutable';

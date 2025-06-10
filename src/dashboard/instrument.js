@@ -41,3 +41,8 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
   ],
 });
+
+
+export default function instrument() {
+  console.log('instrument');
+}
