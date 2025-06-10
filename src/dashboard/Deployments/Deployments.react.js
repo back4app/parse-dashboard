@@ -296,7 +296,7 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
         </td>
         <td style={{ width: '70%' }}>
           <div className={styles.descriptionContainer}>
-            <div className={styles.description}>{value.description}</div>
+            <div className={styles.description}>{value.description || 'NA'}</div>
             {/* {!isCurrentRelease && (
               <button
                 className={`${styles.rollbackButton} ${startRollingBack || isLoading ? styles.disabledRollbackButton : ''}`}
