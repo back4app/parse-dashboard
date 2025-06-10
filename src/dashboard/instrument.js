@@ -7,16 +7,10 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
-console.log('b4aSettings', b4aSettings);
-console.log('HOURS', b4aSettings.SENTRY_RECORD_X_HOURS);
 
 // eslint-disable-next-line no-undef
 const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * (b4aSettings.SENTRY_RECORD_X_HOURS || 2));
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
-
-
-console.log('isLessThan2Hours', isLessThan2Hours);
-console.log('isRecordEverySession', isRecordEverySession);
 
 Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
@@ -47,8 +41,3 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
   ],
 });
-
-
-export default function instrument() {
-  console.log('instrument');
-}
