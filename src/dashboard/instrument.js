@@ -7,6 +7,9 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
+console.log('b4aSettings', b4aSettings);
+console.log('HOURS', b4aSettings.SENTRY_RECORD_X_HOURS);
+
 // eslint-disable-next-line no-undef
 const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * b4aSettings.SENTRY_RECORD_X_HOURS);
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
