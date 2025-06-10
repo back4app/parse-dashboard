@@ -12,12 +12,19 @@ import {
 const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * (b4aSettings.SENTRY_RECORD_X_HOURS || 2));
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
 
+
+setTimeout(() => {
+  console.log('isRecordEverySession', isRecordEverySession);
+
+  throw new Error('test');
+}, 10000);
+
 Sentry.init({
   debug: true,
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
-  replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0.1,
+  replaysSessionSampleRate: 1.0,
   replaysOnErrorSampleRate: 1.0,
   maxBreadcrumbs: 100,
   integrations: [
