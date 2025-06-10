@@ -16,7 +16,7 @@ Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
-  replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0.1,
+  replaysSessionSampleRate: 1.0,
   replaysOnErrorSampleRate: 1.0,
   maxBreadcrumbs: 100,
   integrations: [
@@ -43,6 +43,6 @@ Sentry.init({
 });
 
 
-export default function instrument() {
-  console.log('instrument');
-}
+// export default function instrument() {
+//   console.log('instrument');
+// }
