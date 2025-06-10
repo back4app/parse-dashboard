@@ -10,11 +10,10 @@ import {
 
 console.log('process.env.BUILD_TIMESTAMP', process.env.BUILD_TIMESTAMP);
 console.log('process.env.SENTRY_ENV', process.env.SENTRY_ENV);
-console.log('process.env.SENTRY_DSN', process.env.SENTRY_DSN);
 console.log('process.env.SENTRY_RECORD_X_HOURS', process.env.SENTRY_RECORD_X_HOURS);
 
 // const isLessThan2Hours = new Date(process.env.BUILD_TIMESTAMP) > new Date(Date.now() - 1000 * 60 * 60 * b4aSettings.SENTRY_RECORD_X_HOURS);
-const isLessThan2Hours = new Date(process.env.BUILD_TIMESTAMP) > new Date(Date.now() - 1000 * 60 * 3);
+const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 2);
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
 
 console.log('isLessThan2Hours', isLessThan2Hours);
