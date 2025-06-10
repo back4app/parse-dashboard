@@ -42,3 +42,7 @@ Sentry.init({
   ],
 });
 
+
+export default function instrument() {
+  console.log('');
+}
