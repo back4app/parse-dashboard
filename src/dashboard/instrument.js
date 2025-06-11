@@ -44,20 +44,25 @@ Sentry.init({
   ],
 });
 
-window.addEventListener('navigate', (event) => {
-  const url = new URL(event.destination.url);
+console.log('isRecordEverySession', isRecordEverySession);
 
-  let isDeploymentPath = false;
-  isDeploymentPath = url.pathname.split('/').includes('deployments');
-  console.log('isDeploymentPath', isDeploymentPath);
-  console.log('isRecordEverySession', isRecordEverySession);
+if (typeof window !== 'undefined') {
+  window.addEventListener('navigate', (event) => {
+    const url = new URL(event.destination.url);
 
-  if (isDeploymentPath && isRecordEverySession) {
-    replay.start();
-  }
-});
+    let isDeploymentPath = false;
+    isDeploymentPath = url.pathname.split('/').includes('deployments');
+    console.log('isDeploymentPath', isDeploymentPath);
+    console.log('isRecordEverySession', isRecordEverySession);
 
+    if (isDeploymentPath && isRecordEverySession) {
+      replay.start();
+    }
+  });
+} else {
+  console.log('window is undefined');
+}
 
 export default function instrument() {
-  console.log('');
+  console.log('instrument....');
 }
