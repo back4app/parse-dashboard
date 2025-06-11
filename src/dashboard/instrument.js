@@ -22,6 +22,9 @@ const replay = Sentry.replayIntegration({
   networkResponseHeaders: ['X-Custom-Header'],
 })
 
+console.log('NODE_ENV', process.env.NODE_ENV);
+console.log('value:', process.env.NODE_ENV !== 'production');
+
 Sentry.init({
   debug: process.env.NODE_ENV !== 'production',
   dsn: b4aSettings.SENTRY_DSN,
@@ -45,6 +48,8 @@ Sentry.init({
 });
 
 console.log('isRecordEverySession', isRecordEverySession);
+console.log('typeof window', typeof window);
+console.log('window', window);
 
 if (typeof window !== 'undefined') {
   window.addEventListener('navigate', (event) => {
@@ -65,4 +70,10 @@ if (typeof window !== 'undefined') {
 
 export default function instrument() {
   console.log('instrument....');
+
+  if (typeof window !== 'undefined') {
+    console.log('if from inside function')
+  } else {
+    console.log('else from inside function')
+  }
 }
