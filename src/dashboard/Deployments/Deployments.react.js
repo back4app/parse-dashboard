@@ -117,7 +117,7 @@ class Deployments extends DashboardView {
           }
         });
       }
-      this.loadData();
+      this.loadData(true);
       setTimeout(() => {
         this.setState({
           notification: null
