@@ -10,10 +10,12 @@ import {
 // eslint-disable-next-line no-undef
 const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 5);
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
+const replaysSessionSampleRate = isRecordEverySession ? 1.0 : 0.1;
 
 export default function instrument() {
   console.log('isRecordEverySession', isRecordEverySession);
-  console.log(process.env.BUILD_TIMESTAMP);
+  console.log('replaysSessionSampleRate', replaysSessionSampleRate);
+  console.log(new Date(process.env.BUILD_TIMESTAMP).getTime());
 
   const replay = Sentry.replayIntegration({
     stickySession: true,
@@ -31,7 +33,7 @@ export default function instrument() {
     dsn: b4aSettings.SENTRY_DSN,
     environment: process.env.SENTRY_ENV,
     tracesSampleRate: 1.0,
-    replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0.1,
+    replaysSessionSampleRate,
     replaysOnErrorSampleRate: 1.0,
     maxBreadcrumbs: 100,
     integrations: [
