@@ -27,7 +27,7 @@ Sentry.init({
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
-  replaysSessionSampleRate: 0,
+  replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0.1,
   replaysOnErrorSampleRate: 1.0,
   maxBreadcrumbs: 100,
   integrations: [
@@ -44,27 +44,70 @@ Sentry.init({
   ],
 });
 
+// eslint-disable-next-line no-undef
+console.log('Sentry initialized with DSN:', b4aSettings.SENTRY_DSN);
 console.log('isRecordEverySession', isRecordEverySession);
 
+// Function to detect and handle deployments screen
+function handleDeploymentScreenRecording() {
+  const currentPath = window.location.pathname;
+  const isDeploymentPath = currentPath.split('/').includes('deployments');
+
+  if (isDeploymentPath) {
+    // Set deployment-specific context
+    Sentry.setTag('screen', 'deployments');
+    Sentry.setContext('deployment_screen', {
+      path: currentPath,
+      timestamp: new Date().toISOString(),
+      recordEverySession: isRecordEverySession
+    });
+
+    console.log('Deployment screen detected, setting Sentry context');
+
+    // Force start replay for deployments if needed
+    if (isRecordEverySession) {
+      replay.start();
+      console.log('Started replay for deployment screen');
+    }
+  } else {
+    // Clear deployment-specific tags for non-deployment screens
+    Sentry.setTag('screen', 'other');
+    Sentry.setContext('deployment_screen', null);
+  }
+}
+
+// Handle initial page load
 if (typeof window !== 'undefined') {
+  handleDeploymentScreenRecording();
+
+  // Listen for navigation events
   window.addEventListener('navigate', (event) => {
     console.log('navigate event');
     const url = new URL(event.destination.url);
-
-    let isDeploymentPath = false;
-    isDeploymentPath = url.pathname.split('/').includes('deployments');
+    const isDeploymentPath = url.pathname.split('/').includes('deployments');
     console.log('isDeploymentPath', isDeploymentPath);
 
-    if (isDeploymentPath && isRecordEverySession) {
-      replay.start();
+    // Update Sentry context based on new path
+    if (isDeploymentPath) {
+      Sentry.setTag('screen', 'deployments');
+      Sentry.setContext('deployment_screen', {
+        path: url.pathname,
+        timestamp: new Date().toISOString(),
+        recordEverySession: isRecordEverySession
+      });
+
+      if (isRecordEverySession) {
+        replay.start();
+        console.log('Started replay for deployment screen navigation');
+      }
     } else {
-      replay.stop();
+      Sentry.setTag('screen', 'other');
+      Sentry.setContext('deployment_screen', null);
     }
   });
+
+  // Also listen for React Router navigation (since you're using React Router)
+  window.addEventListener('popstate', handleDeploymentScreenRecording);
 } else {
   console.log('window is undefined');
-}
-
-export default function instrument() {
-  console.log('');
 }

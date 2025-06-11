@@ -5,6 +5,7 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+// Sentry initialization should be imported first!
 import './instrument';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
