@@ -22,11 +22,8 @@ const replay = Sentry.replayIntegration({
   networkResponseHeaders: ['X-Custom-Header'],
 })
 
-console.log('NODE_ENV', process.env.NODE_ENV);
-console.log('value:', process.env.NODE_ENV !== 'production');
-
 Sentry.init({
-  debug: process.env.NODE_ENV !== 'production',
+  debug: process.env.SENTRY_ENV !== 'production',
   dsn: b4aSettings.SENTRY_DSN,
   environment: process.env.SENTRY_ENV,
   tracesSampleRate: 1.0,
@@ -48,20 +45,20 @@ Sentry.init({
 });
 
 console.log('isRecordEverySession', isRecordEverySession);
-console.log('typeof window', typeof window);
-console.log('window', window);
 
 if (typeof window !== 'undefined') {
   window.addEventListener('navigate', (event) => {
+    console.log('navigate event');
     const url = new URL(event.destination.url);
 
     let isDeploymentPath = false;
     isDeploymentPath = url.pathname.split('/').includes('deployments');
     console.log('isDeploymentPath', isDeploymentPath);
-    console.log('isRecordEverySession', isRecordEverySession);
 
     if (isDeploymentPath && isRecordEverySession) {
       replay.start();
+    } else {
+      replay.stop();
     }
   });
 } else {
@@ -69,11 +66,5 @@ if (typeof window !== 'undefined') {
 }
 
 export default function instrument() {
-  console.log('instrument....');
-
-  if (typeof window !== 'undefined') {
-    console.log('if from inside function')
-  } else {
-    console.log('else from inside function')
-  }
+  console.log('');
 }
