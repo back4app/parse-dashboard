@@ -8,41 +8,73 @@ import {
 } from 'react-router-dom';
 
 // eslint-disable-next-line no-undef
-const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * (b4aSettings.SENTRY_RECORD_X_HOURS || 2));
+const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * (b4aSettings.SENTRY_RECORD_X_HOURS || 1));
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
-
-Sentry.init({
-  debug: true,
-  dsn: b4aSettings.SENTRY_DSN,
-  environment: process.env.SENTRY_ENV,
-  tracesSampleRate: 1.0,
-  replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0.1,
-  replaysOnErrorSampleRate: 1.0,
-  maxBreadcrumbs: 100,
-  integrations: [
-    Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect,
-      useLocation,
-      useNavigationType,
-      createRoutesFromChildren,
-      matchRoutes,
-    }),
-    Sentry.replayIntegration({
-      stickySession: true,
-      maskAllText: false,
-      blockAllMedia: true,
-      minReplayDuration: 5000,
-      maskAllInputs: false,
-      networkDetailAllowUrls: [/(https?:\/\/(.+?\.)?back4app\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/g],
-      networkRequestHeaders: ['X-Custom-Header'],
-      networkResponseHeaders: ['X-Custom-Header'],
-    }),
-    Sentry.captureConsoleIntegration({ levels: ['error']}),
-    Sentry.browserTracingIntegration(),
-  ],
-});
-
+const replaysSessionSampleRate = isRecordEverySession ? 1.0 : 0.1;
 
 export default function instrument() {
-  console.log('');
+  console.log('isRecordEverySession', isRecordEverySession);
+  console.log('replaysSessionSampleRate', replaysSessionSampleRate);
+  console.log(new Date(process.env.BUILD_TIMESTAMP).getTime());
+
+  const replay = Sentry.replayIntegration({
+    stickySession: true,
+    maskAllText: false,
+    blockAllMedia: true,
+    minReplayDuration: 5000,
+    maskAllInputs: false,
+    networkDetailAllowUrls: [/(https?:\/\/(.+?\.)?back4app\.com(\/[A-Za-z0-9\-\._~:\/\?#\[\]@!$&'\(\)\*\+,;\=]*)?)/g],
+    networkRequestHeaders: ['X-Custom-Header'],
+    networkResponseHeaders: ['X-Custom-Header'],
+  })
+
+  Sentry.init({
+    debug: process.env.SENTRY_ENV !== 'production',
+    dsn: b4aSettings.SENTRY_DSN,
+    environment: process.env.SENTRY_ENV,
+    tracesSampleRate: 1.0,
+    replaysSessionSampleRate,
+    replaysOnErrorSampleRate: 1.0,
+    maxBreadcrumbs: 100,
+    integrations: [
+      Sentry.reactRouterV6BrowserTracingIntegration({
+        useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
+      }),
+      replay,
+      Sentry.captureConsoleIntegration({ levels: ['error']}),
+      Sentry.browserTracingIntegration(),
+    ],
+  });
+}
+
+export function useAppPageTracking() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Match pattern: /apps/appId/pageName/...
+    const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+)/;
+    const match = location.pathname.match(appPagePattern);
+
+    if (match) {
+      const pageName = match[2];
+
+      Sentry.setTag('page_type', pageName);
+
+      Sentry.addBreadcrumb({
+        message: `User navigated to ${pageName} page`,
+        category: 'navigation',
+        level: 'info',
+        data: {
+          pathname: location.pathname,
+          pageName: pageName,
+        }
+      });
+    } else {
+      Sentry.setTag('page_type', null);
+    }
+  }, [location.pathname]);
 }

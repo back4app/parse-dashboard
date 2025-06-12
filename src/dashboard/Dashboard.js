@@ -66,6 +66,7 @@ import back4app2 from '../lib/back4app2';
 import { initializeAmplitude } from 'lib/amplitudeEvents';
 import { setUser as setSentryUser } from '@sentry/react';
 import Deployments from './Deployments/Deployments.react';
+import { useAppPageTracking } from './instrument';
 
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
@@ -540,6 +541,8 @@ const LinkImpl = ({ href, className, children }) => {
 const NavbarWrapper = () => {
   const [user, setUser] = useState();
   const [appsPlans, setAppsPlans] = useState();
+
+  useAppPageTracking();
 
   useEffect(() => {
     (async () => {
