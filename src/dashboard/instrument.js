@@ -50,3 +50,35 @@ export default function instrument() {
     ],
   });
 }
+
+export function useDeploymentsPageTracking() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const deploymentsPagePattern = /^\/apps\/[^\/]+\/deployments/;
+    const isDeploymentsPage = deploymentsPagePattern.test(location.pathname);
+
+    if (isDeploymentsPage) {
+      Sentry.setTag('page_type', 'deployments');
+      Sentry.setTag('deployments_page', true);
+
+      const appIdMatch = location.pathname.match(/^\/apps\/([^\/]+)\/deployments/);
+      if (appIdMatch && appIdMatch[1]) {
+        Sentry.setTag('app_id', appIdMatch[1]);
+      }
+
+      Sentry.addBreadcrumb({
+        message: 'User navigated to deployments page',
+        category: 'navigation',
+        level: 'info',
+        data: {
+          pathname: location.pathname,
+          appId: appIdMatch ? appIdMatch[1] : null,
+        }
+      });
+    } else {
+      Sentry.setTag('page_type', null);
+      Sentry.setTag('deployments_page', null);
+    }
+  }, [location.pathname]);
+}
