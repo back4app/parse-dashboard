@@ -119,7 +119,6 @@ class Deployments extends DashboardView {
       }
 
       this.context.fetchDeployments(1, null, 'desc').then(data => {
-        console.log('data', data);
         this.setState({
           currentRelease: data.currentDeployment,
         });
