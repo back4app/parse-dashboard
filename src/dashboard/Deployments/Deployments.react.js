@@ -117,7 +117,13 @@ class Deployments extends DashboardView {
           }
         });
       }
-      this.loadData();
+
+      this.context.fetchDeployments(1, null, 'desc').then(data => {
+        this.setState({
+          currentRelease: data.currentDeployment,
+        });
+      });
+
       setTimeout(() => {
         this.setState({
           notification: null
@@ -282,7 +288,7 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
   const onClick = () => {
     setStartRollingBack(true);
     handleRollback(value._id).finally(() => {
-      // setStartRollingBack(false);
+      setStartRollingBack(false);
     });
   };
   return (
@@ -297,7 +303,7 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
         <td style={{ width: '70%' }}>
           <div className={styles.descriptionContainer}>
             <div className={styles.description}>{value.description || 'NA'}</div>
-            {/* {!isCurrentRelease && (
+            {!isCurrentRelease && (
               <button
                 className={`${styles.rollbackButton} ${startRollingBack || isLoading ? styles.disabledRollbackButton : ''}`}
                 onClick={onClick}
@@ -305,7 +311,7 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
               >
                 {startRollingBack ? 'Rolling back...' : 'Rollback'}
               </button>
-            )} */}
+            )}
           </div>
         </td>
       </tr>
