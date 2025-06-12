@@ -102,16 +102,12 @@ class Deployments extends DashboardView {
   handleRollback(releaseId) {
     this.setState({ isRollingBack: true });
     return this.context.rollbackDeployment(releaseId).then((response) => {
-      console.log('response', response);
       if (response.success) {
         this.setState({
           notification: {
             message: 'Rollback successful!',
             isErrorNote: false
           }
-        });
-        this.setState({
-          currentRelease: response.data
         });
       } else {
         this.setState({
@@ -121,6 +117,14 @@ class Deployments extends DashboardView {
           }
         });
       }
+
+      this.context.fetchDeployments(1, null, 'desc').then(data => {
+        console.log('data', data);
+        this.setState({
+          currentRelease: data.currentDeployment,
+        });
+      });
+
       setTimeout(() => {
         this.setState({
           notification: null
