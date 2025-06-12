@@ -282,7 +282,7 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
   const onClick = () => {
     setStartRollingBack(true);
     handleRollback(value._id).finally(() => {
-      // setStartRollingBack(false);
+      setStartRollingBack(false);
     });
   };
   return (
