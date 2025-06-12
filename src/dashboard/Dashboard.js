@@ -66,7 +66,7 @@ import back4app2 from '../lib/back4app2';
 import { initializeAmplitude } from 'lib/amplitudeEvents';
 import { setUser as setSentryUser } from '@sentry/react';
 import Deployments from './Deployments/Deployments.react';
-import { useDeploymentsPageTracking } from './instrument';
+import { useAppPageTracking } from './instrument';
 
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
@@ -542,8 +542,7 @@ const NavbarWrapper = () => {
   const [user, setUser] = useState();
   const [appsPlans, setAppsPlans] = useState();
 
-  // Track deployments page navigation for Sentry
-  useDeploymentsPageTracking();
+  useAppPageTracking();
 
   useEffect(() => {
     (async () => {

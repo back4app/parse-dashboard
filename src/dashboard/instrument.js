@@ -51,22 +51,26 @@ export default function instrument() {
   });
 }
 
-export function useDeploymentsPageTracking() {
+export function useAppPageTracking() {
   const location = useLocation();
 
   useEffect(() => {
-    const deploymentsPagePattern = /^\/apps\/[^\/]+\/deployments/;
-    const isDeploymentsPage = deploymentsPagePattern.test(location.pathname);
+    // Match pattern: /apps/appId/pageName/...
+    const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+)/;
+    const match = location.pathname.match(appPagePattern);
 
-    if (isDeploymentsPage) {
-      Sentry.setTag('page_type', 'deployments');
+    if (match) {
+      const pageName = match[2];
+
+      Sentry.setTag('page_type', pageName);
 
       Sentry.addBreadcrumb({
-        message: 'User navigated to deployments page',
+        message: `User navigated to ${pageName} page`,
         category: 'navigation',
         level: 'info',
         data: {
           pathname: location.pathname,
+          pageName: pageName,
         }
       });
     } else {
