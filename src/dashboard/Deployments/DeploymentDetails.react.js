@@ -28,15 +28,16 @@ class DeploymentDetails extends DashboardView {
   }
 
   loadData() {
+    this.setState({ loading: true });
     this.context.getDeploymentDetails(this.props.params.releaseId).then((data) => {
       console.log('data', data);
       this.setState({
         currentRelease: data.currentRelease,
         tree: data.changes.tree
       });
-      $('#tree').jstree().refresh(true);
     }).catch((err) => {
       console.error(err);
+      this.setState({ error: err.message || 'Failed to load deployment details' });
     }).finally(() => {
       this.setState({ loading: false });
     });
@@ -61,6 +62,7 @@ class DeploymentDetails extends DashboardView {
       <div className={styles.fileTreeHeader}>Changed Files</div>
       <div className={styles.fileTree}>
         <B4ACodeTree
+          key={this.props.params.releaseId}
           setUpdatedFile={() => {}}
           files={this.state.tree}
           parentState={() => {}}
@@ -83,10 +85,10 @@ class DeploymentDetails extends DashboardView {
             <div className={styles.header}>
               <div className={styles.title}>V{this.props.params.releaseId}</div>
               <div className={styles.subtitle}>
-                <div className={styles.description}>{this.state.currentRelease.description}</div>
+                <div className={styles.description}>{this.state.currentRelease?.description}</div>
                 <div className={styles.right}>
                   <div className={styles.deployedAt}>
-                    {new Date(this.state.currentRelease.deployedAt).toLocaleString()}
+                    {this.state.currentRelease && new Date(this.state.currentRelease.deployedAt).toLocaleString()}
                   </div>
                   <button className={styles.rollbackButton}>
                     Rollback to version
