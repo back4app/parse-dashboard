@@ -105,6 +105,7 @@ export default class B4ACodeTree extends React.Component {
   }
 
   deleteFile() {
+    if (this.props.hideControls) { return; }
     if (this.state.nodeId) {
       B4ATreeActions.remove(`#${this.state.nodeId}`, true);
       this.setState({ source: '', selectedFile: '', nodeId: '' })
@@ -186,6 +187,7 @@ export default class B4ACodeTree extends React.Component {
   }
 
   async updateSelectedFileContent(value) {
+    if (this.props.hideControls) { return; }
     const ecodedValue = await B4ATreeActions.encodeFile(value, 'data:plain/text;base64');
     this.setState({ source: value });
 
@@ -239,20 +241,28 @@ export default class B4ACodeTree extends React.Component {
 
   componentDidMount() {
     const config = B4ATreeActions.getConfig(this.state.files);
+    if (this.props.hideControls) {
+      // Remove contextmenu plugin to disable right-click
+      config.plugins = config.plugins.filter(p => p !== 'contextmenu');
+      // Remove contextmenu property
+      delete config.contextmenu;
+    }
     $('#tree').jstree(config);
     this.watchSelectedNode();
-    $('#tree').on('create_node.jstree', (node, parent) => {
-      amplitudeLogEvent(`CloudCode create ${parent?.node?.type}`);
-      this.updateCodeOnNewFile(parent?.node?.type, parent?.node?.text, parent?.node?.id);
-    });
-    $('#tree').on('delete_node.jstree', (parent, node) => {
-      if (node?.node?.type === 'new-folder') {
-        amplitudeLogEvent(`CloudCode delete ${parent?.node?.type}`);
-        this.updateCodeOnNewFile('delete-folder', node?.node?.text, node?.node?.id);
-      } else {
-        this.updateCodeOnNewFile('delete-file', node?.node?.text, node?.node?.id);
-      }
-    });
+    if (!this.props.hideControls) {
+      $('#tree').on('create_node.jstree', (node, parent) => {
+        amplitudeLogEvent(`CloudCode create ${parent?.node?.type}`);
+        this.updateCodeOnNewFile(parent?.node?.type, parent?.node?.text, parent?.node?.id);
+      });
+      $('#tree').on('delete_node.jstree', (parent, node) => {
+        if (node?.node?.type === 'new-folder') {
+          amplitudeLogEvent(`CloudCode delete ${parent?.node?.type}`);
+          this.updateCodeOnNewFile('delete-folder', node?.node?.text, node?.node?.id);
+        } else {
+          this.updateCodeOnNewFile('delete-file', node?.node?.text, node?.node?.id);
+        }
+      });
+    }
   }
 
   componentDidUpdate() {
@@ -276,21 +286,25 @@ export default class B4ACodeTree extends React.Component {
       content = <div className={`${styles.filesPreviewWrapper}`}>
         <div className={styles.filesPreviewHeader} >
           <p>{typeof this.state.selectedFile === 'string' ? this.state.selectedFile : this.state.selectedFile.name}</p>
-          <button
-            className={styles.deleteBtn}
-            primary={true}
-            disabled={!this.state.nodeId}
-            onClick={this.deleteFile.bind(this)}
-          >
-            <Icon name='b4a-delete-icon' fill="#E85C3E" width={24} height={20} />
-          </button>
+          {!this.props.hideControls && (
+            <button
+              className={styles.deleteBtn}
+              primary={true}
+              disabled={!this.state.nodeId}
+              onClick={this.deleteFile.bind(this)}
+            >
+              <Icon name='b4a-delete-icon' fill="#E85C3E" width={24} height={20} />
+            </button>
+          )}
         </div>
         <B4ACloudCodeView
           isFolderSelected={this.state.isFolderSelected}
           onCodeChange={value => this.updateSelectedFileContent(value)}
           source={this.state.source}
           extension={this.state.extension}
-          fileName={this.state.selectedFile} />
+          fileName={this.state.selectedFile}
+          readOnly={!!this.props.hideControls}
+        />
       </div>;
     } else {
       content = (
@@ -299,67 +313,69 @@ export default class B4ACodeTree extends React.Component {
     }
 
     return (
-      <div className={styles.codeContainer}>
+      <div className={styles.codeContainer} style={this.props.style ? this.props.style : {}}>
         <div className={styles.fileSelector}>
           <div className={`${styles['files-box']}`}>
             <div className={styles['files-header']} >
               <p>Files</p>
-              <div>
-                <Button
-                  onClick={() => {
-                    if (this.state.selectedFile === '') {
-                      this.selectCloudFolder();
-                    }
-                    swalWithBootstrapButtons.fire({
-                      title: 'Create a new empty file',
-                      text: 'Name your file',
-                      padding: '1rem 2rem',
-                      input: 'text',
-                      inputAttributes: {
-                        autocapitalize: 'off',
-                        placeholder: 'File name',
-                      },
-                      showCancelButton: true,
-                      reverseButtons: true,
-                      confirmButtonText: 'Create file',
-                      buttonsStyling: false,
-                      showCloseButton: true,
-                      allowOutsideClick: () => !Swal.isLoading()
-                    }).then(({value}) => {
-                      if (value) {
-                        value = B4ATreeActions.sanitizeHTML(value);
-                        const parent = B4ATreeActions.getSelectedParent();
-                        const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
-                        B4ATreeActions.selectFileOnTree(newNodeId); // select new file
-                        this.setState({ files: $('#tree').jstree(true).get_json() });
-                      }
-                    })
-                  }}
-                  disabled={false}
-                  value={
-                    <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
-                      <Icon name="b4a-add-outline-circle" fill="#27AE60" width={18} height={18} />
-                      <span style={{ color: '#f9f9f9', marginLeft:'0.25rem', fontSize: '14px' }}>New File</span>
-                    </div>}
-                  width='20'
-                  additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none', padding: '0' }}
-                />
-                <ReactFileReader
-                  fileTypes={'*/*'}
-                  base64={true}
-                  multipleFiles={true}
-                  handleFiles={this.handleFiles.bind(this)}>
+              {!this.props.hideControls && (
+                <div>
                   <Button
+                    onClick={() => {
+                      if (this.state.selectedFile === '') {
+                        this.selectCloudFolder();
+                      }
+                      swalWithBootstrapButtons.fire({
+                        title: 'Create a new empty file',
+                        text: 'Name your file',
+                        padding: '1rem 2rem',
+                        input: 'text',
+                        inputAttributes: {
+                          autocapitalize: 'off',
+                          placeholder: 'File name',
+                        },
+                        showCancelButton: true,
+                        reverseButtons: true,
+                        confirmButtonText: 'Create file',
+                        buttonsStyling: false,
+                        showCloseButton: true,
+                        allowOutsideClick: () => !Swal.isLoading()
+                      }).then(({value}) => {
+                        if (value) {
+                          value = B4ATreeActions.sanitizeHTML(value);
+                          const parent = B4ATreeActions.getSelectedParent();
+                          const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
+                          B4ATreeActions.selectFileOnTree(newNodeId); // select new file
+                          this.setState({ files: $('#tree').jstree(true).get_json() });
+                        }
+                      })
+                    }}
+                    disabled={false}
                     value={
                       <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
-                        <Icon name="B4a-upload-file-icon" fill="#27AE60" width={18} height={18} />
-                        <span style={{ color: '#f9f9f9', marginLeft: '0.25rem', fontSize: '14px' }}>Upload</span>
+                        <Icon name="b4a-add-outline-circle" fill="#27AE60" width={18} height={18} />
+                        <span style={{ color: '#f9f9f9', marginLeft:'0.25rem', fontSize: '14px' }}>New File</span>
                       </div>}
                     width='20'
-                    additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none', padding: '0' }}
+                    additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none', padding: '0' }}
                   />
-                </ReactFileReader>
-              </div>
+                  <ReactFileReader
+                    fileTypes={'*/*'}
+                    base64={true}
+                    multipleFiles={true}
+                    handleFiles={this.handleFiles.bind(this)}>
+                    <Button
+                      value={
+                        <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
+                          <Icon name="B4a-upload-file-icon" fill="#27AE60" width={18} height={18} />
+                          <span style={{ color: '#f9f9f9', marginLeft: '0.25rem', fontSize: '14px' }}>Upload</span>
+                        </div>}
+                      width='20'
+                      additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none', padding: '0' }}
+                    />
+                  </ReactFileReader>
+                </div>
+              )}
             </div>
             <Resizable className={styles['files-tree']}
               defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}

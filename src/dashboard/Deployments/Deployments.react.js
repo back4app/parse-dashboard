@@ -17,6 +17,7 @@ import styles from './Deployments.scss';
 import DashboardView from 'dashboard/DashboardView.react';
 import stylesTable from 'dashboard/TableView.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+import { useNavigate } from 'react-router-dom';
 
 
 @withRouter
@@ -167,6 +168,7 @@ class Deployments extends DashboardView {
         isCurrentRelease={this.state.currentRelease?._id === value._id}
         handleRollback={this.handleRollback.bind(this)}
         isLoading={this.state.isRollingBack}
+        appId={this.context.slug}
       />
     );
   }
@@ -245,7 +247,7 @@ class Deployments extends DashboardView {
                     </tr>
                   )}
                   {this.state.currentRelease && (
-                    <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} />
+                    <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} appId={this.context.slug} />
                   )}
                   {data.length > 0 && (
                     <tr key={`${Math.random()}`}>
@@ -283,17 +285,34 @@ class Deployments extends DashboardView {
 export default Deployments;
 
 
-const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
+const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading, appId }) => {
   const [startRollingBack, setStartRollingBack] = useState(false);
+  const navigate = useNavigate();
+
   const onClick = () => {
     setStartRollingBack(true);
     handleRollback(value._id).finally(() => {
       setStartRollingBack(false);
     });
   };
+
+  const handleRowClick = (e) => {
+    // Prevent click if clicking on rollback button
+    if (e.target.closest('button')) {
+      return;
+    }
+    console.log('onclick button');
+    navigate(`/apps/${appId}/deployments/${value.releaseId}`);
+  };
+
   return (
     <>
-      <tr key={value.releaseId} className={`${styles.row} ${startRollingBack ? styles.rollingBack : ''}`  }>
+      <tr
+        key={value.releaseId}
+        className={`${styles.row} ${startRollingBack ? styles.rollingBack : ''}`}
+        onClick={handleRowClick}
+        style={{ cursor: 'pointer' }}
+      >
         <td style={{ width: '10%' }}>
           {value.releaseId}
         </td>
