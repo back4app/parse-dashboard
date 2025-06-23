@@ -9,7 +9,6 @@ import Button from 'components/Button/Button.react';
 import B4ACloudCodeView from 'components/B4ACloudCodeView/B4ACloudCodeView.react';
 import B4ATreeActions from 'components/B4ACodeTree/B4ATreeActions';
 import Swal from 'sweetalert2';
-import B4ACloudCodeInfo from 'components/B4ACodeTree/B4ACloudCodeInfo.react';
 import folderInfoIcon from './icons/folder-info.png';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 // import CloudCodeChanges from 'lib/CloudCodeChanges';
@@ -127,44 +126,63 @@ export default class B4ACodeTree extends React.Component {
     if (data.selected && data.selected.length === 1) {
       selected = data.instance.get_node(data.selected[0]);
       // if is code
-      if (selected.data && selected.data.code && selected.type != 'folder') {
-        // index of file on tree.
-        const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
-        fileList?.map((file) => {
-          if (file.name === selected.text) {
-            selectedFile = file;
-          }
-        });
-        const fr = new FileReader();
-        isImage = this.getFileType(selected.data.code)
-        if (isImage === false) {
-          if (selectedFile instanceof Blob) {
-            fr.onload = () => {
-              source = fr.result;
-              selectedFile = selected.text;
+      if (selected.type !== 'folder') {
+        if (selected.data && selected.data.code) {
+          // index of file on tree.
+          const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
+          fileList?.map((file) => {
+            if (file.name === selected.text) {
+              selectedFile = file;
+            }
+          });
+          const fr = new FileReader();
+          isImage = this.getFileType(selected.data.code)
+          if (isImage === false) {
+            if (selectedFile instanceof Blob) {
+              fr.onload = () => {
+                source = fr.result;
+                selectedFile = selected.text;
+                nodeId = selected.id
+                extension = B4ATreeActions.getExtension(selectedFile)
+                this.setState({ source, selectedFile, nodeId, extension, isImage })
+              }
+              fr.readAsText(selectedFile);
+            }
+            else {
+              const decodedCode = window.atob(selected.data.code.split(',')?.[1]);
+              const decodedCodeString = decodeURIComponent(escape(decodedCode));
+              source = decodedCodeString;
+              selectedFile = selected.text
               nodeId = selected.id
               extension = B4ATreeActions.getExtension(selectedFile)
-              this.setState({ source, selectedFile, nodeId, extension, isImage })
             }
-            fr.readAsText(selectedFile);
-          }
-          else {
-            const decodedCode = window.atob(selected.data.code.split(',')?.[1]);
-            const decodedCodeString = decodeURIComponent(escape(decodedCode));
-            source = decodedCodeString;
+          } else {
+            source = selected.data.code;
             selectedFile = selected.text
             nodeId = selected.id
             extension = B4ATreeActions.getExtension(selectedFile)
           }
-        } else {
-          source = selected.data.code;
-          selectedFile = selected.text
-          nodeId = selected.id
-          extension = B4ATreeActions.getExtension(selectedFile)
-        }
-        // Call onFileClick if provided and not a folder
-        if (this.props.onFileClick) {
-          this.props.onFileClick(selected);
+          // Call onFileClick if provided and not a folder
+          if (this.props.onFileClick) {
+            this.props.onFileClick(selected);
+          }
+        } else if (this.props.onFileClick) {
+          // No code, not a folder: lazy load code
+          try {
+            const fileData = await this.props.onFileClick(selected);
+            if (fileData && fileData.base64) {
+              // Assume plain text for now
+              const decodedCode = window.atob(fileData.base64);
+              source = decodeURIComponent(escape(decodedCode));
+              selectedFile = selected.text;
+              nodeId = selected.id;
+              extension = B4ATreeActions.getExtension(selectedFile);
+              // Optionally update the node's data.code for future quick access
+              selected.data.code = `data:plain/text;base64,${fileData.base64}`;
+            }
+          } catch (err) {
+            console.error('Failed to fetch file data:', err);
+          }
         }
       } else {
         selectedFolder = selected.id;

@@ -89,6 +89,7 @@ class DeploymentDetails extends DashboardView {
             try {
               const data = await this.context.fetchFileData(fileNode.data);
               console.log('Fetched file data:', data);
+              return data;
             } catch (err) {
               console.error('Failed to fetch file data:', err);
             }
