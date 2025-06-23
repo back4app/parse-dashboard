@@ -53,6 +53,14 @@ class DeploymentDetails extends DashboardView {
     this.loadData();
   }
 
+  componentDidUpdate() {
+    console.log('componentDidUpdate');
+    if (window.$ && window.$('#tree').jstree) {
+      window.$('#tree').jstree(true).settings.core.data = this.state.tree;
+      window.$('#tree').jstree(true).refresh();
+    }
+  }
+
   renderToolbar() {
     return (
       <Toolbar section="Cloud Code" subsection={`Deployments > V${this.props.params.releaseId}`} >
