@@ -6,7 +6,6 @@ import styles from './DeploymentDetails.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import { withRouter } from 'lib/withRouter';
 import DashboardView from 'dashboard/DashboardView.react';
-import $ from 'jquery';
 import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
 
 @withRouter
@@ -34,6 +33,13 @@ class DeploymentDetails extends DashboardView {
       this.setState({
         currentRelease: data.currentRelease,
         tree: data.changes.tree
+      }, () => {
+        // Paint the tree using jsTree after state is updated
+        console.log('window.$');
+        if (window.$ && window.$('#tree').jstree) {
+          window.$('#tree').jstree(true).settings.core.data = this.state.tree;
+          window.$('#tree').jstree(true).refresh();
+        }
       });
     }).catch((err) => {
       console.error(err);
