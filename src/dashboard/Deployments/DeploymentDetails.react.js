@@ -84,6 +84,15 @@ class DeploymentDetails extends DashboardView {
           cloudCodeChanges={null}
           hideControls={true}
           style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
+          onFileClick={async (fileNode) => {
+            if (!fileNode || fileNode.type === 'folder') { return; }
+            try {
+              const data = await this.context.fetchFileData(fileNode.data);
+              console.log('Fetched file data:', data);
+            } catch (err) {
+              console.error('Failed to fetch file data:', err);
+            }
+          }}
         />
       </div>
     </div>

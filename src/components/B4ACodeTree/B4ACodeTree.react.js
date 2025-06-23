@@ -160,6 +160,10 @@ export default class B4ACodeTree extends React.Component {
           nodeId = selected.id
           extension = B4ATreeActions.getExtension(selectedFile)
         }
+        // Call onFileClick if provided and not a folder
+        if (this.props.onFileClick) {
+          this.props.onFileClick(selected);
+        }
       } else {
         selectedFolder = selected.id;
         if (selected.text === 'cloud') {
@@ -405,5 +409,6 @@ B4ACodeTree.propTypes = {
   setUpdatedFile: PropTypes.func.isRequired.describe('Function to update undeployed file count.'),
   currentApp: PropTypes.any.isRequired.describe('The current parseApp.'),
   files: PropTypes.any.isRequired.describe('Array of files'),
-  parentState: PropTypes.func.isRequired.describe('Update parent state.')
+  parentState: PropTypes.func.isRequired.describe('Update parent state.'),
+  onFileClick: PropTypes.func.describe('Function to call when a file is clicked')
 }
