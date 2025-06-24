@@ -22,6 +22,7 @@ class DeploymentDetails extends DashboardView {
       error: undefined
     };
     this.cloudCodeChanges = new CloudCodeChanges();
+    this.onFileClick = this.onFileClick.bind(this);
   }
 
   componentWillMount() {
@@ -35,13 +36,6 @@ class DeploymentDetails extends DashboardView {
       this.setState({
         currentRelease: data.currentRelease,
         tree: data.changes.tree
-      }, () => {
-        // Paint the tree using jsTree after state is updated
-        // console.log('window.$');
-        // if ($ && $('#tree').jstree) {
-        //   $('#tree').jstree(true).settings.core.data = this.state.tree;
-        //   $('#tree').jstree(true).refresh();
-        // }
       });
     }).catch((err) => {
       console.error(err);
@@ -65,6 +59,19 @@ class DeploymentDetails extends DashboardView {
     );
   }
 
+  async onFileClick(fileNode) {
+    console.log('fileNode', fileNode);
+    if (!fileNode || fileNode.type === 'folder') { return; }
+
+    try {
+      const data = await this.context.fetchFileData({ ...fileNode.data, releaseId: this.props.params.releaseId });
+      console.log('Fetched file data:', data);
+      return data;
+    } catch (err) {
+      console.error('Failed to fetch file data:', err);
+    }
+  }
+
   renderFileTree() {
     return (
       <div className={styles.fileTreeContainer}>
@@ -80,16 +87,7 @@ class DeploymentDetails extends DashboardView {
               cloudCodeChanges={this.cloudCodeChanges}
               hideControls={true}
               style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
-              onFileClick={async (fileNode) => {
-                if (!fileNode || fileNode.type === 'folder') { return; }
-                try {
-                  const data = await this.context.fetchFileData({ ...fileNode.data, releaseId: this.props.params.releaseId });
-                  console.log('Fetched file data:', data);
-                  return data;
-                } catch (err) {
-                  console.error('Failed to fetch file data:', err);
-                }
-              }}
+              onFileClick={this.onFileClick}
             />
           ) : null}
         </div>
@@ -103,7 +101,6 @@ class DeploymentDetails extends DashboardView {
       <B4aLoaderContainer loading={this.state.loading}>
         <div className={styles.content}>
           <div className={styles.mainContent}>
-            {/* <div className={styles.wrapper}> */}
             <div className={styles.header}>
               <div className={styles.title}>V{this.props.params.releaseId}</div>
               <div className={styles.subtitle}>
@@ -118,9 +115,7 @@ class DeploymentDetails extends DashboardView {
                 </div>
               </div>
             </div>
-            {/* </div> */}
-
-            {this.renderFileTree()}
+            {this.state.error ? <B4aEmptyState title="Error" description={this.state.error} /> : this.renderFileTree()}
           </div>
         </div>
       </B4aLoaderContainer>

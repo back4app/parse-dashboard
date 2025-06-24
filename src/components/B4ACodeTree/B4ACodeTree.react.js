@@ -62,7 +62,8 @@ export default class B4ACodeTree extends React.Component {
       selectedFolder: 0,
       isFolderSelected: true,
       selectedNodeData: null,
-      loadingFileId: null // <-- Track which file is loading
+      isLoadingFileData: false,
+      errorFileData: null,
     }
 
     // this.cloudCodeChanges = new CloudCodeChanges();
@@ -126,8 +127,9 @@ export default class B4ACodeTree extends React.Component {
 
     if (data.selected && data.selected.length === 1) {
       selected = data.instance.get_node(data.selected[0]);
-      // if is code
+      // if is not a folder
       if (selected.type !== 'folder') {
+        // if is code
         if (selected.data && selected.data.code) {
           // index of file on tree.
           const fileList = this.state.filesOnTree?.fileList ? Array.from(this.state.filesOnTree?.fileList) : [];
@@ -145,7 +147,7 @@ export default class B4ACodeTree extends React.Component {
                 selectedFile = selected.text;
                 nodeId = selected.id
                 extension = B4ATreeActions.getExtension(selectedFile)
-                this.setState({ source, selectedFile, nodeId, extension, isImage, loadingFileId: null })
+                this.setState({ source, selectedFile, nodeId, extension, isImage, isLoadingFileData: false })
               }
               fr.readAsText(selectedFile);
             }
@@ -163,38 +165,24 @@ export default class B4ACodeTree extends React.Component {
             nodeId = selected.id
             extension = B4ATreeActions.getExtension(selectedFile)
           }
-          // Call onFileClick if provided and not a folder
-          if (this.props.onFileClick) {
-            this.props.onFileClick(selected);
-          }
         } else if (this.props.onFileClick) {
-          // No code, not a folder: lazy load code
-          // Prevent repeated requests for the same file
-          if (this.state.loadingFileId === selected.id) {
-            // Already loading this file, do nothing
+          if (this.state.isLoadingFileData) {
             return;
           }
-          this.setState({ loadingFileId: selected.id, source: '', selectedFile: selected.text, nodeId: selected.id, extension: '', isImage: false });
-          try {
-            const fileData = await this.props.onFileClick(selected);
-            if (fileData && fileData.base64) {
-              // Assume plain text for now
-              const decodedCode = window.atob(fileData.base64);
-              source = decodeURIComponent(escape(decodedCode));
-              selectedFile = selected.text;
-              nodeId = selected.id;
-              extension = B4ATreeActions.getExtension(selectedFile);
-              // Optionally update the node's data.code for future quick access
-              selected.data.code = `data:plain/text;base64,${fileData.base64}`;
-              this.setState({ source, selectedFile, nodeId, extension, isImage: false, loadingFileId: null });
-            } else {
-              this.setState({ loadingFileId: null });
-            }
-          } catch (err) {
-            console.error('Failed to fetch file data:', err);
-            this.setState({ loadingFileId: null });
+          this.setState({ isLoadingFileData: true });
+          const data = await this.props.onFileClick(selected);
+          if (data.base64) {
+            const base64Data = data.base64.includes(',') ? data.base64.split(',')?.[1] : data.base64;
+            const decodedCode = window.atob(base64Data);
+            const decodedCodeString = decodeURIComponent(escape(decodedCode));
+            source = decodedCodeString;
+            selectedFile = selected.text
+            nodeId = selected.id
+            extension = B4ATreeActions.getExtension(selectedFile)
+            this.setState({ isLoadingFileData: false });
+          } else {
+            this.setState({ errorFileData: 'Failed to fetch file data', isLoadingFileData: false });
           }
-          return; // Don't update state again below
         }
       } else {
         selectedFolder = selected.id;
@@ -206,7 +194,7 @@ export default class B4ACodeTree extends React.Component {
         }
       }
     }
-    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder', loadingFileId: null })
+    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder' })
   }
 
   // method to identify the selected tree node
@@ -309,16 +297,7 @@ export default class B4ACodeTree extends React.Component {
 
   render(){
     let content;
-    // Show spinner if loading file
-    if (this.state.loadingFileId && this.state.nodeId === this.state.loadingFileId) {
-      content = (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-          <div className={styles.spinner}></div>
-          <span style={{ marginLeft: 8 }}>Loading file...</span>
-        </div>
-      );
-    }
-    else if (this.state.isImage) {
+    if (this.state.isImage) {
       content = <img style={{ width: '100%', height: '100%', objectFit: 'scale-down' }} src={this.state.source} />;
     }
     else if (this.state.isFolderSelected === true) {
@@ -353,7 +332,7 @@ export default class B4ACodeTree extends React.Component {
       </div>;
     } else {
       content = (
-        <B4aEmptyState imgSrc={folderInfoIcon} description="Select a file to edit" margin="46px 0 0 0" />
+        <B4aEmptyState imgSrc={folderInfoIcon} description={`Select a file to ${this.props.hideControls ? 'view' : 'edit'}`} margin="46px 0 0 0" />
       );
     }
 
@@ -451,5 +430,6 @@ B4ACodeTree.propTypes = {
   currentApp: PropTypes.any.isRequired.describe('The current parseApp.'),
   files: PropTypes.any.isRequired.describe('Array of files'),
   parentState: PropTypes.func.isRequired.describe('Update parent state.'),
-  onFileClick: PropTypes.func.describe('Function to call when a file is clicked')
+  onFileClick: PropTypes.func.describe('Function to call when a file is clicked'),
+  hideControls: PropTypes.bool.describe('Whether to hide the controls')
 }
