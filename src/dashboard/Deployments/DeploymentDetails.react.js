@@ -39,7 +39,6 @@ class DeploymentDetails extends DashboardView {
       }, () => {
         // Paint the tree using jsTree after state is updated
         console.log('window.$');
-        debugger;
         if ($ && $('#tree').jstree) {
           $('#tree').jstree(true).settings.core.data = this.state.tree;
           $('#tree').jstree(true).refresh();
@@ -55,15 +54,6 @@ class DeploymentDetails extends DashboardView {
 
   onRefresh() {
     this.loadData();
-  }
-
-  componentDidUpdate() {
-    console.log('componentDidUpdate');
-    debugger;
-    if ($ && $('#tree').jstree) {
-      $('#tree').jstree(true).settings.core.data = this.state.tree;
-      $('#tree').jstree(true).refresh();
-    }
   }
 
   renderToolbar() {
