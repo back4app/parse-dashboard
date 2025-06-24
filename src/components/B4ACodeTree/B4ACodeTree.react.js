@@ -61,7 +61,8 @@ export default class B4ACodeTree extends React.Component {
       isImage: false,
       selectedFolder: 0,
       isFolderSelected: true,
-      selectedNodeData: null
+      selectedNodeData: null,
+      loadingFileId: null // <-- Track which file is loading
     }
 
     // this.cloudCodeChanges = new CloudCodeChanges();
@@ -144,7 +145,7 @@ export default class B4ACodeTree extends React.Component {
                 selectedFile = selected.text;
                 nodeId = selected.id
                 extension = B4ATreeActions.getExtension(selectedFile)
-                this.setState({ source, selectedFile, nodeId, extension, isImage })
+                this.setState({ source, selectedFile, nodeId, extension, isImage, loadingFileId: null })
               }
               fr.readAsText(selectedFile);
             }
@@ -168,6 +169,12 @@ export default class B4ACodeTree extends React.Component {
           }
         } else if (this.props.onFileClick) {
           // No code, not a folder: lazy load code
+          // Prevent repeated requests for the same file
+          if (this.state.loadingFileId === selected.id) {
+            // Already loading this file, do nothing
+            return;
+          }
+          this.setState({ loadingFileId: selected.id, source: '', selectedFile: selected.text, nodeId: selected.id, extension: '', isImage: false });
           try {
             const fileData = await this.props.onFileClick(selected);
             if (fileData && fileData.base64) {
@@ -179,10 +186,15 @@ export default class B4ACodeTree extends React.Component {
               extension = B4ATreeActions.getExtension(selectedFile);
               // Optionally update the node's data.code for future quick access
               selected.data.code = `data:plain/text;base64,${fileData.base64}`;
+              this.setState({ source, selectedFile, nodeId, extension, isImage: false, loadingFileId: null });
+            } else {
+              this.setState({ loadingFileId: null });
             }
           } catch (err) {
             console.error('Failed to fetch file data:', err);
+            this.setState({ loadingFileId: null });
           }
+          return; // Don't update state again below
         }
       } else {
         selectedFolder = selected.id;
@@ -194,7 +206,7 @@ export default class B4ACodeTree extends React.Component {
         }
       }
     }
-    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder' })
+    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder', loadingFileId: null })
   }
 
   // method to identify the selected tree node
@@ -297,7 +309,16 @@ export default class B4ACodeTree extends React.Component {
 
   render(){
     let content;
-    if (this.state.isImage) {
+    // Show spinner if loading file
+    if (this.state.loadingFileId && this.state.nodeId === this.state.loadingFileId) {
+      content = (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <div className={styles.spinner}></div>
+          <span style={{ marginLeft: 8 }}>Loading file...</span>
+        </div>
+      );
+    }
+    else if (this.state.isImage) {
       content = <img style={{ width: '100%', height: '100%', objectFit: 'scale-down' }} src={this.state.source} />;
     }
     else if (this.state.isFolderSelected === true) {
