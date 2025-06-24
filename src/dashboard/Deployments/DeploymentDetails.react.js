@@ -39,11 +39,11 @@ class DeploymentDetails extends DashboardView {
         tree: data.changes.tree
       }, () => {
         // Paint the tree using jsTree after state is updated
-        console.log('window.$');
-        if ($ && $('#tree').jstree) {
-          $('#tree').jstree(true).settings.core.data = this.state.tree;
-          $('#tree').jstree(true).refresh();
-        }
+        // console.log('window.$');
+        // if ($ && $('#tree').jstree) {
+        //   $('#tree').jstree(true).settings.core.data = this.state.tree;
+        //   $('#tree').jstree(true).refresh();
+        // }
       });
     }).catch((err) => {
       console.error(err);
