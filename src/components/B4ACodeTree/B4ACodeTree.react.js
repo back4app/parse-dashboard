@@ -297,6 +297,12 @@ export default class B4ACodeTree extends React.Component {
 
   render(){
     let content;
+    if (this.state.isLoadingFileData) {
+      content = <B4aEmptyState
+        margin="46px 0 0 0"
+        imgSrc={folderInfoIcon}
+        description="Loading file content..." />;
+    }
     if (this.state.isImage) {
       content = <img style={{ width: '100%', height: '100%', objectFit: 'scale-down' }} src={this.state.source} />;
     }
