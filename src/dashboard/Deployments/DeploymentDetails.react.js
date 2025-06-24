@@ -8,8 +8,6 @@ import { withRouter } from 'lib/withRouter';
 import DashboardView from 'dashboard/DashboardView.react';
 import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
-import $ from 'jquery';
-import jstree from 'jstree';
 
 @withRouter
 class DeploymentDetails extends DashboardView {
@@ -68,31 +66,35 @@ class DeploymentDetails extends DashboardView {
   }
 
   renderFileTree() {
-    return <div className={styles.fileTreeContainer}>
-      <div className={styles.fileTreeHeader}>Changed Files</div>
-      <div className={styles.fileTree}>
-        <B4ACodeTree
-          key={this.props.params.releaseId}
-          setUpdatedFile={() => {}}
-          files={this.state.tree}
-          parentState={() => {}}
-          currentApp={this.context}
-          cloudCodeChanges={this.cloudCodeChanges}
-          hideControls={true}
-          style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
-          onFileClick={async (fileNode) => {
-            if (!fileNode || fileNode.type === 'folder') { return; }
-            try {
-              const data = await this.context.fetchFileData({...fileNode.data, releaseId: this.props.params.releaseId });
-              console.log('Fetched file data:', data);
-              return data;
-            } catch (err) {
-              console.error('Failed to fetch file data:', err);
-            }
-          }}
-        />
+    return (
+      <div className={styles.fileTreeContainer}>
+        <div className={styles.fileTreeHeader}>Changed Files</div>
+        <div className={styles.fileTree}>
+          {this.state.tree ? (
+            <B4ACodeTree
+              key={this.props.params.releaseId}
+              setUpdatedFile={() => {}}
+              files={this.state.tree}
+              parentState={() => {}}
+              currentApp={this.context}
+              cloudCodeChanges={this.cloudCodeChanges}
+              hideControls={true}
+              style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
+              onFileClick={async (fileNode) => {
+                if (!fileNode || fileNode.type === 'folder') { return; }
+                try {
+                  const data = await this.context.fetchFileData({ ...fileNode.data, releaseId: this.props.params.releaseId });
+                  console.log('Fetched file data:', data);
+                  return data;
+                } catch (err) {
+                  console.error('Failed to fetch file data:', err);
+                }
+              }}
+            />
+          ) : null}
+        </div>
       </div>
-    </div>
+    );
   }
 
   renderContent(){
