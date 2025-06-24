@@ -9,6 +9,7 @@ import DashboardView from 'dashboard/DashboardView.react';
 import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
 import $ from 'jquery';
+import jstree from 'jstree';
 
 @withRouter
 class DeploymentDetails extends DashboardView {
