@@ -7,6 +7,8 @@ import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer
 import { withRouter } from 'lib/withRouter';
 import DashboardView from 'dashboard/DashboardView.react';
 import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
+import CloudCodeChanges from 'lib/CloudCodeChanges';
+import $ from 'jquery';
 
 @withRouter
 class DeploymentDetails extends DashboardView {
@@ -20,6 +22,7 @@ class DeploymentDetails extends DashboardView {
       tree: undefined,
       error: undefined
     };
+    this.cloudCodeChanges = new CloudCodeChanges();
   }
 
   componentWillMount() {
@@ -36,9 +39,10 @@ class DeploymentDetails extends DashboardView {
       }, () => {
         // Paint the tree using jsTree after state is updated
         console.log('window.$');
-        if (window.$ && window.$('#tree').jstree) {
-          window.$('#tree').jstree(true).settings.core.data = this.state.tree;
-          window.$('#tree').jstree(true).refresh();
+        debugger;
+        if ($ && $('#tree').jstree) {
+          $('#tree').jstree(true).settings.core.data = this.state.tree;
+          $('#tree').jstree(true).refresh();
         }
       });
     }).catch((err) => {
@@ -55,9 +59,10 @@ class DeploymentDetails extends DashboardView {
 
   componentDidUpdate() {
     console.log('componentDidUpdate');
-    if (window.$ && window.$('#tree').jstree) {
-      window.$('#tree').jstree(true).settings.core.data = this.state.tree;
-      window.$('#tree').jstree(true).refresh();
+    debugger;
+    if ($ && $('#tree').jstree) {
+      $('#tree').jstree(true).settings.core.data = this.state.tree;
+      $('#tree').jstree(true).refresh();
     }
   }
 
@@ -81,8 +86,8 @@ class DeploymentDetails extends DashboardView {
           files={this.state.tree}
           parentState={() => {}}
           currentApp={this.context}
-          cloudCodeChanges={null}
-          hideControls={true}
+          cloudCodeChanges={this.cloudCodeChanges}
+          // hideControls={true}
           style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
           onFileClick={async (fileNode) => {
             if (!fileNode || fileNode.type === 'folder') { return; }
