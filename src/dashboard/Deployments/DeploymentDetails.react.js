@@ -87,7 +87,7 @@ class DeploymentDetails extends DashboardView {
           parentState={() => {}}
           currentApp={this.context}
           cloudCodeChanges={this.cloudCodeChanges}
-          // hideControls={true}
+          hideControls={true}
           style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
           onFileClick={async (fileNode) => {
             if (!fileNode || fileNode.type === 'folder') { return; }
