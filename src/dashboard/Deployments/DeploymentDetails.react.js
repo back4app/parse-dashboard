@@ -8,6 +8,8 @@ import { withRouter } from 'lib/withRouter';
 import DashboardView from 'dashboard/DashboardView.react';
 import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
+import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
+import errorImgPNG from 'dashboard/Data/Browser/error-icon.png';
 
 @withRouter
 class DeploymentDetails extends DashboardView {
@@ -32,7 +34,6 @@ class DeploymentDetails extends DashboardView {
   loadData() {
     this.setState({ loading: true });
     this.context.getDeploymentDetails(this.props.params.releaseId).then((data) => {
-      console.log('data', data);
       this.setState({
         currentRelease: data.currentRelease,
         tree: data.changes.tree
@@ -109,13 +110,15 @@ class DeploymentDetails extends DashboardView {
                   <div className={styles.deployedAt}>
                     {this.state.currentRelease && new Date(this.state.currentRelease.deployedAt).toLocaleString()}
                   </div>
-                  <button className={styles.rollbackButton}>
-                    Rollback to version
-                  </button>
+                  {this.state.isRollbackAvailable && (
+                    <button className={styles.rollbackButton}>
+                      Rollback to version
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-            {this.state.error ? <B4aEmptyState title="Error" description={this.state.error} /> : this.renderFileTree()}
+            {this.state.error ? <div style={{ marginTop: '2.5rem' }}><B4aEmptyState title="Error" description={this.state.error} imgSrc={errorImgPNG} /></div> : this.renderFileTree()}
           </div>
         </div>
       </B4aLoaderContainer>
