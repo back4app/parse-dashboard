@@ -62,11 +62,12 @@ export default class B4ACodeTree extends React.Component {
       selectedFolder: 0,
       isFolderSelected: true,
       selectedNodeData: null,
-      isLoadingFileData: false,
+      loadingFileId: null,
       errorFileData: null,
     }
 
-    // this.cloudCodeChanges = new CloudCodeChanges();
+    // Used to track the latest file load request
+    this.loadRequestId = 0;
   }
 
   getFileType(file) {
@@ -166,22 +167,29 @@ export default class B4ACodeTree extends React.Component {
             extension = B4ATreeActions.getExtension(selectedFile)
           }
         } else if (this.props.onFileClick) {
-          if (this.state.isLoadingFileData) {
+          // Use a request token to prevent race conditions
+          if (this.state.loadingFileId === selected.id) {
             return;
           }
-          this.setState({ isLoadingFileData: true });
-          const data = await this.props.onFileClick(selected);
-          if (data.base64) {
-            const base64Data = data.base64.includes(',') ? data.base64.split(',')?.[1] : data.base64;
+          this.loadRequestId += 1;
+          const currentRequestId = this.loadRequestId;
+          this.setState({ loadingFileId: selected.id, errorFileData: null });
+          const dataResult = await this.props.onFileClick(selected);
+          // Only update state if this is the latest request
+          if (this.loadRequestId !== currentRequestId) {
+            return;
+          }
+          if (dataResult.base64) {
+            const base64Data = dataResult.base64.includes(',') ? dataResult.base64.split(',')?.[1] : dataResult.base64;
             const decodedCode = window.atob(base64Data);
             const decodedCodeString = decodeURIComponent(escape(decodedCode));
             source = decodedCodeString;
             selectedFile = selected.text
             nodeId = selected.id
             extension = B4ATreeActions.getExtension(selectedFile)
-            this.setState({ isLoadingFileData: false });
+            this.setState({ loadingFileId: null });
           } else {
-            this.setState({ errorFileData: 'Failed to fetch file data', isLoadingFileData: false });
+            this.setState({ errorFileData: 'Failed to fetch file data', loadingFileId: null });
           }
         }
       } else {
@@ -297,13 +305,12 @@ export default class B4ACodeTree extends React.Component {
 
   render(){
     let content;
-    if (this.state.isLoadingFileData) {
+    if (this.state.loadingFileId) {
       content = <B4aEmptyState
         margin="46px 0 0 0"
         imgSrc={folderInfoIcon}
         description="Loading file content..." />;
-    }
-    if (this.state.isImage) {
+    } else if (this.state.isImage) {
       content = <img style={{ width: '100%', height: '100%', objectFit: 'scale-down' }} src={this.state.source} />;
     }
     else if (this.state.isFolderSelected === true) {

@@ -32,7 +32,6 @@ class DeploymentDetails extends DashboardView {
   }
 
   loadData() {
-    this.setState({ loading: true });
     this.context.getDeploymentDetails(this.props.params.releaseId).then((data) => {
       this.setState({
         currentRelease: data.currentRelease,
@@ -47,7 +46,9 @@ class DeploymentDetails extends DashboardView {
   }
 
   onRefresh() {
-    this.loadData();
+    this.setState({ loading: true, error: undefined, tree: undefined, currentRelease: undefined }, () => {
+      this.loadData();
+    });
   }
 
   renderToolbar() {
