@@ -180,13 +180,18 @@ export default class B4ACodeTree extends React.Component {
             return;
           }
           if (dataResult.base64) {
-            const base64Data = dataResult.base64.includes(',') ? dataResult.base64.split(',')?.[1] : dataResult.base64;
-            const decodedCode = window.atob(base64Data);
-            const decodedCodeString = decodeURIComponent(escape(decodedCode));
-            source = decodedCodeString;
-            selectedFile = selected.text
-            nodeId = selected.id
-            extension = B4ATreeActions.getExtension(selectedFile)
+            isImage = /^(jpg|jpeg|png|gif)$/i.test(B4ATreeActions.getExtension(selected.text));
+            if (isImage) {
+              source = `data:image/png;base64,${dataResult.base64}`;
+            } else {
+              const base64Data = dataResult.base64.includes(',') ? dataResult.base64.split(',')?.[1] : dataResult.base64;
+              const decodedCode = window.atob(base64Data);
+              const decodedCodeString = decodeURIComponent(escape(decodedCode));
+              source = decodedCodeString;
+            }
+            selectedFile = selected.text;
+            nodeId = selected.id;
+            extension = B4ATreeActions.getExtension(selectedFile);
             this.setState({ loadingFileId: null });
           } else {
             this.setState({ errorFileData: 'Failed to fetch file data', loadingFileId: null });
