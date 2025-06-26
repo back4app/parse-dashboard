@@ -105,20 +105,8 @@ class Deployments extends DashboardView {
   handleRollback(releaseId) {
     this.setState({ isRollingBack: true });
     return this.context.rollbackDeployment(releaseId).then((response) => {
-      if (response.success) {
-        this.setState({
-          notification: {
-            message: 'Rollback successful!',
-            isErrorNote: false
-          }
-        });
-      } else {
-        this.setState({
-          notification: {
-            message: response.message || response.error || 'Rollback failed!',
-            isErrorNote: true
-          }
-        });
+      if (!response.success) {
+        return { success: false, error: response.error || 'Rollback failed!' };
       }
 
       this.context.fetchDeployments(1, null, 'desc').then(data => {
@@ -126,25 +114,10 @@ class Deployments extends DashboardView {
           currentRelease: data.currentDeployment,
         });
       });
-
-      setTimeout(() => {
-        this.setState({
-          notification: null
-        });
-      }, 3500);
+      return { success: true };
     }).catch(error => {
       console.error('Rollback failed:', error);
-      this.setState({
-        notification: {
-          message: error || 'Rollback failed!',
-          isErrorNote: true
-        }
-      });
-      setTimeout(() => {
-        this.setState({
-          notification: null
-        });
-      }, 3500);
+      return { success: false, error: error || 'Rollback failed!' };
     }).finally(() => {
       this.setState({ isRollingBack: false });
     });
