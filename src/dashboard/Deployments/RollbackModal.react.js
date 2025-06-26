@@ -31,8 +31,8 @@ const RollbackModal = ({ onCancel, onConfirm, releaseId, onSuccess }) => {
   return (
     <B4aModal
       type={B4aModal.Types.INFO}
-      title='Rollback'
-      subtitle={`Are you sure you want to rollback to V${releaseId}. This action might take a few minutes to be reflected.`}
+      title='Confirm Rollback'
+      subtitle={`You\'re about to revert to version ${releaseId}. Please type only the version number to confirm`}
       confirmText={isRollingBack === false ? 'Rollback' : 'Rolling back...'}
       disableConfirm={isRollingBack}
       disableCancel={isRollingBack}
@@ -41,7 +41,7 @@ const RollbackModal = ({ onCancel, onConfirm, releaseId, onSuccess }) => {
       onCancel={onCancel}
       onConfirm={handleConfirm}
     >
-      <input ref={confirmationInput} type="text" placeholder="Please type Version to confirm" className={styles.rollbackConfirmationInput} />
+      <input ref={confirmationInput} type="text" placeholder="Enter version number (e.g. 6)" className={styles.rollbackConfirmationInput} />
       <span className={styles.rollbackConfirmationError}>{error}</span>
     </B4aModal>
   )
