@@ -153,7 +153,7 @@ class DeploymentDetails extends DashboardView {
           }}
           onSuccess={() => {
             this.setState({ showRollbackModal: false });
-            this.props.navigate(`/apps/${this.context.appId}/deployments`);
+            this.props.navigate(`/apps/${this.props.params.appId}/deployments`);
           }}
         >
           <input type="text" placeholder="Enter the release ID" />
