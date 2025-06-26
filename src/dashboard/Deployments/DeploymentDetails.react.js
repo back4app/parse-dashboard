@@ -74,9 +74,12 @@ class DeploymentDetails extends DashboardView {
   }
 
   renderFileTree() {
+    if (!this.state.currentRelease) { return null; }
     return (
       <div className={styles.fileTreeContainer}>
-        <div className={styles.fileTreeHeader}>Changed Files</div>
+        {this.state.currentRelease.releaseId === 1 ? (
+          <div className={styles.fileTreeHeader}>Changed Files in Version {this.state.currentRelease.releaseId}</div>
+        ) : (<div className={styles.fileTreeHeader}>Changed Files: Comparing Version {this.state.currentRelease.releaseId} ↔️ Version {this.state.currentRelease.releaseId - 1}</div>)}
         <div className={styles.fileTree}>
           {this.state.tree ? (
             <B4ACodeTree
