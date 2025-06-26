@@ -81,19 +81,27 @@ class DeploymentDetails extends DashboardView {
           <div className={styles.fileTreeHeader}>Changed Files in Version {this.state.currentRelease.releaseId}</div>
         ) : (<div className={styles.fileTreeHeader}>Changed Files: Comparing Version {this.state.currentRelease.releaseId} ↔️ Version {this.state.currentRelease.releaseId - 1}</div>)}
         <div className={styles.fileTree}>
-          {this.state.tree ? (
-            <B4ACodeTree
-              key={this.props.params.releaseId}
-              setUpdatedFile={() => {}}
-              files={this.state.tree}
-              parentState={() => {}}
-              currentApp={this.context}
-              cloudCodeChanges={this.cloudCodeChanges}
-              hideControls={true}
-              style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
-              onFileClick={this.onFileClick}
-            />
-          ) : null}
+          {this.state.tree.length === 0 ? (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{ marginTop: '2.5rem', marginLeft: '2.5rem', marginRight: '2.5rem', background: '#1D293E', borderRadius: '0.25rem', padding: '4rem' }}>
+                <B4aEmptyState
+                  title="No changes in this version"
+                  description="This version has no changes compared to the previous version"
+                // imgSrc={errorImgPNG}
+                />
+              </div>
+            </div>
+          ) : <B4ACodeTree
+            key={this.props.params.releaseId}
+            setUpdatedFile={() => {}}
+            files={this.state.tree}
+            parentState={() => {}}
+            currentApp={this.context}
+            cloudCodeChanges={this.cloudCodeChanges}
+            hideControls={true}
+            style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
+            onFileClick={this.onFileClick}
+          />}
         </div>
       </div>
     );
