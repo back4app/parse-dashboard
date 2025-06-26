@@ -124,8 +124,6 @@ export default class B4ACodeTree extends React.Component {
     let isImage = false
     let selectedFolder = 0;
 
-    console.log('selectNode', data);
-
     if (data.selected && data.selected.length === 1) {
       selected = data.instance.get_node(data.selected[0]);
       // if is not a folder

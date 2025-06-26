@@ -10,6 +10,7 @@ import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import errorImgPNG from 'dashboard/Data/Browser/error-icon.png';
+import RollbackModal from './RollbackModal.react';
 
 @withRouter
 class DeploymentDetails extends DashboardView {
@@ -21,7 +22,8 @@ class DeploymentDetails extends DashboardView {
       loading: true,
       currentRelease: undefined,
       tree: undefined,
-      error: undefined
+      error: undefined,
+      showRollbackModal: false,
     };
     this.cloudCodeChanges = new CloudCodeChanges();
     this.onFileClick = this.onFileClick.bind(this);
@@ -40,7 +42,8 @@ class DeploymentDetails extends DashboardView {
     this.context.getDeploymentDetails(releaseId).then((data) => {
       this.setState({
         currentRelease: data.currentRelease,
-        tree: data.changes.tree
+        tree: data.changes.tree,
+        isRollbackAvailable: data.isRollbackAvailable,
       });
     }).catch((err) => {
       console.error(err);
@@ -67,11 +70,9 @@ class DeploymentDetails extends DashboardView {
   }
 
   async onFileClick(fileNode) {
-    console.log('fileNode', fileNode.data.checksum);
     if (!fileNode || fileNode.type === 'folder') { return; }
     try {
       const data = await this.context.fetchFileData({ ...fileNode.data, releaseId: this.props.params.releaseId });
-      console.log('Fetched file data:', data);
       return data;
     } catch (err) {
       console.error('Failed to fetch file data:', err);
@@ -127,7 +128,7 @@ class DeploymentDetails extends DashboardView {
                     {this.state.currentRelease && new Date(this.state.currentRelease.deployedAt).toLocaleString()}
                   </div>
                   {this.state.isRollbackAvailable && (
-                    <button className={styles.rollbackButton}>
+                    <button className={styles.rollbackButton} onClick={() => this.setState({ showRollbackModal: true })}>
                       Rollback to version
                     </button>
                   )}
@@ -139,6 +140,21 @@ class DeploymentDetails extends DashboardView {
         </div>
       </B4aLoaderContainer>
       {toolbar}
+      {this.state.showRollbackModal && (
+        <RollbackModal
+          releaseId={this.props.params.releaseId}
+          onCancel={() => this.setState({ showRollbackModal: false })}
+          onConfirm={async () => {
+            return this.context.rollbackDeployment(this.props.params.releaseId).then(() => {
+              return { success: true }
+            }).catch((e) => {
+              return { success: false, error: e.error || 'Failed to rollback' }
+            })
+          }
+          }>
+          <input type="text" placeholder="Enter the release ID" />
+        </RollbackModal>
+      )}
     </div>
   }
 }

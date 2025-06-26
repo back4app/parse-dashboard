@@ -148,3 +148,19 @@ td.subHeader {
   padding: 20px;
   text-align: center;
 }
+
+.rollbackConfirmationInput {
+  border-radius: 0.25rem;
+  border: 1px solid $light-grey;
+  padding: 0.75rem;
+  color: $dark;
+  width: 100%;
+  background: transparent;
+  outline: none;
+}
+.rollbackConfirmationError {
+  margin: 0.5rem 0;
+  color: $error-red;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
