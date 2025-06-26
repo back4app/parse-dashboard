@@ -32,7 +32,12 @@ class DeploymentDetails extends DashboardView {
   }
 
   loadData() {
-    this.context.getDeploymentDetails(this.props.params.releaseId).then((data) => {
+    const releaseId = this.props.params.releaseId;
+    if (typeof releaseId !== 'string' || !/^[0-9]+$/.test(releaseId)) {
+      this.setState({ error: 'Invalid release ID', loading: false });
+      return;
+    }
+    this.context.getDeploymentDetails(releaseId).then((data) => {
       this.setState({
         currentRelease: data.currentRelease,
         tree: data.changes.tree
