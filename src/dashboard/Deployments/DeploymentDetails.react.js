@@ -145,7 +145,7 @@ class DeploymentDetails extends DashboardView {
           releaseId={this.props.params.releaseId}
           onCancel={() => this.setState({ showRollbackModal: false })}
           onConfirm={async () => {
-            return this.context.rollbackDeployment(this.props.params.releaseId).then(() => {
+            return this.context.rollbackDeployment(this.state.currentRelease._id).then(() => {
               return { success: true }
             }).catch((e) => {
               return { success: false, error: e.error || 'Failed to rollback' }
