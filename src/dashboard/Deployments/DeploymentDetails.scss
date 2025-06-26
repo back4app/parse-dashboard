@@ -65,8 +65,7 @@
       .description {
         white-space: normal;
         word-wrap: break-word;
-        // max-width: 60%;
-        max-width: 50%;
+        max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -76,6 +75,7 @@
         display: flex;
         align-items: center;
         gap: .625rem;
+        flex-shrink: 0;
       }
     }
   }
