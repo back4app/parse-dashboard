@@ -104,7 +104,7 @@ class DeploymentDetails extends DashboardView {
             currentApp={this.context}
             cloudCodeChanges={this.cloudCodeChanges}
             hideControls={true}
-            style={{ position: 'relative', minHeight: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
+            style={{ position: 'relative', height: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
             onFileClick={this.onFileClick}
           />}
         </div>
