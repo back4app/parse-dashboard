@@ -275,7 +275,7 @@ export default class B4ACodeTree extends React.Component {
     const config = B4ATreeActions.getConfig(this.state.files);
     if (this.props.hideControls) {
       // Remove contextmenu plugin to disable right-click
-      config.plugins = config.plugins.filter(p => p !== 'contextmenu');
+      config.plugins = config.plugins.filter(p => p !== 'contextmenu' && p !== 'dnd');
       // Remove contextmenu property
       delete config.contextmenu;
     }
