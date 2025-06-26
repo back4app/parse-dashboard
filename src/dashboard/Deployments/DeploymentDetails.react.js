@@ -11,13 +11,16 @@ import CloudCodeChanges from 'lib/CloudCodeChanges';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import errorImgPNG from 'dashboard/Data/Browser/error-icon.png';
 import RollbackModal from './RollbackModal.react';
+import greenFileIcon from 'components/B4ACodeTree/icons/green-file.png';
+import yellowFileIcon from 'components/B4ACodeTree/icons/yellow-file.png';
+import redFileIcon from 'components/B4ACodeTree/icons/red-file.png';
 
 @withRouter
 class DeploymentDetails extends DashboardView {
   constructor() {
     super();
     this.section = 'Cloud Code';
-    this.subsection = 'Deployments > ';
+    this.subsection = 'Deployments';
     this.state = {
       loading: true,
       currentRelease: undefined,
@@ -97,17 +100,24 @@ class DeploymentDetails extends DashboardView {
                 />
               </div>
             </div>
-          ) : <B4ACodeTree
-            key={this.props.params.releaseId}
-            setUpdatedFile={() => {}}
-            files={this.state.tree}
-            parentState={() => {}}
-            currentApp={this.context}
-            cloudCodeChanges={this.cloudCodeChanges}
-            hideControls={true}
-            style={{ position: 'relative', height: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
-            onFileClick={this.onFileClick}
-          />}
+          ) : <>
+            <B4ACodeTree
+              key={this.props.params.releaseId}
+              setUpdatedFile={() => {}}
+              files={this.state.tree}
+              parentState={() => {}}
+              currentApp={this.context}
+              cloudCodeChanges={this.cloudCodeChanges}
+              hideControls={true}
+              style={{ position: 'relative', height: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
+              onFileClick={this.onFileClick}
+            />
+            <div className={styles.fileTreeFooter}>
+              <div> <img src={greenFileIcon} alt="error" /> Added</div>
+              <div> <img src={yellowFileIcon} alt="error" /> Edited</div>
+              <div> <img src={redFileIcon} alt="error" /> Deleted</div>
+            </div>
+          </> }
         </div>
       </div>
     );

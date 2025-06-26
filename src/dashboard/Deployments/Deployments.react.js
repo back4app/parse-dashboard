@@ -7,7 +7,7 @@
  */
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import Icon from 'components/Icon/Icon.react';
-import React, { useState } from 'react';
+import React from 'react';
 import TableHeader from 'components/Table/TableHeader.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
@@ -18,6 +18,7 @@ import DashboardView from 'dashboard/DashboardView.react';
 import stylesTable from 'dashboard/TableView.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import { useNavigate } from 'react-router-dom';
+import RollbackModal from './RollbackModal.react';
 
 
 @withRouter
@@ -40,6 +41,7 @@ class Deployments extends DashboardView {
       notification: null,
       isRollingBack: false,
       loadingMore: false,
+      selectedRelease: null,
     };
   }
 
@@ -166,7 +168,7 @@ class Deployments extends DashboardView {
         key={value._id || value.releaseId}
         value={value}
         isCurrentRelease={this.state.currentRelease?._id === value._id}
-        handleRollback={this.handleRollback.bind(this)}
+        handleRollback={() => this.setState({ selectedRelease: value, showRollbackModal: true })}
         isLoading={this.state.isRollingBack}
         appId={this.context.slug}
       />
@@ -219,6 +221,14 @@ class Deployments extends DashboardView {
           />
         )}
         {loadMoreButton}
+        {this.state.showRollbackModal && this.state.selectedRelease && (
+          <RollbackModal
+            releaseId={this.state.selectedRelease.releaseId}
+            onCancel={() => this.setState({ showRollbackModal: false, selectedRelease: null })}
+            onConfirm={() => this.handleRollback(this.state.selectedRelease._id)}
+            onSuccess={() => this.setState({ showRollbackModal: false, selectedRelease: null })}
+          />
+        )}
       </>
     );
   }
@@ -286,15 +296,7 @@ export default Deployments;
 
 
 const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading, appId }) => {
-  const [startRollingBack, setStartRollingBack] = useState(false);
   const navigate = useNavigate();
-
-  const onClick = () => {
-    setStartRollingBack(true);
-    handleRollback(value._id).finally(() => {
-      setStartRollingBack(false);
-    });
-  };
 
   const handleRowClick = (e) => {
     // Prevent click if clicking on rollback button
@@ -309,7 +311,7 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading, appId 
     <>
       <tr
         key={value.releaseId}
-        className={`${styles.row} ${startRollingBack ? styles.rollingBack : ''}`}
+        className={`${styles.row}`}
         onClick={handleRowClick}
         style={{ cursor: 'pointer' }}
       >
@@ -324,11 +326,10 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading, appId 
             <div className={styles.description}>{value.description || 'NA'}</div>
             {!isCurrentRelease && (
               <button
-                className={`${styles.rollbackButton} ${startRollingBack || isLoading ? styles.disabledRollbackButton : ''}`}
-                onClick={onClick}
-                disabled={startRollingBack || isLoading}
+                className={`${styles.rollbackButton} ${isLoading ? styles.disabledRollbackButton : ''}`}
+                onClick={handleRollback}
               >
-                {startRollingBack ? 'Rolling back...' : 'Rollback'}
+                Rollback
               </button>
             )}
           </div>

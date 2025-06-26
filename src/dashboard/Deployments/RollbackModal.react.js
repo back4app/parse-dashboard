@@ -9,7 +9,8 @@ const RollbackModal = ({ onCancel, onConfirm, releaseId, onSuccess }) => {
 
   const handleConfirm = async () => {
     setError(undefined);
-    if (confirmationInput.current.value !== releaseId) {
+    // loose type comparison as input is text
+    if (confirmationInput.current.value != releaseId) {
       setError('Please type the correct version');
       return;
     }

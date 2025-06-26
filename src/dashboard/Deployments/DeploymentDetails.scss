@@ -138,3 +138,22 @@
     cursor: not-allowed;
   }
 }
+
+.fileTreeFooter {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  & img {
+    width: 18px;
+    height: 18px;
+  }
+}
