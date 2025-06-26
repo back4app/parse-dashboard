@@ -62,9 +62,8 @@ class DeploymentDetails extends DashboardView {
   }
 
   async onFileClick(fileNode) {
-    console.log('fileNode', fileNode);
+    console.log('fileNode', fileNode.data.checksum);
     if (!fileNode || fileNode.type === 'folder') { return; }
-
     try {
       const data = await this.context.fetchFileData({ ...fileNode.data, releaseId: this.props.params.releaseId });
       console.log('Fetched file data:', data);

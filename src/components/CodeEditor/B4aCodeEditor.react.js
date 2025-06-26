@@ -153,6 +153,7 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode, readO
       basicSetup={{ lineNumbers: true, highlightActiveLine: true }}
       theme={myTheme}
       editable={!readOnly}
+      readOnly={readOnly}
     />
   );
 })
