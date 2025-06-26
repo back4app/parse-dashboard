@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import styles from './Deployments.scss';
 
-const RollbackModal = ({ onCancel, onConfirm, releaseId }) => {
+const RollbackModal = ({ onCancel, onConfirm, releaseId, onSuccess }) => {
   const [isRollingBack, setIsRollingBack] = useState(false);
   const [error, setError] = useState(undefined);
   const confirmationInput = useRef(null);
@@ -17,7 +17,7 @@ const RollbackModal = ({ onCancel, onConfirm, releaseId }) => {
     try {
       const { success, error } = await onConfirm();
       if (success) {
-        onCancel();
+        onSuccess();
       } else {
         setError(error);
       }

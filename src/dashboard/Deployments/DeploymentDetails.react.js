@@ -150,8 +150,12 @@ class DeploymentDetails extends DashboardView {
             }).catch((e) => {
               return { success: false, error: e.error || 'Failed to rollback' }
             })
-          }
-          }>
+          }}
+          onSuccess={() => {
+            this.setState({ showRollbackModal: false });
+            this.props.navigate(`/apps/${this.context.appId}/deployments`);
+          }}
+        >
           <input type="text" placeholder="Enter the release ID" />
         </RollbackModal>
       )}
