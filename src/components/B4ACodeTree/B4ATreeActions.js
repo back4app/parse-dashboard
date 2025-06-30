@@ -7,9 +7,6 @@ import { Base64 } from 'js-base64'
 import folderIcon from './icons/folder.png';
 import file from './icons/file.png';
 import fileCheck from './icons/file-check.png';
-import greenFileIcon from './icons/green-file.png';
-import redFileIcon from './icons/red-file.png';
-import yellowFileIcon from './icons/yellow-file.png';
 import undeployedFolder from './icons/folder-notdeployed.png';
 import styles from 'components/B4ACodeTree/B4ACodeTree.scss';
 import buttonStyles from 'components/Button/Button.scss';
@@ -279,18 +276,6 @@ const getConfig = (files) => {
       },
       'new-file': {
         icon: file,
-        max_children: 0
-      },
-      'green-file': {
-        icon: greenFileIcon,
-        max_children: 0
-      },
-      'red-file': {
-        icon: redFileIcon,
-        max_children: 0
-      },
-      'yellow-file': {
-        icon: yellowFileIcon,
         max_children: 0
       }
     }
