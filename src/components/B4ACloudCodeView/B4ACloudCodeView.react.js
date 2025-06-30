@@ -80,6 +80,7 @@ export default class B4ACloudCodeView extends React.Component {
           onCodeChange={(value) => this.props.onCodeChange(value)}
           mode={this.extensionDecoder()}
           ref={editor => (this.editor = editor)}
+          readOnly={this.props.readOnly || false}
         />
       </div>
     );
