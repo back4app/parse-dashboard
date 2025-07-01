@@ -13,10 +13,6 @@ const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process
 const replaysSessionSampleRate = isRecordEverySession ? 1.0 : 0.1;
 
 export default function instrument() {
-  console.log('isRecordEverySession', isRecordEverySession);
-  console.log('replaysSessionSampleRate', replaysSessionSampleRate);
-  console.log(new Date(process.env.BUILD_TIMESTAMP).getTime());
-
   const replay = Sentry.replayIntegration({
     stickySession: true,
     maskAllText: false,
@@ -29,7 +25,7 @@ export default function instrument() {
   })
 
   Sentry.init({
-    debug: process.env.SENTRY_ENV !== 'production',
+    debug: false,
     dsn: b4aSettings.SENTRY_DSN,
     environment: process.env.SENTRY_ENV,
     tracesSampleRate: 1.0,
