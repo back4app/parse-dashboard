@@ -35,6 +35,83 @@
   }
 
   & .content {
+
+    & .appOverviewActionsContainer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      & .appOverviewActionsTitle {
+        @include SoraFont;
+        font-size: 1.125rem;
+        font-weight: 700;
+        line-height: 140%;
+        color: $white;
+      }
+
+      & .dropdownContainer {
+        @include InterFont;
+        position: relative;
+        min-width: 200px;
+        background: $dark;
+        z-index: 1;
+        .dropdownTrigger {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.5rem 0.75rem;
+          cursor: pointer;
+          user-select: none;
+          color: $white;
+          font-size: 1rem;
+          font-weight: 500;
+          border: 1px solid $regal-blue;
+          border-radius: 4px;
+        }
+
+        & .dropdownTrigger.open {
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+          border-bottom: none;
+        }
+  
+        .dropdownMenu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background: $dark;
+          border: 1px solid $regal-blue;
+          border-top: none;
+          border-radius: 4px;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          padding: 0.5rem 0.75rem;
+          margin-top: 0 !important;
+
+          &.open {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            border-top: none;
+          }
+        }
+  
+        .dropdownItem {
+          padding: 0.5rem;
+          border-radius: 4px;
+          cursor: pointer;
+          color: $white;
+          font-size: 14px;
+          transition: background-color 0.2s ease;
+  
+          &:hover {
+            background: $mid-blue;
+          }
+        }
+      }
+
+    }
+
     & .appName {
       color: 18px;
     }
@@ -194,6 +271,19 @@
 
       & .greyText {
         color: #ccc;
+      }
+
+      & .changeRegionLink {
+        display: inline-block;
+        margin-left: 4px;
+        font-size: 12px;
+        color: $white;
+        background: $cta-green;
+        cursor: pointer;
+        border: 1px solid $cta-green;
+        border-radius: 4px;
+        padding: 0 6px;
+        text-decoration: none;
       }
     }
 

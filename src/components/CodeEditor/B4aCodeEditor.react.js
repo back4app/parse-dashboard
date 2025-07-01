@@ -77,7 +77,7 @@ const loadEslint = () => {
   });
 };
 
-const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode }, ref) => {
+const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode, readOnly = false }, ref) => {
   const [code, setCode] = useState(initialCode);
   const [eslintInstance, setEslintInstance] = useState(null);
 
@@ -152,6 +152,8 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode }, ref
       }}
       basicSetup={{ lineNumbers: true, highlightActiveLine: true }}
       theme={myTheme}
+      editable={!readOnly}
+      readOnly={readOnly}
     />
   );
 })

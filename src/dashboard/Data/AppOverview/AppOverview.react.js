@@ -22,6 +22,7 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import AppOverviewActions from './AppOverviewActions.react';
 
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 @withRouter
@@ -196,6 +197,11 @@ class AppOverview extends DashboardView {
           <div className={styles.title}>Overview</div>
         </div>
         <div className={styles.content}>
+          <AppOverviewActions
+            appUrlName={this.context.slug}
+            context={this.context}
+          />
+
           <AppLoadingText appName={this.context.name} appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
 
           <div className={styles.appInfoCard}>
@@ -232,7 +238,7 @@ class AppOverview extends DashboardView {
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>{this.context.databaseType}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region}</div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change region</a></span></div>
               </div>
             </div>
           </div>

@@ -425,7 +425,7 @@ export default class ParseApp {
   }
 
   restartApp() {
-    const path = `/parse-app/${this.slug}/restart`;
+    const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/restart`;
     return AJAX.post(path);
   }
 
@@ -455,7 +455,7 @@ export default class ParseApp {
   }
 
   async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false) {
-    const path = `/parse-app/${this.slug}/clone`;
+    const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
     return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs })
   }
 
@@ -560,6 +560,22 @@ export default class ParseApp {
     let fieldNames;
     let jsonArray;
 
+    // Helper function to check if a header is valid (not empty and not auto-generated)
+    const isValidHeader = (header) => {
+      if (!header || typeof header !== 'string') {
+        return false;
+      }
+      const trimmed = header.trim();
+      if (!trimmed) {
+        return false;
+      }
+      // Check if it's an auto-generated header like "_1", "_2", etc.
+      if (/^_\d+$/.test(trimmed)) {
+        return false;
+      }
+      return true;
+    };
+
     if (className) {
       const schema = await (new Parse.Schema(className)).get();
 
@@ -571,10 +587,21 @@ export default class ParseApp {
         transformHeader: header => header.trim()
       });
 
-      fieldNames = parseResult.meta.fields;
-      jsonArray = parseResult.data.map(row =>
-        this.processNestedFields(row, parseResult.meta.fields)
-      );
+      // Filter out invalid headers
+      const validFieldNames = parseResult.meta.fields.filter(isValidHeader);
+      fieldNames = validFieldNames;
+
+      // Process data and filter out columns with invalid headers
+      jsonArray = parseResult.data.map(row => {
+        // Create a new row object with only valid fields
+        const filteredRow = {};
+        validFieldNames.forEach(fieldName => {
+          if (row.hasOwnProperty(fieldName)) {
+            filteredRow[fieldName] = row[fieldName];
+          }
+        });
+        return this.processNestedFields(filteredRow, validFieldNames);
+      });
 
       // Handle custom field type conversions based on the schema
       const fields = fieldNames.filter(fieldName => fieldName.indexOf('.') < 0).reduce((fields, fieldName) => {
@@ -638,10 +665,21 @@ export default class ParseApp {
         transformHeader: header => header.trim()
       });
 
-      fieldNames = parseResult.meta.fields;
-      jsonArray = parseResult.data.map(row =>
-        this.processNestedFields(row, parseResult.meta.fields)
-      );
+      // Filter out invalid headers
+      const validFieldNames = parseResult.meta.fields.filter(isValidHeader);
+      fieldNames = validFieldNames;
+
+      // Process data and filter out columns with invalid headers
+      jsonArray = parseResult.data.map(row => {
+        // Create a new row object with only valid fields
+        const filteredRow = {};
+        validFieldNames.forEach(fieldName => {
+          if (row.hasOwnProperty(fieldName)) {
+            filteredRow[fieldName] = row[fieldName];
+          }
+        });
+        return this.processNestedFields(filteredRow, validFieldNames);
+      });
     }
 
     return new Blob([JSON.stringify({ results: jsonArray })], { type: 'text/plain' });
@@ -1601,4 +1639,69 @@ export default class ParseApp {
     }
   }
 
+  async fetchDeployments(limit = 10, cursor = null, sort = 'desc') {
+    try {
+      const params = new URLSearchParams({
+        limit: limit.toString(),
+        sort: sort
+      });
+
+      if (cursor) {
+        params.append('cursor', cursor);
+      }
+
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases?${params.toString()}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async rollbackDeployment(releaseId) {
+    try {
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/rollback`,
+          { releaseId },
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      console.log('err', err);
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async getDeploymentDetails(releaseId) {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases/${releaseId}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
+    }
+  }
+
+  async fetchFileData({ folder, filename, version, checksum, releaseId }) {
+    try {
+      const url = `${b4aSettings.BACK4APP_API_PATH}/cli/${this.slug}/releases/${releaseId}/file`;
+      const payload = { folder, filename, version, checksum };
+      const response = await axios.post(url, payload, {
+        withCredentials: true
+      });
+      return response.data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
 }
