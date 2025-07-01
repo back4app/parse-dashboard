@@ -7,7 +7,7 @@
  */
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import Icon from 'components/Icon/Icon.react';
-import React, { useState } from 'react';
+import React from 'react';
 import TableHeader from 'components/Table/TableHeader.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
@@ -17,6 +17,8 @@ import styles from './Deployments.scss';
 import DashboardView from 'dashboard/DashboardView.react';
 import stylesTable from 'dashboard/TableView.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+import { useNavigate } from 'react-router-dom';
+import RollbackModal from './RollbackModal.react';
 
 
 @withRouter
@@ -39,6 +41,7 @@ class Deployments extends DashboardView {
       notification: null,
       isRollingBack: false,
       loadingMore: false,
+      selectedRelease: null,
     };
   }
 
@@ -102,20 +105,8 @@ class Deployments extends DashboardView {
   handleRollback(releaseId) {
     this.setState({ isRollingBack: true });
     return this.context.rollbackDeployment(releaseId).then((response) => {
-      if (response.success) {
-        this.setState({
-          notification: {
-            message: 'Rollback successful!',
-            isErrorNote: false
-          }
-        });
-      } else {
-        this.setState({
-          notification: {
-            message: response.message || response.error || 'Rollback failed!',
-            isErrorNote: true
-          }
-        });
+      if (!response.success) {
+        return { success: false, error: response.error || 'Rollback failed!' };
       }
 
       this.context.fetchDeployments(1, null, 'desc').then(data => {
@@ -123,25 +114,10 @@ class Deployments extends DashboardView {
           currentRelease: data.currentDeployment,
         });
       });
-
-      setTimeout(() => {
-        this.setState({
-          notification: null
-        });
-      }, 3500);
+      return { success: true };
     }).catch(error => {
       console.error('Rollback failed:', error);
-      this.setState({
-        notification: {
-          message: error || 'Rollback failed!',
-          isErrorNote: true
-        }
-      });
-      setTimeout(() => {
-        this.setState({
-          notification: null
-        });
-      }, 3500);
+      return { success: false, error: error || 'Rollback failed!' };
     }).finally(() => {
       this.setState({ isRollingBack: false });
     });
@@ -165,8 +141,9 @@ class Deployments extends DashboardView {
         key={value._id || value.releaseId}
         value={value}
         isCurrentRelease={this.state.currentRelease?._id === value._id}
-        handleRollback={this.handleRollback.bind(this)}
+        handleRollback={() => this.setState({ selectedRelease: value, showRollbackModal: true })}
         isLoading={this.state.isRollingBack}
+        appId={this.context.slug}
       />
     );
   }
@@ -217,6 +194,14 @@ class Deployments extends DashboardView {
           />
         )}
         {loadMoreButton}
+        {this.state.showRollbackModal && this.state.selectedRelease && (
+          <RollbackModal
+            releaseId={this.state.selectedRelease.releaseId}
+            onCancel={() => this.setState({ showRollbackModal: false, selectedRelease: null })}
+            onConfirm={() => this.handleRollback(this.state.selectedRelease._id)}
+            onSuccess={() => this.setState({ showRollbackModal: false, selectedRelease: null })}
+          />
+        )}
       </>
     );
   }
@@ -245,7 +230,7 @@ class Deployments extends DashboardView {
                     </tr>
                   )}
                   {this.state.currentRelease && (
-                    <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} />
+                    <ReleaseRow value={this.state.currentRelease} isCurrentRelease={true} handleRollback={() => {}} isLoading={false} appId={this.context.slug} />
                   )}
                   {data.length > 0 && (
                     <tr key={`${Math.random()}`}>
@@ -283,17 +268,26 @@ class Deployments extends DashboardView {
 export default Deployments;
 
 
-const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
-  const [startRollingBack, setStartRollingBack] = useState(false);
-  const onClick = () => {
-    setStartRollingBack(true);
-    handleRollback(value._id).finally(() => {
-      setStartRollingBack(false);
-    });
+const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading, appId }) => {
+  const navigate = useNavigate();
+
+  const handleRowClick = (e) => {
+    // Prevent click if clicking on rollback button
+    if (e.target.closest('button')) {
+      return;
+    }
+    console.log('onclick button');
+    navigate(`/apps/${appId}/deployments/${value.releaseId}`);
   };
+
   return (
     <>
-      <tr key={value.releaseId} className={`${styles.row} ${startRollingBack ? styles.rollingBack : ''}`  }>
+      <tr
+        key={value.releaseId}
+        className={`${styles.row}`}
+        onClick={handleRowClick}
+        style={{ cursor: 'pointer' }}
+      >
         <td style={{ width: '10%' }}>
           {value.releaseId}
         </td>
@@ -305,11 +299,10 @@ const ReleaseRow = ({ value, isCurrentRelease, handleRollback, isLoading }) => {
             <div className={styles.description}>{value.description || 'NA'}</div>
             {!isCurrentRelease && (
               <button
-                className={`${styles.rollbackButton} ${startRollingBack || isLoading ? styles.disabledRollbackButton : ''}`}
-                onClick={onClick}
-                disabled={startRollingBack || isLoading}
+                className={`${styles.rollbackButton} ${isLoading ? styles.disabledRollbackButton : ''}`}
+                onClick={handleRollback}
               >
-                {startRollingBack ? 'Rolling back...' : 'Rollback'}
+                Rollback
               </button>
             )}
           </div>

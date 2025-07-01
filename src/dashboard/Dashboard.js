@@ -66,6 +66,7 @@ import back4app2 from '../lib/back4app2';
 import { initializeAmplitude } from 'lib/amplitudeEvents';
 import { setUser as setSentryUser } from '@sentry/react';
 import Deployments from './Deployments/Deployments.react';
+import DeploymentDetails from './Deployments/DeploymentDetails.react';
 import { useAppPageTracking } from './instrument';
 
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
@@ -461,6 +462,7 @@ class Dashboard extends React.Component {
 
         <Route path="jobs">{JobsRoute}</Route>
         <Route path="deployments" element={<Deployments />} />
+        <Route path="deployments/:releaseId" element={<DeploymentDetails />} />
         <Route path="logs">{LogsRoute}</Route>
 
         <Route path="config" element={<Config />} />

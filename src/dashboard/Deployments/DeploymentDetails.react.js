@@ -1,0 +1,176 @@
+import React from 'react';
+import Toolbar from 'components/Toolbar/Toolbar.react';
+import Icon from 'components/Icon/Icon.react';
+import browserStyles from 'dashboard/Data/Browser/Browser.scss';
+import styles from './DeploymentDetails.scss';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+import { withRouter } from 'lib/withRouter';
+import DashboardView from 'dashboard/DashboardView.react';
+import B4ACodeTree from 'components/B4ACodeTree/B4ACodeTree.react';
+import CloudCodeChanges from 'lib/CloudCodeChanges';
+import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
+import errorImgPNG from 'dashboard/Data/Browser/error-icon.png';
+import RollbackModal from './RollbackModal.react';
+import greenFileIcon from 'components/B4ACodeTree/icons/green-file.png';
+import yellowFileIcon from 'components/B4ACodeTree/icons/yellow-file.png';
+import redFileIcon from 'components/B4ACodeTree/icons/red-file.png';
+
+@withRouter
+class DeploymentDetails extends DashboardView {
+  constructor() {
+    super();
+    this.section = 'Cloud Code';
+    this.subsection = 'Deployments';
+    this.state = {
+      loading: true,
+      currentRelease: undefined,
+      tree: undefined,
+      error: undefined,
+      showRollbackModal: false,
+    };
+    this.cloudCodeChanges = new CloudCodeChanges();
+    this.onFileClick = this.onFileClick.bind(this);
+  }
+
+  componentWillMount() {
+    this.loadData();
+  }
+
+  loadData() {
+    const releaseId = this.props.params.releaseId;
+    if (typeof releaseId !== 'string' || !/^[0-9]+$/.test(releaseId)) {
+      this.setState({ error: 'Invalid release ID', loading: false });
+      return;
+    }
+    this.context.getDeploymentDetails(releaseId).then((data) => {
+      this.setState({
+        currentRelease: data.currentRelease,
+        tree: data.changes.tree,
+        isRollbackAvailable: data.isRollbackAvailable,
+      });
+    }).catch((err) => {
+      console.error(err);
+      this.setState({ error: err.message || 'Failed to load deployment details' });
+    }).finally(() => {
+      this.setState({ loading: false });
+    });
+  }
+
+  onRefresh() {
+    this.setState({ loading: true, error: undefined, tree: undefined, currentRelease: undefined }, () => {
+      this.loadData();
+    });
+  }
+
+  renderToolbar() {
+    return (
+      <Toolbar section="Cloud Code" subsection={`Deployments > V${this.props.params.releaseId}`} >
+        <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
+          <Icon name="b4a-refresh-icon" width={18} height={18} />
+        </a>
+      </Toolbar>
+    );
+  }
+
+  async onFileClick(fileNode) {
+    if (!fileNode || fileNode.type === 'folder') { return; }
+    try {
+      const data = await this.context.fetchFileData({ ...fileNode.data, releaseId: this.props.params.releaseId });
+      return data;
+    } catch (err) {
+      console.error('Failed to fetch file data:', err);
+    }
+  }
+
+  renderFileTree() {
+    if (!this.state.currentRelease) { return null; }
+    return (
+      <div className={styles.fileTreeContainer}>
+        {this.state.currentRelease.releaseId === 1 ? (
+          <div className={styles.fileTreeHeader}>Changed Files in Version {this.state.currentRelease.releaseId}</div>
+        ) : (<div className={styles.fileTreeHeader}>Changed Files: Comparing Version {this.state.currentRelease.releaseId} ↔️ Version {this.state.currentRelease.releaseId - 1}</div>)}
+        <div className={styles.fileTree}>
+          {this.state.tree.length === 0 ? (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{ marginTop: '2.5rem', marginLeft: '2.5rem', marginRight: '2.5rem', background: '#1D293E', borderRadius: '0.25rem', padding: '4rem' }}>
+                <B4aEmptyState
+                  title="No changes in this version"
+                  description="This version has no changes compared to the previous version"
+                // imgSrc={errorImgPNG}
+                />
+              </div>
+            </div>
+          ) : <>
+            <B4ACodeTree
+              key={this.props.params.releaseId}
+              setUpdatedFile={() => {}}
+              files={this.state.tree}
+              parentState={() => {}}
+              currentApp={this.context}
+              cloudCodeChanges={this.cloudCodeChanges}
+              hideControls={true}
+              style={{ position: 'relative', height: '500px', top: '0', background: '#1D293E', borderRadius: '0.25rem', overflow: 'hidden' }}
+              onFileClick={this.onFileClick}
+            />
+            <div className={styles.fileTreeFooter}>
+              <div> <img src={greenFileIcon} alt="error" /> Added</div>
+              <div> <img src={yellowFileIcon} alt="error" /> Edited</div>
+              <div> <img src={redFileIcon} alt="error" /> Deleted</div>
+            </div>
+          </> }
+        </div>
+      </div>
+    );
+  }
+
+  renderContent(){
+    const toolbar = this.renderToolbar();
+    return <div>
+      <B4aLoaderContainer loading={this.state.loading}>
+        <div className={styles.content}>
+          <div className={styles.mainContent}>
+            <div className={styles.header}>
+              <div className={styles.title}>V{this.props.params.releaseId}</div>
+              <div className={styles.subtitle}>
+                <div className={styles.description}>{this.state.currentRelease?.description}</div>
+                <div className={styles.right}>
+                  <div className={styles.deployedAt}>
+                    {this.state.currentRelease && new Date(this.state.currentRelease.deployedAt).toLocaleString()}
+                  </div>
+                  {this.state.isRollbackAvailable && (
+                    <button className={styles.rollbackButton} onClick={() => this.setState({ showRollbackModal: true })}>
+                      Rollback to version
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            {this.state.error ? <div style={{ marginTop: '2.5rem' }}><B4aEmptyState title="Error" description={this.state.error} imgSrc={errorImgPNG} /></div> : this.renderFileTree()}
+          </div>
+        </div>
+      </B4aLoaderContainer>
+      {toolbar}
+      {this.state.showRollbackModal && (
+        <RollbackModal
+          releaseId={this.props.params.releaseId}
+          onCancel={() => this.setState({ showRollbackModal: false })}
+          onConfirm={async () => {
+            return this.context.rollbackDeployment(this.state.currentRelease._id).then(() => {
+              return { success: true }
+            }).catch((e) => {
+              return { success: false, error: e.error || 'Failed to rollback' }
+            })
+          }}
+          onSuccess={() => {
+            this.setState({ showRollbackModal: false });
+            this.props.navigate(`/apps/${this.props.params.appId}/deployments`);
+          }}
+        >
+          <input type="text" placeholder="Enter the release ID" />
+        </RollbackModal>
+      )}
+    </div>
+  }
+}
+
+export default DeploymentDetails;
