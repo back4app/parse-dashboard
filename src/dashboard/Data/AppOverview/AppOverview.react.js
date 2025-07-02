@@ -23,6 +23,7 @@ import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import AppOverviewActions from './AppOverviewActions.react';
+import ComplianceCard from './ComplianceCard.react';
 
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 @withRouter
@@ -250,6 +251,7 @@ class AppOverview extends DashboardView {
           )} */}
           <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
 
+          <ComplianceCard />
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
 
