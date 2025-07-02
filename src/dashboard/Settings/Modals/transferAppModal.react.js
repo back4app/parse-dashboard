@@ -1,10 +1,11 @@
-import React, { useState }                from 'react';
-import B4aModal                              from 'components/B4aModal/B4aModal.react';
-import Field                              from 'components/Field/Field.react';
-import Label                              from 'components/Label/Label.react';
-import TextInput                          from 'components/TextInput/TextInput.react';
-import { validateEmail }                  from 'dashboard/Settings/Util';
-import FormNote                           from 'components/FormNote/FormNote.react';
+import React, { useState } from 'react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
+import Field from 'components/Field/Field.react';
+import Label from 'components/Label/Label.react';
+import TextInput from 'components/TextInput/TextInput.react';
+import { validateEmail } from 'dashboard/Settings/Util';
+import FormNote from 'components/FormNote/FormNote.react';
+import { useNavigate } from 'react-router-dom';
 
 export const TransferAppModal = ({ context, setParentState }) => {
 
@@ -12,6 +13,7 @@ export const TransferAppModal = ({ context, setParentState }) => {
   const [ email, setEmail ] = useState('');
   const [ note, setNote ] = useState('')
   const [ processing, setProcessing ] = useState(false);
+  const navigate = useNavigate();
 
   return <B4aModal
     type={B4aModal.Types.DEFAULT}
@@ -32,7 +34,7 @@ export const TransferAppModal = ({ context, setParentState }) => {
             cleanupNoteColor: 'orange',
             showTransferAppModal: false,
           });
-          window.location = `${b4aSettings.DASHBOARD_PATH}/apps`;
+          navigate('/apps');
         }).catch((e) => {
           setParentState({
             cleanupFilesMessage: e.error,
