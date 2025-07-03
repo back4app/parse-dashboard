@@ -5,15 +5,15 @@ import Icon from 'components/Icon/Icon.react';
 const complianceTypes = {
   'HIPAA': {
     name: 'HIPAA',
-    description: 'Healthcare data privacy and security',
+    description: 'Healthcare privacy & security regulation',
   },
   'SOC 2': {
     name: 'SOC 2',
-    description: 'Trust-based controls for data handling',
+    description: 'Audit-backed controls for secure data handling',
   },
   'ISO 27001': {
     name: 'ISO 27001',
-    description: 'International information security management standard',
+    description: 'Global information-security management standard',
   },
 }
 
