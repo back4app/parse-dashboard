@@ -26,9 +26,9 @@ const ComplianceCard = ({ loading, planData, appId, isSignedBAA }) => {
   } else {
     content = (
       <>
-        <ComplianceItem type="HIPAA" planName={planData.planName} appId={appId} isSignedBAA={isSignedBAA} />
-        <ComplianceItem type="SOC 2" planName={planData.planName} appId={appId} />
-        <ComplianceItem type="ISO 27001" planName={planData.planName} appId={appId} />
+        <ComplianceItem type="HIPAA" enabled={planData.isHIPAAAvailable} appId={appId} isSignedBAA={isSignedBAA} />
+        <ComplianceItem type="SOC 2" enabled={planData.isSOC2Compliance} appId={appId} />
+        <ComplianceItem type="ISO 27001" enabled={planData.isISOCompliance} appId={appId} />
       </>
     )
   }
@@ -43,14 +43,13 @@ const ComplianceCard = ({ loading, planData, appId, isSignedBAA }) => {
   )
 }
 
-const ComplianceItem = ({ type, planName, appId, isSignedBAA }) => {
+const ComplianceItem = ({ type, enabled, appId, isSignedBAA }) => {
   let showUpgrade = false; let showSignBAA = false;
-  if (/Free/i.test(planName) || /MVP/i.test(planName)) {
+  if (type === 'HIPAA') {
+    if (enabled && !isSignedBAA) {showSignBAA = true;}
+    if (!enabled) {showUpgrade = true;}
+  } else if (!enabled) {
     showUpgrade = true;
-  } else if (/Pay As You Go/i.test(planName) && type === 'HIPAA') {
-    showSignBAA = true;
-  } else if (!isSignedBAA && type === 'HIPAA') {
-    showSignBAA = true;
   }
 
   return <div className={styles.complianceItem}>
