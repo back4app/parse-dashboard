@@ -16,7 +16,7 @@ const complianceTypes = {
   },
 }
 
-const ComplianceCard = ({ loading, planData, appId }) => {
+const ComplianceCard = ({ loading, planData, appId, isSignedBAA }) => {
   let content = null;
   if (loading) {
     content = <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
@@ -25,7 +25,7 @@ const ComplianceCard = ({ loading, planData, appId }) => {
   } else {
     content = (
       <div className={styles.complianceContent}>
-        <ComplianceItem type="HIPAA" planName={planData.planName} appId={appId} />
+        <ComplianceItem type="HIPAA" planName={planData.planName} appId={appId} isSignedBAA={isSignedBAA} />
         <ComplianceItem type="SOC 2" planName={planData.planName} appId={appId} />
         <ComplianceItem type="ISO 27001" planName={planData.planName} appId={appId} />
       </div>
@@ -40,15 +40,13 @@ const ComplianceCard = ({ loading, planData, appId }) => {
   )
 }
 
-const ComplianceItem = ({ type, planName, appId }) => {
+const ComplianceItem = ({ type, planName, appId, isSignedBAA }) => {
   let showUpgrade = false; let showSignBAA = false;
-  if (/Free/i.test(planName)) {
+  if (/Free/i.test(planName) || /MVP/i.test(planName)) {
     showUpgrade = true;
-  } else if (/MVP/i.test(planName)) {
-    showUpgrade = true;
-  } else if (/Pay As You Go/i.test(planName)) {
+  } else if (/Pay As You Go/i.test(planName) && type === 'HIPAA') {
     showSignBAA = true;
-  } else { // check if BAA signed
+  } else if (!isSignedBAA && type === 'HIPAA') {
     showSignBAA = true;
   }
 
