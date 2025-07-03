@@ -101,6 +101,8 @@ export default class GeneralSettings extends DashboardView {
   promiseCallback({ removedCollaborators }) {
     this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
     this.setState({ removedCollaborators: removedCollaborators || [] });
+
+    console.log('removedCollaborators', removedCollaborators);
   }
 
   renderContent() {
