@@ -5,7 +5,6 @@ import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import { validateEmail } from 'dashboard/Settings/Util';
 import FormNote from 'components/FormNote/FormNote.react';
-import { useNavigate } from 'react-router-dom';
 
 export const TransferAppModal = ({ context, setParentState }) => {
 
@@ -13,7 +12,6 @@ export const TransferAppModal = ({ context, setParentState }) => {
   const [ email, setEmail ] = useState('');
   const [ note, setNote ] = useState('')
   const [ processing, setProcessing ] = useState(false);
-  const navigate = useNavigate();
 
   return <B4aModal
     type={B4aModal.Types.DEFAULT}
@@ -34,7 +32,7 @@ export const TransferAppModal = ({ context, setParentState }) => {
             cleanupNoteColor: 'orange',
             showTransferAppModal: false,
           });
-          navigate('/apps');
+          window.location.href = '/apps';
         }).catch((e) => {
           setParentState({
             cleanupFilesMessage: e.error,

@@ -4,7 +4,6 @@ import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import FormNote from 'components/FormNote/FormNote.react';
-import { useNavigate } from 'react-router-dom';
 
 export const DeleteAppModal = ({ context, setParentState }) => {
 
@@ -12,8 +11,6 @@ export const DeleteAppModal = ({ context, setParentState }) => {
   const [ name, setName ] = useState('');
   const [ note, setNote ] = useState('')
   const [ processing, setProcessing ] = useState(false);
-  const navigate = useNavigate();
-
 
   useEffect(() => { setNote('') },[name])
 
@@ -43,7 +40,7 @@ export const DeleteAppModal = ({ context, setParentState }) => {
           cleanupNoteColor: 'orange',
           showDeleteAppModal: false,
         });
-        navigate('/apps');
+        window.location.href = '/apps';
       }).catch((e) => {
         setParentState({
           cleanupFilesMessage: e.error,
