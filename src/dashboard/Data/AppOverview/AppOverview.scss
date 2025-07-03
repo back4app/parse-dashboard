@@ -1147,11 +1147,14 @@
     margin-top: 0.75rem;
     display: flex;
     gap: 12px;
+    width: 100%;
+    justify-content: stretch;
 
     & .complianceItem {
       background: #1D293E;
       border-radius: 8px;
       padding: 12px 16px;
+      flex-grow: 1;
 
       & .complianceItemHeader {
         display: flex;
@@ -1194,6 +1197,7 @@
           padding: 0.5rem;
           font-size: 0.75rem;
           font-weight: 500;
+          flex-shrink: 0;
         }
 
         & .complianceItemSignBtn {
