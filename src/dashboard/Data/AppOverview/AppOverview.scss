@@ -1130,6 +1130,94 @@
   animation: rotating 1s linear infinite;
 }
 
+.complianceContainer {
+  margin: 1.5rem 0;
+  border: 1px solid #253348;
+  border-radius: 8px;
+  background: #10203A;
+  overflow: hidden;
+  padding: 1.5rem;
+
+  & .complianceHeader {
+    font-weight: 600;
+  }
+
+  & .complianceContent {
+    @include InterFont;
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: stretch;
+
+    & .complianceItem {
+      background: #1D293E;
+      border-radius: 8px;
+      padding: 12px 16px;
+      flex-grow: 1;
+      width: 100%;
+
+      & .complianceItemHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+
+        & .complianceText {
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+
+        & .complianceStatus {
+          font-size: 0.75rem;
+          color: #ccc;
+          display: flex;
+          flex-shrink: 0;
+          align-items: center;
+          gap: 4px;
+        }
+      }
+
+      & .complianceItemDescription {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+
+        & .complianceItemDescriptionText {
+          font-size: 0.75rem;
+          color: #ccc;
+        }
+
+        & .complianceItemUpgradeBtn {
+          outline: none;
+          border: none;
+          border-radius: 0.5rem;
+          border: 1px solid #34506F;
+          background: rgba(255, 255, 255, 0.00);
+          padding: 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+
+        & .complianceItemSignBtn {
+          outline: none;
+          border: none;
+          border-radius: 0.5rem;
+          color: $dark-blue;
+          background: $white;
+          padding: 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+  
+}
+
 @keyframes rotating {
   from {
     -ms-transform: rotate(0deg);
