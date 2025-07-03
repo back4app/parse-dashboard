@@ -25,18 +25,20 @@ const ComplianceCard = ({ loading, planData, appId, isSignedBAA }) => {
     content = <div className={styles.loading}>Something went wrong</div>;
   } else {
     content = (
-      <div className={styles.complianceContent}>
+      <>
         <ComplianceItem type="HIPAA" planName={planData.planName} appId={appId} isSignedBAA={isSignedBAA} />
         <ComplianceItem type="SOC 2" planName={planData.planName} appId={appId} />
         <ComplianceItem type="ISO 27001" planName={planData.planName} appId={appId} />
-      </div>
+      </>
     )
   }
 
   return (
     <div className={styles.complianceContainer}>
       <div className={styles.complianceHeader}>Compliance</div>
-      {content}
+      <div className={styles.complianceContent}>
+        {content}
+      </div>
     </div>
   )
 }
