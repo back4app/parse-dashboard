@@ -103,6 +103,11 @@ export default class GeneralSettings extends DashboardView {
     this.setState({ removedCollaborators: removedCollaborators || [] });
 
     console.log('removedCollaborators', removedCollaborators);
+    console.log('currentUser', AccountManager.currentUser().email);
+
+    if (removedCollaborators.filter(collab => collab.userEmail === AccountManager.currentUser().email).length > 0) {
+      window.location.href = '/apps';
+    }
   }
 
   renderContent() {
