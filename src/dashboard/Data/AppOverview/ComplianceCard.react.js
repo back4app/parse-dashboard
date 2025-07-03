@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './AppOverview.scss';
+import Icon from 'components/Icon/Icon.react';
 
 const complianceTypes = {
   'HIPAA': {
