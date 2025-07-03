@@ -57,7 +57,11 @@ const ComplianceItem = ({ type, planName, appId, isSignedBAA }) => {
       {showUpgrade ? <div className={styles.complianceStatus}>
        Change Plan
       </div> : (
-        <div className={styles.complianceStatus}> <Icon name="b4a-check-icon" width="18px" height="20px" fill="#27AE60" /> Enabled</div>
+        showSignBAA ? (
+          <div className={styles.complianceStatus}>Available</div>
+        ) : (
+          <div className={styles.complianceStatus}> <Icon name="b4a-check-icon" width="18px" height="20px" fill="#27AE60" /> Enabled</div>
+        )
       )}
     </div>
 
