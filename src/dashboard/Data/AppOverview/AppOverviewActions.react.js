@@ -81,21 +81,25 @@ const AppOverviewActions = ({ appUrlName, context }) => {
             <div className={styles.dropdownItem} onClick={() => handleAction('restart')}>
               Restart
             </div>
-            <div className={styles.dropdownItem} onClick={() => handleAction('clone')}>
-              Clone
-            </div>
+            {context.custom.isOwner && (
+              <div className={styles.dropdownItem} onClick={() => handleAction('clone')}>
+                Clone
+              </div>
+            )}
             <div className={styles.dropdownItem}>
               <a href="https://help.back4app.com/hc/en-us/requests/new" target="_blank" rel="noopener noreferrer">
                 Open a Ticket
               </a>
             </div>
-            <div
-              className={styles.dropdownItem}
-              onClick={() => handleAction('delete')}
-              style={{ color: '#FF4242' }}
-            >
-              Delete
-            </div>
+            {context.custom.isOwner && (
+              <div
+                className={styles.dropdownItem}
+                onClick={() => handleAction('delete')}
+                style={{ color: '#FF4242' }}
+              >
+                Delete
+              </div>
+            )}
           </div>
         )}
       </div>
