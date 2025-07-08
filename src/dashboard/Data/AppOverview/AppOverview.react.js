@@ -241,7 +241,7 @@ class AppOverview extends DashboardView {
                   Database: </span>{this.context.databaseType}
                 {!this.state.isLoadingAppPlanData && !(this.state.appPlanData instanceof Error) && /Free/i.test(this.state.appPlanData.planName) ? (
                   <>
-                    {this.context.databaseVersion}
+                    {' '}{this.context.databaseVersion}
                     {this.context.isMongoUpgradeAvailable && (
                       <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
                     )}
