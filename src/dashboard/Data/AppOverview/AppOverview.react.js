@@ -243,7 +243,7 @@ class AppOverview extends DashboardView {
                   <>
                     {' '}{this.context.databaseVersion}
                     {this.context.isMongoUpgradeAvailable && (
-                      <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
+                      <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
                     )}
                   </>
                 ) : ('')}
