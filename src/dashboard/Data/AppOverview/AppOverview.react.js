@@ -23,6 +23,7 @@ import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import AppOverviewActions from './AppOverviewActions.react';
+import ComplianceCard from './ComplianceCard.react';
 
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 @withRouter
@@ -236,18 +237,25 @@ class AppOverview extends DashboardView {
               <div className={styles.appInfoCardHeader}>App Information</div>
               <div className="">
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>{this.context.databaseType}</div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>
+                  Database: </span>{this.context.databaseType}
+                {!this.state.isLoadingAppPlanData && !(this.state.appPlanData instanceof Error) && /Free/i.test(this.state.appPlanData.planName) ? (
+                  <>
+                    {' '}{this.context.databaseVersion}
+                    {this.context.isMongoUpgradeAvailable && (
+                      <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
+                    )}
+                  </>
+                ) : ('')}
+                </div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change region</a></span></div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a></span></div>
               </div>
             </div>
           </div>
 
-          {/* Onboarding boxes */}
-          {/* {this.state.currentUser.createdAt && (
-            (new Date() - new Date(this.state.currentUser.createdAt)) / (1000 * 60 * 60 * 24) <= 7 && (
-            )
-          )} */}
+          <ComplianceCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} isSignedBAA={this.context.custom.isSignedBAA} />
+
           <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
 
           {/* System Logs Card */}

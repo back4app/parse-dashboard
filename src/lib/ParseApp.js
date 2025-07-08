@@ -60,6 +60,8 @@ export default class ParseApp {
     useLatestDashboardVersion,
     parseVersion,
     databaseType,
+    databaseVersion,
+    isMongoUpgradeAvailable,
     region
   }) {
     this.name = appName;
@@ -97,6 +99,8 @@ export default class ParseApp {
     this.parseVersion = parseVersion;
     this.databaseType = databaseType;
     this.region = region;
+    this.databaseVersion = databaseVersion;
+    this.isMongoUpgradeAvailable = isMongoUpgradeAvailable;
     if (!supportedPushLocales) {
       console.warn('Missing push locales for \'' + appName + '\', see this link for details on setting localizations up. https://github.com/parse-community/parse-dashboard#configuring-localized-push-notifications');
     }

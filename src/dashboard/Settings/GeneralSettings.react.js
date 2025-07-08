@@ -6,6 +6,7 @@
  * the root directory of this source tree.
  */
 import AccountManager from 'lib/AccountManager';
+import AppsManager from 'lib/AppsManager';
 import DashboardView from 'dashboard/DashboardView.react';
 import FlowView from 'components/FlowView/FlowView.react';
 import React from 'react';
@@ -101,6 +102,11 @@ export default class GeneralSettings extends DashboardView {
   promiseCallback({ removedCollaborators }) {
     this.forceUpdate(); //Need to forceUpdate to see changes applied to source ParseApp
     this.setState({ removedCollaborators: removedCollaborators || [] });
+
+    if (removedCollaborators.filter(collab => collab.userEmail === AccountManager.currentUser().email).length > 0) {
+      AppsManager.removeAppFromList(this.context.slug);
+      this.props.navigate('/apps');
+    }
   }
 
   renderContent() {
