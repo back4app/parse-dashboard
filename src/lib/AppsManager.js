@@ -131,6 +131,12 @@ const AppsManager = {
     });
     return promise;
   },
+
+  removeAppFromList(slug) {
+    const appIdx = appsStore.findIndex(ap => ap.slug === slug);
+    if (appIdx === -1) {return;}
+    appsStore.splice(appIdx, 1);
+  },
 };
 
 export default AppsManager;

@@ -40,7 +40,7 @@ export const DeleteAppModal = ({ context, setParentState }) => {
           cleanupNoteColor: 'orange',
           showDeleteAppModal: false,
         });
-        window.location = `${b4aSettings.DASHBOARD_PATH}/apps`;
+        window.location.href = '/apps';
       }).catch((e) => {
         setParentState({
           cleanupFilesMessage: e.error,
