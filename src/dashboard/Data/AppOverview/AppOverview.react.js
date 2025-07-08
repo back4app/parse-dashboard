@@ -237,9 +237,9 @@ class AppOverview extends DashboardView {
               <div className={styles.appInfoCardHeader}>App Information</div>
               <div className="">
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>{this.context.databaseType}</div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Database: </span>{this.context.databaseType} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Upgrade</a></span> </div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change region</a></span></div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a></span></div>
               </div>
             </div>
           </div>
