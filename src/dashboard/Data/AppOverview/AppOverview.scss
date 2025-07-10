@@ -936,7 +936,7 @@
   }
 }
 
-.connectAppModal {
+.connectAppModal, .mcpModal {
   @include modalAnimation();
   position: absolute;
   top: 50%;
@@ -981,95 +981,95 @@
   & .connectAppModalContent {
     padding: 1.5rem;
     color: $white;
+  }
+}
 
-    & .codeBlockContainer {
-      position: relative;
-      padding-top: 0.5rem;
-      background: $regal-blue;
-      border-radius: 4px;
+.codeBlockContainer {
+  position: relative;
+  padding-top: 0.5rem;
+  background: $regal-blue;
+  border-radius: 4px;
 
-      & .codeBlockHeader {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0rem 1.5rem;
-      }
+  & .codeBlockHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0rem 1.5rem;
+  }
 
-      .copyButtonWrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
+  .copyButtonWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-      .copyTooltip {
-        position: absolute;
-        right: 50%;
-        bottom: calc(100% + 8px);
-        transform: translateX(50%);
-        background: $dark-grey;
-        color: $white;
-        border-radius: 5px;
-        padding: .625rem 1rem;
-        font-size: 12px;
-        white-space: nowrap;
-        box-shadow: 0px 6px 16px 0px #0000001A;
-        animation: fadeIn 0.2s ease-in-out;
+  .copyTooltip {
+    position: absolute;
+    right: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(50%);
+    background: $dark-grey;
+    color: $white;
+    border-radius: 5px;
+    padding: .625rem 1rem;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0px 6px 16px 0px #0000001A;
+    animation: fadeIn 0.2s ease-in-out;
 
-        &::after {
-          content: '';
-          position: absolute;
-          left: 50%;
-          bottom: -4px;
-          transform: translateX(-50%) rotate(45deg);
-          width: 8px;
-          height: 8px;
-          background: $dark-grey;
-        }
-      }
-
-      h1, h2, h3 {
-        margin: .8rem 0;
-        font-weight: 600;
-      }
-      h4 {
-        font-weight: 500;
-        margin-bottom: .5rem;
-      }
-
-      p {
-        margin-bottom: .5rem;
-        font-size: 14px;
-      }
-
-      pre {
-        background: #111214 !important;
-        border-radius: 4px;
-        padding: 0rem 1.5rem 1.5rem 0!important;
-        margin: 1rem 0;
-        overflow-x: auto;
-        margin: none !important;
-        border-top-left-radius: 0 !important;
-        border-top-right-radius: 0 !important;
-        font-family: 'Roboto Mono', monospace !important;
-        padding-left: 3.5em !important;
-
-        pre.line-numbers:before {
-          background: transparent !important;
-        }
-
-        code {
-          font-family: 'Roboto Mono', monospace !important;
-          font-size: 13px;
-          background: #111214 !important;
-        }
-      }
-
-      code {
-        font-family: 'Roboto Mono', monospace !important;
-        font-size: 13px;
-        background: #111214 !important;
-      }
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -4px;
+      transform: translateX(-50%) rotate(45deg);
+      width: 8px;
+      height: 8px;
+      background: $dark-grey;
     }
+  }
+
+  h1, h2, h3 {
+    margin: .8rem 0;
+    font-weight: 600;
+  }
+  h4 {
+    font-weight: 500;
+    margin-bottom: .5rem;
+  }
+
+  p {
+    margin-bottom: .5rem;
+    font-size: 14px;
+  }
+
+  pre {
+    background: #111214 !important;
+    border-radius: 4px;
+    padding: 0rem 1.5rem 1.5rem 0!important;
+    margin: 1rem 0;
+    overflow-x: auto;
+    margin: none !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    font-family: 'Roboto Mono', monospace !important;
+    padding-left: 3.5em !important;
+
+    pre.line-numbers:before {
+      background: transparent !important;
+    }
+
+    code {
+      font-family: 'Roboto Mono', monospace !important;
+      font-size: 13px;
+      background: #111214 !important;
+    }
+  }
+
+  code {
+    font-family: 'Roboto Mono', monospace !important;
+    font-size: 13px;
+    background: #111214 !important;
   }
 }
 
@@ -1220,6 +1220,128 @@
     }
   }
   
+}
+
+.mcpModalContent {
+  & .mcpModalStep1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 2.5rem 1rem 4rem 1rem;
+
+    & .mcpModalTitle {
+      @include SoraFont;
+      font-size: 2.1875rem;
+      font-weight: 600;
+    }
+
+    & .mcpModalDescription {
+      @include InterFont;
+      font-size: 0.875rem;
+      font-weight: 400;
+      margin-bottom: 2.5rem;
+      color: $light-grey;
+    }
+
+    & .mcpChoiceList {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2.5rem;
+
+      & .mcpChoice {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        border: 1px solid $light-blue;
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        width: 7.75rem;
+
+        &:hover {
+          background: $regal-blue;
+          box-shadow: 0px 0px 16px 0px rgba(193, 226, 255, 0.50);
+        }
+
+        & svg {
+          fill: $light-blue;
+        }
+
+        & .mcpChoiceTitle {
+          @include SoraFont;
+          font-size: 1rem;
+          color: $light-blue;
+        }
+      }
+    }
+    
+  }
+
+  & .mcpModalStep2 {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+
+    & .mcpModalStep2Header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+
+      & .mcpModalStep2Title {
+        @include SoraFont;
+        font-size: 2.1875rem;
+        font-weight: 600;
+        line-height: 130%;
+      }
+    }
+
+    & .mcpModalStep2Description{
+      @include InterFont;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 140%;
+      color: $light-grey;
+    }
+
+    & .mcpTabButtons {
+      margin-top: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    & .step {
+      @include SoraFont;
+      font-size: 1.125rem;
+      line-height: 140%;
+      margin-bottom: 1rem;
+    }
+
+    & .text {
+      @include InterFont;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 140%;
+    }
+
+    & .inlineCode {
+      @include InterFont;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 140%;
+      background: $regal-blue;
+      border-radius: 0.25rem;
+      color: $light-blue;
+      display: inline-block;
+      padding: 0.1rem 0.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+  }
 }
 
 @keyframes rotating {
