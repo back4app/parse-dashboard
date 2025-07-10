@@ -1710,10 +1710,9 @@ export default class ParseApp {
   }
 
   async getMcpKey() {
-    console.log('getMcpKey', b4aSettings.BACK4APP_API_PATH);
     try {
       return (
-        await axios.post(
+        await axios.get(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/accountKey/getOrCreateMcpKey`,
           { withCredentials: true }
