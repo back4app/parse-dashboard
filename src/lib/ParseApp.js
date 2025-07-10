@@ -1710,6 +1710,7 @@ export default class ParseApp {
   }
 
   async getMcpKey() {
+    console.log('getMcpKey', b4aSettings.BACK4APP_API_PATH);
     try {
       return (
         await axios.post(
