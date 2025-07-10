@@ -260,9 +260,7 @@ const MCPSetupModal = ({ closeModal, context }) => {
   };
 
   useEffect(() => {
-    console.log('useEffect');
     const getMcpKey = async () => {
-      console.log('getMcpKey');
       try {
         const data = await context.getMcpKey();
         setMcpKey(data.key);
