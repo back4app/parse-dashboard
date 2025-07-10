@@ -184,6 +184,43 @@ const getVerifyContent = (ide) => {
   }
 }
 
+const getManualInstructions = (ide) => {
+  if (ide === 'cursor') {
+    return <>
+      <div className={styles.step}>1. Open MCP Settings</div>
+      <div className={styles.text}>Navigate to: <strong>Cursor-&gt;Settings-&gt;Cursor Settings-&gt;MCP</strong></div>
+
+      <div style={{ margin: '1rem 0' }}></div>
+
+      <div className={styles.step}>2. Add MCP Server Configuration</div>
+      <div className={styles.text}>Click <strong>&apos;+ Add new global MCP server&apos;</strong> button.</div>
+      <div className={styles.text}>Copy & Paste the code below into opened &apos;<strong>mcp.json</strong>&apos; file </div></>
+  } else if (ide === 'windsurf') {
+    return <>
+      <div className={styles.step}>1. Open MCP Settings</div>
+      <div className={styles.text}>Navigate to: <strong>Windsurf-&gt;Casade assistant</strong></div>
+
+      <div style={{ margin: '1rem 0' }}></div>
+
+      <div className={styles.step}>2. Add MCP Server Configuration</div>
+      <div className={styles.text}>Tap on the hammer (MCP) icon, then Configure to open the configuration file</div>
+      <div className={styles.text} style={{ marginTop: '.5rem' }}>Add the following configuration:</div>
+    </>
+  } else if (ide === 'vscode') {
+    return <>
+      <div className={styles.step}>1. Open MCP Settings</div>
+      <div className={styles.text}>Navigate to: <strong>VSCode(Copilot)-&gt;Go to root directory of your project</strong></div>
+      <div className={styles.text}>Create a .vscode folder if it doesn't exist</div>
+
+      <div style={{ margin: '1rem 0' }}></div>
+
+      <div className={styles.step}>2. Add MCP Server Configuration</div>
+      <div className={styles.text}>Create a mcp.json file in the .vscode folder</div>
+      <div className={styles.text} style={{ marginTop: '.5rem' }}>Add the following configuration:</div>
+    </>
+  }
+}
+
 const getIDEContent = (ide, automatic, mcpKey) => {
   if (automatic) {
     return (
@@ -199,17 +236,8 @@ const getIDEContent = (ide, automatic, mcpKey) => {
   } else {
     return (
       <div>
-        <div className={styles.step}>1. Open MCP Settings</div>
-        <div className={styles.text}>Use keyboard shortcut ( ”command” + ”,” )to open settings.</div>
-        <div className={styles.text}>Navigate to: <strong>{ide} &gt; Full Settings &gt; MCP</strong></div>
-
+        {getManualInstructions(ide)}
         <div style={{ margin: '1rem 0' }}></div>
-
-        <div className={styles.step}>2. Add MCP Server Configuration</div>
-        <div className={styles.text}>Click <strong>&apos;+ Add new global MCP server&apos;</strong> button.</div>
-        <div className={styles.text}>Copy & Paste the code below into opened &apos;<strong>mcp.json</strong>&apos; file </div>
-        <div style={{ margin: '1rem 0' }}></div>
-
         <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>macOS / Linux</strong>
         <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, true)} />
         <div style={{ margin: '1rem 0' }}></div>
@@ -232,7 +260,9 @@ const MCPSetupModal = ({ closeModal, context }) => {
   };
 
   useEffect(() => {
+    console.log('useEffect');
     const getMcpKey = async () => {
+      console.log('getMcpKey');
       try {
         const data = await context.getMcpKey();
         setMcpKey(data.key);
