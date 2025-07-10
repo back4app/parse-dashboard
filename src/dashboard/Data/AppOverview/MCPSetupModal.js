@@ -263,7 +263,8 @@ const MCPSetupModal = ({ closeModal, context }) => {
     const getMcpKey = async () => {
       try {
         const data = await context.getMcpKey();
-        setMcpKey(data.key);
+        console.log('data', data);
+        // setMcpKey(data.key);
       } catch (error) {
         console.error('Failed to get MCP key: ', error);
       }
