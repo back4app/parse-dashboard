@@ -174,6 +174,16 @@ const getManualJsonContent = (ide, mcpKey, isLinux) => {
   }
 }
 
+const getVerifyContent = (ide) => {
+  if (ide === 'cursor') {
+    return <div className={styles.text}>Navigate to: <strong>Cursor &gt; Full Settings &gt; MCP</strong></div>
+  } else if (ide === 'windsurf') {
+    return <div className={styles.text}>Navigate to: <strong>Windsurf &gt; Find the toolbar above the Cascade input and click on refresh</strong></div>
+  } else if (ide === 'vscode') {
+    return <div className={styles.text}>Navigate to: <strong>VSCode &gt; Click on configure tools on the Agent Mode (Copilot) and find the back4app MCP tools.</strong></div>
+  }
+}
+
 const getIDEContent = (ide, automatic, mcpKey) => {
   if (automatic) {
     return (
@@ -183,10 +193,7 @@ const getIDEContent = (ide, automatic, mcpKey) => {
         <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
         <div style={{ margin: '1rem 0' }}></div>
         <div className={styles.step}>2. Verify your connection</div>
-        <div className={styles.text}>Use keyboard shortcut ( ”command” + ”,” )to open settings.</div>
-
-        <div className={styles.text}>Navigate to: <strong>{ide} &gt; Full Settings &gt; MCP</strong></div>
-
+        {getVerifyContent(ide)}
       </div>
     );
   } else {
