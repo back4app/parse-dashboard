@@ -61,6 +61,11 @@ export const CloneAppModal = ({ context, setParentState }) => {
         throw new Error();
       }
 
+      setNote('Creating database for the new parse app...');
+      setNoteColor('blue');
+
+      await context.initializeDb(newApp._id, cloneParseVersion?.version);
+
       setNote('Cloning app...');
       setNoteColor('blue');
 
