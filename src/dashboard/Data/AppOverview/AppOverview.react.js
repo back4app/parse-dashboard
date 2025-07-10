@@ -26,6 +26,8 @@ import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
 
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
+const LazyMCPSetupModal = lazy(() => import('./MCPSetupModal.js'));
+
 @withRouter
 class AppOverview extends DashboardView {
   constructor() {
@@ -57,6 +59,7 @@ class AppOverview extends DashboardView {
 
       showCopiedTooltip: false,
       showConnectAppModal: false,
+      showMCPSetupModal: false,
 
       currentUser: user,
 
@@ -78,6 +81,7 @@ class AppOverview extends DashboardView {
 
   componentDidMount() {
     import('./ConnectAppModal.react');
+    import('./MCPSetupModal.js');
   }
 
   copyText(copyText = '') {
@@ -229,9 +233,7 @@ class AppOverview extends DashboardView {
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
               <hr />
               <button className={styles.appContentBtn} onClick={() => this.setState({ showConnectAppModal: true })}>Connect App</button>
-              <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer">
-                <button className={styles.appMCPBtn}>MCP Setup</button>
-              </a>
+              <button className={styles.appMCPBtn} onClick={() => this.setState({ showMCPSetupModal: true })}>MCP Setup</button>
             </div>
             <div className={styles.appInformationBox}>
               <div className={styles.appInfoCardHeader}>App Information</div>
@@ -324,6 +326,12 @@ class AppOverview extends DashboardView {
         {this.state.showConnectAppModal && (
           <Suspense fallback={'Loading...'}>
             <LazyConnectAppModal closeModal={() => this.setState({ showConnectAppModal: false })} />
+          </Suspense>
+        )}
+
+        {this.state.showMCPSetupModal && (
+          <Suspense fallback={'Loading...'}>
+            <LazyMCPSetupModal closeModal={() => this.setState({ showMCPSetupModal: false })} context={this.context} />
           </Suspense>
         )}
       </div>
