@@ -74,6 +74,145 @@ const CodeBlock = ({ language, value, fileName, inline = false }) => {
   );
 };
 
+const getManualJsonContent = (ide, mcpKey, isLinux) => {
+  if (ide === 'cursor' && isLinux) {
+    return `{
+  "mcpServers": {
+    "back4app": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@back4app/mcp-server-back4app@latest",
+        "--account-key",
+        "${mcpKey}"
+      ]
+    }
+  }
+}`
+  } else if (ide === 'cursor' && !isLinux) {
+    return `{
+  "mcpServers": {
+    "back4app": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "@back4app/mcp-server-back4app@latest",
+        "--account-key",
+        "${mcpKey}"
+      ]
+    }
+  }
+}`
+  } else if (ide === 'windsurf' && isLinux) {
+    return `{
+  "mcpServers": {
+    "back4app": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@back4app/mcp-server-back4app@latest",
+        "--account-key",
+        "${mcpKey}"
+      ]
+    }
+  }
+}`
+  } else if (ide === 'windsurf' && !isLinux) {
+    return `{
+  "mcpServers": {
+    "back4app": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "@back4app/mcp-server-back4app@latest",
+        "--account-key",
+        "${mcpKey}"
+      ]
+    }
+  }
+}`
+  } else if (ide === 'vscode' && isLinux) {
+    return `{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "back4app-account-key",
+      "description": "Back4App personal access token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "back4app": {
+      "command": "npx",
+      "args": ["-y", "@back4app/mcp-server-back4app@latest"],
+      "env": {
+        "BACK4APP_ACCOUNT_KEY": "\${input:${mcpKey}}"
+      }
+    }
+  }
+}`
+  } else if (ide === 'vscode' && !isLinux) {
+    return `{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "back4app-account-key",
+      "description": "Back4App personal access token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "back4app": {
+      "command": "npx.cmd",
+      "args": ["-y", "@back4app/mcp-server-back4app@latest"],
+      "env": {
+        "BACK4APP_ACCOUNT_KEY": "\${input:${mcpKey}}"
+      }
+    }
+  }
+}`
+  }
+}
+
+const getIDEContent = (ide, automatic, mcpKey) => {
+  if (automatic) {
+    return (
+      <div>
+        <div className={styles.step}>1. Run the installation command</div>
+        <div className={styles.text}>Copy and run the command below in your terminal to install {ide}.</div>
+        <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
+        <div style={{ margin: '1rem 0' }}></div>
+        <div className={styles.step}>2. Verify your connection</div>
+        <div className={styles.text}>Use keyboard shortcut ( ”command” + ”,” )to open settings.</div>
+
+        <div className={styles.text}>Navigate to: <strong>{ide} &gt; Full Settings &gt; MCP</strong></div>
+
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <div className={styles.step}>1. Open MCP Settings</div>
+        <div className={styles.text}>Use keyboard shortcut ( ”command” + ”,” )to open settings.</div>
+        <div className={styles.text}>Navigate to: <strong>{ide} &gt; Full Settings &gt; MCP</strong></div>
+
+        <div style={{ margin: '1rem 0' }}></div>
+
+        <div className={styles.step}>2. Add MCP Server Configuration</div>
+        <div className={styles.text}>Click <strong>&apos;+ Add new global MCP server&apos;</strong> button.</div>
+        <div className={styles.text}>Copy & Paste the code below into opened &apos;<strong>mcp.json</strong>&apos; file </div>
+        <div style={{ margin: '1rem 0' }}></div>
+
+        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>macOS / Linux</strong>
+        <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, true)} />
+        <div style={{ margin: '1rem 0' }}></div>
+        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>Windows</strong>
+        <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, false)} />
+      </div>
+    );
+  }
+}
+
 const MCPSetupModal = ({ closeModal, context }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedIDE, setSelectedIDE] = useState(null);
@@ -199,142 +338,3 @@ const MCPSetupModal = ({ closeModal, context }) => {
 
 export default MCPSetupModal;
 
-const getManualJsonContent = (ide, mcpKey, isLinux) => {
-  if (ide === 'cursor' && isLinux) {
-    return `{
-  "mcpServers": {
-    "back4app": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@back4app/mcp-server-back4app@latest",
-        "--account-key",
-        "${mcpKey}"
-      ]
-    }
-  }
-}`
-  } else if (ide === 'cursor' && !isLinux) {
-    return `{
-  "mcpServers": {
-    "back4app": {
-      "command": "npx.cmd",
-      "args": [
-        "-y",
-        "@back4app/mcp-server-back4app@latest",
-        "--account-key",
-        "${mcpKey}"
-      ]
-    }
-  }
-}`
-  } else if (ide === 'windsurf' && isLinux) {
-    return `{
-  "mcpServers": {
-    "back4app": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@back4app/mcp-server-back4app@latest",
-        "--account-key",
-        "${mcpKey}"
-      ]
-    }
-  }
-}`
-  } else if (ide === 'windsurf' && !isLinux) {
-    return `{
-  "mcpServers": {
-    "back4app": {
-      "command": "npx.cmd",
-      "args": [
-        "-y",
-        "@back4app/mcp-server-back4app@latest",
-        "--account-key",
-        "${mcpKey}"
-      ]
-    }
-  }
-}`
-  } else if (ide === 'vscode' && isLinux) {
-    return `{
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "back4app-account-key",
-      "description": "Back4App personal access token",
-      "password": true
-    }
-  ],
-  "servers": {
-    "back4app": {
-      "command": "npx",
-      "args": ["-y", "@back4app/mcp-server-back4app@latest"],
-      "env": {
-        "BACK4APP_ACCOUNT_KEY": "\${input:${mcpKey}}"
-      }
-    }
-  }
-}`
-  } else if (ide === 'vscode' && !isLinux) {
-    return `{
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "back4app-account-key",
-      "description": "Back4App personal access token",
-      "password": true
-    }
-  ],
-  "servers": {
-    "back4app": {
-      "command": "npx.cmd",
-      "args": ["-y", "@back4app/mcp-server-back4app@latest"],
-      "env": {
-        "BACK4APP_ACCOUNT_KEY": "\${input:${mcpKey}}"
-      }
-    }
-  }
-}`
-  }
-}
-
-
-const getIDEContent = (ide, automatic, mcpKey) => {
-  if (automatic) {
-    return (
-      <div>
-        <div className={styles.step}>1. Run the installation command</div>
-        <div className={styles.text}>Copy and run the command below in your terminal to install {ide}.</div>
-        <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
-        <div style={{ margin: '1rem 0' }}></div>
-        <div className={styles.step}>2. Verify your connection</div>
-        <div className={styles.text}>Use keyboard shortcut ( ”command” + ”,” )to open settings.</div>
-
-        <div className={styles.text}>Navigate to: <strong>{ide} &gt; Full Settings &gt; MCP</strong></div>
-
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <div className={styles.step}>1. Open MCP Settings</div>
-        <div className={styles.text}>Use keyboard shortcut ( ”command” + ”,” )to open settings.</div>
-        <div className={styles.text}>Navigate to: <strong>{ide} &gt; Full Settings &gt; MCP</strong></div>
-
-        <div style={{ margin: '1rem 0' }}></div>
-
-        <div className={styles.step}>2. Add MCP Server Configuration</div>
-        <div className={styles.text}>Click <strong>&apos;+ Add new global MCP server&apos;</strong> button.</div>
-        <div className={styles.text}>Copy & Paste the code below into opened &apos;<strong>mcp.json</strong>&apos; file </div>
-        <div style={{ margin: '1rem 0' }}></div>
-
-        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>macOS / Linux</strong>
-        <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, true)} />
-        <div style={{ margin: '1rem 0' }}></div>
-        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>Windows</strong>
-        <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, false)} />
-      </div>
-    );
-  }
-}
