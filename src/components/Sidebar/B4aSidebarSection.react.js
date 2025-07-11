@@ -7,18 +7,28 @@
  */
 import Icon from 'components/Icon/Icon.react';
 import { Link } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import styles from 'components/Sidebar/B4aSidebar.scss';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import B4aApiIcon from 'components/Sidebar/icons/B4aApiIcon.react';
-import B4aDatabaseIcon from 'components/Sidebar/icons/B4aDatabaseIcon.react';
-import B4aCloudCodeIcon from 'components/Sidebar/icons/B4aCloudCodeIcon.react';
-import B4aWebDeploymentIcon from 'components/Sidebar/icons/B4aWebDeploymentIcon.react';
-import B4aMoreIcon from 'components/Sidebar/icons/B4aMoreIcon.react';
-import B4aOverviewIcon from 'components/Sidebar/icons/B4aOverviewIcon.react';
-import B4aAppSettingsIcon from 'components/Sidebar/icons/B4aAppSettingsIcon.react';
+
+const LazyB4aApiIcon = lazy(() => import('components/Sidebar/icons/B4aApiIcon.react'));
+const LazyB4aDatabaseIcon = lazy(() => import('components/Sidebar/icons/B4aDatabaseIcon.react'));
+const LazyB4aCloudCodeIcon = lazy(() => import('components/Sidebar/icons/B4aCloudCodeIcon.react'));
+const LazyB4aWebDeploymentIcon = lazy(() => import('components/Sidebar/icons/B4aWebDeploymentIcon.react'));
+const LazyB4aMoreIcon = lazy(() => import('components/Sidebar/icons/B4aMoreIcon.react'));
+const LazyB4aOverviewIcon = lazy(() => import('components/Sidebar/icons/B4aOverviewIcon.react'));
+const LazyB4aAppSettingsIcon = lazy(() => import('components/Sidebar/icons/B4aAppSettingsIcon.react'));
+
+// Preload functions for each lazy icon
+LazyB4aApiIcon.preload = () => import('components/Sidebar/icons/B4aApiIcon.react');
+LazyB4aDatabaseIcon.preload = () => import('components/Sidebar/icons/B4aDatabaseIcon.react');
+LazyB4aCloudCodeIcon.preload = () => import('components/Sidebar/icons/B4aCloudCodeIcon.react');
+LazyB4aWebDeploymentIcon.preload = () => import('components/Sidebar/icons/B4aWebDeploymentIcon.react');
+LazyB4aMoreIcon.preload = () => import('components/Sidebar/icons/B4aMoreIcon.react');
+LazyB4aOverviewIcon.preload = () => import('components/Sidebar/icons/B4aOverviewIcon.react');
+LazyB4aAppSettingsIcon.preload = () => import('components/Sidebar/icons/B4aAppSettingsIcon.react');
 
 const sendEvent = () => {
   // eslint-disable-next-line no-undef
@@ -29,19 +39,47 @@ const sendEvent = () => {
 const getIconContent = (icon) => {
   switch (icon) {
     case 'b4a-api-icon':
-      return <B4aApiIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aApiIcon />
+        </Suspense>
+      );
     case 'b4a-database-icon':
-      return <B4aDatabaseIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aDatabaseIcon />
+        </Suspense>
+      );
     case 'b4a-cloud-code-icon':
-      return <B4aCloudCodeIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aCloudCodeIcon />
+        </Suspense>
+      );
     case 'b4a-web-deployment-icon':
-      return <B4aWebDeploymentIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aWebDeploymentIcon />
+        </Suspense>
+      );
     case 'b4a-more-icon':
-      return <B4aMoreIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aMoreIcon />
+        </Suspense>
+      );
     case 'b4a-app-overview-icon':
-      return <B4aOverviewIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aOverviewIcon />
+        </Suspense>
+      );
     case 'b4a-app-settings-icon':
-      return <B4aAppSettingsIcon />;
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aAppSettingsIcon />
+        </Suspense>
+      );
     default:
       return null;
   }
@@ -52,6 +90,17 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
   const [showPopoverSection, setShowPopoverSection] = useState(false);
   const [position, setPosition] = useState(null);
   const subSectionRef = useRef();
+
+  // Preload all icons on mount
+  useEffect(() => {
+    LazyB4aApiIcon.preload();
+    LazyB4aDatabaseIcon.preload();
+    LazyB4aCloudCodeIcon.preload();
+    LazyB4aWebDeploymentIcon.preload();
+    LazyB4aMoreIcon.preload();
+    LazyB4aOverviewIcon.preload();
+    LazyB4aAppSettingsIcon.preload();
+  }, []);
 
   useEffect(() => {
     if (showPopoverSection) {
