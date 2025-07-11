@@ -12,11 +12,39 @@ import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import styles from 'components/Sidebar/B4aSidebar.scss';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import B4aApiIcon from 'components/Sidebar/icons/B4aApiIcon.react';
+import B4aDatabaseIcon from 'components/Sidebar/icons/B4aDatabaseIcon.react';
+import B4aCloudCodeIcon from 'components/Sidebar/icons/B4aCloudCodeIcon.react';
+import B4aWebDeploymentIcon from 'components/Sidebar/icons/B4aWebDeploymentIcon.react';
+import B4aMoreIcon from 'components/Sidebar/icons/B4aMoreIcon.react';
+import B4aOverviewIcon from 'components/Sidebar/icons/B4aOverviewIcon.react';
+import B4aAppSettingsIcon from 'components/Sidebar/icons/B4aAppSettingsIcon.react';
 
 const sendEvent = () => {
   // eslint-disable-next-line no-undef
   // back4AppNavigation && back4AppNavigation.atApiReferenceIntroEvent && back4AppNavigation.atApiReferenceIntroEvent()
   amplitudeLogEvent('at API Reference Introduction');
+}
+
+const getIconContent = (icon) => {
+  switch (icon) {
+    case 'b4a-api-icon':
+      return <B4aApiIcon />;
+    case 'b4a-database-icon':
+      return <B4aDatabaseIcon />;
+    case 'b4a-cloud-code-icon':
+      return <B4aCloudCodeIcon />;
+    case 'b4a-web-deployment-icon':
+      return <B4aWebDeploymentIcon />;
+    case 'b4a-more-icon':
+      return <B4aMoreIcon />;
+    case 'b4a-app-overview-icon':
+      return <B4aOverviewIcon />;
+    case 'b4a-app-settings-icon':
+      return <B4aAppSettingsIcon />;
+    default:
+      return null;
+  }
 }
 
 const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge, locked }) => {
@@ -42,10 +70,13 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
     classes.push(styles.collapsed);
   }
 
-  const iconContent = icon && <Icon width={20} height={20} name={icon} fill='#ffffff' />;
+  let iconContent = icon && <Icon width={20} height={20} name={icon} fill='#ffffff' />;
+  if (active) {
+    iconContent = getIconContent(icon);
+  }
   const textContent = !isCollapsed && <span>{name}</span>;
   const sectionContent = active
-    ? <div className={styles.section_header} style={{ ...style, background: primaryBackgroundColor, justifyContent: isCollapsed ? 'center' : '' }} onClick={onClick}>{<img src={require(`./icons/${icon}.png`)} style={{ marginRight: isCollapsed ? '0' : '14px', width: '20px', height: '20px', objectFit: 'contain' }} />}{textContent}{badge}</div>
+    ? <div className={styles.section_header} style={{ ...style, background: primaryBackgroundColor, justifyContent: isCollapsed ? 'center' : '' }} onClick={onClick}>{iconContent}{textContent}{badge}</div>
     : link.startsWith('/')
       ? <Link style={style} className={styles.section_header} to={{ pathname: link || '' }} onClick={onClick}>{iconContent}{textContent}{badge}</Link>
       : <a style={style} className={styles.section_header} href={link} target="_blank" onClick={() => sendEvent()}>{iconContent}{textContent}{badge}</a>;
