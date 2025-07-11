@@ -449,7 +449,7 @@ export default class ParseApp {
   }
 
   createApp(appName, parseVersion, originalAppId = null) {
-    const path = '/parse-app';
+    const path = '/create-parse-app';
     return AJAX.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false })
   }
 

@@ -75,7 +75,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNoteColor('green');
 
       setTimeout(() => {
-        window.location.href = `/apps/${newApp.appId}`;
+        window.location.href = `/apps/${newApp._id}`;
       }, 1000);
 
     } catch(e){
