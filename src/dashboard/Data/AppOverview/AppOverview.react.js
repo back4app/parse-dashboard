@@ -240,8 +240,8 @@ class AppOverview extends DashboardView {
               <div className="">
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>
-                  Database: </span>{this.context.databaseType} {this.context.databaseVersion === '8.0' && ' 8.0'}
-                {!this.state.isLoadingAppPlanData && !(this.state.appPlanData instanceof Error) && /Free/i.test(this.state.appPlanData.planName) ? (
+                  Database: </span>{this.context.databaseType}
+                {(!this.state.isLoadingAppPlanData && !(this.state.appPlanData instanceof Error) && /Free/i.test(this.state.appPlanData.planName) || this.context.databaseVersion === '8.0') ? (
                   <>
                     {' '}{this.context.databaseVersion}
                     {this.context.isMongoUpgradeAvailable && (
