@@ -316,8 +316,8 @@ const MCPSetupModal = ({ closeModal, context }) => {
         <div className={styles.mcpModalStep2Footer} style={{ marginTop: '2rem' }}>
           <Button
             primary={true}
-            value={'Close'}
-            onClick={closeModal}
+            value="Continue"
+            onClick={() => setCurrentStep(2)}
           />
         </div>
       </div>
@@ -326,23 +326,18 @@ const MCPSetupModal = ({ closeModal, context }) => {
     content = (
       <div className={styles.mcpModalStep2}>
         <div className={styles.mcpModalStep2Header}>
-          <div className={styles.mcpModalStep2Title}>Create your first component</div>
+          <div className={styles.mcpModalStep2Title}>Test your connection</div>
         </div>
-        <div className={styles.mcpModalStep2Description}>Let's create your first component with back4app MCP.</div>
+        <div className={styles.mcpModalStep2Description}>Let's test your connection with back4app MCP.</div>
         <div style={{ marginTop: '2rem' }}>
           <div className={styles.step}>1. Tell your agent what you need</div>
-          <div className={styles.text}>In your AI agent chat, use /UI followed by the prompt describing the component you want to create.</div>
-          <div className={styles.text}>Here is an example for you: </div>
-          <div className={styles.inlineCode}>
-            /UI create a calendar UI with month scrolling
-          </div>
+          <div className={styles.text}>In your AI agent chat, You can use Back4App MCP to interact with your Back4App account.</div>
+          <div className={styles.text} style={{ marginBottom: '.5rem' }}>Here is an example to get a list of your apps: </div>
+          <CodeBlock inline={true} value={'List all of the apps in my Back4App account'} />
           <div style={{ margin: '2rem 0' }}></div>
-          <div className={styles.step}>2. Your UI component will be built instantly.</div>
-          <div className={styles.text}>See it happening live. </div>
+          <div className={styles.step}>2. Refer to docs for more information</div>
+          <div className={styles.text}> <a className={styles.link} href="https://www.back4app.com/docs/mcp" target="_blank" rel="noopener noreferrer">https://www.back4app.com/docs/mcp</a></div>
 
-          <div style={{ margin: '2rem 0' }}></div>
-
-          <div className={styles.step}>3. You are all set!</div>
           <div style={{ margin: '2rem 0'}}>
             <Button
               primary={true}
@@ -358,13 +353,11 @@ const MCPSetupModal = ({ closeModal, context }) => {
   return (
     <Popover fadeIn={true} fixed={true} position={origin} modal={true} color="rgba(17,13,17,0.8)">
       <div className={styles.mcpModal}>
-        <div className={styles.mcpModalContainer}>
-          <div className={styles.closeIcon} onClick={closeModal}>
-            <Icon name="close" fill="#f9f9f9" width={14} height={14} />
-          </div>
-          <div className={styles.mcpModalContent}>
-            {content}
-          </div>
+        <div className={styles.closeIcon} onClick={closeModal}>
+          <Icon name="close" fill="#f9f9f9" width={14} height={14} />
+        </div>
+        <div className={styles.mcpModalContent}>
+          {content}
         </div>
       </div>
     </Popover>

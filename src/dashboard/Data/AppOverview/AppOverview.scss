@@ -984,6 +984,10 @@
   }
 }
 
+.mcpModal {
+  max-width: 920px;
+}
+
 .codeBlockContainer {
   position: relative;
   padding-top: 0.5rem;
@@ -1325,6 +1329,12 @@
       font-size: 0.875rem;
       font-weight: 400;
       line-height: 140%;
+    }
+
+    & .link {
+      color: $cta-green;
+      text-decoration: underline;
+      font-weight: 600;
     }
 
     & .inlineCode {
