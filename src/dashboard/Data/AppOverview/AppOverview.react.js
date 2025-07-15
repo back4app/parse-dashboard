@@ -240,18 +240,18 @@ class AppOverview extends DashboardView {
               <div className="">
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>
-                  Database: </span>{this.context.databaseType}
+                  Database: </span>{this.context.databaseType} {this.context.databaseVersion === '8.0' && ' 8.0'}
                 {!this.state.isLoadingAppPlanData && !(this.state.appPlanData instanceof Error) && /Free/i.test(this.state.appPlanData.planName) ? (
                   <>
                     {' '}{this.context.databaseVersion}
                     {this.context.isMongoUpgradeAvailable && (
-                      <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
+                      <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
                     )}
                   </>
                 ) : ('')}
                 </div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a></span></div>
+                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - Change Hosting Region Button')} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a></span></div>
               </div>
             </div>
           </div>
