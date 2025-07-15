@@ -325,7 +325,7 @@ const selectFileOnTree = (nodeId) => {
 }
 
 const sanitizeHTML = (str) => {
-  return str.replace(/[^\w. ]/gi, function (c) {
+  return str.replace(/[^\w.\- ]/g, function (c) {
     return '&#' + c.charCodeAt(0) + ';';
   });
 };
