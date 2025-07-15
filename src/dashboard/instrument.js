@@ -10,7 +10,6 @@ import {
 // eslint-disable-next-line no-undef
 const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * (b4aSettings.SENTRY_RECORD_X_HOURS || 1));
 const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
-const replaysSessionSampleRate = isRecordEverySession ? 1.0 : 0.1;
 
 export default function instrument() {
   const replay = Sentry.replayIntegration({
@@ -29,7 +28,7 @@ export default function instrument() {
     dsn: b4aSettings.SENTRY_DSN,
     environment: process.env.SENTRY_ENV,
     tracesSampleRate: 1.0,
-    replaysSessionSampleRate,
+    replaysSessionSampleRate: isRecordEverySession ? 1.0 : 0,
     replaysOnErrorSampleRate: 1.0,
     maxBreadcrumbs: 100,
     integrations: [
@@ -54,11 +53,20 @@ export function useAppPageTracking() {
     // Match pattern: /apps/appId/pageName/...
     const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+)/;
     const match = location.pathname.match(appPagePattern);
+    const replay = Sentry.getReplay && Sentry.getReplay();
 
     if (match) {
       const pageName = match[2];
 
       Sentry.setTag('page_type', pageName);
+
+      if (!isRecordEverySession && replay) {
+        if (pageName === 'cloud_code') {
+          replay.start();
+        } else {
+          replay.stop();
+        }
+      }
 
       Sentry.addBreadcrumb({
         message: `User navigated to ${pageName} page`,
@@ -71,6 +79,9 @@ export function useAppPageTracking() {
       });
     } else {
       Sentry.setTag('page_type', null);
+      if (!isRecordEverySession && replay) {
+        replay.stop();
+      }
     }
   }, [location.pathname]);
 }
