@@ -64,7 +64,7 @@ class DeploymentDetails extends DashboardView {
 
   renderToolbar() {
     return (
-      <Toolbar section="Cloud Code" subsection={`Deployments > V${this.props.params.releaseId}`} >
+      <Toolbar section="Cloud Code" subsection={`Deployments > V${this.props.params.releaseId}`} showBackButton={true}>
         <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
           <Icon name="b4a-refresh-icon" width={18} height={18} />
         </a>
@@ -130,9 +130,9 @@ class DeploymentDetails extends DashboardView {
         <div className={styles.content}>
           <div className={styles.mainContent}>
             <div className={styles.header}>
-              <div className={styles.title}>V{this.props.params.releaseId}</div>
+              {/* <div className={styles.title}>V{this.props.params.releaseId}</div> */}
               <div className={styles.subtitle}>
-                <div className={styles.description}>{this.state.currentRelease?.description}</div>
+                <div className={styles.description}> <span className={styles.releaseId}>V{this.props.params.releaseId}</span> {this.state.currentRelease?.description}</div>
                 <div className={styles.right}>
                   <div className={styles.deployedAt}>
                     {this.state.currentRelease && new Date(this.state.currentRelease.deployedAt).toLocaleString()}

@@ -42,6 +42,7 @@ export default class ParseApp {
     webhookKey,
     apiKey,
     serverURL,
+    jobAPI,
     serverInfo,
     production,
     iconName,
@@ -83,6 +84,7 @@ export default class ParseApp {
     this.fileKey = apiKey;
     this.production = production;
     this.serverURL = serverURL;
+    this.jobAPI = jobAPI;
     this.serverInfo = serverInfo;
     this.icon = iconName;
     this.primaryBackgroundColor = primaryBackgroundColor;
@@ -1012,6 +1014,17 @@ export default class ParseApp {
   }
 
   runJob(job) {
+    if (this.jobAPI) {
+      return axios.post(this.jobAPI + '/jobs', {
+        description: 'Executing from job schedule web console.',
+        input: JSON.parse(job.params || '{}'),
+        jobName: job.jobName,
+        when: 0,
+        _ApplicationId: this.applicationId,
+        _MasterKey: this.masterKey,
+      },
+      );
+    }
     return Parse._request(
       'POST',
       'jobs',
