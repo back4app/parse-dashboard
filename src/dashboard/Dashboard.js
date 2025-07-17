@@ -162,6 +162,7 @@ const preloadMap = {
   cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
   graphqlConsole: () => import('./Data/ApiConsole/GraphQLConsole.react'),
   playground: () => import('./Data/Playground/Playground.react'),
+  appPlan: () => import('./AppPlan/AppPlan.react'),
 };
 
 // Preload all routes with proper error handling and logging
