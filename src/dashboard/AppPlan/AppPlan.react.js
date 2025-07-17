@@ -1,0 +1,159 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+import React from 'react';
+import Toolbar from 'components/Toolbar/Toolbar.react';
+import { withRouter } from 'lib/withRouter';
+import DashboardView from 'dashboard/DashboardView.react';
+import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+import Icon from 'components/Icon/Icon.react';
+import styles from './AppPlan.scss';
+import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import Button from 'components/Button/Button.react';
+import { getUsageClassName } from './usageClassUtils';
+
+
+@withRouter
+class AppPlan extends DashboardView {
+  constructor() {
+    super();
+    this.section = 'Plan Usage';
+    this.state = {
+      isLoadingAppPlanData: true,
+      appPlanData: null,
+      appPlanError: null,
+    };
+    this.onRefresh = this.onRefresh.bind(this);
+  }
+
+  componentWillMount() {
+    this.loadData();
+  }
+
+  componentWillReceiveProps(nextProps, nextContext) {
+    if (this.context !== nextContext) {
+      // check if the changes are in currentApp serverInfo status
+      // if not return without making any request
+      if (this.props.apps !== nextProps.apps) {
+        const updatedCurrentApp = nextProps.apps.find(ap => ap.slug === this.props.match.params.appId);
+        const prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.match.params.appId);
+        const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
+        if (!shouldUpdate) {return;}
+      }
+      // nextProps.config.dispatch(ActionTypes.FETCH);
+    }
+  }
+
+  onRefresh() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.context.getAppPlanData().then(res => this.setState({
+      isLoadingAppPlanData: false,
+      appPlanData: res
+    })).catch(err => this.setState({
+      isLoadingAppPlanData: false,
+      appPlanData: new Error(err.message || err.msg || 'Something went wrong')
+    }));
+  }
+
+  renderToolbar() {
+    return (
+      <Toolbar section="Plan Usage">
+        {/* <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
+          <Icon name="b4a-refresh-icon" width={18} height={18} />
+        </a> */}
+      </Toolbar>
+    );
+  }
+
+  renderContent() {
+    const toolbar = this.renderToolbar();
+
+    const loading = this.state.isLoadingAppPlanData;
+    const planData = this.state.appPlanData;
+    return (
+      <div>
+        <B4aLoaderContainer loading={loading}>
+          <div className={styles.content}>
+            {planData instanceof Error ? <EmptyGhostState
+              title="Something went wrong"
+              description={'Please try again later.'}
+              cta="Refresh"
+              action={this.onRefresh}
+            /> : (
+              <div className={styles.mainContent}>
+                <div className={styles.header}>Plan Usage</div>
+                <div className={styles.headerSubText}>Track your resource utilization across all features to optimize your app and plan allocation.</div>
+                <div className={styles.planUsage}>
+                  <div className={styles.planUsageHeader}>
+                    <div className={styles.planNameChip}>{this.state.appPlanData.planName}</div>
+                    <div className={styles.planDates}>
+                      <div className={styles.planDate}>Valid until: <span className={styles.planDateValue}>{this.state.appPlanData.planValid}</span></div>
+                      <div className={styles.planDate}>Last Update: <span className={styles.planDateValue}>{this.state.appPlanData.planLastUpdate}</span></div>
+                    </div>
+                  </div>
+                  <div className={styles.planUsageDetails}>
+                    <div className={styles.usageLimitsCard}>
+                      <table className={styles.usageLimitsTable}>
+                        <thead>
+                          <tr>
+                            <th className={styles.usageLimitsHeader}>Usage & Limits</th>
+                            <th className={styles.usageLimitsHeader}>Used</th>
+                            <th className={styles.usageLimitsHeader}>Included</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Requests/second</td>
+                            <td>(N.A.)</td>
+                            <td>{this.state.appPlanData.apiCallPerSecondLimit}</td>
+                          </tr>
+                          <tr>
+                            <td>Total Requests/Month</td>
+                            <td className={getUsageClassName(this.state.appPlanData.apiCallUsed, this.state.appPlanData.apiCallLimit) ? styles[getUsageClassName(this.state.appPlanData.apiCallUsed, this.state.appPlanData.apiCallLimit)] : undefined}>{this.state.appPlanData.apiCallUsed}</td>
+                            <td>{this.state.appPlanData.apiCallLimit}</td>
+                          </tr>
+                          <tr>
+                            <td>File Storage</td>
+                            <td className={getUsageClassName(this.state.appPlanData.fileStorageUsed, this.state.appPlanData.fileStorageLimit) ? styles[getUsageClassName(this.state.appPlanData.fileStorageUsed, this.state.appPlanData.fileStorageLimit)] : undefined}>{this.state.appPlanData.fileStorageUsed}</td>
+                            <td>{this.state.appPlanData.fileStorageLimit}</td>
+                          </tr>
+                          <tr>
+                            <td>Database Storage</td>
+                            <td className={getUsageClassName(this.state.appPlanData.dataStorageUsed, this.state.appPlanData.dataStorageLimit) ? styles[getUsageClassName(this.state.appPlanData.dataStorageUsed, this.state.appPlanData.dataStorageLimit)] : undefined}>{this.state.appPlanData.dataStorageUsed}</td>
+                            <td>{this.state.appPlanData.dataStorageLimit}</td>
+                          </tr>
+                          <tr>
+                            <td>Cloud Code Jobs</td>
+                            <td>(N.A.)</td>
+                            <td>{this.state.appPlanData.maxJobAmount == 1000 ? 'Unlimited' : this.state.appPlanData.maxJobAmount}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className={styles.upgradeCard}>
+                      <div className={styles.upgradeCardHeader}>Supercharge Your App Experience</div>
+                      <div className={styles.upgradeCardSubText}>Unlock advanced features, increased capacity, and enhanced performance tools.</div>
+                      <Button primary value="Upgrade" onClick={() => window.open(`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`, '_blank')} />
+                      <div className={styles.upgradeCardGreyText}>No downtime on upgrade.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </B4aLoaderContainer>
+        {toolbar}
+      </div>
+    );
+  }
+}
+
+export default AppPlan;
+
