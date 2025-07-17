@@ -78,7 +78,9 @@ class AppPlan extends DashboardView {
     const planData = this.state.appPlanData;
 
     let content = null;
-    if (planData instanceof Error || this.state.appPlanError) {
+    if (loading) {
+      content = null;
+    } else if (planData instanceof Error || this.state.appPlanError) {
       content = <EmptyGhostState
         title="Something went wrong"
         description={'Please try again later.'}
@@ -91,10 +93,10 @@ class AppPlan extends DashboardView {
         <div className={styles.headerSubText}>Track your resource utilization across all features to optimize your app and plan allocation.</div>
         <div className={styles.planUsage}>
           <div className={styles.planUsageHeader}>
-            <div className={styles.planNameChip}>{this.state.appPlanData.planName}</div>
+            <div className={styles.planNameChip}>{planData.planName}</div>
             <div className={styles.planDates}>
-              <div className={styles.planDate}>Valid until: <span className={styles.planDateValue}>{this.state.appPlanData.planValid}</span></div>
-              <div className={styles.planDate}>Last Update: <span className={styles.planDateValue}>{this.state.appPlanData.planLastUpdate}</span></div>
+              <div className={styles.planDate}>Valid until: <span className={styles.planDateValue}>{planData.planValid}</span></div>
+              <div className={styles.planDate}>Last Update: <span className={styles.planDateValue}>{planData.planLastUpdate}</span></div>
             </div>
           </div>
           <div className={styles.planUsageDetails}>
@@ -111,27 +113,27 @@ class AppPlan extends DashboardView {
                   <tr>
                     <td>Requests/second</td>
                     <td>(N.A.)</td>
-                    <td>{this.state.appPlanData.apiCallPerSecondLimit}</td>
+                    <td>{planData.apiCallPerSecondLimit}</td>
                   </tr>
                   <tr>
                     <td>Total Requests/Month</td>
-                    <td className={getUsageClassName(this.state.appPlanData.apiCallUsed, this.state.appPlanData.apiCallLimit) ? styles[getUsageClassName(this.state.appPlanData.apiCallUsed, this.state.appPlanData.apiCallLimit)] : undefined}>{this.state.appPlanData.apiCallUsed}</td>
-                    <td>{this.state.appPlanData.apiCallLimit}</td>
+                    <td className={getUsageClassName(planData.apiCallUsed, planData.apiCallLimit) ? styles[getUsageClassName(planData.apiCallUsed, planData.apiCallLimit)] : undefined}>{planData.apiCallUsed}</td>
+                    <td>{planData.apiCallLimit}</td>
                   </tr>
                   <tr>
                     <td>File Storage</td>
-                    <td className={getUsageClassName(this.state.appPlanData.fileStorageUsed, this.state.appPlanData.fileStorageLimit) ? styles[getUsageClassName(this.state.appPlanData.fileStorageUsed, this.state.appPlanData.fileStorageLimit)] : undefined}>{this.state.appPlanData.fileStorageUsed}</td>
-                    <td>{this.state.appPlanData.fileStorageLimit}</td>
+                    <td className={getUsageClassName(planData.fileStorageUsed, planData.fileStorageLimit) ? styles[getUsageClassName(planData.fileStorageUsed, planData.fileStorageLimit)] : undefined}>{planData.fileStorageUsed}</td>
+                    <td>{planData.fileStorageLimit}</td>
                   </tr>
                   <tr>
                     <td>Database Storage</td>
-                    <td className={getUsageClassName(this.state.appPlanData.dataStorageUsed, this.state.appPlanData.dataStorageLimit) ? styles[getUsageClassName(this.state.appPlanData.dataStorageUsed, this.state.appPlanData.dataStorageLimit)] : undefined}>{this.state.appPlanData.dataStorageUsed}</td>
-                    <td>{this.state.appPlanData.dataStorageLimit}</td>
+                    <td className={getUsageClassName(planData.dataStorageUsed, planData.dataStorageLimit) ? styles[getUsageClassName(planData.dataStorageUsed, planData.dataStorageLimit)] : undefined}>{planData.dataStorageUsed}</td>
+                    <td>{planData.dataStorageLimit}</td>
                   </tr>
                   <tr>
                     <td>Cloud Code Jobs</td>
                     <td>(N.A.)</td>
-                    <td>{this.state.appPlanData.maxJobAmount == 1000 ? 'Unlimited' : this.state.appPlanData.maxJobAmount}</td>
+                    <td>{planData.maxJobAmount == 1000 ? 'Unlimited' : planData.maxJobAmount}</td>
                   </tr>
                 </tbody>
               </table>
@@ -146,7 +148,6 @@ class AppPlan extends DashboardView {
         </div>
       </div>
     }
-
 
     return (
       <div>
