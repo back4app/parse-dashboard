@@ -72,6 +72,7 @@ import { useAppPageTracking } from './instrument';
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
 const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
+const LazyAppPlan = lazy(() => import('./AppPlan/AppPlan.react'));
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -464,6 +465,7 @@ class Dashboard extends React.Component {
         <Route path="deployments" element={<Deployments />} />
         <Route path="deployments/:releaseId" element={<DeploymentDetails />} />
         <Route path="logs">{LogsRoute}</Route>
+        <Route path="app-plan" element={<LazyComponentWrapper><LazyAppPlan /></LazyComponentWrapper>} />
 
         <Route path="config" element={<Config />} />
 
