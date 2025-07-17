@@ -20,6 +20,7 @@ const LazyB4aWebDeploymentIcon = lazy(() => import('components/Sidebar/icons/B4a
 const LazyB4aMoreIcon = lazy(() => import('components/Sidebar/icons/B4aMoreIcon.react'));
 const LazyB4aOverviewIcon = lazy(() => import('components/Sidebar/icons/B4aOverviewIcon.react'));
 const LazyB4aAppSettingsIcon = lazy(() => import('components/Sidebar/icons/B4aAppSettingsIcon.react'));
+const LazyB4aPlanUsageIcon = lazy(() => import('components/Sidebar/icons/B4aPlanUsageIcon.react'));
 
 // Preload functions for each lazy icon
 LazyB4aApiIcon.preload = () => import('components/Sidebar/icons/B4aApiIcon.react');
@@ -29,6 +30,7 @@ LazyB4aWebDeploymentIcon.preload = () => import('components/Sidebar/icons/B4aWeb
 LazyB4aMoreIcon.preload = () => import('components/Sidebar/icons/B4aMoreIcon.react');
 LazyB4aOverviewIcon.preload = () => import('components/Sidebar/icons/B4aOverviewIcon.react');
 LazyB4aAppSettingsIcon.preload = () => import('components/Sidebar/icons/B4aAppSettingsIcon.react');
+LazyB4aPlanUsageIcon.preload = () => import('components/Sidebar/icons/B4aPlanUsageIcon.react');
 
 const sendEvent = () => {
   // eslint-disable-next-line no-undef
@@ -80,6 +82,12 @@ const getIconContent = (icon) => {
           <LazyB4aAppSettingsIcon />
         </Suspense>
       );
+    case 'b4a-plan-usage-icon':
+      return (
+        <Suspense fallback={null}>
+          <LazyB4aPlanUsageIcon />
+        </Suspense>
+      );
     default:
       return null;
   }
@@ -100,6 +108,7 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
     LazyB4aMoreIcon.preload();
     LazyB4aOverviewIcon.preload();
     LazyB4aAppSettingsIcon.preload();
+    LazyB4aPlanUsageIcon.preload();
   }, []);
 
   useEffect(() => {
