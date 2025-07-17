@@ -141,7 +141,9 @@ class AppPlan extends DashboardView {
             <div className={styles.upgradeCard}>
               <div className={styles.upgradeCardHeader}>Supercharge Your App Experience</div>
               <div className={styles.upgradeCardSubText}>Unlock advanced features, increased capacity, and enhanced performance tools.</div>
-              <Button primary value="Upgrade" onClick={() => window.open(`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`, '_blank')} />
+              <Button primary value={
+                <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank">Upgrade</a>
+              } />
               <div className={styles.upgradeCardGreyText}>No downtime on upgrade.</div>
             </div>
           </div>
