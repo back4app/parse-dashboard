@@ -45,3 +45,16 @@ export function getUsageClassName(usage, limit) {
   }
   return '';
 }
+
+export const formatDate = (dateString) => {
+  try {
+    if(dateString && Date.parse(dateString)) {
+      const date = new Date(dateString);
+      return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
+    } else {
+      return '(N.A.)';
+    }
+  } catch (error) {
+    return '(N.A.)';
+  }
+}

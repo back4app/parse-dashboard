@@ -13,7 +13,7 @@ import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer
 import styles from './AppPlan.scss';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import Button from 'components/Button/Button.react';
-import { getUsageClassName } from './usageClassUtils';
+import { getUsageClassName, formatDate } from './usageClassUtils';
 
 
 @withRouter
@@ -95,8 +95,8 @@ class AppPlan extends DashboardView {
           <div className={styles.planUsageHeader}>
             <div className={styles.planNameChip}>{planData.planName}</div>
             <div className={styles.planDates}>
-              <div className={styles.planDate}>Valid until: <span className={styles.planDateValue}>{planData.planValid}</span></div>
-              <div className={styles.planDate}>Last Update: <span className={styles.planDateValue}>{planData.planLastUpdate}</span></div>
+              <div className={styles.planDate}>Valid until: <span className={styles.planDateValue}>{formatDate(planData.planValid)}</span></div>
+              <div className={styles.planDate}>Last Update: <span className={styles.planDateValue}>{formatDate(planData.planLastUpdate)}</span></div>
             </div>
           </div>
           <div className={styles.planUsageDetails}>
