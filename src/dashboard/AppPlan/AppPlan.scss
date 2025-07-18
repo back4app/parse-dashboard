@@ -81,7 +81,7 @@
 
 .usageLimitsCard {
   background: $dark-blue;
-  border: 1px solid #253348;
+  border: 1px solid rgba($color: $cta-green, $alpha: 0.06);
   border-radius: 0.5rem;
   padding: 1.5rem;
   width: 100%;
@@ -91,34 +91,84 @@
 }
 
 .upgradeCard {
-  background: $dark-blue;
+  background: linear-gradient(172deg, #27ae601c 0%, #0f1c328a 30%);
   border: 1px solid #253348;
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   flex-shrink: 0;
-  max-width: 280px;
+  max-width: 355px;
+  border-color: #27ae6045;
 
   .upgradeCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .upgradeCardTitle {
     @include InterFont;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+  }
+
+  .upgradeCardIcon {
+    font-size: 1.25rem;
   }
 
   .upgradeCardSubText {
     @include InterFont;
     font-size: 0.75rem;
-    margin-bottom: 1rem;
+    font-weight: 500;
   }
 
-  .upgradeCardGreyText {
+  .upgradeFeatures {
+    background: rgba($color: $regal-blue, $alpha: 0.06);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+
+    .upgradeFeaturesTitle {
+      @include InterFont;
+      font-weight: 700;
+      font-size: 0.65rem;
+      color: $cta-green;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .upgradeFeaturesList {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .upgradeFeature {
+      @include InterFont;
+      font-size: 0.75rem;
+      color: $white;
+      line-height: 1.4;
+
+      .planName {
+        font-weight: 600;
+        color: $white;
+      }
+    }
+  }
+
+  .upgradeCardTrial {
+    @include InterFont;
     font-size: 0.6875rem;
     color: $light-grey;
     text-align: center;
-    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
   }
-
 }
 
 .usageLimitsTable {

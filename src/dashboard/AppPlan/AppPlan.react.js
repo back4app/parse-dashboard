@@ -110,11 +110,11 @@ class AppPlan extends DashboardView {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  {/* <tr>
                     <td>Requests/second</td>
                     <td>(N.A.)</td>
                     <td>{planData.apiCallPerSecondLimit}</td>
-                  </tr>
+                  </tr> */}
                   <tr>
                     <td>Total Requests/Month</td>
                     <td className={getUsageClassName(planData.apiCallUsed, planData.apiCallLimit) ? styles[getUsageClassName(planData.apiCallUsed, planData.apiCallLimit)] : undefined}>{planData.apiCallUsed}</td>
@@ -139,12 +139,34 @@ class AppPlan extends DashboardView {
               </table>
             </div>
             <div className={styles.upgradeCard}>
-              <div className={styles.upgradeCardHeader}>Supercharge Your App Experience</div>
-              <div className={styles.upgradeCardSubText}>Unlock advanced features, increased capacity, and enhanced performance tools.</div>
+              <div className={styles.upgradeCardHeader}>
+                <div className={styles.upgradeCardTitle}>Ready to Scale?</div>
+                <div className={styles.upgradeCardIcon}>⚡</div>
+              </div>
+              <div className={styles.upgradeCardSubText}>Upgrade for Backups, Resilience & Compliance</div>
+
+              <div className={styles.upgradeFeatures}>
+                <div className={styles.upgradeFeaturesTitle}>WHAT YOU GET:</div>
+                <div className={styles.upgradeFeaturesList}>
+                  <div className={styles.upgradeFeature}>
+                    <span className={styles.planName}>MVP:</span> Daily automated backups
+                  </div>
+                  <div className={styles.upgradeFeature}>
+                    <span className={styles.planName}>Pay-as-you-Go:</span> SOC 2 and ISO 27001-certified infrastructure
+                  </div>
+                  <div className={styles.upgradeFeature}>
+                    <span className={styles.planName}>Dedicated:</span> Point-in-time restore & HIPAA-ready
+                  </div>
+                </div>
+              </div>
+
               <Button primary value={
-                <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank">Upgrade</a>
-              } />
-              <div className={styles.upgradeCardGreyText}>No downtime on upgrade.</div>
+                <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} style={{ display: 'block', width: '100%'}} target="_blank">Upgrade Now →</a>
+              } additionalStyles={{ padding: 0 }} width="100%" />
+
+              <div className={styles.upgradeCardTrial}>
+                ✨ 15-day trial • Cancel anytime
+              </div>
             </div>
           </div>
         </div>
