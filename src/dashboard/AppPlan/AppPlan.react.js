@@ -141,7 +141,6 @@ class AppPlan extends DashboardView {
             <div className={styles.upgradeCard}>
               <div className={styles.upgradeCardHeader}>
                 <div className={styles.upgradeCardTitle}>Ready to Scale?</div>
-                <div className={styles.upgradeCardIcon}>⚡</div>
               </div>
               <div className={styles.upgradeCardSubText}>Upgrade for Backups, Resilience & Compliance</div>
 
@@ -163,10 +162,6 @@ class AppPlan extends DashboardView {
               <Button primary value={
                 <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} style={{ display: 'block', width: '100%'}} target="_blank">Upgrade Now →</a>
               } additionalStyles={{ padding: 0 }} width="100%" />
-
-              <div className={styles.upgradeCardTrial}>
-                ✨ 15-day trial • Cancel anytime
-              </div>
             </div>
           </div>
         </div>
