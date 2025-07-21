@@ -466,7 +466,7 @@ class Dashboard extends React.Component {
         <Route path="deployments" element={<Deployments />} />
         <Route path="deployments/:releaseId" element={<DeploymentDetails />} />
         <Route path="logs">{LogsRoute}</Route>
-        <Route path="app-plan" element={<LazyComponentWrapper><LazyAppPlan /></LazyComponentWrapper>} />
+        <Route path="plan-usage" element={<LazyComponentWrapper><LazyAppPlan /></LazyComponentWrapper>} />
 
         <Route path="config" element={<Config />} />
 

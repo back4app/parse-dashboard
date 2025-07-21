@@ -301,7 +301,7 @@ export default class DashboardView extends React.Component {
     appSidebarSections.push({
       name: 'Plan Usage',
       icon: 'b4a-plan-usage-icon',
-      link: '/app-plan',
+      link: '/plan-usage',
     })
 
     appSidebarSections.push({
