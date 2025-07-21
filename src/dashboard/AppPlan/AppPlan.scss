@@ -1,0 +1,238 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    padding: 2.5rem;
+    position: relative;
+    overflow: auto;
+    max-width: 90rem;
+    margin: 0 auto;
+    
+
+    .headerText {
+      @include InterFont;
+      font-size: 1.125rem;
+      font-weight: 600;
+      line-height: 140%;
+    }
+
+    .headerSubText {
+      @include InterFont;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 140%;
+    }
+    .planUsage {
+      margin-top: 2.5rem;
+      gap: 1rem;
+
+      .planUsageHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .planNameChip {
+        @include InterFont;
+        font-weight: 500;
+        background: $regal-blue;
+        padding: 0.1rem 0.5rem;
+        border-radius: 1rem;
+      }
+
+      .planDates {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        .planDate {
+          font-size: 0.75rem;
+          color: $light-grey;
+
+          .planDateValue {
+            color: $white;
+          }
+        }
+      }
+    }
+
+  }
+}
+
+.planUsageDetails{
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .planUsageDetails {
+    flex-wrap: wrap;
+  }
+}
+
+.usageLimitsCard {
+  background: $dark-blue;
+  border: 1px solid rgba($color: $cta-green, $alpha: 0.06);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 100%;
+  min-width: 520px;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.upgradeCard {
+  background: linear-gradient(172deg, #27ae601c 0%, #0f1c328a 30%);
+  border: 1px solid #253348;
+  border-radius: 0.5rem;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  max-width: 355px;
+  border-color: #27ae6045;
+
+  .upgradeCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .upgradeCardTitle {
+    @include InterFont;
+    font-weight: 600;
+    font-size: 1.125rem;
+  }
+
+  .upgradeCardIcon {
+    font-size: 1.25rem;
+  }
+
+  .upgradeCardSubText {
+    @include InterFont;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .upgradeFeatures {
+    background: rgba($color: $regal-blue, $alpha: 0.06);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+
+    .upgradeFeaturesTitle {
+      @include InterFont;
+      font-weight: 700;
+      font-size: 0.65rem;
+      color: $cta-green;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .upgradeFeaturesList {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .upgradeFeature {
+      @include InterFont;
+      font-size: 0.75rem;
+      color: $white;
+      line-height: 1.4;
+
+      .planName {
+        font-weight: 600;
+        color: $white;
+      }
+    }
+  }
+
+  .upgradeCardTrial {
+    @include InterFont;
+    font-size: 0.6875rem;
+    color: $light-grey;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+}
+
+.usageLimitsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 480px;
+}
+
+.usageLimitsHeader {
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-align: left;
+  padding-top: 0;
+  border: none;
+}
+
+.usageLimitsHeader:nth-child(2),
+.usageLimitsHeader:nth-child(3) {
+  text-align: right;
+}
+
+.usageLimitsTable td {
+  font-size: 0.875rem;
+  padding: 0.75rem 0 0;
+  border: none;
+  text-align: left;
+}
+
+.usageLimitsTable tr td:first-child {
+  font-weight: 500;
+}
+
+.usageDanger {
+  color: $error-red;
+  font-weight: 600;
+}
+
+.usageWarning {
+  color: $alert-yellow;
+  font-weight: 600;
+}
+
+.usageLimitsTable td:nth-child(2),
+.usageLimitsTable td:nth-child(3) {
+  text-align: right;
+  padding-right: 0;
+}
+
+@media (max-width: 1100px) {
+  .usageLimitsCard {
+    padding: 0.5rem;
+    min-width: 0;
+  }
+  .usageLimitsTable {
+    min-width: 360px;
+    font-size: 0.75rem;
+  }
+  .usageLimitsHeader, .usageLimitsTable td {
+    padding: 1rem 0 0;
+    font-size: 0.75rem;
+  }
+
+  .upgradeCardHeader{
+    font-size: 0.875rem;
+  }
+}

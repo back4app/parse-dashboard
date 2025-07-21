@@ -72,6 +72,7 @@ import { useAppPageTracking } from './instrument';
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
 const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
+const LazyAppPlan = lazy(() => import('./AppPlan/AppPlan.react'));
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -161,6 +162,7 @@ const preloadMap = {
   cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
   graphqlConsole: () => import('./Data/ApiConsole/GraphQLConsole.react'),
   playground: () => import('./Data/Playground/Playground.react'),
+  appPlan: () => import('./AppPlan/AppPlan.react'),
 };
 
 // Preload all routes with proper error handling and logging
@@ -464,6 +466,7 @@ class Dashboard extends React.Component {
         <Route path="deployments" element={<Deployments />} />
         <Route path="deployments/:releaseId" element={<DeploymentDetails />} />
         <Route path="logs">{LogsRoute}</Route>
+        <Route path="plan-usage" element={<LazyComponentWrapper><LazyAppPlan /></LazyComponentWrapper>} />
 
         <Route path="config" element={<Config />} />
 

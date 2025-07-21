@@ -961,14 +961,14 @@
 
   & .connectAppModalHeader {
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: sticky;
     width: 100%;
     top: 0;
-    background: #253348;
+    background: #1c293e;
     z-index: 1;
   }
 
@@ -982,6 +982,10 @@
     padding: 1.5rem;
     color: $white;
   }
+}
+
+.connectAppModal{
+  background: #1c293e !important;
 }
 
 .mcpModal {
@@ -1079,7 +1083,10 @@
 
 .dropdownContainer {
   position: relative;
-  min-width: 300px;
+  min-width: 14rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: #1B3454;
 }
 
 .dropdownTrigger {
@@ -1102,7 +1109,7 @@
   left: 0;
   right: 0;
   margin-top: 4px;
-  background: #253348;
+  background: #1B3454;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   max-height: 300px;
@@ -1119,6 +1126,7 @@
   color: $white;
   transition: background-color 0.2s;
   font-size: 14px;
+  font-size: 0.875rem;
 
   &:hover {
     background: rgba($dark-blue, 0.4);

@@ -45,7 +45,7 @@ const Button = forwardRef(function Button(props, ref) {
   }
   const clickHandler = hasOnClick ? props.trackClick ? () => {
     // eslint-disable-next-line no-undef
-    amplitudeLogEvent(props.eventName || `${typeof props.value === 'string' ? props.value : ''}`);
+    amplitudeLogEvent(props.eventName || `On Click - ${typeof props.value === 'string' ? props.value : ''}`);
     // console.log(props.eventName);
     props.onClick();
   } : props.onClick : noop;
