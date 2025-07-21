@@ -982,6 +982,15 @@
     padding: 1.5rem;
     color: $white;
   }
+
+  .dropdownContainer {
+    position: relative;
+    min-width: 14rem !important;
+    border-radius: 0.25rem !important;
+    padding: 0.25rem 0.5rem !important;
+    background: #1B3454 !important;
+  }
+  
 }
 
 .connectAppModal{
@@ -1083,10 +1092,7 @@
 
 .dropdownContainer {
   position: relative;
-  min-width: 14rem;
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background: #1B3454;
+  min-width: 300px;
 }
 
 .dropdownTrigger {
