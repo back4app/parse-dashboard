@@ -920,7 +920,7 @@ const CodeBlock = ({ language, value }) => {
 };
 
 const ConnectAppModal = ({ closeModal }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState(LanguageDocMap['rest']);
+  const [selectedLanguage, setSelectedLanguage] = useState(LanguageDocMap['js-browser']);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
@@ -940,7 +940,7 @@ const ConnectAppModal = ({ closeModal }) => {
                     width={20}
                     height={20}
                   />
-                  <span>{selectedLanguage.name}</span>
+                  <span style={{ fontSize: '0.875rem' }}>{selectedLanguage.name}</span>
                 </div>
                 <Icon name="b4a-chevron-down" width={16} height={16} fill="#f9f9f9" />
               </div>
@@ -957,7 +957,7 @@ const ConnectAppModal = ({ closeModal }) => {
                         setIsDropdownOpen(false);
                       }}
                     >
-                      <Icon name={value.icon} fill={value.iconColor || ''} width={20} height={20} />
+                      <Icon name={value.icon} fill={value.iconColor || ''} width={16} height={16} />
                       <span>{value.name}</span>
                     </div>
                   ))}
