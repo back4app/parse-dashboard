@@ -1,4 +1,4 @@
-export const ALWAYS_ALLOWED_ROUTES = ['overview', 'web-deployment', 'Overview', 'Web Deployment', 'settings', 'App Settings', 'server-settings', 'plan-usage', 'Plan Usage'];
+export const ALWAYS_ALLOWED_ROUTES = ['overview', 'web-deployment', 'Overview', 'Web Deployment', 'settings', 'App Settings', 'server-settings', 'plan-usage', 'Plan Usage', 'Logs', 'logs', 'analytics', 'reports', 'Slow Queries', 'App Security Report', 'Advisors', 'security'];
 
 export const canAccess = (serverInfo, route) => {
   if (ALWAYS_ALLOWED_ROUTES.includes(route)) {

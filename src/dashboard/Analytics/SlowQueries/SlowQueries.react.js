@@ -43,7 +43,7 @@ class SlowQueries extends TableView {
   constructor() {
     super();
     this.section = 'Advisors';
-    this.subsection = 'Slow Queries';
+    this.subsection = 'Analytics';
 
     const date = new Date();
     this.state = {
