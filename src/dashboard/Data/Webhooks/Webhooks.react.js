@@ -38,7 +38,7 @@ export default
 class Webhooks extends TableView {
   constructor() {
     super();
-    this.section = 'More';
+    this.section = 'Cloud Code';
     this.subsection = 'Webhooks';
     this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" />Add webHook</span>, this.openNewWebhookModal.bind(this));
     this.state = {

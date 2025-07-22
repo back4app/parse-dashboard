@@ -25,7 +25,7 @@ import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 class Config extends TableView {
   constructor() {
     super();
-    this.section = 'More';
+    this.section = 'Cloud Code';
     this.subsection = 'Config';
     this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" />Add parameter</span>, this.createParameter.bind(this));
     this.state = {
