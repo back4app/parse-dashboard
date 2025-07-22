@@ -43,7 +43,7 @@ class SlowQueries extends TableView {
   constructor() {
     super();
     this.section = 'Advisors';
-    this.subsection = 'Slow Queries';
+    this.subsection = 'Slow Requests';
 
     const date = new Date();
     this.state = {
@@ -243,7 +243,7 @@ class SlowQueries extends TableView {
     }
 
     return (
-      <Toolbar section="Advisors" subsection="Slow Queries">
+      <Toolbar section="Advisors" subsection="Slow Requests">
         {actions}
       </Toolbar>
     );
