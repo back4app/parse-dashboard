@@ -314,10 +314,26 @@ export default class DashboardView extends React.Component {
       subsections: apiSubSections
     });
 
+    const pushSubSections = [];
+
+    pushSubSections.push({
+      name: 'Send New Push',
+      link: '/push/new',
+    });
+    pushSubSections.push({
+      name: 'Past Pushes',
+      link: '/push/activity',
+    });
+    pushSubSections.push({
+      name: 'Audiences',
+      link: '/push/audiences',
+    });
+
     appSidebarSections.push({
       name: 'Push Notifications',
       icon: 'b4a-push-notification-icon',
-      link: '/push'
+      link: '/push',
+      subsections: pushSubSections
     });
 
     appSidebarSections.push({
@@ -326,14 +342,15 @@ export default class DashboardView extends React.Component {
       link: '/web-deployment'
     });
 
-    const reportsSubSections = [];
+    const advisorsSubSections = [];
 
-    reportsSubSections.push({
+    advisorsSubSections.push({
       name: 'Analytics',
-      link: '/analytics'
+      link: '/analytics',
+      // subsections: analyticsSubSections
     })
 
-    reportsSubSections.push({
+    advisorsSubSections.push({
       name: 'Security',
       link: '/reports/security',
     });
@@ -346,10 +363,10 @@ export default class DashboardView extends React.Component {
     });
 
     appSidebarSections.push({
-      name: 'Reports',
+      name: 'Advisors',
       icon: 'b4a-reports-icon',
-      link: '/reports',
-      subsections: reportsSubSections
+      link: '/analytics',
+      subsections: advisorsSubSections
     });
 
     if (settingsSections.length > 0) {

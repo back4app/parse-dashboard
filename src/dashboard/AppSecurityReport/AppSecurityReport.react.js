@@ -20,7 +20,7 @@ import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer
 class AppSecurityReport extends DashboardView {
   constructor() {
     super();
-    this.section = 'Reports';
+    this.section = 'Advisors';
     this.subsection = 'Security';
     this.state = {
       isLoadingSecurityReport: true,
