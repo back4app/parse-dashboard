@@ -283,6 +283,20 @@ export default class DashboardView extends React.Component {
       subsections: apiSubSections
     })
 
+    const reportsSubSections = [];
+
+    reportsSubSections.push({
+      name: 'Security',
+      link: '/reports/security',
+    });
+
+    appSidebarSections.push({
+      name: 'Reports',
+      icon: 'b4a-reports-icon',
+      link: '/reports',
+      subsections: reportsSubSections
+    })
+
     appSidebarSections.push({
       name: 'Web Deployment',
       icon: 'b4a-web-deployment-icon',
