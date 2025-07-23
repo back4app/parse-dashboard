@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 
 const complianceTypes = {
   'HIPAA': {
@@ -70,8 +71,8 @@ const ComplianceItem = ({ type, enabled, appId, isSignedBAA }) => {
       <div className={styles.complianceItemDescriptionText}>
         {complianceTypes[type].description}
       </div>
-      {showUpgrade && <a href={`${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse}`} target="_blank" rel="noopener noreferrer"><button className={styles.complianceItemUpgradeBtn}>Upgrade</button></a>}
-      {showSignBAA && <a href={`https://back4app.typeform.com/to/qagI6LKi?appId=${appId}`} target="_blank" rel="noopener noreferrer"><button className={styles.complianceItemSignBtn}>Sign BAA</button></a>}
+      {showUpgrade && <a href={`${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse}`} onClick={() => amplitudeLogEvent(`On Click - At Upgrade Plan for ${type} compliance`)} target="_blank" rel="noopener noreferrer"><button className={styles.complianceItemUpgradeBtn}>Upgrade</button></a>}
+      {showSignBAA && <a href={`https://back4app.typeform.com/to/qagI6LKi?appId=${appId}`} onClick={() => amplitudeLogEvent(`On Click - At Sign BAA for ${type} compliance`)} target="_blank" rel="noopener noreferrer"><button className={styles.complianceItemSignBtn}>Sign BAA</button></a>}
     </div>
   </div>
 }

@@ -126,6 +126,11 @@ export default class DashboardView extends React.Component {
       link: '/index'
     })
 
+    databaseSubsections.push({
+      name: 'Admin App',
+      link: '/admin'
+    })
+
     const cloudCodeSubSections = [];
     // Show cloud code to all parse versions
     // if (features.cloudCode && features.cloudCode.viewCode) {
@@ -145,11 +150,21 @@ export default class DashboardView extends React.Component {
       link: '/deployments',
     });
 
-    // if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
     cloudCodeSubSections.push({
-      name: 'Logs',
-      link: '/logs',
+      name: 'Webhooks',
+      link: '/webhooks'
     });
+
+    cloudCodeSubSections.push({
+      name: 'Config',
+      link: '/config'
+    });
+
+    // if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
+    // cloudCodeSubSections.push({
+    //   name: 'Logs',
+    //   link: '/logs',
+    // });
     // }
 
     const apiSubSections = [];
@@ -177,39 +192,34 @@ export default class DashboardView extends React.Component {
     //   features.globalConfig.update &&
     //   features.globalConfig.delete) {
     //   }
-    moreSubSection.push({
-      name: 'Config',
-      link: '/config',
-    });
+    // moreSubSection.push({
+    //   name: 'Config',
+    //   link: '/config',
+    // });
 
     //webhooks requires removal of heroku link code, then it should work.
     // if (!isLocked && features.hooks && features.hooks.create && features.hooks.read && features.hooks.update && features.hooks.delete) {
     // }
-    moreSubSection.push({
-      name: 'Webhooks',
-      link: '/webhooks'
-    });
+    // moreSubSection.push({
+    //   name: 'Webhooks',
+    //   link: '/webhooks'
+    // });
 
-    moreSubSection.push({
-      name: 'Push',
-      link: '/push'
-    });
+    // moreSubSection.push({
+    //   name: 'Push',
+    //   link: '/push'
+    // });
     // if (!isLocked && features.push) {
     // }
 
-    moreSubSection.push({
-      name: 'Analytics',
-      link: '/analytics'
-    })
+    // moreSubSection.push({
+    //   name: 'Analytics',
+    //   link: '/analytics'
+    // })
 
     moreSubSection.push({
       name: 'Database HUB',
       link: '/connections'
-    })
-
-    moreSubSection.push({
-      name: 'Admin App',
-      link: '/admin'
     })
 
     // moreSubSection.push({
@@ -251,6 +261,27 @@ export default class DashboardView extends React.Component {
       link: '/server-settings',
     });
 
+    const logsSubSections = [];
+
+    logsSubSections.push({
+      name: 'System',
+      link: '/logs/system',
+    });
+
+    logsSubSections.push({
+      name: 'Info',
+      link: '/logs/info',
+    });
+
+    logsSubSections.push({
+      name: 'Error',
+      link: '/logs/error',
+    });
+
+    logsSubSections.push({
+      name: 'Access',
+      link: '/logs/access',
+    });
 
     const appSidebarSections = [];
 
@@ -281,13 +312,62 @@ export default class DashboardView extends React.Component {
       icon: 'b4a-api-icon',
       link: '/connect',
       subsections: apiSubSections
-    })
+    });
+
+    const pushSubSections = [];
+
+    pushSubSections.push({
+      name: 'Send New Push',
+      link: '/push/new',
+    });
+    pushSubSections.push({
+      name: 'Past Pushes',
+      link: '/push/activity',
+    });
+    pushSubSections.push({
+      name: 'Audiences',
+      link: '/push/audiences',
+    });
+
+    appSidebarSections.push({
+      name: 'Push Notifications',
+      icon: 'b4a-push-notification-icon',
+      link: '/push',
+      subsections: pushSubSections
+    });
 
     appSidebarSections.push({
       name: 'Web Deployment',
       icon: 'b4a-web-deployment-icon',
       link: '/web-deployment'
+    });
+
+    const advisorsSubSections = [];
+
+    advisorsSubSections.push({
+      name: 'Slow Requests',
+      link: '/analytics/slow-queries',
+      // subsections: analyticsSubSections
     })
+
+    advisorsSubSections.push({
+      name: 'Security',
+      link: '/reports/security',
+    });
+
+    appSidebarSections.push({
+      name: 'Logs',
+      icon: 'b4a-logs-icon',
+      link: '/logs',
+      subsections: logsSubSections,
+    });
+
+    appSidebarSections.push({
+      name: 'Advisors',
+      icon: 'b4a-reports-icon',
+      link: '/analytics',
+      subsections: advisorsSubSections
+    });
 
     if (settingsSections.length > 0) {
       appSidebarSections.push({
@@ -307,7 +387,7 @@ export default class DashboardView extends React.Component {
     appSidebarSections.push({
       name: 'More',
       icon: 'b4a-more-icon',
-      link: '/config',
+      link: '/connections',
       subsections: moreSubSection
     })
 

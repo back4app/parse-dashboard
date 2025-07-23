@@ -28,6 +28,7 @@ import { formatAudienceSchema } from 'lib/PushUtils';
 import { List } from 'immutable';
 import generatePath from 'lib/generatePath';
 import { withRouter } from 'lib/withRouter';
+import SidebarAction from 'components/Sidebar/SidebarAction';
 
 const XHR_KEY = 'PushAudiencesIndex';
 
@@ -37,8 +38,8 @@ const XHR_KEY = 'PushAudiencesIndex';
 class PushAudiencesIndex extends DashboardView {
   constructor() {
     super();
-    this.section = 'More';
-    this.subsection = 'Push';
+    this.section = 'Push Notifications';
+    this.subsection = 'Audiences';
     this.state = {
       availableDevices: [],
       loading: true,
@@ -48,31 +49,32 @@ class PushAudiencesIndex extends DashboardView {
       deleteionAudienceName: null,
       showCreateAudienceModal: false,
     };
+    this.action = new SidebarAction(<span>Add Audience</span>, this.handleCreateAudienceClick.bind(this));
   }
 
-  renderSidebar() {
-    const { pathname } = this.props.location;
-    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
-    return (
-      <CategoryList
-        current={current}
-        linkPrefix={'push/'}
-        categories={[
-          { name: 'Send New Push', id: 'new' },
-          { name: 'Past Pushes', id: 'activity' },
-          {
-            name: 'Audiences',
-            id: 'audiences',
-            currentActive: current === 'audiences',
-            action: new CategoryItemAction(
-              'Add audience',
-              this.handleCreateAudienceClick.bind(this)
-            )
-          }
-        ]}
-      />
-    );
-  }
+  // renderSidebar() {
+  //   const { pathname } = this.props.location;
+  //   const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+  //   return (
+  //     <CategoryList
+  //       current={current}
+  //       linkPrefix={'push/'}
+  //       categories={[
+  //         { name: 'Send New Push', id: 'new' },
+  //         { name: 'Past Pushes', id: 'activity' },
+  //         {
+  //           name: 'Audiences',
+  //           id: 'audiences',
+  //           currentActive: current === 'audiences',
+  //           action: new CategoryItemAction(
+  //             'Add audience',
+  //             this.handleCreateAudienceClick.bind(this)
+  //           )
+  //         }
+  //       ]}
+  //     />
+  //   );
+  // }
 
   getAudienceData(createdAudiences = 0) {
     this.props.schema.dispatch(SchemaStore.ActionTypes.FETCH);
@@ -85,6 +87,7 @@ class PushAudiencesIndex extends DashboardView {
   }
 
   componentWillMount() {
+    this.action = new SidebarAction(<span>Add Audience</span>, this.handleCreateAudienceClick.bind(this));
     this.getAudienceData().catch((err) => {
       console.error(err)
     }).finally(() => {

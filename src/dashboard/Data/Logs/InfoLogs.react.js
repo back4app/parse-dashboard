@@ -49,8 +49,8 @@ const alertWhatIsMessage = (
 export default class InfoLogs extends DashboardView {
   constructor() {
     super();
-    this.section = 'Cloud Code';
-    this.subsection = 'Logs';
+    this.section = 'Logs';
+    this.subsection = 'Info';
 
     this.state = {
       loading: false,
@@ -114,18 +114,18 @@ export default class InfoLogs extends DashboardView {
   }
   */
 
-  renderSidebar() {
-    const { pathname } = this.props.location;
-    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
-    return (
-      <CategoryList current={current} linkPrefix={'logs/'} categories={[
-        { name: 'System', id: 'system' },
-        { name: 'Info', id: 'info' },
-        { name: 'Error', id: 'error' },
-        { name: 'Access', id: 'access' },
-      ]} />
-    );
-  }
+  // renderSidebar() {
+  //   const { pathname } = this.props.location;
+  //   const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+  //   return (
+  //     <CategoryList current={current} linkPrefix={'logs/'} categories={[
+  //       { name: 'System', id: 'system' },
+  //       { name: 'Info', id: 'info' },
+  //       { name: 'Error', id: 'error' },
+  //       { name: 'Access', id: 'access' },
+  //     ]} />
+  //   );
+  // }
 
   handleAlertClose() {
     localStorage.setItem('showInfoLogBox', false);
@@ -146,8 +146,8 @@ export default class InfoLogs extends DashboardView {
     let toolbar = null;
     toolbar = (
       <Toolbar
-        section='Cloud Code'
-        subsection='Logs > Info'
+        section='Logs'
+        subsection='Info'
         details={ReleaseInfo({ release: this.state.release })}
       >
         <a className={refreshIconStyles} onClick={!this.state.loading ? this.refreshLogs : undefined} title='Refresh'>

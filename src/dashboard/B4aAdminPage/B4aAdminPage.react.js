@@ -23,7 +23,7 @@ import swalCssStyles from 'stylesheets/swalCustom.css';
 class B4aAdminPage extends DashboardView {
   constructor() {
     super()
-    this.section = 'More';
+    this.section = 'Database';
     this.subsection = 'Admin App';
     this.adminDomain = b4aSettings.ADMIN_DOMAIN
     this.protocol = 'https://'

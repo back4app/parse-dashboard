@@ -24,6 +24,7 @@ import TableHeader from 'components/Table/TableHeader.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import generatePath from 'lib/generatePath';
 import { withRouter } from 'lib/withRouter';
+import SidebarAction from 'components/Sidebar/SidebarAction';
 
 const PUSH_TYPE_ALL = 'all';
 const PUSH_TYPE_CAMPAIGN = 'campaign';
@@ -227,9 +228,9 @@ const getPushTime = (pushTime, updatedAt) => {
 class PushIndex extends DashboardView {
   constructor() {
     super();
-    this.section = 'More';
-    this.subsection = 'Push';
-    // this.action = new SidebarAction('Send a push', this.navigateToNew.bind(this));
+    this.section = 'Push Notifications';
+    this.subsection = 'Past Pushes';
+    this.action = new SidebarAction('Send a push', this.navigateToNew.bind(this));
     this.state = {
       pushes: [],
       loading: true,
@@ -323,31 +324,33 @@ class PushIndex extends DashboardView {
   renderSidebar() {
     const { pathname } = this.props.location;
     const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
-    const categoryCurrent = this.props.params.category || '';
+    // const categoryCurrent = this.props.params.category || '';
     const subCategory = (
-      <CategoryList current={categoryCurrent} linkPrefix={'push/activity/'} categories={[
+      <CategoryList current={current} linkPrefix={'push/'} categories={[
         { name: PUSH_CATEGORIES[PUSH_TYPE_ALL],
           id: PUSH_TYPE_ALL},
       ]} />
     );
 
-    return (
-      <CategoryList
-        current={current}
-        linkPrefix={'push/'}
-        categories={[
-          { name: 'Send New Push', id: 'new' },
-          {
-            name: 'Past Pushes',
-            id: 'activity',
-            subCategories: subCategory,
-            currentActive: current === 'all',
-            action: new CategoryItemAction(<span><Icon width={14} height={14} name="b4a-add-outline-circle" /> Send a push</span>, this.navigateToNew.bind(this))
-          },
-          { name: 'Audiences', id: 'audiences' }
-        ]}
-      />
-    );
+    return subCategory;
+
+    // return (
+    //   <CategoryList
+    //     current={current}
+    //     linkPrefix={'push/'}
+    //     categories={[
+    //       { name: 'Send New Push', id: 'new' },
+    //       {
+    //         name: 'Past Pushes',
+    //         id: 'activity',
+    //         subCategories: subCategory,
+    //         currentActive: current === 'all',
+    //         action: new CategoryItemAction(<span><Icon width={14} height={14} name="b4a-add-outline-circle" /> Send a push</span>, this.navigateToNew.bind(this))
+    //       },
+    //       { name: 'Audiences', id: 'audiences' }
+    //     ]}
+    //   />
+    // );
   }
 
   renderRow(push) {

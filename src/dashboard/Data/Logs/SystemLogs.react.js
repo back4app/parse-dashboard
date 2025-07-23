@@ -42,8 +42,8 @@ const alertWhatIsMessage = (
 export default class SystemLogs extends DashboardView {
   constructor() {
     super();
-    this.section = 'Cloud Code';
-    this.subsection = 'Logs';
+    this.section = 'Logs';
+    this.subsection = 'System';
 
     this.state = {
       loading: false,
@@ -109,22 +109,22 @@ export default class SystemLogs extends DashboardView {
   }
   */
 
-  renderSidebar() {
-    const { pathname } = this.props.location;
-    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
-    return (
-      <CategoryList
-        current={current}
-        linkPrefix={'logs/'}
-        categories={[
-          { name: 'System', id: 'system' },
-          { name: 'Info', id: 'info' },
-          { name: 'Error', id: 'error' },
-          { name: 'Access', id: 'access' }
-        ]}
-      />
-    );
-  }
+  // renderSidebar() {
+  //   const { pathname } = this.props.location;
+  //   const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+  //   return (
+  //     <CategoryList
+  //       current={current}
+  //       linkPrefix={'logs/'}
+  //       categories={[
+  //         { name: 'System', id: 'system' },
+  //         { name: 'Info', id: 'info' },
+  //         { name: 'Error', id: 'error' },
+  //         { name: 'Access', id: 'access' }
+  //       ]}
+  //     />
+  //   );
+  // }
 
   handlerCloseAlert() {
     localStorage.setItem(this.alertWhatIs, false);
@@ -142,8 +142,8 @@ export default class SystemLogs extends DashboardView {
     let toolbar = null;
     toolbar = (
       <Toolbar
-        section="Cloud Code"
-        subsection="Logs > System"
+        section="Logs"
+        subsection="System"
         details={ReleaseInfo({ release: this.state.release })}
       >
         <a

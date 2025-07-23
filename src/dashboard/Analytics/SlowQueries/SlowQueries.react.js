@@ -42,8 +42,8 @@ export default
 class SlowQueries extends TableView {
   constructor() {
     super();
-    this.section = 'More';
-    this.subsection = 'Analytics';
+    this.section = 'Advisors';
+    this.subsection = 'Slow Requests';
 
     const date = new Date();
     this.state = {
@@ -76,17 +76,17 @@ class SlowQueries extends TableView {
     this.xhrHandles = [];
   }
 
-  renderSidebar() {
-    const { pathname } = this.props.location;
-    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
-    return (
-      <CategoryList current={current} linkPrefix={'analytics/'} categories={[
-        // { name: 'Explorer', id: 'explorer' },
-        // { name: 'Performance', id: 'performance' },
-        { name: 'Slow Requests', id: 'slow_requests' },
-      ]} />
-    );
-  }
+  // renderSidebar() {
+  //   const { pathname } = this.props.location;
+  //   const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+  //   return (
+  //     <CategoryList current={current} linkPrefix={'analytics/'} categories={[
+  //       // { name: 'Explorer', id: 'explorer' },
+  //       // { name: 'Performance', id: 'performance' },
+  //       { name: 'Slow Requests', id: 'slow_requests' },
+  //     ]} />
+  //   );
+  // }
 
   componentWillMount() {
     this.fetchDropdownData(this.props);
@@ -243,7 +243,7 @@ class SlowQueries extends TableView {
     }
 
     return (
-      <Toolbar section="Analytics" subsection="Slow Queries">
+      <Toolbar section="Advisors" subsection="Slow Requests">
         {actions}
       </Toolbar>
     );

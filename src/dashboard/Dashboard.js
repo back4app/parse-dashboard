@@ -73,6 +73,7 @@ const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.r
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
 const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
 const LazyAppPlan = lazy(() => import('./AppPlan/AppPlan.react'));
+const LazyAppSecurityReport = lazy(() => import('./AppSecurityReport/AppSecurityReport.react'));
 
 const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
 
@@ -162,6 +163,7 @@ const preloadMap = {
   cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
   graphqlConsole: () => import('./Data/ApiConsole/GraphQLConsole.react'),
   playground: () => import('./Data/Playground/Playground.react'),
+  appSecurityReport: () => import('./AppSecurityReport/AppSecurityReport.react'),
   appPlan: () => import('./AppPlan/AppPlan.react'),
 };
 
@@ -436,6 +438,13 @@ class Dashboard extends React.Component {
       </Route>
     );
 
+    const ReportsRoute = (
+      <Route>
+        <Route path="security" element={<LazyComponentWrapper><LazyAppSecurityReport /></LazyComponentWrapper>} />
+        <Route index element={<Navigate replace to="security" />} />
+      </Route>
+    );
+
     // const BrowserRoute = ShowSchemaOverview ? SchemaOverview : Browser;
     const BrowserRoute = Browser;
 
@@ -467,6 +476,7 @@ class Dashboard extends React.Component {
         <Route path="deployments/:releaseId" element={<DeploymentDetails />} />
         <Route path="logs">{LogsRoute}</Route>
         <Route path="plan-usage" element={<LazyComponentWrapper><LazyAppPlan /></LazyComponentWrapper>} />
+        <Route path="reports">{ReportsRoute}</Route>
 
         <Route path="config" element={<Config />} />
 

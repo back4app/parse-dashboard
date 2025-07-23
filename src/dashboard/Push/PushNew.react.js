@@ -156,8 +156,8 @@ class PushNew extends DashboardView {
   constructor() {
     super();
     this.xhrs = [];
-    this.section = 'More';
-    this.subsection = 'Push';
+    this.section = 'Push Notifications';
+    this.subsection = 'Send New Push';
     this.state = {
       pushAudiencesFetched: false,
       deviceCount: null,
@@ -201,17 +201,17 @@ class PushNew extends DashboardView {
     });
   }
 
-  renderSidebar() {
-    const { pathname } = this.props.location;
-    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
-    return (
-      <CategoryList current={current} linkPrefix={'push/'} categories={[
-        { name: 'Send New Push', id: 'new', currentActive: current === 'new' },
-        { name: 'Past Pushes', id: 'activity' },
-        { name: 'Audiences', id: 'audiences' },
-      ]} />
-    );
-  }
+  // renderSidebar() {
+  //   const { pathname } = this.props.location;
+  //   const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+  //   return (
+  //     <CategoryList current={current} linkPrefix={'push/'} categories={[
+  //       { name: 'Send New Push', id: 'new', currentActive: current === 'new' },
+  //       { name: 'Past Pushes', id: 'activity' },
+  //       { name: 'Audiences', id: 'audiences' },
+  //     ]} />
+  //   );
+  // }
 
   componentWillUnmount() {
     this.props.pushaudiences.dispatch(PushAudiencesStore.ActionTypes.ABORT_FETCH, {
