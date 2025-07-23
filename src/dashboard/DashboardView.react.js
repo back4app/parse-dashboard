@@ -346,7 +346,7 @@ export default class DashboardView extends React.Component {
 
     advisorsSubSections.push({
       name: 'Slow Requests',
-      link: '/analytics/slow-requests',
+      link: '/analytics/slow_requests',
       // subsections: analyticsSubSections
     })
 
