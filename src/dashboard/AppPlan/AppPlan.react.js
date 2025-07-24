@@ -250,7 +250,7 @@ class AppPlan extends DashboardView {
         }
       }
       if (data.name === 'checkout.closed') {
-        window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${this.context.applicationId}/plan-usage`;
+        window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${this.context.appId}/plan-usage`;
       }
     }
 
