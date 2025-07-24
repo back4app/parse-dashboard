@@ -127,8 +127,9 @@ label {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+  width: 6px;
+  height: 6px;
+  visibility: hidden;
 }
 
 ::-webkit-scrollbar-track {

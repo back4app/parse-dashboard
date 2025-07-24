@@ -236,3 +236,81 @@
     font-size: 0.875rem;
   }
 }
+
+.prices {
+  margin-top: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba($color: $regal-blue, $alpha: 0.5);
+  padding: 1.5rem 1rem;
+  background: rgba($color: $regal-blue, $alpha: 0.06);
+  .pricesHeaderTitle {
+    font-size: 1.125rem;
+  }
+  .priceDescription {
+    font-size: 0.875rem;
+    color: $light-grey;
+    margin-bottom: 1rem;
+  }
+  .priceList {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    margin-top: 1rem;
+  }
+
+  .priceCard {
+    flex: 1;
+    border: 1px solid rgba($color: $regal-blue, $alpha: 0.6);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    &.activePriceCard {
+      border-color: rgba($color: $cta-green, $alpha: 0.4);
+      background: rgba($color: $cta-green, $alpha: 0.06);
+    }
+    .priceName {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .svg {
+        fill: $cta-green;
+      }
+    }
+    .planPrice {
+      width: 100%;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      .planPriceValue {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      .planPriceCycle {
+        font-size: 0.675rem;
+        color: $light-grey;
+      }
+    }
+    .planDetails {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      .planDetailText {
+        font-size: 0.75rem;
+      }
+    }
+    .inactiveButton {
+      width: 100%;
+      background: $light-grey;
+      color: $dark-grey;
+      border: none;
+    } 
+    .activeButton {
+      width: 100%;
+      background: $cta-green;
+      color: $white;
+      font-weight: 600;
+    }
+  }
+}

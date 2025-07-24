@@ -14,6 +14,122 @@ import styles from './AppPlan.scss';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import Button from 'components/Button/Button.react';
 import { getUsageClassName, formatDate } from './usageClassUtils';
+import B4aToggle from 'components/Toggle/B4aToggle.react';
+import Icon from 'components/Icon/Icon.react';
+import { initializePaddle, Paddle } from '@paddle/paddle-js';
+
+const prices = [
+  {
+    id: 0,
+    name: 'MVP',
+    desc: 'Validate Ideas Quickly — Launch Fast on Our Managed Serverless Backend',
+    pricePerMonth: '25',
+    monthlyPlanId: 'gXGhzlMHZ6',
+    pricePerYear: '15',
+    annuallyPlanId: 'nUAySI815X',
+    priceTag: 'Per App / Month',
+    savePercent: '40%',
+    details: [
+      {
+        number: '500 K',
+        text: 'Requests',
+      },
+      {
+        number: '1 GB',
+        text: 'Data Storage',
+      },
+      {
+        number: '250 GB',
+        text: 'Data Transfer',
+      },
+      {
+        number: '50 GB',
+        text: 'File Storage',
+      },
+      {
+        text: 'Daily Backups',
+      },
+    ],
+    icon: 'b4a-security-shield'
+  },
+  {
+    id: 1,
+    name: 'Pay As You Go',
+    desc: 'Run & Scale Applications on a Serverless Infrastructure',
+    pricePerMonth: '100',
+    monthlyPlanId: '7xWmyzNUvZ',
+    pricePerYear: '80',
+    annuallyPlanId: 'YfX9ryk4UH',
+    priceTag: 'Per App / Month',
+    savePercent: '20%',
+    details: [
+      {
+        number: '5 M',
+        text: 'Requests',
+      },
+      {
+        number: '3 GB',
+        text: 'Data Storage',
+      },
+      {
+        number: '1 TB',
+        text: 'Data Transfer',
+      },
+      {
+        number: '250 GB',
+        text: 'File Storage',
+      },
+      {
+        text: 'Daily Backups',
+      },
+      {
+        text: 'SOC 2 and ISO 27001',
+      },
+    ],
+    icon: 'b4a-security-shield'
+  },
+  {
+    id: 2,
+    name: 'Dedicated',
+    desc: 'Production-Grade Speed, Isolation & Flexibility on Dedicated Resources',
+    pricePerMonth: '500',
+    monthlyPlanId: 'VGaDTCDNbi',
+    pricePerYear: '400',
+    annuallyPlanId: 'U8nRA9rxdD',
+    priceTag: 'Per App / Month',
+    savePercent: '20%',
+    details: [
+      {
+        text: 'Unlimited Requests',
+      },
+      {
+        number: '10 CPUs / 14 GB',
+      },
+      {
+        number: '8 GB',
+        text: 'Data Storage',
+      },
+      {
+        number: '2 TB',
+        text: 'Data Transfer',
+      },
+      {
+        number: '1 TB',
+        text: 'File Storage',
+      },
+      {
+        text: 'Point-in-Time Backups',
+      },
+      {
+        text: 'SOC 2 and ISO 27001',
+      },
+      {
+        text: 'HIPAA After BAA Signed',
+      },
+    ],
+    icon: 'b4a-security-shield'
+  },
+];
 
 
 @withRouter
@@ -25,12 +141,26 @@ class AppPlan extends DashboardView {
       isLoadingAppPlanData: true,
       appPlanData: null,
       appPlanError: null,
+      selectedPlan: prices[1],
+      billingCycle: 0, // 0 --> monthly || 1 --> annually
+      isLoadingPaddle: false,
+      paddleError: null,
+      paddle: null
     };
     this.onRefresh = this.onRefresh.bind(this);
+    this.handleOnClickPlan = this.handleOnClickPlan.bind(this);
   }
 
   componentWillMount() {
     this.loadData();
+    Paddle.Environment.set('sandbox');
+    initializePaddle({ environment: 'sandbox', token: '' }).then(
+      (paddleInstance) => {
+        if (paddleInstance) {
+          this.setState({ paddle: paddleInstance });
+        }
+      },
+    );
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -71,11 +201,19 @@ class AppPlan extends DashboardView {
     );
   }
 
+  handleOnClickPlan(plan) {
+    this.setState({ selectedPlan: plan });
+    this.state.paddle?.Checkout.open({
+      items: [{ priceId: this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId, quantity: 1 }],
+    });
+  }
+
   renderContent() {
     const toolbar = this.renderToolbar();
 
     const loading = this.state.isLoadingAppPlanData;
     const planData = this.state.appPlanData;
+    const { selectedPlan, billingCycle } = this.state;
 
     let content = null;
     if (loading) {
@@ -165,6 +303,32 @@ class AppPlan extends DashboardView {
             </div>
           </div>
         </div>
+
+        <div className={styles.prices}>
+          <div className={styles.pricesHeader}>
+            <div className={styles.pricesHeaderTitle}>Choose your plan</div>
+            <div className={styles.priceDescription}>Compare all available plans and find the perfect fit for your application needs.</div>
+            <B4aToggle
+              type={B4aToggle.Types.CUSTOM}
+              value={billingCycle === 0 ? 'Monthly' : 'Annually'}
+              optionLeft="Annually"
+              optionRight="Monthly"
+              labelLeft="Annually"
+              labelRight="Monthly"
+              onChange={level => {
+                this.setState({
+                  billingCycle: level === 'Annually' ? 1 : 0,
+                })
+              }}
+            />
+          </div>
+          <div className={styles.priceList}>
+            {prices.map((plan, idx) => (
+              <PriceCard key={idx} plan={plan} active={selectedPlan.id === plan.id} cycle={billingCycle} onClick={this.handleOnClickPlan.bind(this)} />
+            ))}
+          </div>
+        </div>
+
       </div>
     }
 
@@ -183,3 +347,23 @@ class AppPlan extends DashboardView {
 
 export default AppPlan;
 
+
+const PriceCard = ({ plan, active, cycle, onClick }) => {
+  const { name, pricePerMonth, pricePerYear, monthlyPlanId, annuallyPlanId, priceTag, details } = plan;
+
+  const price = cycle === 0 ? pricePerMonth : pricePerYear;
+  const planId = cycle === 0 ? monthlyPlanId : annuallyPlanId;
+
+  return (
+    <div className={`${styles.priceCard} ${active ? styles.activePriceCard : ''}`}>
+      <div className={styles.priceName}> <Icon name={plan.icon} width={16} height={16} /> {name}</div>
+      <div className={styles.planPrice}><span className={styles.planPriceValue}>${price}</span> <span className={styles.planPriceCycle}>/{cycle === 0 ? 'Monthly' : 'Annually'}</span></div>
+      <div className={styles.planDetails}>
+        {details.slice(0, 3).map((detail, idx) => (
+          <div key={idx} className={styles.planDetailText}>{detail.text}</div>
+        ))}
+      </div>
+      <Button className={active ? styles.activeButton : styles.inactiveButton} value={`Choose ${name}`} onClick={() => onClick(plan)} />
+    </div>
+  );
+};
