@@ -225,7 +225,7 @@ class AppPlan extends DashboardView {
         // Amplitude event for successful checkout
         try {
           const amplitudePayload = {
-            api_key: '',
+            api_key: b4aSettings.BACK4APP_AMPLITUDE_KEY,
             events: [
               {
                 user_id: paymentData.email || 'unknown',
@@ -250,7 +250,7 @@ class AppPlan extends DashboardView {
         }
       }
       if (data.name === 'checkout.closed') {
-        window.location.href = 'https://dashboard.back4app.com';
+        window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps`;
       }
     }
 
@@ -317,7 +317,7 @@ class AppPlan extends DashboardView {
       customData: { appId: this.context.applicationId, planId: priceId },
       allowLogout: false,
       customer: {
-        email: this.context.custom.isOwner ? AccountManager.currentUser().email : undefined,
+        email: this.state.appOwnerEmail,
       }
     });
   }
