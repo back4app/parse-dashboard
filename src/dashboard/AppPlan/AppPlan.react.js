@@ -5,7 +5,7 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import AccountManager from 'lib/AccountManager'; /
+import AccountManager from 'lib/AccountManager';
 import React from 'react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import { withRouter } from 'lib/withRouter';
