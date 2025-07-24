@@ -259,10 +259,23 @@
   }
 
   .priceCard {
+    @include InterFont;
     flex: 1;
     border: 1px solid rgba($color: $regal-blue, $alpha: 0.6);
     border-radius: 0.5rem;
     padding: 1rem;
+    position: relative;
+    .mostPopular {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background: $cta-green;
+      color: $white;
+      font-size: 0.675rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
     &.activePriceCard {
       border-color: rgba($color: $cta-green, $alpha: 0.4);
       background: rgba($color: $cta-green, $alpha: 0.06);
@@ -272,8 +285,14 @@
       align-items: center;
       gap: 0.5rem;
 
-      .svg {
+      svg {
         fill: $cta-green;
+      }
+
+      .greenText {
+        color: $cta-green;
+        font-size: 0.675rem;
+        font-weight: 600;
       }
     }
     .planPrice {

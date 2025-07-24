@@ -53,7 +53,8 @@ const prices = [
         text: 'Daily Backups',
       },
     ],
-    icon: 'b4a-security-shield'
+    icon: 'b4a-security-shield',
+    greenText: '20x more requests'
   },
   {
     id: 1,
@@ -91,7 +92,8 @@ const prices = [
         text: 'SOC 2 and ISO 27001',
       },
     ],
-    icon: 'b4a-security-shield'
+    icon: 'b4a-security-shield',
+    greenText: '200x more requests'
   },
   {
     id: 2,
@@ -134,7 +136,8 @@ const prices = [
         text: 'HIPAA After BAA Signed',
       },
     ],
-    icon: 'b4a-security-shield'
+    icon: 'b4a-security-shield',
+    greenText: 'Unlimited requests'
   },
 ];
 
@@ -309,10 +312,13 @@ class AppPlan extends DashboardView {
       items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
       title: plan.planName,
       settings: {
-        displayMode: 'overlay',
+        displayMode: 'inline',
         theme: 'light',
         locale: 'en',
-        variant: 'one-page'
+        variant: 'one-page',
+        frameTarget: 'checkout-container',
+        frameInitialHeight: '450',
+        // frameStyle: 'width: 100%; min-width: 312px; background-color: transparent; border: none;'
       },
       customData: { appId: this.context.applicationId, planId: priceId },
       allowLogout: false,
@@ -452,6 +458,7 @@ class AppPlan extends DashboardView {
           <div className={styles.content}>
             {content}
           </div>
+          <div className="checkout-container"></div>
         </B4aLoaderContainer>
         {toolbar}
       </div>
@@ -463,14 +470,15 @@ export default AppPlan;
 
 
 const PriceCard = ({ plan, active, cycle, onClick }) => {
-  const { name, pricePerMonth, pricePerYear, monthlyPlanId, annuallyPlanId, priceTag, details } = plan;
+  const { name, pricePerMonth, pricePerYear, monthlyPlanId, annuallyPlanId, priceTag, details, greenText } = plan;
 
   const price = cycle === 0 ? pricePerMonth : pricePerYear;
   const planId = cycle === 0 ? monthlyPlanId : annuallyPlanId;
 
   return (
     <div className={`${styles.priceCard} ${active ? styles.activePriceCard : ''}`}>
-      <div className={styles.priceName}> <Icon name={plan.icon} width={16} height={16} /> {name}</div>
+      {plan.id === 1 ? <span className={styles.mostPopular}>Most Popular</span> : null}
+      <div className={styles.priceName}> <Icon name={plan.icon} width={16} height={16} /> {name} <span className={styles.greenText}>{greenText}</span></div>
       <div className={styles.planPrice}><span className={styles.planPriceValue}>${price}</span> <span className={styles.planPriceCycle}>/{cycle === 0 ? 'Monthly' : 'Annually'}</span></div>
       <div className={styles.planDetails}>
         {details.slice(0, 3).map((detail, idx) => (
