@@ -163,6 +163,8 @@ class AppPlan extends DashboardView {
     this.loadData();
     this.loadPaddle();
     this.getAppOwnerEmail();
+    console.log('NODE_ENVVVV');
+    console.log(process.env.NODE_ENV);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
