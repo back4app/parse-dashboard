@@ -46,6 +46,8 @@ export default function instrument() {
   });
 }
 
+Sentry.setTag('project', 'Backend Dashboard');
+
 export function useAppPageTracking() {
   const location = useLocation();
 
