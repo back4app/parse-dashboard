@@ -5,6 +5,7 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
+import AccountManager from 'lib/AccountManager'; /
 import React from 'react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import { withRouter } from 'lib/withRouter';
@@ -25,8 +26,10 @@ const prices = [
     desc: 'Validate Ideas Quickly — Launch Fast on Our Managed Serverless Backend',
     pricePerMonth: '25',
     monthlyPlanId: 'gXGhzlMHZ6',
+    monthlyProductId: 'pri_01jjyr3kxmsav875y1v2p8h68k',
     pricePerYear: '15',
     annuallyPlanId: 'nUAySI815X',
+    annuallyProductId: 'pri_01jjyr5r3ayqcs5cr58bm5b4rw',
     priceTag: 'Per App / Month',
     savePercent: '40%',
     details: [
@@ -58,8 +61,10 @@ const prices = [
     desc: 'Run & Scale Applications on a Serverless Infrastructure',
     pricePerMonth: '100',
     monthlyPlanId: '7xWmyzNUvZ',
+    monthlyProductId: 'pri_01jjyr4fs9j1926g5tv54jvs0h',
     pricePerYear: '80',
     annuallyPlanId: 'YfX9ryk4UH',
+    annuallyProductId: 'pri_01jjyr4zj8dzg88xf82mtrnk6k',
     priceTag: 'Per App / Month',
     savePercent: '20%',
     details: [
@@ -95,7 +100,9 @@ const prices = [
     pricePerMonth: '500',
     monthlyPlanId: 'VGaDTCDNbi',
     pricePerYear: '400',
+    monthlyProductId: 'pri_01jjyrqff5wb1pkcekge3ddrtz',
     annuallyPlanId: 'U8nRA9rxdD',
+    annuallyProductId: 'pri_01jjyrsbcexqvqzsjvby0ykw2h',
     priceTag: 'Per App / Month',
     savePercent: '20%',
     details: [
@@ -145,7 +152,8 @@ class AppPlan extends DashboardView {
       billingCycle: 0, // 0 --> monthly || 1 --> annually
       isLoadingPaddle: false,
       paddleError: null,
-      paddle: null
+      paddle: null,
+      appOwnerEmail: null
     };
     this.onRefresh = this.onRefresh.bind(this);
     this.handleOnClickPlan = this.handleOnClickPlan.bind(this);
@@ -154,6 +162,7 @@ class AppPlan extends DashboardView {
   componentWillMount() {
     this.loadData();
     this.loadPaddle();
+    this.getAppOwnerEmail();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -186,7 +195,7 @@ class AppPlan extends DashboardView {
 
   loadPaddle() {
     const paddleOptions = {
-      token: b4aSettings.PADDLE_TOKEN,
+      token: b4aSettings.PADDLE_TOKEN || 'test_0270ab179b4f4abd7aa228c7014',
       environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
       pwCustomer: {}
     }
@@ -204,7 +213,8 @@ class AppPlan extends DashboardView {
           email: data.data.customer.email,
         };
 
-        await fetch('/save-subscription', {
+        // confirm its value in homolog
+        await fetch(`${b4aSettings.BACK4APP_CHECKOUT_URL}/save-subscription`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -215,7 +225,7 @@ class AppPlan extends DashboardView {
         // Amplitude event for successful checkout
         try {
           const amplitudePayload = {
-            api_key: '<%= amplitudeKey %>',
+            api_key: '',
             events: [
               {
                 user_id: paymentData.email || 'unknown',
@@ -253,6 +263,17 @@ class AppPlan extends DashboardView {
     );
   }
 
+  async getAppOwnerEmail() {
+    let appOwnerEmail;
+    if (!this.context.custom.isOwner) {
+      const { ownerEmail } = await this.context.getAppOwnerEmail();
+      appOwnerEmail = ownerEmail;
+    } else {
+      appOwnerEmail = AccountManager.currentUser().email;
+    }
+    this.setState({ appOwnerEmail });
+  }
+
   renderToolbar() {
     return (
       <Toolbar section="Plan Usage">
@@ -263,18 +284,41 @@ class AppPlan extends DashboardView {
     );
   }
 
-  handleOnClickPlan(plan) {
+  async getPriceId(planId) {
+    try {
+      const response = await fetch(`https://${b4aSettings.BACK4APP_CHECKOUT_URL}/functions/getPriceId?planId=${planId}`, {
+        method: 'POST',
+        headers: {
+          'x-parse-application-id': b4aSettings.CHECKOUT_APPLICATION_ID,
+          'x-parse-rest-api-key': b4aSettings.CHECKOUT_REST_API_KEY,
+        }
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching priceId', error);
+      this.setState({ paddleError: error });
+    }
+  }
+
+  async handleOnClickPlan(plan) {
     this.setState({ selectedPlan: plan });
+    const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;
+    const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
     this.state.paddle?.Checkout.open({
-      items: [{ priceId: this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId, quantity: 1 }],
-      title: plan.name,
+      items: [{ priceId: process.env.NODE_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
+      title: plan.planName,
       settings: {
         displayMode: 'overlay',
         theme: 'light',
         locale: 'en',
         variant: 'one-page'
       },
-      customData: { appId: this.context.applicationId, planId: plan.id }
+      customData: { appId: this.context.applicationId, planId: priceId },
+      allowLogout: false,
+      customer: {
+        email: this.context.custom.isOwner ? AccountManager.currentUser().email : undefined,
+      }
     });
   }
 
