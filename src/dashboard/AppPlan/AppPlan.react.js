@@ -163,8 +163,6 @@ class AppPlan extends DashboardView {
     this.loadData();
     this.loadPaddle();
     this.getAppOwnerEmail();
-    console.log('NODE_ENVVVV');
-    console.log(process.env.NODE_ENV);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -198,7 +196,7 @@ class AppPlan extends DashboardView {
   loadPaddle() {
     const paddleOptions = {
       token: b4aSettings.PADDLE_TOKEN || 'test_0270ab179b4f4abd7aa228c7014',
-      environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
+      environment: process.env.SENTRY_ENV === 'production' ? 'production' : 'sandbox',
       pwCustomer: {}
     }
 
@@ -308,7 +306,7 @@ class AppPlan extends DashboardView {
     const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;
     const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
     this.state.paddle?.Checkout.open({
-      items: [{ priceId: process.env.NODE_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
+      items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
       title: plan.planName,
       settings: {
         displayMode: 'overlay',
