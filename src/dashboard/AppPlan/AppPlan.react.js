@@ -18,6 +18,7 @@ import { getUsageClassName, formatDate } from './usageClassUtils';
 import B4aToggle from 'components/Toggle/B4aToggle.react';
 import Icon from 'components/Icon/Icon.react';
 import { initializePaddle } from '@paddle/paddle-js';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 
 const prices = [
   {
@@ -156,7 +157,8 @@ class AppPlan extends DashboardView {
       isLoadingPaddle: false,
       paddleError: null,
       paddle: null,
-      appOwnerEmail: null
+      appOwnerEmail: null,
+      openCheckout: false
     };
     this.onRefresh = this.onRefresh.bind(this);
     this.handleOnClickPlan = this.handleOnClickPlan.bind(this);
@@ -166,6 +168,10 @@ class AppPlan extends DashboardView {
     this.loadData();
     this.loadPaddle();
     this.getAppOwnerEmail();
+  }
+
+  componentDidUnmount() {
+    this.setState({ openCheckout: false });
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -305,26 +311,27 @@ class AppPlan extends DashboardView {
   }
 
   async handleOnClickPlan(plan) {
-    this.setState({ selectedPlan: plan });
-    const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;
-    const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
-    this.state.paddle?.Checkout.open({
-      items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
-      title: plan.planName,
-      settings: {
-        displayMode: 'inline',
-        theme: 'light',
-        locale: 'en',
-        variant: 'one-page',
-        frameTarget: 'checkout-container',
-        frameInitialHeight: '450',
-        // frameStyle: 'width: 100%; min-width: 312px; background-color: transparent; border: none;'
-      },
-      customData: { appId: this.context.applicationId, planId: priceId },
-      allowLogout: false,
-      customer: {
-        email: this.state.appOwnerEmail,
-      }
+    this.setState({ selectedPlan: plan, openCheckout: true }, () => {
+      const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;
+      const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
+      this.state.paddle?.Checkout.open({
+        items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
+        title: plan.planName,
+        settings: {
+          displayMode: 'inline',
+          theme: 'light',
+          locale: 'en',
+          variant: 'one-page',
+          frameTarget: 'checkout-container',
+          frameInitialHeight: '450',
+          frameStyle: 'width: 100%; min-width: 312px; max-height: 80vh; background-color: #f9f9f9; border: none;'
+        },
+        customData: { appId: this.context.applicationId, planId: priceId },
+        allowLogout: false,
+        customer: {
+          email: this.state.appOwnerEmail,
+        }
+      });
     });
   }
 
@@ -458,9 +465,19 @@ class AppPlan extends DashboardView {
           <div className={styles.content}>
             {content}
           </div>
-          <div className="checkout-container"></div>
         </B4aLoaderContainer>
         {toolbar}
+
+        {this.state.openCheckout ? (
+          <B4aModal
+            type={B4aModal.Types.INFO}
+            width={'80vw'}
+            customFooter={<div></div>}
+            onCancel={() => this.setState({ openCheckout: false })}
+          >
+            <div className="checkout-container"></div>
+          </B4aModal>
+        ) : null}
       </div>
     );
   }
@@ -470,10 +487,9 @@ export default AppPlan;
 
 
 const PriceCard = ({ plan, active, cycle, onClick }) => {
-  const { name, pricePerMonth, pricePerYear, monthlyPlanId, annuallyPlanId, priceTag, details, greenText } = plan;
+  const { name, pricePerMonth, pricePerYear, details, greenText } = plan;
 
   const price = cycle === 0 ? pricePerMonth : pricePerYear;
-  const planId = cycle === 0 ? monthlyPlanId : annuallyPlanId;
 
   return (
     <div className={`${styles.priceCard} ${active ? styles.activePriceCard : ''}`}>
