@@ -16,7 +16,7 @@ import Button from 'components/Button/Button.react';
 import { getUsageClassName, formatDate } from './usageClassUtils';
 import B4aToggle from 'components/Toggle/B4aToggle.react';
 import Icon from 'components/Icon/Icon.react';
-import { initializePaddle, Paddle } from '@paddle/paddle-js';
+import { initializePaddle } from '@paddle/paddle-js';
 
 const prices = [
   {
@@ -153,14 +153,7 @@ class AppPlan extends DashboardView {
 
   componentWillMount() {
     this.loadData();
-    Paddle.Environment.set('sandbox');
-    initializePaddle({ environment: 'sandbox', token: '' }).then(
-      (paddleInstance) => {
-        if (paddleInstance) {
-          this.setState({ paddle: paddleInstance });
-        }
-      },
-    );
+    this.loadPaddle();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -191,6 +184,75 @@ class AppPlan extends DashboardView {
     }));
   }
 
+  loadPaddle() {
+    const paddleOptions = {
+      token: b4aSettings.PADDLE_TOKEN,
+      environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
+      pwCustomer: {}
+    }
+
+    const paddleEventCallback = async function (data) {
+      if (data.name === 'checkout.completed') {
+        const paymentData = {
+          appId: data.data.custom_data.app_id,
+          customerId: data.data.customer.id,
+          planName: data.data.items[0].product.name,
+          transactionId: data.data.transaction_id,
+          checkoutId: data.data.id,
+          results: data.data,
+          planId: data.data.custom_data.plan_id,
+          email: data.data.customer.email,
+        };
+
+        await fetch('/save-subscription', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paymentData),
+        });
+
+        // Amplitude event for successful checkout
+        try {
+          const amplitudePayload = {
+            api_key: '<%= amplitudeKey %>',
+            events: [
+              {
+                user_id: paymentData.email || 'unknown',
+                event_type: 'At Checkout - Subscription Successful',
+                time: Date.now(),
+                event_properties: {
+                  appId: paymentData.appId,
+                  planName: paymentData.planName,
+                  planType: data.data.items[0].billing_cycle.interval,
+                  subscriptionTotal: data.data.totals.total,
+                }
+              }
+            ]
+          };
+          await fetch('https://api.amplitude.com/2/httpapi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(amplitudePayload)
+          });
+        } catch (error) {
+          console.log('Amplitude error (checkout.completed):', error);
+        }
+      }
+      if (data.name === 'checkout.closed') {
+        window.location.href = 'https://dashboard.back4app.com';
+      }
+    }
+
+    initializePaddle({ ...paddleOptions, eventCallback: paddleEventCallback }).then(
+      (paddleInstance) => {
+        if (paddleInstance) {
+          this.setState({ paddle: paddleInstance });
+        }
+      },
+    );
+  }
+
   renderToolbar() {
     return (
       <Toolbar section="Plan Usage">
@@ -205,6 +267,14 @@ class AppPlan extends DashboardView {
     this.setState({ selectedPlan: plan });
     this.state.paddle?.Checkout.open({
       items: [{ priceId: this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId, quantity: 1 }],
+      title: plan.name,
+      settings: {
+        displayMode: 'overlay',
+        theme: 'light',
+        locale: 'en',
+        variant: 'one-page'
+      },
+      customData: { appId: this.context.applicationId, planId: plan.id }
     });
   }
 
