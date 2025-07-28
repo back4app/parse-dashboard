@@ -80,12 +80,13 @@
 }
 
 .usageLimitsCard {
+  flex: 0.6;
   background: $dark-blue;
   border: 1px solid rgba($color: $cta-green, $alpha: 0.06);
   border-radius: 0.5rem;
   padding: 1.5rem;
   width: 100%;
-  min-width: 520px;
+  // min-width: 520px;
   box-sizing: border-box;
   overflow-x: auto;
 }
@@ -99,7 +100,8 @@
   flex-direction: column;
   gap: 0.5rem;
   flex-shrink: 0;
-  max-width: 355px;
+  flex: 0.4;
+  // max-width: 355px;
   border-color: #27ae6045;
 
   .upgradeCardHeader {
@@ -260,6 +262,7 @@
 
   .priceCard {
     @include InterFont;
+    position: relative;
     flex: 1;
     border: 1px solid rgba($color: $regal-blue, $alpha: 0.6);
     border-radius: 0.5rem;
@@ -317,6 +320,9 @@
       margin-bottom: 1rem;
       .planDetailText {
         font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
     }
     .inactiveButton {
@@ -330,6 +336,12 @@
       background: $cta-green;
       color: $white;
       font-weight: 600;
+    }
+
+    .upgradeBnt {
+      position: absolute;
+      bottom: 1rem;
+      width: calc(100% - 2rem);
     }
   }
 }

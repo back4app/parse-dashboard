@@ -54,7 +54,7 @@ const prices = [
         text: 'Daily Backups',
       },
     ],
-    icon: 'b4a-security-shield',
+    icon: 'b4a-mvp-plan-icon',
     greenText: '20x more requests'
   },
   {
@@ -93,7 +93,7 @@ const prices = [
         text: 'SOC 2 and ISO 27001',
       },
     ],
-    icon: 'b4a-security-shield',
+    icon: 'b4a-pay-as-you-go-plan-icon',
     greenText: '200x more requests'
   },
   {
@@ -137,7 +137,7 @@ const prices = [
         text: 'HIPAA After BAA Signed',
       },
     ],
-    icon: 'b4a-security-shield',
+    icon: 'b4a-dedicated-plan-icon',
     greenText: 'Unlimited requests'
   },
 ];
@@ -423,10 +423,6 @@ class AppPlan extends DashboardView {
                   </div>
                 </div>
               </div>
-
-              <Button primary value={
-                <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} style={{ display: 'block', width: '100%'}} target="_blank">Upgrade Now →</a>
-              } additionalStyles={{ padding: 0 }} width="100%" />
             </div>
           </div>
         </div>
@@ -497,11 +493,14 @@ const PriceCard = ({ plan, active, cycle, onClick }) => {
       <div className={styles.priceName}> <Icon name={plan.icon} width={16} height={16} /> {name} <span className={styles.greenText}>{greenText}</span></div>
       <div className={styles.planPrice}><span className={styles.planPriceValue}>${price}</span> <span className={styles.planPriceCycle}>/{cycle === 0 ? 'Monthly' : 'Annually'}</span></div>
       <div className={styles.planDetails}>
-        {details.slice(0, 3).map((detail, idx) => (
-          <div key={idx} className={styles.planDetailText}>{detail.text}</div>
+        {details.map((detail, idx) => (
+          <div key={idx} className={styles.planDetailText}>
+            <Icon name='b4a-check-icon' width={12} height={12} fill='#f9f9f9' />
+            <span> <span style={{ fontWeight: 600 }}>{detail.number}</span> {detail.text}</span>
+          </div>
         ))}
       </div>
-      <Button className={active ? styles.activeButton : styles.inactiveButton} value={`Choose ${name}`} onClick={() => onClick(plan)} />
+      <Button className={`${styles.upgradeBnt} ${active ? styles.activeButton : styles.inactiveButton}`} value={`Choose ${name}`} onClick={() => onClick(plan)} />
     </div>
   );
 };
