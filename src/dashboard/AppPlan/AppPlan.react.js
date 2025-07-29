@@ -490,7 +490,7 @@ const PriceCard = ({ plan, active, cycle, onClick }) => {
   return (
     <div className={`${styles.priceCard} ${active ? styles.activePriceCard : ''}`}>
       {plan.id === 1 ? <span className={styles.mostPopular}>Most Popular</span> : null}
-      <div className={styles.priceName}> <Icon name={plan.icon} width={16} height={16} /> {name} <span className={styles.greenText}>{greenText}</span></div>
+      <div className={styles.priceName}>{name} <span className={styles.greenText}>{greenText}</span></div>
       <div className={styles.planPrice}><span className={styles.planPriceValue}>${price}</span> <span className={styles.planPriceCycle}>/{cycle === 0 ? 'Monthly' : 'Annually'}</span></div>
       <div className={styles.planDetails}>
         {details.map((detail, idx) => (
