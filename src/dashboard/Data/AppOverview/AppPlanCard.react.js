@@ -2,6 +2,7 @@ import React from 'react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { Button } from '@back4app2/react-components';
 import Icon from 'components/Icon/Icon.react';
+import { Link } from 'react-router-dom';
 
 const formatDate = (dateString) => {
   try {
@@ -45,9 +46,9 @@ const AppPlanCard = ({ loading, planData, appId }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <a href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${appId}&type=parse`} target="_blank" rel="noopener noreferrer">
+        <Link to={`/apps/${appId}/plan-usage`}>
           <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
-        </a>
+        </Link>
       </div>
       <div className={styles.planDataBox}>
         {content}

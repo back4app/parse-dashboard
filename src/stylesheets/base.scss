@@ -15,8 +15,6 @@ html {
 html, body {
   min-height: $content-max-height;
   background-color: $dark;
-  overflow-x: overlay;
-  overflow-y: overlay;
 }
 
 body {
@@ -127,44 +125,22 @@ label {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+  width: 8px;
+  height: 8px;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.2);
+  background: rgba(249, 249, 249, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 3px;
-  transition: background 0.2s ease;
+  border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background: rgba(249, 249, 249, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-/* Show scrollbar only when scrolling or hovering - overlay mode */
-*:hover::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-*:active::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-/* Show scrollbar thumb when scrollbar is visible */
-*:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-*:active::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(249, 249, 249, 0.8);
 }
