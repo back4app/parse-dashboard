@@ -2,7 +2,7 @@ import React from 'react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { Button } from '@back4app2/react-components';
 import Icon from 'components/Icon/Icon.react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const formatDate = (dateString) => {
   try {
