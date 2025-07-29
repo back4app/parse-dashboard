@@ -15,8 +15,6 @@ html {
 html, body {
   min-height: $content-max-height;
   background-color: $dark;
-  overflow-x: overlay;
-  overflow-y: overlay;
 }
 
 body {
@@ -124,57 +122,4 @@ table {
 
 label {
   margin: 0;
-}
-
-::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(40, 40, 40, 0.8);
-  border-radius: 4px;
-  margin: 2px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(120, 120, 120, 0.8);
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(160, 160, 160, 0.9);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-/* Show scrollbar when scrolling or dragging */
-*:hover::-webkit-scrollbar,
-*:active::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-/* Increase width when actively dragging the thumb */
-*:active::-webkit-scrollbar-thumb {
-  width: 12px;
-  background: rgba(180, 180, 180, 1);
-  border-radius: 6px;
-}
-
-/* Show scrollbar during scroll events */
-*:focus-within::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-/* Ensure scrollbar is visible during scroll */
-*:hover::-webkit-scrollbar-thumb,
-*:active::-webkit-scrollbar-thumb,
-*:focus-within::-webkit-scrollbar-thumb {
-  background: rgba(160, 160, 160, 0.9);
 }
