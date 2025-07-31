@@ -13,8 +13,11 @@
     padding: 2.5rem;
     position: relative;
     overflow: auto;
-    max-width: 90rem;
-    margin: 0 auto;
+
+    .wrapper {
+      max-width: 90rem;
+      margin: 0 auto;
+    }
     
 
     .headerText {

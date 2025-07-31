@@ -353,7 +353,7 @@ class AppPlan extends DashboardView {
         action={this.onRefresh}
       />
     } else {
-      content = <div className={styles.mainContent}>
+      content = <div className={styles.mainContent}><div className={styles.wrapper}>
         <div className={styles.header}>Plan Usage</div>
         <div className={styles.headerSubText}>Track your resource utilization across all features to optimize your app and plan allocation.</div>
         <div className={styles.planUsage}>
@@ -452,7 +452,7 @@ class AppPlan extends DashboardView {
           </div>
         </div>
 
-      </div>
+      </div></div>
     }
 
     return (
