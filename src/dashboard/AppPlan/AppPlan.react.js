@@ -153,7 +153,7 @@ class AppPlan extends DashboardView {
       appPlanData: null,
       appPlanError: null,
       selectedPlan: prices[1],
-      billingCycle: 0, // 0 --> monthly || 1 --> annually
+      billingCycle: 0, // 0 --> monthly || 1 --> yearly
       isLoadingPaddle: false,
       paddleError: null,
       paddle: null,
@@ -353,7 +353,7 @@ class AppPlan extends DashboardView {
         action={this.onRefresh}
       />
     } else {
-      content = <div className={styles.mainContent}>
+      content = <div className={styles.mainContent}><div className={styles.wrapper}>
         <div className={styles.header}>Plan Usage</div>
         <div className={styles.headerSubText}>Track your resource utilization across all features to optimize your app and plan allocation.</div>
         <div className={styles.planUsage}>
@@ -433,14 +433,14 @@ class AppPlan extends DashboardView {
             <div className={styles.priceDescription}>Compare all available plans and find the perfect fit for your application needs.</div>
             <B4aToggle
               type={B4aToggle.Types.CUSTOM}
-              value={billingCycle === 0 ? 'Monthly' : 'Annually'}
-              optionLeft="Annually"
+              value={billingCycle === 0 ? 'Monthly' : 'Yearly'}
+              optionLeft="Yearly"
               optionRight="Monthly"
-              labelLeft="Annually"
+              labelLeft="Yearly"
               labelRight="Monthly"
               onChange={level => {
                 this.setState({
-                  billingCycle: level === 'Annually' ? 1 : 0,
+                  billingCycle: level === 'Yearly' ? 1 : 0,
                 })
               }}
             />
@@ -452,7 +452,7 @@ class AppPlan extends DashboardView {
           </div>
         </div>
 
-      </div>
+      </div></div>
     }
 
     return (
@@ -491,7 +491,12 @@ const PriceCard = ({ plan, active, cycle, onClick }) => {
     <div className={`${styles.priceCard} ${active ? styles.activePriceCard : ''}`}>
       {plan.id === 1 ? <span className={styles.mostPopular}>Most Popular</span> : null}
       <div className={styles.priceName}>{name} <span className={styles.greenText}>{greenText}</span></div>
-      <div className={styles.planPrice}><span className={styles.planPriceValue}>${price}</span> <span className={styles.planPriceCycle}>/{cycle === 0 ? 'Monthly' : 'Yearly'}</span></div>
+      <div className={styles.planPrice}>
+        <span className={styles.planPriceValue}>${price}</span>
+        <span className={styles.planPriceCycle}>per App / Month</span>
+        {cycle ? <span className={styles.planPriceSave}>Save {plan.savePercent}</span> : null}
+        <span className={styles.planPriceCycle}>Billed {cycle ? 'Yearly' : 'Monthly'}</span>
+      </div>
       <div className={styles.planDetails}>
         {details.map((detail, idx) => (
           <div key={idx} className={styles.planDetailText}>

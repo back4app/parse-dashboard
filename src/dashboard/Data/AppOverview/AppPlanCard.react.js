@@ -17,7 +17,7 @@ const formatDate = (dateString) => {
   }
 }
 
-const AppPlanCard = ({ loading, planData, appId }) => {
+const AppPlanCard = ({ loading, planData, appSlug }) => {
   let content = null;
   if (loading) {
     content =  <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
@@ -46,7 +46,7 @@ const AppPlanCard = ({ loading, planData, appId }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <Link to={`/apps/${appId}/plan-usage`}>
+        <Link to={`/apps/${appSlug}/plan-usage`}>
           <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
         </Link>
       </div>
