@@ -304,6 +304,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+      margin-bottom: 1rem;
       .planPriceValue {
         font-size: 1.25rem;
         font-weight: 600;
@@ -311,6 +312,11 @@
       .planPriceCycle {
         font-size: 0.675rem;
         color: $light-grey;
+      }
+      .planPriceSave {
+        font-size: 0.675rem;
+        color: $cta-green;
+        font-weight: 600;
       }
     }
     .planDetails {
