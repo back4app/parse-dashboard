@@ -261,6 +261,11 @@ export default class DashboardView extends React.Component {
       link: '/server-settings',
     });
 
+    settingsSections.push({
+      name: 'Domain Settings',
+      link: '/domain-settings',
+    });
+
     const logsSubSections = [];
 
     logsSubSections.push({

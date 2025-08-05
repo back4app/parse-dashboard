@@ -1,0 +1,43 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    padding: 2.5rem;
+    position: relative;
+    overflow: auto;
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+}
+
+.domainSettingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+  }
+  .formContainer {
+    margin-top: 1.5rem;
+  }
+
+  .fieldHr {
+    margin: 4px 0;
+    border: 0;
+  }
+}

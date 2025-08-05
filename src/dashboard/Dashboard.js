@@ -68,6 +68,7 @@ import { setUser as setSentryUser } from '@sentry/react';
 import Deployments from './Deployments/Deployments.react';
 import DeploymentDetails from './Deployments/DeploymentDetails.react';
 import { useAppPageTracking } from './instrument';
+import DomainSettings from './DomainSettings/DomainSettings.react';
 
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
@@ -224,6 +225,7 @@ class Dashboard extends React.Component {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
       fetchHubUser().then(userDetail => {
         user.createdAt = userDetail.createdAt;
+        user.verification = userDetail.verification;
         const now = new Date();
         const createdAt = new Date(userDetail.createdAt);
         const hourDiff = Math.floor((now - createdAt) / (1000 * 60 * 60));
@@ -498,6 +500,7 @@ class Dashboard extends React.Component {
 
         <Route path="server-settings/" element={<ServerSettings />} />
         <Route path="server-settings/:targetPage" element={<ServerSettings />} />
+        <Route path="domain-settings" element={<DomainSettings />} />
 
         <Route path="index/:className" element={<IndexManager />} />
         <Route path="index" element={<IndexManager />} />
