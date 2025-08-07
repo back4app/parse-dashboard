@@ -25,6 +25,7 @@ import Fieldset from 'components/Fieldset/Fieldset.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
+import StripeValidateCard from 'components/StripeValidateCard/StripeValidateCard.react';
 
 @withRouter
 class DomainSettings extends DashboardView {
@@ -119,8 +120,8 @@ class DomainSettings extends DashboardView {
 
     hasPermission = (!response.featuresPermission || response.featuresPermission.webHostLiveQuery === 'Write');
     if (response && ((appHostSettings.serverURL && appHostSettings.activated) || (createdAt && ((new Date() - new Date(createdAt)) > (6 * 30 * 24 * 60 * 60 * 1000))))) {
-      isUserVerified = true;
-      alertValidationCreditCard = false;
+      // isUserVerified = true;
+      // alertValidationCreditCard = false;
     }
 
     if (!isUserVerified) {
@@ -185,19 +186,15 @@ class DomainSettings extends DashboardView {
         <Field
           label={<Label text="Verify your card" dark={true} description="You must verify your card to activate your web hosting." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-            <Button
-              additionalStyles={{ background: '#f9f9f9', color: '#000', border: 'none' }}
-              width="auto"
-              value={
-                <a href="https://checkout.back4app.io/subscription/0EeFjudf6H">Validate Card</a>
-              }
-              onClick={() => {
-                this.showNotification('Redirecting to card validation...', 'info');
-              }}
+            <StripeValidateCard
+              onClick={() => this.setState({ cardValidationError: null })}
+              onError={(err) => this.setState({ cardValidationError: err.message || 'Something went wrong!' })}
+              onSuccess={() => this.setState({ showCardValidation: false, isUserVerified: true })}
             />
           </div>}
           theme={Field.Theme.BLUE}
         />
+        {this.state.cardValidationError && <div className={styles.error}>{this.state.cardValidationError}</div>}
       </Fieldset>
     } else if (this.state.isUserVerified) {
       content = <Fieldset description="Configure your web hosting domain settings.">

@@ -41,3 +41,18 @@
     border: 0;
   }
 }
+
+
+.error {
+  color: $error-red;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+.validateBtn {
+  background: $white;
+  color: $dark;
+}
