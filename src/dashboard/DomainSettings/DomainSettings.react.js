@@ -26,6 +26,7 @@ import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import StripeValidateCard from 'components/StripeValidateCard/StripeValidateCard.react';
 import { Link } from 'react-router-dom';
+import back4app2 from 'lib/back4app2';
 
 @withRouter
 class DomainSettings extends DashboardView {
@@ -281,6 +282,17 @@ class DomainSettings extends DashboardView {
     }
   }
 
+  async verifyUser() {
+    try {
+      const user = await back4app2.me();
+      if (user && user.verification.cardValidation) {
+        this.setState({ isUserVerified: true, showCardValidation: false });
+      }
+    } catch (e) {
+      console.log('user validation failed!')
+    }
+  }
+
   getDisplayContent() {
     let content = null;
 
@@ -292,7 +304,7 @@ class DomainSettings extends DashboardView {
             <StripeValidateCard
               onClick={() => this.setState({ cardValidationError: null })}
               onError={(err) => this.setState({ cardValidationError: err.message || 'Something went wrong!' })}
-              onSuccess={() => this.setState({ showCardValidation: false, isUserVerified: true })}
+              onSuccess={() => this.verifyUser()}
             />
           </div>}
           theme={Field.Theme.BLUE}

@@ -35,13 +35,13 @@ const CreditCardValidation = ({ onClick, onCancel, onError, onSuccess }) => {
     }
   }
 
-  const onComplete = (result) => {
+  const onComplete = async (result) => {
     if (result?.error) {
       setIsLoading(false);
       onError(result.error);
     } else {
       console.log('onComplete');
-      onSuccess();
+      await onSuccess();
       setShowStripe(false);
     }
   }
