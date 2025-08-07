@@ -55,6 +55,12 @@ class DomainSettings extends DashboardView {
       currentDomain: 'b4a.app',
 
       updating: false,
+
+      errorCustomDomain: null,
+      successCustomDomain: null,
+      errorUpdateWebHost: null,
+      successUpdateWebHost: null,
+
     };
     this.onRefresh = this.onRefresh.bind(this);
     this.handleSubdomainChange = this.handleSubdomainChange.bind(this);
@@ -192,12 +198,42 @@ class DomainSettings extends DashboardView {
     this.setState({ subdomainName: e.target.value });
   }
 
-  handleAddCustomDomain() {
-    console.log('add custom domain');
+  async handleAddCustomDomain() {
+    try {
+      this.setState({ updating: true });
+      await this.context.addCustomDomain({ domain: this.state.customDomain });
+      this.setState({ customDomainArray: [...this.state.customDomainArray, this.state.customDomain], customDomain: '' });
+      this.setState({ successCustomDomain: 'Custom domain added successfully' });
+      setTimeout(() => {
+        this.setState({ successCustomDomain: null });
+      }, 5000);
+    } catch (error) {
+      this.setState({ errorCustomDomain: error });
+      setTimeout(() => {
+        this.setState({ errorCustomDomain: null });
+      }, 5000);
+    } finally {
+      this.setState({ updating: false });
+    }
   }
 
-  handleRemoveCustomDomain(domain) {
-    console.log('remove custom domain', domain);
+  async handleRemoveCustomDomain(domain) {
+    try {
+      this.setState({ updating: true });
+      await this.context.removeCustomDomain({ domain });
+      this.setState({ customDomainArray: this.state.customDomainArray.filter(d => d !== domain) });
+      this.setState({ successCustomDomain: 'Custom domain removed successfully' });
+      setTimeout(() => {
+        this.setState({ successCustomDomain: null });
+      }, 5000);
+    } catch (error) {
+      this.setState({ errorCustomDomain: error.message || 'Something went wrong!' });
+      setTimeout(() => {
+        this.setState({ errorCustomDomain: null });
+      }, 5000);
+    } finally {
+      this.setState({ updating: false });
+    }
   }
 
   getDisplayContent() {
@@ -245,7 +281,7 @@ class DomainSettings extends DashboardView {
             }}>
               <TextInput
                 value={this.state.subdomainName}
-                onChange={this.handleSubdomainChange}
+                onChange={(name) => this.setState({ subdomainName: name })}
                 placeholder="yourapp"
                 disabled={this.state.updating}
                 style={{
@@ -316,15 +352,15 @@ class DomainSettings extends DashboardView {
             input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <TextInput
                 value={this.state.customDomain}
-                onChange={(e) => this.setState({ customDomain: e.target.value })}
-                disabled={!this.state.canChangeCustomDomain}
+                onChange={(val) => this.setState({ customDomain: val })}
+                disabled={this.state.updating || !this.state.canChangeCustomDomain}
                 placeholder="example.com"
               />
               <Button
                 value="Add"
                 color="green"
                 onClick={this.handleAddCustomDomain}
-                disabled={!this.state.canChangeCustomDomain}
+                disabled={this.state.updating || !this.state.canChangeCustomDomain || this.state.customDomain.trim().length === 0}
                 additionalStyles={{ background: 'transparent', border: '1px solid #4CAF50', color: '#4CAF50', borderRadius: '4px', padding: '0.5rem 1rem', fontSize: '14px', minWidth: '80px' }}
               />
             </div>}
@@ -353,11 +389,14 @@ class DomainSettings extends DashboardView {
                   additionalStyles={{
                     padding: '0 0.5rem',
                   }}
+                  disabled={this.state.updating}
                 />
               </div>
             ))}
           </div>}
         />
+        {this.state.successCustomDomain && <div className={styles.success}>{this.state.successCustomDomain}</div>}
+        {this.state.errorCustomDomain && <div className={styles.error}>{this.state.errorCustomDomain}</div>}
       </Fieldset>
       </>
     }

@@ -44,12 +44,25 @@
 
 
 .error {
-  color: $error-red;
+  background: #EB5178;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 140%;
-  padding: 0.5rem 0;
+  padding: 0.2rem 0.5rem;
   width: 100%;
+  text-align: center;
+  transition: height 0.3s ease-in-out;
+}
+
+.success {
+  background: $cta-green;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  padding: 0.2rem 0.5rem;
+  width: 100%;
+  text-align: center;
+  transition: height 0.3s ease-in-out;
 }
 
 .validateBtn {
@@ -78,4 +91,8 @@
     border-bottom: 1px solid $dark;
     padding: 0.5rem 1rem;
   }
+}
+
+.error {
+
 }
