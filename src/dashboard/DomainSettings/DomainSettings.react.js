@@ -120,8 +120,8 @@ class DomainSettings extends DashboardView {
 
     hasPermission = (!response.featuresPermission || response.featuresPermission.webHostLiveQuery === 'Write');
     if (response && ((appHostSettings.serverURL && appHostSettings.activated) || (createdAt && ((new Date() - new Date(createdAt)) > (6 * 30 * 24 * 60 * 60 * 1000))))) {
-      // isUserVerified = true;
-      // alertValidationCreditCard = false;
+      isUserVerified = true;
+      alertValidationCreditCard = false;
     }
 
     if (!isUserVerified) {
