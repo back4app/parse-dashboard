@@ -16,7 +16,6 @@ import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import Button from 'components/Button/Button.react';
 import B4aToggle from 'components/Toggle/B4aToggle.react';
 import Icon from 'components/Icon/Icon.react';
-import { initializePaddle } from '@paddle/paddle-js';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import Label from 'components/Label/Label.react';
 import Field from 'components/Field/Field.react';
@@ -56,6 +55,7 @@ class DomainSettings extends DashboardView {
 
       updating: false,
       isEditing: false,
+      hasToggleChanged: false,
 
       errorCustomDomain: null,
       successCustomDomain: null,
@@ -67,6 +67,7 @@ class DomainSettings extends DashboardView {
     this.handleSubdomainChange = this.handleSubdomainChange.bind(this);
     this.handleAddCustomDomain = this.handleAddCustomDomain.bind(this);
     this.handleRemoveCustomDomain = this.handleRemoveCustomDomain.bind(this);
+    this.handleToggleChange = this.handleToggleChange.bind(this);
   }
 
   componentWillMount() {
@@ -192,12 +193,30 @@ class DomainSettings extends DashboardView {
         <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
           <Icon name="b4a-refresh-icon" width={18} height={18} />
         </a>
+        {this.state.hasToggleChanged && (
+          <Button
+            value="Save Changes"
+            primary={true}
+            onClick={this.handleUpdateHostSettings.bind(this)}
+            disabled={this.state.updating}
+            width="auto"
+            additionalStyles={{ marginLeft: '10px' }}
+          />
+        )}
       </Toolbar>
     );
   }
 
   handleSubdomainChange(e) {
     this.setState({ subdomainName: e.target.value });
+  }
+
+  handleToggleChange(value) {
+    const originalActivated = this.state.isActivated;
+    this.setState({
+      activated: value,
+      hasToggleChanged: originalActivated && !value // Only true when changing from true to false
+    });
   }
 
   async handleAddCustomDomain() {
@@ -245,7 +264,10 @@ class DomainSettings extends DashboardView {
         subdomainName: this.state.subdomainName + '.' + this.state.currentDomain,
         activated: this.state.activated
       });
-      this.setState({ successUpdateWebHost: 'Subdomain updated successfully' });
+      this.setState({
+        successUpdateWebHost: 'Subdomain updated successfully',
+        hasToggleChanged: false // Reset the toggle change flag
+      });
       setTimeout(() => {
         this.setState({ successUpdateWebHost: null });
       }, 5000);
@@ -285,7 +307,7 @@ class DomainSettings extends DashboardView {
             <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
               <B4aToggle
                 value={this.state.activated}
-                onChange={value => this.setState({ activated: value })}
+                onChange={this.handleToggleChange}
                 type={B4aToggle.Types.YES_NO}
               />
             </div>
