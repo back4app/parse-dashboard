@@ -26,6 +26,7 @@ import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import StripeValidateCard from 'components/StripeValidateCard/StripeValidateCard.react';
+import { Link } from 'react-router-dom';
 
 @withRouter
 class DomainSettings extends DashboardView {
@@ -44,12 +45,21 @@ class DomainSettings extends DashboardView {
 
       subdomainName: '',
       currentSubdomain: '',
+      customDomain: '',
+      customDomainArray: [],
+
       activated: false,
       isActivated: false,
       hasPermission: false,
+      availableDomains: ['b4a.app'],
+      currentDomain: 'b4a.app',
 
+      updating: false,
     };
     this.onRefresh = this.onRefresh.bind(this);
+    this.handleSubdomainChange = this.handleSubdomainChange.bind(this);
+    this.handleAddCustomDomain = this.handleAddCustomDomain.bind(this);
+    this.handleRemoveCustomDomain = this.handleRemoveCustomDomain.bind(this);
   }
 
   componentWillMount() {
@@ -178,6 +188,18 @@ class DomainSettings extends DashboardView {
     );
   }
 
+  handleSubdomainChange(e) {
+    this.setState({ subdomainName: e.target.value });
+  }
+
+  handleAddCustomDomain() {
+    console.log('add custom domain');
+  }
+
+  handleRemoveCustomDomain(domain) {
+    console.log('remove custom domain', domain);
+  }
+
   getDisplayContent() {
     let content = null;
 
@@ -197,7 +219,7 @@ class DomainSettings extends DashboardView {
         {this.state.cardValidationError && <div className={styles.error}>{this.state.cardValidationError}</div>}
       </Fieldset>
     } else if (this.state.isUserVerified) {
-      content = <Fieldset description="Configure your web hosting domain settings.">
+      content = <><Fieldset>
         <Field
           label={<Label text="Activate Web Hosting" dark={true} description="Toggle to enable or disable web hosting for your app." />}
           input={
@@ -211,7 +233,133 @@ class DomainSettings extends DashboardView {
           }
           theme={Field.Theme.BLUE}
         />
+        {this.state.activated && <Field
+          label={<Label text="Subdomain Name" dark={true} description="Enter your subdomain name" />}
+          input={
+            <div style={{
+              display: 'flex',
+              width: '100%',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+            }}>
+              <TextInput
+                value={this.state.subdomainName}
+                onChange={this.handleSubdomainChange}
+                placeholder="yourapp"
+                disabled={this.state.updating}
+                style={{
+                  flex: 1,
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: '14px'
+                }}
+              />
+              <span style={{
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: 'normal'
+              }}>
+                .
+              </span>
+              <select
+                value={this.state.currentDomain}
+                onChange={(e) => this.setState({ currentDomain: e.target.value })}
+                disabled={this.state.updating}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: '14px',
+                  padding: '0.25rem',
+                  outline: 'none',
+                }}
+              >
+                {this.state.availableDomains.map((domain) => (
+                  <option key={domain} value={domain}>
+                    {domain}
+                  </option>
+                ))}
+              </select>
+              <Button
+                value={this.state.updating ? 'saving...' : 'save'}
+                onClick={this.handleUpdateHostSettings}
+                disabled={this.state.updating || !this.state.subdomainName}
+                additionalStyles={{
+                  background: 'transparent',
+                  border: '1px solid #4CAF50',
+                  color: '#4CAF50',
+                  borderRadius: '4px',
+                  padding: '0.5rem 1rem',
+                  fontSize: '14px',
+                  minWidth: '80px'
+                }}
+              />
+            </div>
+          }
+          theme={Field.Theme.BLUE}
+        />}
       </Fieldset>
+
+      <Fieldset legend="Custom Domain" description={this.state.canChangeCustomDomain ? 'Configure a custom address to your app.' : 'Upgrade to Pay as You Go Plan to add your custom domain.'}>
+        {!this.state.canChangeCustomDomain && <Link to={`/apps/${this.context.slug}/plan-usage`}>
+          <Button
+            value="Upgrade Plan"
+            primary={true}
+          />
+        </Link>}
+
+        <div style={{ marginTop: this.state.canChangeCustomDomain ? '0' : '1rem', opacity: this.state.canChangeCustomDomain ? 1 : 0.5, pointerEvents: this.state.canChangeCustomDomain ? 'auto' : 'none' }}>
+          <Field
+            label={<Label text="Custom domain" dark={true} description="Lorem ipsum dolor sit amet." />}
+            input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <TextInput
+                value={this.state.customDomain}
+                onChange={(e) => this.setState({ customDomain: e.target.value })}
+                disabled={!this.state.canChangeCustomDomain}
+                placeholder="example.com"
+              />
+              <Button
+                value="Add"
+                color="green"
+                onClick={this.handleAddCustomDomain}
+                disabled={!this.state.canChangeCustomDomain}
+                additionalStyles={{ background: 'transparent', border: '1px solid #4CAF50', color: '#4CAF50', borderRadius: '4px', padding: '0.5rem 1rem', fontSize: '14px', minWidth: '80px' }}
+              />
+            </div>}
+            theme={Field.Theme.BLUE}
+          />
+          <div className={styles.note}>
+            Note: To set up a custom domain, you'll first need to create a
+            b4a.app subdomain (e.g. myapp.b4a.app). After that, create a CNAME DNS entry in your DNS provider.
+            (myapp.mydomain.com - myapp.b4a.app)
+          </div>
+        </div>
+      </Fieldset>
+
+      <Fieldset legend="Custom domains added">
+        <Field label={<Label text="Available Custom domains" dark={true} />}
+          theme={Field.Theme.BLUE}
+          input={<div className={styles.customDomainList}>
+            {this.state.customDomainArray.map((domain) => (
+              <div key={domain} className={styles.customDomainItem}>
+                <div>{domain}</div>
+                <Button
+                  value="x"
+                  color="red"
+                  onClick={() => this.handleRemoveCustomDomain(domain)}
+                  width="auto"
+                  additionalStyles={{
+                    padding: '0 0.5rem',
+                  }}
+                />
+              </div>
+            ))}
+          </div>}
+        />
+      </Fieldset>
+      </>
     }
 
     return (

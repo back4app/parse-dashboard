@@ -56,3 +56,26 @@
   background: $white;
   color: $dark;
 }
+
+.note {
+  color: $light-grey;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 140%;
+  margin-top: 0.5rem;
+}
+
+.customDomainList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  & > .customDomainItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 14px;
+    border-bottom: 1px solid $dark;
+    padding: 0.5rem 1rem;
+  }
+}
