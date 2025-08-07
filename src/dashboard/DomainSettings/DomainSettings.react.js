@@ -55,6 +55,7 @@ class DomainSettings extends DashboardView {
       currentDomain: 'b4a.app',
 
       updating: false,
+      isEditing: false,
 
       errorCustomDomain: null,
       successCustomDomain: null,
@@ -172,6 +173,7 @@ class DomainSettings extends DashboardView {
 
       activated,
       isActivated,
+      isEditing: !isActivated,
 
       hasPermission,
       canChangeCustomDomain,
@@ -236,6 +238,27 @@ class DomainSettings extends DashboardView {
     }
   }
 
+  async handleUpdateHostSettings() {
+    try {
+      this.setState({ updating: true });
+      await this.context.updateHostSettings({ currentSubdomain: this.state.currentSubdomain,
+        subdomainName: this.state.subdomainName + '.' + this.state.currentDomain,
+        activated: this.state.activated
+      });
+      this.setState({ successUpdateWebHost: 'Subdomain updated successfully' });
+      setTimeout(() => {
+        this.setState({ successUpdateWebHost: null });
+      }, 5000);
+    } catch (error) {
+      this.setState({ errorUpdateWebHost: error.message || 'Something went wrong!' });
+      setTimeout(() => {
+        this.setState({ errorUpdateWebHost: null });
+      }, 5000);
+    } finally {
+      this.setState({ updating: false });
+    }
+  }
+
   getDisplayContent() {
     let content = null;
 
@@ -276,66 +299,82 @@ class DomainSettings extends DashboardView {
               display: 'flex',
               width: '100%',
               alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
+              padding: '0 1rem',
+              justifyContent: 'space-between'
             }}>
-              <TextInput
-                value={this.state.subdomainName}
-                onChange={(name) => this.setState({ subdomainName: name })}
-                placeholder="yourapp"
-                disabled={this.state.updating}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#fff',
-                  fontSize: '14px'
-                }}
-              />
-              <span style={{
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: 'normal'
-              }}>
+              {this.state.isEditing ? <>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
+                  <TextInput
+                    value={this.state.subdomainName}
+                    onChange={(name) => this.setState({ subdomainName: name })}
+                    placeholder="yourapp"
+                    disabled={this.state.updating}
+                    style={{
+                      flex: 1,
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#fff',
+                      fontSize: '14px'
+                    }}
+                  />
+                  <span style={{
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: 'normal'
+                  }}>
                 .
-              </span>
-              <select
-                value={this.state.currentDomain}
-                onChange={(e) => this.setState({ currentDomain: e.target.value })}
-                disabled={this.state.updating}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#fff',
-                  fontSize: '14px',
-                  padding: '0.25rem',
-                  outline: 'none',
-                }}
-              >
-                {this.state.availableDomains.map((domain) => (
-                  <option key={domain} value={domain}>
-                    {domain}
-                  </option>
-                ))}
-              </select>
-              <Button
-                value={this.state.updating ? 'saving...' : 'save'}
-                onClick={this.handleUpdateHostSettings}
-                disabled={this.state.updating || !this.state.subdomainName}
-                additionalStyles={{
-                  background: 'transparent',
-                  border: '1px solid #4CAF50',
-                  color: '#4CAF50',
-                  borderRadius: '4px',
-                  padding: '0.5rem 1rem',
-                  fontSize: '14px',
-                  minWidth: '80px'
-                }}
-              />
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <select
+                    value={this.state.currentDomain}
+                    onChange={(e) => this.setState({ currentDomain: e.target.value })}
+                    disabled={this.state.updating}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#fff',
+                      fontSize: '14px',
+                      padding: '0.25rem',
+                      outline: 'none',
+                    }}
+                  >
+                    {this.state.availableDomains.map((domain) => (
+                      <option key={domain} value={domain}>
+                        {domain}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    value={this.state.updating ? 'saving...' : 'save'}
+                    onClick={this.handleUpdateHostSettings.bind(this)}
+                    disabled={this.state.updating || !this.state.subdomainName}
+                    primary={true}
+                  />
+                  <Button
+                    value={'cancel'}
+                    onClick={() => this.setState({ isEditing: false })}
+                    disabled={this.state.updating}
+                    color="red"
+                  />
+                </div>
+              </> : (
+                <>
+                  <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.subdomainName}.${this.state.currentDomain}`} target="_blank" rel="noopener noreferrer">{this.state.subdomainName}.{this.state.currentDomain}</a></span>
+                  <Button
+                    value={'Edit'}
+                    color="blue"
+                    onClick={() => this.setState({ isEditing: true })}
+                    disabled={this.state.updating}
+                  /></>
+              )}
+
             </div>
           }
           theme={Field.Theme.BLUE}
         />}
+        {this.state.successUpdateWebHost && <div className={styles.success}>{this.state.successUpdateWebHost}</div>}
+        {this.state.errorUpdateWebHost && <div className={styles.error}>{this.state.errorUpdateWebHost}</div>}
       </Fieldset>
 
       <Fieldset legend="Custom Domain" description={this.state.canChangeCustomDomain ? 'Configure a custom address to your app.' : 'Upgrade to Pay as You Go Plan to add your custom domain.'}>
@@ -380,7 +419,7 @@ class DomainSettings extends DashboardView {
           input={<div className={styles.customDomainList}>
             {this.state.customDomainArray.map((domain) => (
               <div key={domain} className={styles.customDomainItem}>
-                <div>{domain}</div>
+                <div className={styles.subdomainContainer}> <a style={{ color: '#fff' }} className={styles.subdomain} href={`https://${domain}`} target="_blank" rel="noopener noreferrer">{domain}</a></div>
                 <Button
                   value="x"
                   color="red"

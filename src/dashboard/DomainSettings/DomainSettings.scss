@@ -93,6 +93,20 @@
   }
 }
 
-.error {
+.subdomainContainer {
+  flex: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
+.subdomain {
+  color: $old-blue;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+  &:hover {
+    text-decoration: underline;
+  }
 }

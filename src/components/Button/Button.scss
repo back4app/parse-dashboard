@@ -170,3 +170,14 @@
     }
   }
 }
+
+
+.blue {
+  color: $old-blue;
+  border-color: $old-blue;
+
+  &:hover {
+    background-color: $old-blue;
+    color: $white;
+  }
+}

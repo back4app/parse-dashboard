@@ -1780,6 +1780,7 @@ export default class ParseApp {
   }
 
   async removeCustomDomain(hostSettings) {
+    console.log(`${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/customdomain`)
     try {
       return (
         await axios.delete(
