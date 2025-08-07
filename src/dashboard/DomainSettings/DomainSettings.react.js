@@ -261,7 +261,7 @@ class DomainSettings extends DashboardView {
   async handleUpdateHostSettings() {
     try {
       this.setState({ updating: true });
-      await this.context.updateHostSettings({ currentSubdomain: this.state.currentSubdomain,
+      await this.context.updateHostAddress({ currentSubdomain: this.state.currentSubdomain,
         subdomainName: this.state.subdomainName + '.' + this.state.currentDomain,
         activated: this.state.activated
       });
