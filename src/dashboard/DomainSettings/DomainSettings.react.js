@@ -21,7 +21,7 @@ import Label from 'components/Label/Label.react';
 import Field from 'components/Field/Field.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
-import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import StripeValidateCard from 'components/StripeValidateCard/StripeValidateCard.react';
@@ -63,6 +63,12 @@ class DomainSettings extends DashboardView {
       errorUpdateWebHost: null,
       successUpdateWebHost: null,
 
+      // Session verification states
+      isVerifyingSession: false,
+      sessionVerificationError: null,
+      verifiedSessionId: null,
+      showSuccessMessage: false,
+
     };
     this.onRefresh = this.onRefresh.bind(this);
     this.handleSubdomainChange = this.handleSubdomainChange.bind(this);
@@ -73,6 +79,7 @@ class DomainSettings extends DashboardView {
 
   componentWillMount() {
     this.loadData();
+    this.checkForStripeSession();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -293,23 +300,99 @@ class DomainSettings extends DashboardView {
     }
   }
 
+  checkForStripeSession() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+
+    if (sessionId && sessionId !== this.state.verifiedSessionId) {
+      this.verifyStripeSession(sessionId);
+    }
+  }
+
+  async verifyStripeSession(sessionId) {
+    try {
+      this.setState({
+        isVerifyingSession: true,
+        sessionVerificationError: null
+      });
+
+      await back4app2.stripeSessionStatus(sessionId);
+
+      // Session verification successful
+      this.setState({
+        isVerifyingSession: false,
+        verifiedSessionId: sessionId,
+        showSuccessMessage: true
+      });
+
+      // Show success message for 2 seconds, then close modal and update state
+      setTimeout(() => {
+        this.setState({
+          showSuccessMessage: false,
+          isUserVerified: true,
+          showCardValidation: false
+        });
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error verifying stripe session:', error);
+
+      this.setState({
+        isVerifyingSession: false,
+        sessionVerificationError: error.message || 'Failed to verify payment. Please try again.',
+        showCardValidation: true
+      });
+    } finally {
+      // Clean up URL regardless of success or error
+      const url = new URL(window.location);
+      url.searchParams.delete('session_id');
+      window.history.replaceState({}, '', url);
+    }
+  }
+
   getDisplayContent() {
     let content = null;
 
-    if (this.state.showCardValidation) {
+    if (this.state.isVerifyingSession || this.state.showSuccessMessage) {
+      content = <B4aModal
+        type={B4aModal.Types.INFO}
+        title={this.state.showSuccessMessage ? 'Payment Verified' : 'Verifying payment'}
+        subtitle={this.state.showSuccessMessage ? 'Your payment has been successfully verified!' : 'Please wait while we verify your payment...'}
+        width={'60vw'}
+        customFooter={<div></div>}
+      >
+        <div className={styles.paymentVerificationModal}>
+          {this.state.showSuccessMessage ? (
+            <div className={styles.successContainer}>
+              <Icon name="b4a-success-check" width={24} height={24} />
+              <div className={styles.successText}>Payment verification successful!</div>
+            </div>
+          ) : (
+            <div className={styles.spinnerContainer}>
+              <div className={styles.spinner}></div>
+              <div className={styles.spinnerText}>Loading...</div>
+            </div>
+          )}
+        </div>
+      </B4aModal>
+    } else if (this.state.showCardValidation) {
       content = <Fieldset>
         <Field
           label={<Label text="Verify your card" dark={true} description="You must verify your card to activate your web hosting." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
             <StripeValidateCard
-              onClick={() => this.setState({ cardValidationError: null })}
+              onClick={() => this.setState({ cardValidationError: null, sessionVerificationError: null })}
               onError={(err) => this.setState({ cardValidationError: err.message || 'Something went wrong!' })}
               onSuccess={() => this.verifyUser()}
             />
           </div>}
           theme={Field.Theme.BLUE}
         />
-        {this.state.cardValidationError && <div className={styles.error}>{this.state.cardValidationError}</div>}
+        {(this.state.cardValidationError || this.state.sessionVerificationError) && (
+          <div className={styles.error}>
+            {this.state.cardValidationError || this.state.sessionVerificationError}
+          </div>
+        )}
       </Fieldset>
     } else if (this.state.isUserVerified) {
       content = <><Fieldset>

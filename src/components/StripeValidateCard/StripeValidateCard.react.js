@@ -23,7 +23,7 @@ const CreditCardValidation = ({ onClick, onCancel, onError, onSuccess }) => {
     setIsLoading(true);
     setShowStripe(true);
     try {
-      const response = await back4app2.createStripeSession();
+      const response = await back4app2.createStripeSession(window.location.href);
       setOptions(() => ({
         clientSecret: response,
         onComplete: onComplete
@@ -48,6 +48,7 @@ const CreditCardValidation = ({ onClick, onCancel, onError, onSuccess }) => {
 
   const handleOnCancel = () => {
     setShowStripe(false);
+    setIsLoading(false);
     if (typeof onCancel === 'function') {
       onCancel();
     }

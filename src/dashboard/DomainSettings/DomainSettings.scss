@@ -100,6 +100,78 @@
   white-space: nowrap;
 }
 
+.paymenytVerfiicationModal {
+  color: $dark;
+  text-align: center;
+  font-size: 1.25rem;
+  .spinner {
+    
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.paymentVerificationModal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.spinnerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinnerText {
+  font-size: 1rem;
+  color: $white;
+  text-align: center;
+  font-weight: 500;
+}
+
+.successContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.successIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: $cta-green;
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.successText {
+  font-size: 1.1rem;
+  color: $white;
+  text-align: center;
+  font-weight: 500;
+}
+
 .subdomain {
   color: $old-blue;
   text-decoration: none;

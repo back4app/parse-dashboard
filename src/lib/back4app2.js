@@ -147,16 +147,16 @@ const back4app2 = {
 
     return result.data.data.redirectToAgent;
   },
-  createStripeSession: async () => {
+  createStripeSession: async (returnUrl) => {
     const result = await axios.post(
       b4aSettings.CONTAINERS_API_PATH,
       {
         query: `
-          query CreateStripeSession($disableRedirect: Boolean) {
-            createStripeSession(disableRedirect: $disableRedirect)
+          query CreateStripeSession($returnUrl: String) {
+            createStripeSession(returnUrl: $returnUrl)
           }
         `,
-        variables: { disableRedirect: true },
+        variables: { returnUrl },
       },
       {
         headers: {
