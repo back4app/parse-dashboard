@@ -476,12 +476,12 @@ class DomainSettings extends DashboardView {
                     disabled={this.state.updating || !this.state.subdomainName}
                     primary={true}
                   />
-                  <Button
+                  {this.state.domainSettings.hostSettings.webhost && <Button
                     value={'cancel'}
                     onClick={() => this.setState({ isEditing: false })}
                     disabled={this.state.updating}
                     color="red"
-                  />
+                  />}
                 </div>
               </> : (
                 <>
