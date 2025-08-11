@@ -283,15 +283,18 @@ class DomainSettings extends DashboardView {
       this.setState({
         successUpdateWebHost: 'Subdomain updated successfully',
         hasToggleChanged: false // Reset the toggle change flag
+      }, () => {
+        this.onRefresh();
+        setTimeout(() => {
+          this.setState({ successUpdateWebHost: null });
+        }, 5000);
       });
-      setTimeout(() => {
-        this.setState({ successUpdateWebHost: null });
-      }, 5000);
     } catch (error) {
-      this.setState({ errorUpdateWebHost: error.message || 'Something went wrong!' });
-      setTimeout(() => {
-        this.setState({ errorUpdateWebHost: null });
-      }, 5000);
+      this.setState({ errorUpdateWebHost: error.message || 'Something went wrong!' }, () => {
+        setTimeout(() => {
+          this.setState({ errorUpdateWebHost: null });
+        }, 5000);
+      });
     } finally {
       this.setState({ updating: false });
     }
@@ -451,7 +454,7 @@ class DomainSettings extends DashboardView {
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <select
+                  {this.state.availableDomains.length > 1 ? (<select
                     value={this.state.currentDomain}
                     onChange={(e) => this.setState({ currentDomain: e.target.value })}
                     disabled={this.state.updating}
@@ -469,7 +472,7 @@ class DomainSettings extends DashboardView {
                         {domain}
                       </option>
                     ))}
-                  </select>
+                  </select>) : (<span style={{ display:'inline-block', marginLeft: '0.5rem' }}>{this.state.currentDomain}</span>)}
                   <Button
                     value={this.state.updating ? 'saving...' : 'save'}
                     onClick={this.handleUpdateHostSettings.bind(this)}
