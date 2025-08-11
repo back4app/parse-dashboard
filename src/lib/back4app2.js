@@ -187,6 +187,10 @@ const back4app2 = {
       }
     );
 
+    if (result.data.errors) {
+      throw new Error(result.data.errors[0].message);
+    }
+
     return result.data.data.stripeSessionStatus;
   },
 };

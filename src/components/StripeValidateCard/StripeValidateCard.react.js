@@ -10,7 +10,7 @@ import B4aModal from 'components/B4aModal/B4aModal.react';
 
 const stripePromise = loadStripe(b4aSettings.BACK4APP_STRIPE_PUBLIC_KEY);
 
-const CreditCardValidation = ({ onClick, onCancel, onError, onSuccess }) => {
+const StripeValidateCard = ({ onClick, onCancel, onError, onSuccess }) => {
   const [showStripe, setShowStripe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState(null);
@@ -32,6 +32,7 @@ const CreditCardValidation = ({ onClick, onCancel, onError, onSuccess }) => {
     } catch (err) {
       console.log('error in creating stripe session');
       onError(err);
+      setIsLoading(false);
     }
   }
 
@@ -79,4 +80,5 @@ const CreditCardValidation = ({ onClick, onCancel, onError, onSuccess }) => {
   )
 }
 
-export default CreditCardValidation
+export default StripeValidateCard;
+
