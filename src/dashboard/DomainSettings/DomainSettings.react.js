@@ -492,7 +492,7 @@ class DomainSettings extends DashboardView {
                 </div>
               </> : (
                 <>
-                  <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.domainSettings.hostSettings.webhost}.${this.state.currentDomain}`} target="_blank" rel="noopener noreferrer">{this.state.domainSettings.hostSettings.webhost}.{this.state.currentDomain}</a></span>
+                  <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.domainSettings.hostSettings.webhost}`} target="_blank" rel="noopener noreferrer">{this.state.domainSettings.hostSettings.webhost}</a></span>
                   <Button
                     value={'Edit'}
                     color="blue"
