@@ -439,7 +439,7 @@ class DomainSettings extends DashboardView {
                   <TextInput
                     value={this.state.subdomainName}
                     onChange={(name) => this.setState({ subdomainName: name })}
-                    placeholder="yourapp"
+                    placeholder={this.state.currentSubdomain || 'yourapp'}
                     disabled={this.state.updating}
                     style={{
                       flex: 1,
@@ -492,7 +492,7 @@ class DomainSettings extends DashboardView {
                 </div>
               </> : (
                 <>
-                  <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.subdomainName}.${this.state.currentDomain}`} target="_blank" rel="noopener noreferrer">{this.state.subdomainName}.{this.state.currentDomain}</a></span>
+                  <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.domainSettings.hostSettings.webhost}.${this.state.currentDomain}`} target="_blank" rel="noopener noreferrer">{this.state.domainSettings.hostSettings.webhost}.{this.state.currentDomain}</a></span>
                   <Button
                     value={'Edit'}
                     color="blue"
