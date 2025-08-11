@@ -336,6 +336,10 @@ class DomainSettings extends DashboardView {
         showSuccessMessage: true
       });
 
+      const user = AccountManager.currentUser();
+      user.verification.cardValidation = true;
+      AccountManager.setCurrentUser({ user });
+
       // Show success message for 2 seconds, then close modal and update state
       setTimeout(() => {
         this.setState({
