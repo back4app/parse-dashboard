@@ -21,7 +21,7 @@ import Label from 'components/Label/Label.react';
 import Field from 'components/Field/Field.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
-
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import StripeValidateCard from 'components/StripeValidateCard/StripeValidateCard.react';
@@ -232,6 +232,10 @@ class DomainSettings extends DashboardView {
       this.setState({ updating: true });
       await this.context.addCustomDomain({ domain: this.state.customDomain });
       this.setState({ customDomainArray: [...this.state.customDomainArray, this.state.customDomain], customDomain: '' });
+
+      // Send amplitude event for custom domain configuration
+      amplitudeLogEvent('Custom Domain configured');
+
       this.setState({ successCustomDomain: 'Custom domain added successfully' });
       setTimeout(() => {
         this.setState({ successCustomDomain: null });
@@ -272,6 +276,10 @@ class DomainSettings extends DashboardView {
         subdomainName: this.state.subdomainName + '.' + this.state.currentDomain,
         activated: this.state.activated
       });
+
+      // Send amplitude event for web hosting configuration
+      amplitudeLogEvent('Webhosting configured');
+
       this.setState({
         successUpdateWebHost: 'Subdomain updated successfully',
         hasToggleChanged: false // Reset the toggle change flag
@@ -534,21 +542,28 @@ class DomainSettings extends DashboardView {
         <Field label={<Label text="Available Custom domains" dark={true} />}
           theme={Field.Theme.BLUE}
           input={<div className={styles.customDomainList}>
-            {this.state.customDomainArray.map((domain) => (
-              <div key={domain} className={styles.customDomainItem}>
-                <div className={styles.subdomainContainer}> <a style={{ color: '#fff' }} className={styles.subdomain} href={`https://${domain}`} target="_blank" rel="noopener noreferrer">{domain}</a></div>
-                <Button
-                  value="x"
-                  color="red"
-                  onClick={() => this.handleRemoveCustomDomain(domain)}
-                  width="auto"
-                  additionalStyles={{
-                    padding: '0 0.5rem',
-                  }}
-                  disabled={this.state.updating}
-                />
-              </div>
-            ))}
+            {this.state.customDomainArray.length === 0 ? (
+              <div className={styles.noDomains}>NA</div>
+            ) : (
+              this.state.customDomainArray.map((domain, index) => (
+                <div
+                  key={domain}
+                  className={`${styles.customDomainItem} ${index === this.state.customDomainArray.length - 1 ? styles.lastItem : ''}`}
+                >
+                  <div className={styles.subdomainContainer}> <a style={{ color: '#fff' }} className={styles.subdomain} href={`https://${domain}`} target="_blank" rel="noopener noreferrer">{domain}</a></div>
+                  <Button
+                    value="x"
+                    color="red"
+                    onClick={() => this.handleRemoveCustomDomain(domain)}
+                    width="auto"
+                    additionalStyles={{
+                      padding: '0 0.5rem',
+                    }}
+                    disabled={this.state.updating}
+                  />
+                </div>
+              ))
+            )}
           </div>}
         />
         {this.state.successCustomDomain && <div className={styles.success}>{this.state.successCustomDomain}</div>}
