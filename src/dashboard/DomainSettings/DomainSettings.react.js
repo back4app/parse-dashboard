@@ -625,17 +625,6 @@ class DomainSettings extends DashboardView {
             onClose={this.hideNotification}
           />
         )}
-
-        {this.state.openCheckout ? (
-          <B4aModal
-            type={B4aModal.Types.INFO}
-            width={'80vw'}
-            customFooter={<div></div>}
-            onCancel={() => this.setState({ openCheckout: false })}
-          >
-            <div className="checkout-container"></div>
-          </B4aModal>
-        ) : null}
       </div>
     );
   }

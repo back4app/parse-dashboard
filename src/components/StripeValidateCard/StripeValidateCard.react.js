@@ -68,12 +68,14 @@ const StripeValidateCard = ({ onClick, onCancel, onError, onSuccess }) => {
 
       {showStripe && options?.clientSecret ? (
         <B4aModal type={B4aModal.Types.DEFAULT} showCancel={true} onCancel={handleOnCancel} customFooter={<></>} minWidth="80%">
-          <EmbeddedCheckoutProvider
-            stripe={stripePromise}
-            options={options}
-          >
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
+          <div className="checkout-container" style={{ overflow: 'auto', position: 'relative', maxHeight: '80vh' }}>
+            <EmbeddedCheckoutProvider
+              stripe={stripePromise}
+              options={options}
+            >
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          </div>
         </B4aModal>
       ) : null}
     </div>
