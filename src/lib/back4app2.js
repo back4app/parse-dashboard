@@ -146,7 +146,53 @@ const back4app2 = {
     );
 
     return result.data.data.redirectToAgent;
-  }
+  },
+  createStripeSession: async (returnUrl) => {
+    const result = await axios.post(
+      b4aSettings.CONTAINERS_API_PATH,
+      {
+        query: `
+          query CreateStripeSession($returnUrl: String) {
+            createStripeSession(returnUrl: $returnUrl)
+          }
+        `,
+        variables: { returnUrl },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      }
+    );
+
+    return result.data.data.createStripeSession;
+  },
+  stripeSessionStatus: async (sessionId) => {
+    const result = await axios.post(
+      b4aSettings.CONTAINERS_API_PATH,
+      {
+        query: `
+          mutation StripeSessionStatus($sessionId: String!) {
+            stripeSessionStatus(sessionId: $sessionId)
+          }
+        `,
+        variables: { sessionId },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      }
+    );
+
+    if (result.data.errors) {
+      throw new Error(result.data.errors[0].message);
+    }
+
+    return result.data.data.stripeSessionStatus;
+  },
 };
 
 export default back4app2;
