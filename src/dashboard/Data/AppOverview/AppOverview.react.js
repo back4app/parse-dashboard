@@ -24,6 +24,7 @@ import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
+import { Link } from 'react-router-dom';
 
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 const LazyMCPSetupModal = lazy(() => import('./MCPSetupModal.js'));
@@ -60,6 +61,10 @@ class AppOverview extends DashboardView {
       showCopiedTooltip: false,
       showConnectAppModal: false,
       showMCPSetupModal: false,
+
+      isLoadingWebhosting: true,
+      webhosting: undefined,
+      webhostingError: undefined,
 
       currentUser: user,
 
@@ -180,6 +185,17 @@ class AppOverview extends DashboardView {
       isLoadingAvgResponseTime: false,
       avgResponseTime: new Error(err.message || err.msg || 'Something went wrong')
     }));
+
+    // load webhosting information
+    currentApp.getCustomDomain().then(res => this.setState({
+      isLoadingWebhosting: false,
+      webhosting: res,
+      webhostingError: undefined
+    })).catch(err => this.setState({
+      isLoadingWebhosting: false,
+      webhosting: undefined,
+      webhostingError: new Error(err.message || err.msg || 'Something went wrong')
+    }));
   }
 
   async pollSchemas() {
@@ -252,6 +268,22 @@ class AppOverview extends DashboardView {
                 </div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
                 <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - Change Hosting Region Button')} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a></span></div>
+                <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}><span className={styles.greyText}>Web Hosting: </span>
+                  {this.state.isLoadingWebhosting ?
+                    <Icon name="status-spinner" width="16px" height="16px" fill="#1377B8" className={styles.spinnerStatus} /> :
+                    <>{this.state.webhosting?.hostSettings?.webhost ?
+                      <>
+                        <a
+                          className={styles.webhostingLink}
+                          href={`https://${this.state.webhosting.hostSettings.webhost}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {this.state.webhosting.hostSettings.webhost}
+                        </a>
+                        <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>{this.state.webhosting.domains.length > 0 ? 'Domain Settings' : 'Add custom domain'}</Link>
+                      </> :
+                      (<Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>Configure</Link>)}</>}</div>
               </div>
             </div>
           </div>
