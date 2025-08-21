@@ -2,7 +2,7 @@ import React from 'react';
 import jstree from 'jstree';
 // 🚫🚫 DO NOT REMOVE ABOVE LINE, as the scripts needs to be loaded that allows to use $('#tree').jstree for proper tree rendering, it took me a whole day to debug 🤯🤯🤯.
 import $ from 'jquery';
-import { Resizable } from 're-resizable';
+// import { Resizable } from 're-resizable';
 import ReactFileReader from 'react-file-reader';
 import styles from 'components/B4ACodeTree/B4ACodeTree.scss'
 import Button from 'components/Button/Button.react';
@@ -417,8 +417,8 @@ export default class B4ACodeTree extends React.Component {
                 </div>
               )}
             </div>
-            <Resizable className={styles['files-tree']}
-              defaultSize={{ height: '100%', overflow: 'srcoll', width: '100%' }}
+            <div className={styles['files-tree']}
+              defaultSize={{ height: '100%', overflow: 'auto', width: '100%' }}
               enable={{
                 top:false,
                 right:false,
@@ -430,7 +430,7 @@ export default class B4ACodeTree extends React.Component {
                 topLeft:false
               }}>
               <div id={'tree'} onClick={this.watchSelectedNode.bind(this)}></div>
-            </Resizable>
+            </div>
           </div>
         </div>
         <div className={styles.filePreview}>
