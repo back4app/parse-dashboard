@@ -70,7 +70,8 @@ class BrowserCell extends Component {
         this.props.appId,
         this.props.value.className
       );
-      let dataValue = this.props.value.id;
+      let value = this.props.value;
+      let dataValue = this.props.value.id || this.props.value.objectId;
       if (defaultPointerKey !== 'objectId') {
         dataValue = this.props.value.get(defaultPointerKey);
         if (dataValue && typeof dataValue === 'object') {
@@ -96,13 +97,13 @@ class BrowserCell extends Component {
       if (this.props.value && this.props.value.__type) {
         const object = new Parse.Object(this.props.value.className);
         object.id = this.props.value.objectId;
-        this.props.value = object;
+        value = object;
       }
 
       content = this.props.onPointerClick ? (
         <Pill
           value={dataValue}
-          onClick={this.props.onPointerClick.bind(undefined, this.props.value)}
+          onClick={this.props.onPointerClick.bind(undefined, value)}
           followClick={true}
           shrinkablePill
         />
@@ -155,7 +156,7 @@ class BrowserCell extends Component {
       //     classes.push(styles.hasMore);
       //   }
       // } else {
-        this.copyableValue = content = JSON.stringify(this.props.value);
+      this.copyableValue = content = JSON.stringify(this.props.value);
       // }
     } else if (this.props.type === 'Date') {
       if (typeof value === 'object' && this.props.value.__type) {

@@ -57,11 +57,11 @@ export default class BrowserRow extends Component {
     }, requiredCols);
     // for dynamically changing required field on _User class
     if (
-      obj.className === '_User' &&
+      obj.className === '_User' && obj instanceof Parse.Object &&
       (obj.get('username') !== undefined || obj.get('password') !== undefined)
     ) {
       requiredCols = ['username', 'password'];
-    } else if (obj.className === '_User' && obj.get('authData') !== undefined) {
+    } else if (obj.className === '_User' && obj instanceof Parse.Object && obj.get('authData') !== undefined) {
       requiredCols = ['authData'];
     }
     return (
