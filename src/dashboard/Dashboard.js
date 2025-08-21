@@ -269,8 +269,6 @@ class Dashboard extends React.Component {
         }).catch(err => console.log(err));
       });
 
-      console.log('got apps info from parse-dashboard-config.json');
-
       const stateApps = [];
       apps.forEach(app => {
         app.serverInfo = { status: 'LOADING', features: PARSE_DOT_COM_SERVER_INFO.features };
@@ -298,10 +296,7 @@ class Dashboard extends React.Component {
       // fetch serverInfo request for each app
       apps.forEach(async (app) => {
         // Set master key as a default string to avoid undefined value access issues
-        if (!app.masterKey) {
-          app.masterKey = '******';
-          console.log('masterkey assisgned as ******');
-        }
+        if (!app.masterKey) {app.masterKey = '******'}
         if (app.serverURL.startsWith('https://api.parse.com/1')) {
           //api.parse.com doesn't have feature availability endpoint, fortunately we know which features
           //it supports and can hard code them
@@ -309,12 +304,9 @@ class Dashboard extends React.Component {
           AppsManager.updateApp(app);
         } else {
           let updatedApp;
-          console.log('making request to serverInfo');
           try {
             const serverInfo = await (new ParseApp(app).apiRequest('GET', 'serverInfo', {}, { useMasterKey: true }));
             app.serverInfo = { ...serverInfo, status: 'SUCCESS' };
-            console.log('serverInfo received');
-            console.log('updating appsManager')
             updatedApp = AppsManager.updateApp(app);
             this.updateApp(updatedApp);
           } catch (error) {
@@ -354,7 +346,6 @@ class Dashboard extends React.Component {
         }
       });
     }).catch((error) => {
-      console.log('error in parse-dashboard-config.json');
       console.log(error);
       this.setState({
         configLoadingError: error.message,
@@ -364,7 +355,6 @@ class Dashboard extends React.Component {
   }
 
   updateApp(app) {
-    console.log('updating app', app);
     const updatedApps = [...this.state.apps];
     const appIdx = updatedApps.findIndex(ap => ap.applicationId === app.applicationId);
     if (appIdx === -1) {return;}
