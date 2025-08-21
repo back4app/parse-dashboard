@@ -272,6 +272,7 @@ class Dashboard extends React.Component {
       const stateApps = [];
       apps.forEach(app => {
         app.serverInfo = { status: 'LOADING', features: PARSE_DOT_COM_SERVER_INFO.features };
+        if (!app.masterKey) {app.masterKey = '******'}
         AppsManager.addApp(app);
         stateApps.push(new ParseApp(app));
       });
