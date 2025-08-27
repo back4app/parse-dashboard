@@ -496,6 +496,7 @@ class DomainSettings extends DashboardView {
                   <Button
                     value={'Edit'}
                     color="blue"
+                    secondary={true}
                     onClick={() => this.setState({ isEditing: true })}
                     disabled={this.state.updating}
                   /></>
