@@ -519,7 +519,7 @@ class DomainSettings extends DashboardView {
 
         <div style={{ marginTop: this.state.canChangeCustomDomain ? '0' : '1rem', opacity: this.state.canChangeCustomDomain ? 1 : 0.5, pointerEvents: this.state.canChangeCustomDomain ? 'auto' : 'none' }}>
           <Field
-            label={<Label text="Custom domain" dark={true} description="Lorem ipsum dolor sit amet." />}
+            label={<Label text="Custom domain" dark={true} description="Enter your custom domain" />}
             input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <TextInput
                 value={this.state.customDomain}
