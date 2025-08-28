@@ -111,6 +111,41 @@
   }
 }
 
+.blue {
+  color: $old-blue;
+  border-color: $old-blue;
+  line-height: 28px;
+  background-color: transparent;
+
+  &:hover{
+    background-color: $old-blue;
+    color: $white !important;
+  }
+
+  &.primary {
+    background-color: $old-blue;
+    color: $white;
+
+    &:hover {
+      background-color: $old-blue;
+      color: $white;
+    }
+  }
+
+  &.disabled {
+    background-color: transparent;
+    border-color: $white;
+    opacity: 0.2;
+  }
+  &.dark {
+    color: $white;
+    border: 1px solid #F9F9F90F;
+    &:hover {
+      color: $white !important;
+    }
+  }
+}
+
 .yellow {
   color: $yellow;
   border-color: $yellow;
@@ -168,16 +203,5 @@
     &:hover {
       background-color: rgba($cta-green, 0.3) !important;
     }
-  }
-}
-
-
-.blue {
-  color: $old-blue;
-  border-color: $old-blue;
-
-  &:hover {
-    background-color: $old-blue;
-    color: $white;
   }
 }

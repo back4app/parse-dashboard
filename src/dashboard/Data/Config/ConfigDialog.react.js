@@ -194,7 +194,7 @@ export default class ConfigDialog extends React.Component {
     );
     return (
       <B4aModal
-        type={B4aModal.Types.INFO}
+        type={B4aModal.Types.DEFAULT}
         title={newParam ? 'New parameter' : 'Edit parameter'}
         subtitle={'Dynamically configure parts of your app'}
         disabled={!this.valid()}

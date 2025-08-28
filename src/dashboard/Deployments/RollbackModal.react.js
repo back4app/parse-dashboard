@@ -31,7 +31,7 @@ const RollbackModal = ({ onCancel, onConfirm, releaseId, onSuccess }) => {
 
   return (
     <B4aModal
-      type={B4aModal.Types.INFO}
+      type={B4aModal.Types.DEFAULT}
       title='Confirm Rollback'
       subtitle={`You\'re about to revert to version ${releaseId}. Please type only the version number to confirm`}
       confirmText={isRollingBack === false ? 'Rollback' : 'Rolling back...'}

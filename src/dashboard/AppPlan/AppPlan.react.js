@@ -466,7 +466,7 @@ class AppPlan extends DashboardView {
 
         {this.state.openCheckout ? (
           <B4aModal
-            type={B4aModal.Types.INFO}
+            type={B4aModal.Types.DEFAULT}
             width={'80vw'}
             customFooter={<div></div>}
             onCancel={() => this.setState({ openCheckout: false })}

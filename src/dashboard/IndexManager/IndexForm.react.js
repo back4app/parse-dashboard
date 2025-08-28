@@ -363,7 +363,7 @@ class IndexForm extends Component {
       )
 
     return (
-      <B4aModal width={700} type={B4aModal.Types.INFO} title='New Index' subtitle='Optimize your queries performance' confirmText='Create Index' onConfirm={this.createIndex} onCancel={this.props.onCancel}>
+      <B4aModal width={700} type={B4aModal.Types.DEFAULT} title='New Index' subtitle='Optimize your queries performance' confirmText='Create Index' onConfirm={this.createIndex} onCancel={this.props.onCancel}>
         <div className={styles.indexFormContainer}>
           <Field
             labelWidth={35}

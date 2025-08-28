@@ -370,7 +370,7 @@ class DomainSettings extends DashboardView {
 
     if (this.state.isVerifyingSession || this.state.showSuccessMessage) {
       content = <B4aModal
-        type={B4aModal.Types.INFO}
+        type={B4aModal.Types.DEFAULT}
         title={this.state.showSuccessMessage ? 'Payment Verified' : 'Verifying payment'}
         subtitle={this.state.showSuccessMessage ? 'Your payment has been successfully verified!' : 'Please wait while we verify your payment...'}
         width={'60vw'}
@@ -496,6 +496,7 @@ class DomainSettings extends DashboardView {
                   <Button
                     value={'Edit'}
                     color="blue"
+                    secondary={true}
                     onClick={() => this.setState({ isEditing: true })}
                     disabled={this.state.updating}
                   /></>
@@ -519,7 +520,7 @@ class DomainSettings extends DashboardView {
 
         <div style={{ marginTop: this.state.canChangeCustomDomain ? '0' : '1rem', opacity: this.state.canChangeCustomDomain ? 1 : 0.5, pointerEvents: this.state.canChangeCustomDomain ? 'auto' : 'none' }}>
           <Field
-            label={<Label text="Custom domain" dark={true} description="Lorem ipsum dolor sit amet." />}
+            label={<Label text="Custom domain" dark={true} description="Enter your custom domain" />}
             input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <TextInput
                 value={this.state.customDomain}
