@@ -370,7 +370,7 @@ class DomainSettings extends DashboardView {
 
     if (this.state.isVerifyingSession || this.state.showSuccessMessage) {
       content = <B4aModal
-        type={B4aModal.Types.INFO}
+        type={B4aModal.Types.DEFAULT}
         title={this.state.showSuccessMessage ? 'Payment Verified' : 'Verifying payment'}
         subtitle={this.state.showSuccessMessage ? 'Your payment has been successfully verified!' : 'Please wait while we verify your payment...'}
         width={'60vw'}

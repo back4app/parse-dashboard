@@ -2,7 +2,7 @@ import React from 'react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 
 export const PurgeFilesModal = ({ context, setParentState }) => <B4aModal
-  type={B4aModal.Types.INFO}
+  type={B4aModal.Types.DEFAULT}
   title='Clean Orphan Files'
   subtitle={'The files without DB references will be removed!'}
   confirmText='Purge Files'

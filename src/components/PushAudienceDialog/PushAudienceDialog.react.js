@@ -283,7 +283,7 @@ export default class PushAudienceDialog extends React.Component {
     return (
       <B4aModal
         title={this.props.editMode ? 'Edit audience' : 'Create a new audience'}
-        type={B4aModal.Types.INFO}
+        type={B4aModal.Types.DEFAULT}
         width={900}
         customFooter={customFooter}
         onCancel={this.props.secondaryAction}

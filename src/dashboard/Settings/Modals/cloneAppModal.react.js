@@ -96,7 +96,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
   }
 
   return <B4aModal
-    type={B4aModal.Types.INFO}
+    type={B4aModal.Types.DEFAULT}
     title='Clone app'
     subtitle={'This allows you to create a clone from this app'}
     confirmText={processing === false ? 'Clone' : 'Please wait...'}

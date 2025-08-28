@@ -6,7 +6,7 @@ export const RestartAppModal = ({ context, setParentState }) => {
   const [ processing, setProcessing ] = useState(false);
 
   return <B4aModal
-    type={B4aModal.Types.INFO}
+    type={B4aModal.Types.DEFAULT}
     title='Restart the app'
     subtitle={'This will restart the app'}
     confirmText={processing === false ? 'Restart app' : 'Restarting...'}

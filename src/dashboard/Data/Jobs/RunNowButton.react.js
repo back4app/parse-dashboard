@@ -69,7 +69,7 @@ export default class RunNowButton extends React.Component {
         ref={this.buttonRef}
         progress={this.state.progress}
         onClick={this.handleClick.bind(this)}
-        color={this.state.result === 'error' ? 'red' : 'blue'}
+        color={this.state.result === 'error' ? 'red' : 'green'}
         value={value}
         {...other}
         eventName="Jobs - run a job"
