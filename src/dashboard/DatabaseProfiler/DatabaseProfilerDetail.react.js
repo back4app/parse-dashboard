@@ -150,17 +150,16 @@ const DatabaseProfilerDetail = ({ data }) => {
           <div className={styles.detailSection}>
             <h3>Find and Modify Operation</h3>
             <div className={styles.detailGrid}>
+              {limit > 0 && renderDetailRow('Limit', limit)}
               <div className={styles.queryContainer}>
                 <h4>Query Document</h4>
                 <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
               </div>
               {Object.keys(sort).length > 0 && (
-                <>
+                <div className={styles.queryContainer}>
                   <h4>Sort Criteria</h4>
-                  <div className={styles.queryContainer}>
-                    <pre className="language-javascript">{JSON.stringify(sort, null, 2)}</pre>
-                  </div>
-                </>
+                  <pre className="language-javascript">{JSON.stringify(sort, null, 2)}</pre>
+                </div>
               )}
               {update && (
                 <div className={styles.queryContainer}>
@@ -168,7 +167,6 @@ const DatabaseProfilerDetail = ({ data }) => {
                   <pre className="language-javascript">{JSON.stringify(update, null, 2)}</pre>
                 </div>
               )}
-              {limit > 0 && renderDetailRow('Limit', limit)}
             </div>
           </div>
         );
