@@ -92,21 +92,21 @@
 }
 
 .detailSection {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 
   h3 {
     color: #ffffff;
-    font-size: 16px;
-    margin-bottom: 16px;
-    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-weight: 600;
   }
 }
 
 .detailGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 12px;
 
   &.twoColumns {
     grid-template-columns: repeat(2, 1fr);
@@ -152,37 +152,48 @@
 
 .queryContainer {
   background: rgba(255, 255, 255, 0.05);
-  padding: 16px;
+  padding: 12px;
   border-radius: 6px;
   font-size: 13px;
   width: 100%;
   line-height: 1.5;
   box-sizing: border-box;
+  max-height: 200px;
+  display: flex;
+  flex-direction: column;
   
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
   pre {
     width: 100%;
-    max-height: 300px;
+    flex: 1;
     overflow: auto;
     margin: 0;
     padding: 8px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
+    font-size: 12px;
     white-space: pre-wrap;
     word-break: break-all;
+    max-height: 150px;
 
     &::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
 
     &::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
+      border-radius: 3px;
     }
 
     &::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
+      border-radius: 3px;
       
       &:hover {
         background: rgba(255, 255, 255, 0.3);
