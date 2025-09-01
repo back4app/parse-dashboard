@@ -55,6 +55,9 @@ class DatabaseProfile extends DashboardView {
   }
 
   onRefresh() {
+    this.setState({
+      isLoadingDatabaseProfiler: true,
+    });
     this.loadData();
   }
 
