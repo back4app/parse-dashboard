@@ -52,18 +52,30 @@ export function useAppPageTracking() {
   const location = useLocation();
 
   useEffect(() => {
-    // Match pattern: /apps/appId/pageName/...
-    const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+)/;
+    // Match pattern: /apps/appId/pageName/section - if exists/...
+    const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+|)(?:\/([^\/]+))?/;
+
     const match = location.pathname.match(appPagePattern);
     const replay = Sentry.getReplay && Sentry.getReplay();
 
     if (match) {
-      const pageName = match[2];
+      let pageName;
+      const section = match[3];
+
+      if (section && typeof section === 'string') {
+        if (section === 'database-profiler') {
+          pageName = 'database_profiler';
+        }
+      }
+
+      if (!pageName) {
+        pageName = match[2];
+      }
 
       Sentry.setTag('page_type', pageName);
 
       if (!isRecordEverySession && replay) {
-        if (pageName === 'cloud_code') {
+        if (pageName === 'cloud_code' || pageName === 'database_profiler') {
           replay.start();
         } else {
           replay.stop();

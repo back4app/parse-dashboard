@@ -1542,6 +1542,20 @@ export default class ParseApp {
     }
   }
 
+  async getDatabaseProfiler() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/database-profiler?fromdashboard=true`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw new Error(err.response && err.response.data && err.response.data.error ? err.response.data.error : "Something went wrong")
+    }
+  }
+
   async getAppPlanData() {
     try {
       const headers = {

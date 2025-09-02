@@ -1,0 +1,235 @@
+#toolbar {
+  z-index: 1000 !important;
+}
+
+.pageContainer {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 64px; /* Account for header */
+  overflow: hidden; /* Prevent double scrollbars */
+}
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  margin-top: 0;
+}
+
+.toolbarButton {
+  margin-left: 10px;
+  cursor: pointer;
+  color: #ffffff;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+
+  svg {
+    fill: currentColor;  // Make SVG icon inherit the text color
+  }
+}
+
+.row {
+  transition: all 0.3s ease;
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0px 1px 0px 0px rgba(193, 226, 255, 0.16);
+    background-color: #1B3454;
+  }
+}
+
+.detailView {
+  padding: 20px;
+  background: #0c1e35;
+  margin-top: 0px; /* Account for toolbar height */
+  box-sizing: border-box;
+}
+
+.detailHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 8px 0;
+  margin-bottom: 24px;
+  background: inherit;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  font-family: inherit;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(-2px);
+  }
+
+  &:active {
+    transform: translateX(-1px);
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    top: 1px;
+  }
+}
+
+.detailContent {
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.detailSection {
+  margin-bottom: 24px;
+
+  h3 {
+    color: #ffffff;
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+
+  &.twoColumns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 1200px) {
+    &.twoColumns {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  box-sizing: border-box;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.detailLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  margin-right: 24px;
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.detailValue {
+  color: #ffffff;
+  word-break: break-word;
+  font-size: 13px;
+  flex: 1;
+}
+
+.queryContainer {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  width: 100%;
+  line-height: 1.5;
+  box-sizing: border-box;
+  max-height: 200px;
+  display: flex;
+  flex-direction: column;
+  
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  pre {
+    width: 100%;
+    flex: 1;
+    overflow: auto;
+    margin: 0;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 150px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+.title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.code {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.booleanTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.booleanTrue {
+  background: rgba(72, 199, 142, 0.2);
+  color: #48c78e;
+}
+
+.booleanFalse {
+  background: rgba(241, 70, 104, 0.2);
+  color: #f14668;
+}

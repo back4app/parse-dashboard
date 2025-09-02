@@ -360,6 +360,11 @@ export default class DashboardView extends React.Component {
       link: '/reports/security',
     });
 
+    advisorsSubSections.push({
+      name: 'Database Profiler',
+      link: '/reports/database-profiler',
+    });
+
     appSidebarSections.push({
       name: 'Logs',
       icon: 'b4a-logs-icon',

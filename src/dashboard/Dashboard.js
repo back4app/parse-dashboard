@@ -75,20 +75,7 @@ const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
 const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
 const LazyAppPlan = lazy(() => import('./AppPlan/AppPlan.react'));
 const LazyAppSecurityReport = lazy(() => import('./AppSecurityReport/AppSecurityReport.react'));
-
-const ShowSchemaOverview = false; //In progress features. Change false to true to work on this feature.
-
-// class Empty extends React.Component {
-//   render() {
-//     return <div>Not yet implemented</div>;
-//   }
-// }
-
-// const AccountSettingsPage = () => (
-//   <AccountView section="Account Settings">
-//     <AccountOverview />
-//   </AccountView>
-// );
+const LazyDatabaseProfile = lazy(() => import('./DatabaseProfiler/DatabaseProfiler.react'));
 
 async function fetchHubUser() {
   try {
@@ -443,8 +430,15 @@ class Dashboard extends React.Component {
 
     const ReportsRoute = (
       <Route>
+        {/* Security Report */}
         <Route path="security" element={<LazyComponentWrapper><LazyAppSecurityReport /></LazyComponentWrapper>} />
         <Route index element={<Navigate replace to="security" />} />
+
+        {/* Database Profiler */}
+        <Route path="database-profiler" element={<LazyComponentWrapper><LazyDatabaseProfile /></LazyComponentWrapper>} />
+        <Route index element={<Navigate replace to="database-profiler" />} />
+
+
       </Route>
     );
 
