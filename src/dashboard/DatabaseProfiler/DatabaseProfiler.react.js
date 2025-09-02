@@ -222,9 +222,7 @@ class DatabaseProfile extends DashboardView {
     // Handle error state
     if (databaseProfilerError) {
       content = this.renderError();
-    }
-    // Handle data state
-    else if (!isLoadingDatabaseProfiler) {
+    } else if (!isLoadingDatabaseProfiler) {
       if (!data || !Array.isArray(data) || data.length === 0) {
         content = <div className={stylesTable.empty}>{this.renderEmpty()}</div>;
       } else {
@@ -243,12 +241,12 @@ class DatabaseProfile extends DashboardView {
       <div>
         <B4aLoaderContainer loading={isLoadingDatabaseProfiler}>
           <div className={stylesTable.content}>
-            {toolbar}
+            {headers}
             {content}
             {extras}
           </div>
         </B4aLoaderContainer>
-        {headers}
+      {toolbar}
       </div>
     );
   }
