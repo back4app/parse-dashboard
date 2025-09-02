@@ -52,8 +52,8 @@ export function useAppPageTracking() {
   const location = useLocation();
 
   useEffect(() => {
-    // Match pattern: /apps/appId/pageName/...
-    const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+)/;
+    // Match pattern: /apps/appId/pageName/section - if exists/...
+    const appPagePattern = /^\/apps\/([^\/]+)\/([^\/]+|)(?:\/([^\/]+))?/;
 
     const match = location.pathname.match(appPagePattern);
     const replay = Sentry.getReplay && Sentry.getReplay();
