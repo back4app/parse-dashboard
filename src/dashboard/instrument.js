@@ -79,8 +79,10 @@ export function useAppPageTracking() {
 
       if (!isRecordEverySession && replay) {
         if (pageName === 'database_profiler' || pageName === 'cloud_code') {
+          console.log('replay started')
           replay.start();
         } else {
+          console.log('replay stopped')
           replay.stop();
         }
       }
