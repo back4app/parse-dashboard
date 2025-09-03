@@ -9,7 +9,7 @@ import {
 
 // eslint-disable-next-line no-undef
 const isLessThan2Hours = (Date.now() - new Date(process.env.BUILD_TIMESTAMP)) < (1000 * 60 * 60 * (b4aSettings.SENTRY_RECORD_X_HOURS || 1));
-const isRecordEverySession = (process.env.SENTRY_ENV === 'production' || process.env.SENTRY_ENV === 'homolog') && isLessThan2Hours;
+const isRecordEverySession = false;
 
 export default function instrument() {
   const replay = Sentry.replayIntegration({
@@ -48,6 +48,8 @@ export default function instrument() {
 
 Sentry.setTag('project', 'Backend Dashboard');
 
+// const ALLOWED_PAGE_NAMES = ['cloud_code', 'database_profiler'];
+
 export function useAppPageTracking() {
   const location = useLocation();
 
@@ -73,9 +75,10 @@ export function useAppPageTracking() {
       }
 
       Sentry.setTag('page_type', pageName);
+      console.log('pageName', pageName);
 
       if (!isRecordEverySession && replay) {
-        if (pageName === 'cloud_code' || pageName === 'database_profiler') {
+        if (pageName === 'database_profiler' || pageName === 'cloud_code') {
           replay.start();
         } else {
           replay.stop();
