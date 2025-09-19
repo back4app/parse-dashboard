@@ -174,6 +174,39 @@ const getManualJsonContent = (ide, mcpKey, isLinux) => {
   }
 }
 
+const generateDeeplink = (ide, mcpKey) => {
+  if (ide === 'cursor') {
+    const config = {
+      command: 'npx',
+      args: [
+        '-y',
+        '@back4app/mcp-server-back4app@latest',
+        '--account-key',
+        mcpKey
+      ]
+    };
+
+    const base64Config = btoa(JSON.stringify(config));
+    return `cursor://anysphere.cursor-deeplink/mcp/install?name=back4app&config=${encodeURIComponent(base64Config)}`;
+  } else if (ide === 'vscode') {
+    const config = {
+      name: 'back4app',
+      command: 'npx',
+      args: [
+        '-y',
+        '@back4app/mcp-server-back4app@latest',
+        '--account-key',
+        mcpKey
+      ]
+    };
+
+    const encoded = encodeURIComponent(JSON.stringify(config));
+    return `vscode:mcp/install?${encoded}`;
+  }
+
+  return null;
+};
+
 const getVerifyContent = (ide) => {
   if (ide === 'cursor') {
     return <div className={styles.text}>Navigate to: <strong>Cursor &gt; Full Settings &gt; MCP</strong></div>
@@ -223,14 +256,40 @@ const getManualInstructions = (ide) => {
 
 const getIDEContent = (ide, automatic, mcpKey) => {
   if (automatic) {
+    const deeplink = generateDeeplink(ide, mcpKey);
+
     return (
       <div>
-        <div className={styles.step}>1. Run the installation command</div>
-        <div className={styles.text}>Copy and run the command below in your terminal to install {ide}.</div>
-        <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
-        <div style={{ margin: '1rem 0' }}></div>
-        <div className={styles.step}>2. Verify your connection</div>
-        {getVerifyContent(ide)}
+        {deeplink && (
+          <>
+            <div className={styles.step}>1. One-click installation (Recommended)</div>
+            <div className={styles.text}>Click the button below to automatically install and configure the MCP server:</div>
+            <div style={{ margin: '1rem 0' }}>
+              <Button
+                primary={true}
+                value={`Add to ${ide.charAt(0).toUpperCase() + ide.slice(1)}`}
+                onClick={() => window.open(deeplink, '_self')}
+              />
+            </div>
+            <div style={{ margin: '1rem 0' }}></div>
+            <div className={styles.step}>2. Alternative: Terminal installation</div>
+            <div className={styles.text}>Or copy and run the command below in your terminal to install {ide}:</div>
+            <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
+            <div style={{ margin: '1rem 0' }}></div>
+            <div className={styles.step}>3. Verify your connection</div>
+            {getVerifyContent(ide)}
+          </>
+        )}
+        {!deeplink && (
+          <>
+            <div className={styles.step}>1. Run the installation command</div>
+            <div className={styles.text}>Copy and run the command below in your terminal to install {ide}.</div>
+            <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
+            <div style={{ margin: '1rem 0' }}></div>
+            <div className={styles.step}>2. Verify your connection</div>
+            {getVerifyContent(ide)}
+          </>
+        )}
       </div>
     );
   } else {
@@ -283,13 +342,13 @@ const MCPSetupModal = ({ closeModal, context }) => {
             <Icon name="b4a-cursor-icon" width={60} height={60} />
             <div className={styles.mcpChoiceTitle}>Cursor</div>
           </div>
-          <div className={styles.mcpChoice} onClick={() => handleIDEClick('windsurf')}>
-            <Icon name="b4a-windsurf-icon" width={60} height={60} />
-            <div className={styles.mcpChoiceTitle}>Windsurf</div>
-          </div>
           <div className={styles.mcpChoice} onClick={() => handleIDEClick('vscode')}>
             <Icon name="b4a-vscode-icon" width={60} height={60} />
             <div className={styles.mcpChoiceTitle}>VSCode</div>
+          </div>
+          <div className={styles.mcpChoice} onClick={() => handleIDEClick('windsurf')}>
+            <Icon name="b4a-windsurf-icon" width={60} height={60} />
+            <div className={styles.mcpChoiceTitle}>Windsurf</div>
           </div>
         </div>
       </div>
