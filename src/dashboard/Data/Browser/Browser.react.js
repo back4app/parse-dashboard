@@ -289,7 +289,7 @@ class Browser extends DashboardView {
         this.redirectToFirstClass(this.props.schema.data.get('classes'));
       }
     } catch (fetchError) {
-      console.error('Erro ao buscar schema:', fetchError);
+      console.error('Error fetching schema:', fetchError);
     }
   }
   
@@ -507,7 +507,7 @@ class Browser extends DashboardView {
                   }
                 }).catch(e => {
                   if (e.code === 103 && e.message.includes('already exists')) {
-                    console.log('Classe já existe, continuando para criar objeto...');
+                    console.log('Class already exists, continue creating the object...');
                     return;
                   }
                   throw e;
