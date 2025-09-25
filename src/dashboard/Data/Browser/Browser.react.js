@@ -243,7 +243,6 @@ class Browser extends DashboardView {
     if (!currentApp.preventSchemaEdits) {
       this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" /> Add class</span>, this.showCreateClass.bind(this));
     }
-
     this.props.schema.dispatch(ActionTypes.FETCH).then(() => {
       this.handleFetchedSchema();
       !this.props.params.className && this.redirectToFirstClass(this.props.schema.data.get('classes'));
@@ -267,9 +266,33 @@ class Browser extends DashboardView {
     window.addEventListener('resize', this.windowResizeHandler);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.addLocation(this.props.params.appId);
+  
+    try {
+      await this.props.schema.dispatch(ActionTypes.FETCH);
+      this.handleFetchedSchema();
+      const classes = this.props.schema.data.get('classes');
+      const currentUser = AccountManager.currentUser();
+  
+      if (currentUser.playDatabaseBrowserTutorial && (!classes || classes.size === 0)) {
+        const className = 'B4aVehicle';
+  
+        await this.createClass(className, false);
+
+        this.addColumn({ type: 'String', name: 'name', required: true });
+        this.addColumn({ type: 'Number', name: 'price', required: true });
+        this.addColumn({ type: 'String', name: 'color', required: false });
+      }
+  
+      if (!this.props.params.className) {
+        this.redirectToFirstClass(this.props.schema.data.get('classes'));
+      }
+    } catch (fetchError) {
+      console.error('Erro ao buscar schema:', fetchError);
+    }
   }
+  
 
   componentWillUnmount() {
     this.removeLocation();
@@ -315,8 +338,19 @@ class Browser extends DashboardView {
       this.prefetchData(nextProps, nextContext);
     }
   }
-
+  
   getTourConfig() {
+    const updateState = (saveObject) => {
+  
+      this.setState(prev => {
+        const newData = prev.data ? [saveObject, ...prev.data] : [saveObject];
+        return {
+          data: newData,
+          counts: { ...prev.counts, B4aVehicle: (prev.counts?.B4aVehicle || 0) + 1 },
+          clp: { ...prev.clp, B4aVehicle: {} }
+        };
+      });
+    }
     const createClassCode = `
       <section class="intro-code">
         <pre><span class="intro-code-keyword">const</span> B4aVehicle = Parse.Object.extend(<span class="intro-code-string">'B4aVehicle'</span>);</pre>
@@ -412,6 +446,9 @@ class Browser extends DashboardView {
       throw new Error('Component not ready');
     };
 
+    let vehicleRowCreated = false;      
+
+
     return {
       steps,
       onBeforeStart: () => {
@@ -430,7 +467,6 @@ class Browser extends DashboardView {
       },
       onBeforeChange: function(targetElement) {
         const introItems = this._introItems;
-
         // Fires event if it's not a forced transition
         if (!this._forcedStep) {
           amplitudeLogEvent(`On Database Browser Tour Step ${introItems[this._currentStep].eventId}`)
@@ -461,7 +497,7 @@ class Browser extends DashboardView {
             break;
           case 3:
             {
-              if (!getCustomVehicleClassLink() && !unexpectedErrorThrown) {
+              if (!getCustomVehicleClassLink() && !unexpectedErrorThrown && !vehicleRowCreated) {
                 schema.dispatch(ActionTypes.CREATE_CLASS, {
                   className: 'B4aVehicle',
                   fields: {
@@ -469,14 +505,31 @@ class Browser extends DashboardView {
                     price: { type: 'Number' },
                     color: { type: 'String' },
                   }
-                }).then(() => {
-                  return context.apiRequest('POST', '/classes/B4aVehicle', { name: 'Corolla', price: 19499, color: 'black' }, { useMasterKey: true });
+                }).catch(e => {
+                  if (e.code === 103 && e.message.includes('already exists')) {
+                    console.log('Classe já existe, continuando para criar objeto...');
+                    return;
+                  }
+                  throw e;
+                }).then(async () => {
+                  vehicleRowCreated = true;
+
+                  const Vehicle = Parse.Object.extend('B4aVehicle');
+                  const vehicle = new Vehicle();
+
+                  vehicle.set('name', 'Corolla');
+                  vehicle.set('price', 19499);
+                  vehicle.set('color', 'black');
+
+                  const savedObject = await vehicle.save(null, { useMasterKey: true });
+                  return savedObject
+                }).then((savedObject) => {
+                  updateState(savedObject)
                 }).then(() => {
                   introItems[3].element = getCustomVehicleClassLink();
                   this.nextStep();
                 }).catch(e => {
                   if (!unexpectedErrorThrown) {
-                    console.log(introItems);
                     introItems.splice(3, 2);
                     for (let i = 3; i < introItems.length; i++) {
                       introItems[i].step -= 2;
@@ -748,7 +801,7 @@ class Browser extends DashboardView {
     if (semver.lte(this.context.serverInfo.parseServerVersion, '3.1.1')) {
       clp = {};
     }
-    this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className, clp }).then(() => {
+    return this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className, clp }).then(() => {
       this.state.counts[className] = 0;
       this.state.clp[className] = clp;
       this.props.navigate(generatePath(this.context, 'browser/' + className));
@@ -759,6 +812,11 @@ class Browser extends DashboardView {
     }).catch(error => {
       let errorDeletingNote = 'Internal server error'
       if (error.code === 403) {errorDeletingNote = error.message;}
+
+      if (error.code === 103 && error.message.includes(`already exists`)) {
+        console.log(`Class ${className} already exists`);
+        return;
+      }
 
       this.showNote(errorDeletingNote, true);
     }).finally(() => {
