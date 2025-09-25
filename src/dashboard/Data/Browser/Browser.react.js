@@ -384,7 +384,7 @@ class Browser extends DashboardView {
       },
       {
         eventId: 'Custom Class and Object Creation',
-        element: () => document.querySelectorAll('.section')[2],
+        element: () => document.querySelectorAll('.section')[3],
         intro: `It’s very simple to save data on Back4App from your front-end.<br /><br />
         On the <b>API Reference</b> section, you can find the auto-generated code below that creates a class and persist data on it.<br />
         ${createClassCode}
