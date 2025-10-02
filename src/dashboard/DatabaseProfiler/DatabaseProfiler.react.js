@@ -113,16 +113,16 @@ class DatabaseProfile extends DashboardView {
 
   renderHeaders() {
     return [
-      <TableHeader key="Operation Type" width={25}>
+      <TableHeader key="OperationType" width={25}>
         Operation Type
       </TableHeader>,
       <TableHeader key="Class" width={25}>
         Class
       </TableHeader>,
-      <TableHeader key="Time" width={25}>
+      <TableHeader key="ExecutionTime" width={25}>
         Execution Time (ms)
       </TableHeader>,
-      <TableHeader key="Time" width={25}>
+      <TableHeader key="ExecutedAt" width={25}>
         Executed At (UTC)
       </TableHeader>
     ];

@@ -5,8 +5,41 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React from 'react';
+
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import ReactMarkdown from 'react-markdown';
 import styles from './DatabaseProfiler.scss';
+
+import Prism from 'prismjs';
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+import 'prismjs/components/prism-json';
+// eslint-disable-next-line no-unused-vars
+import 'stylesheets/b4a-prisma.css';
+
+const handleCopy = async (value) => {
+  try {
+    await navigator.clipboard.writeText(value.trim());
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+  }
+};
+
+const CodeBlock = ({ language, value }) => {
+  useEffect(() => {
+    if (typeof Prism !== 'undefined') {
+      Prism.highlightAll();
+    }
+  }, [value, language]);
+
+  return (
+    <div className={styles.codeBlockContainer}>
+      <pre className="line-numbers"><code className={`language-${language}`}>{value.trim()}</code></pre>
+    </div>
+  );
+};
+
 
 const DatabaseProfilerDetail = ({ data }) => {
   if (!data) {
@@ -47,7 +80,7 @@ const DatabaseProfilerDetail = ({ data }) => {
   };
 
   const renderDetailRow = (label, value) => (
-    <div className={styles.detailRow}>
+    <div key={`detail-${label}`} className={styles.detailRow}>
       <span className={styles.detailLabel}>{label}</span>
       <span className={styles.detailValue}>{value}</span>
     </div>
@@ -59,199 +92,174 @@ const DatabaseProfilerDetail = ({ data }) => {
     </span>
   );
 
+  const JsonCodeBlock = React.memo(({ title, data }) => {
+    const memoizedJson = React.useMemo(() => JSON.stringify(data, null, 2), [data]);
+    return (
+    <div className={styles.queryContainer}>
+      {title && 
+        <> 
+          <div className={styles.contentTitle}>
+            <span>{title}</span>
+            <button
+              onClick={() => handleCopy(memoizedJson)}
+              className={styles.copyButton}
+              title="Copy to clipboard"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+        </>
+      }
+      <div className={styles.code}>
+        <ReactMarkdown
+          renderers={{
+            code: CodeBlock
+          }}
+        >{`~~~json
+${JSON.stringify(data, null, 2)}
+~~~`}</ReactMarkdown>
+      </div>
+    </div>
+  );
+});
+
+JsonCodeBlock.propTypes = {
+  title: PropTypes.string,
+  data: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired
+};
+
+const DetailSection = React.memo(({ title, children }) => (
+    <div className={styles.detailSection}>
+      <h3>{title}</h3>
+      <div className={styles.detailGrid}>
+        {children}
+      </div>
+    </div>
+  ));
+
+DetailSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired
+};
+
   const renderOperationSpecificDetails = () => {
     if (!command || command === 'unknown') {
       return (
-        <div className={styles.detailSection}>
-          <h3>Operation Details</h3>
-          <div className={styles.queryContainer}>
-            <pre className="language-javascript">{JSON.stringify(data, null, 2)}</pre>
-          </div>
-        </div>
+        <DetailSection title="Operation Details">
+          <JsonCodeBlock data={data} />
+        </DetailSection>
       );
     }
 
     switch (command) {
       case 'aggregate':
         return (
-          <div className={styles.detailSection}>
-            <h3>Aggregation Pipeline</h3>
-            <div className={styles.queryContainer}>
-              <pre className="language-javascript">{JSON.stringify(pipeline, null, 2)}</pre>
-            </div>
-          </div>
+          <DetailSection title="Aggregation Pipeline">
+            <JsonCodeBlock data={pipeline} />
+          </DetailSection>
         );
 
       case 'count':
         return (
-          <div className={styles.detailSection}>
-            <h3>Count Query</h3>
-            <div className={styles.queryContainer}>
-              <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-            </div>
-          </div>
+          <DetailSection title="Count Query">
+            <JsonCodeBlock data={query} />
+          </DetailSection>
         );
 
       case 'delete':
         return (
-          <div className={styles.detailSection}>
-            <h3>Delete Operation</h3>
-            <div className={styles.detailGrid}>
-              {renderDetailRow('Documents Removed', nRemoved || 0)}
-              <div className={styles.queryContainer}>
-                <h4>Delete Query</h4>
-                <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-              </div>
-            </div>
-          </div>
+          <DetailSection title="Delete Operation">
+            {renderDetailRow('Documents Removed', nRemoved || 0)}
+            <JsonCodeBlock title="Delete Query" data={query} />
+          </DetailSection>
         );
 
       case 'distinct':
         return (
-          <div className={styles.detailSection}>
-            <h3>Distinct Operation</h3>
-            <div className={styles.detailGrid}>
-              {renderDetailRow('Distinct Key', distinct?.key || '')}
-              <div className={styles.queryContainer}>
-                <h4>Distinct Query</h4>
-                <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-              </div>
-            </div>
-          </div>
+          <DetailSection title="Distinct Operation">
+            {renderDetailRow('Distinct Key', distinct?.key || '')}
+            <JsonCodeBlock title="Distinct Query" data={query} />
+          </DetailSection>
         );
 
       case 'find':
       case 'query':
         return (
-          <div className={styles.detailSection}>
-            <h3>Query Details</h3>
-            <div style={{ display: Object.keys(sort).length > 0 ? 'flex' : 'flow', gap: '20px' }}>
-              <div className={styles.queryContainer}>
-                <div className={styles.title}>Find Query</div>
-                <div className={styles.code}>
-                  <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-                </div>
-              </div>
-
+          <DetailSection title="Query Details">
+            <div style={{ display: 'flow', gap: '20px' }}>
+              <JsonCodeBlock title="Find Query" data={query} />
               {Object.keys(sort).length > 0 && (
-                <div className={styles.queryContainer}>
-                  <div className={styles.title}>Sort Criteria</div>
-                  <div className={styles.code}>
-                    <pre className="language-javascript">{JSON.stringify(sort, null, 2)}</pre>
-                  </div>
-                </div>
+                <JsonCodeBlock title="Sort Criteria" data={sort} />
               )}
             </div>
-          </div>
+          </DetailSection>
         );
 
       case 'findAndModify':
         return (
-          <div className={styles.detailSection}>
-            <h3>Find and Modify Operation</h3>
-            <div className={styles.detailGrid}>
-              {limit > 0 && renderDetailRow('Limit', limit)}
-              <div className={styles.queryContainer}>
-                <h4>Query Document</h4>
-                <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-              </div>
-              {Object.keys(sort).length > 0 && (
-                <div className={styles.queryContainer}>
-                  <h4>Sort Criteria</h4>
-                  <pre className="language-javascript">{JSON.stringify(sort, null, 2)}</pre>
-                </div>
-              )}
-              {update && (
-                <div className={styles.queryContainer}>
-                  <h4>Update Operations</h4>
-                  <pre className="language-javascript">{JSON.stringify(update, null, 2)}</pre>
-                </div>
-              )}
-            </div>
-          </div>
+          <DetailSection title="Find and Modify Operation">
+            {limit > 0 && renderDetailRow('Limit', limit)}
+            <JsonCodeBlock title="Query Document" data={query} />
+            {Object.keys(sort).length > 0 && (
+              <JsonCodeBlock title="Sort Criteria" data={sort} />
+            )}
+            {update && (
+              <JsonCodeBlock title="Update Operations" data={update} />
+            )}
+          </DetailSection>
         );
 
       case 'getMore':
         return (
-          <div className={styles.detailSection}>
-            <h3>Get More Operation</h3>
-            <div className={styles.detailGrid}>
-              {renderDetailRow('Documents Returned', docsReturned)}
-            </div>
-          </div>
+          <DetailSection title="Get More Operation">
+            {renderDetailRow('Documents Returned', docsReturned)}
+          </DetailSection>
         );
 
       case 'insert':
         return (
-          <div className={styles.detailSection}>
-            <h3>Insert Operation</h3>
-            <div className={styles.detailGrid}>
-              {renderDetailRow('Documents Inserted', nInserted || 0)}
-            </div>
-          </div>
+          <DetailSection title="Insert Operation">
+            {renderDetailRow('Documents Inserted', nInserted || 0)}
+          </DetailSection>
         );
 
       case 'mapReduce':
         return (
-          <div className={styles.detailSection}>
-            <h3>Map-Reduce Operation</h3>
-            <div className={styles.detailGrid}>
-              {mapReduce && (
-                <>
-                  <div className={styles.queryContainer}>
-                    <h4>Map Function</h4>
-                    <pre className="language-javascript">{mapReduce.map}</pre>
-                  </div>
-                  <div className={styles.queryContainer}>
-                    <h4>Reduce Function</h4>
-                    <pre className="language-javascript">{mapReduce.reduce}</pre>
-                  </div>
-                  {mapReduce.finalize && (
-                    <div className={styles.queryContainer}>
-                      <h4>Finalize Function</h4>
-                      <pre className="language-javascript">{mapReduce.finalize}</pre>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
+          <DetailSection title="Map-Reduce Operation">
+            {mapReduce && (
+              <>
+                <JsonCodeBlock title="Map Function" data={mapReduce.map} />
+                <JsonCodeBlock title="Reduce Function" data={mapReduce.reduce} />
+                {mapReduce.finalize && (
+                  <JsonCodeBlock title="Finalize Function" data={mapReduce.finalize} />
+                )}
+              </>
+            )}
+          </DetailSection>
         );
 
       case 'update':
         return (
-          <div className={styles.detailSection}>
-            <h3>Update Operation</h3>
-            <div className={styles.detailGrid}>
-              {renderDetailRow('Documents Modified', nModified || 0)}
-              <div className={styles.queryContainer}>
-                <h4>Query</h4>
-                <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-              </div>
-              <div className={styles.queryContainer}>
-                <h4>Update</h4>
-                <pre className="language-javascript">{JSON.stringify(update, null, 2)}</pre>
-              </div>
-            </div>
-          </div>
+          <DetailSection title="Update Operation">
+            {renderDetailRow('Documents Modified', nModified || 0)}
+            <JsonCodeBlock title="Query" data={query} />
+            <JsonCodeBlock title="Update" data={update} />
+          </DetailSection>
         );
 
       case 'remove':
         return (
           <>
-            <div className={styles.detailSection}>
-              <h3>Remove Operation</h3>
-              <div className={styles.detailGrid}>
-                {renderDetailRow('Documents Removed', nRemoved || 0)}
-                {renderDetailRow('Limit', limit || 0)}
-              </div>
-            </div>
-            <div className={styles.detailSection}>
-              <h3>Query Details</h3>
-              <div className={styles.queryContainer}>
-                <pre className="language-javascript">{JSON.stringify(query, null, 2)}</pre>
-              </div>
-            </div>
+            <DetailSection title="Remove Operation">
+              {renderDetailRow('Documents Removed', nRemoved || 0)}
+              {renderDetailRow('Limit', limit || 0)}
+            </DetailSection>
+            <DetailSection title="Query Details">
+              <JsonCodeBlock data={query} />
+            </DetailSection>
           </>
         );
       default:
@@ -266,20 +274,20 @@ const DatabaseProfilerDetail = ({ data }) => {
   };
 
   const renderOverview = () => (
-    <div className={styles.detailSection}>
+    <div key="overview-section" className={styles.detailSection}>
       <h3>Operation Overview</h3>
       <div className={styles.detailGrid}>
         {renderDetailRow('Command Type', command)}
         {renderDetailRow('Class', className)}
         {(command === 'find' || command === 'query') && renderDetailRow('Limit', limit || 0)}
-        {renderDetailRow('Total Execution Time', `${duration}ms`)}
-        {renderDetailRow('Last Execution Time', formatDate(ts))}
+        {renderDetailRow('Duration', `${duration}ms`)}
+        {renderDetailRow('Timestamp', formatDate(ts))}
       </div>
     </div>
   );
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ paddingTop: '0px', paddingLeft: '80px', paddingRight: '80px' }}>
       {renderOverview()}
 
       {shouldShowPerformanceMetrics() && (
