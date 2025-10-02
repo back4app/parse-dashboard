@@ -60,6 +60,7 @@ const DatabaseProfilerDetail = ({ data }) => {
     responseLength = 0,
     hasSort = false,
     hasIndex = false,
+    executionStats,
     command = op || 'unknown',  // Fallback to op if command is not present
     limit = 0,
     update,
@@ -146,125 +147,69 @@ DetailSection.propTypes = {
 };
 
   const renderOperationSpecificDetails = () => {
-    if (!command || command === 'unknown') {
-      return (
-        <DetailSection title="Operation Details">
-          <JsonCodeBlock data={data} />
-        </DetailSection>
-      );
-    }
+    let sectionTitle = 'Operation Details', subTitle = '', json, sortJson, updateJson;
 
     switch (command) {
+      case 'unknown':
+        subTitle = 'Command Details';
+        json = data;
+        break;
       case 'aggregate':
-        return (
-          <DetailSection title="Aggregation Pipeline">
-            <JsonCodeBlock data={pipeline} />
-          </DetailSection>
-        );
-
+        subTitle = 'Pipeline';
+        json = pipeline;
+        break;
       case 'count':
-        return (
-          <DetailSection title="Count Query">
-            <JsonCodeBlock data={query} />
-          </DetailSection>
-        );
-
+        subTitle = 'Query';
+        json = query;
+        sortJson = sort;
+        break;
       case 'delete':
-        return (
-          <DetailSection title="Delete Operation">
-            {renderDetailRow('Documents Removed', nRemoved || 0)}
-            <JsonCodeBlock title="Delete Query" data={query} />
-          </DetailSection>
-        );
-
+      case 'remove':
+        subTitle = 'Query';
+        json = query;
+        break;
       case 'distinct':
-        return (
-          <DetailSection title="Distinct Operation">
-            {renderDetailRow('Distinct Key', distinct?.key || '')}
-            <JsonCodeBlock title="Distinct Query" data={query} />
-          </DetailSection>
-        );
-
+        subTitle = 'Query';
+        json = query;
+        break;
       case 'find':
       case 'query':
-        return (
-          <DetailSection title="Query Details">
-            <div style={{ display: 'flow', gap: '20px' }}>
-              <JsonCodeBlock title="Find Query" data={query} />
-              {Object.keys(sort).length > 0 && (
-                <JsonCodeBlock title="Sort Criteria" data={sort} />
-              )}
-            </div>
-          </DetailSection>
-        );
-
+        subTitle = 'Query';
+        json = query;
+        sortJson = sort;
+        break;
       case 'findAndModify':
-        return (
-          <DetailSection title="Find and Modify Operation">
-            {limit > 0 && renderDetailRow('Limit', limit)}
-            <JsonCodeBlock title="Query Document" data={query} />
-            {Object.keys(sort).length > 0 && (
-              <JsonCodeBlock title="Sort Criteria" data={sort} />
-            )}
-            {update && (
-              <JsonCodeBlock title="Update Operations" data={update} />
-            )}
-          </DetailSection>
-        );
-
-      case 'getMore':
-        return (
-          <DetailSection title="Get More Operation">
-            {renderDetailRow('Documents Returned', docsReturned)}
-          </DetailSection>
-        );
-
-      case 'insert':
-        return (
-          <DetailSection title="Insert Operation">
-            {renderDetailRow('Documents Inserted', nInserted || 0)}
-          </DetailSection>
-        );
-
+        subTitle = 'Query';
+        json = query;
+        sortJson = sort;
+        updateJson = update;
+        break;
       case 'mapReduce':
-        return (
-          <DetailSection title="Map-Reduce Operation">
-            {mapReduce && (
-              <>
-                <JsonCodeBlock title="Map Function" data={mapReduce.map} />
-                <JsonCodeBlock title="Reduce Function" data={mapReduce.reduce} />
-                {mapReduce.finalize && (
-                  <JsonCodeBlock title="Finalize Function" data={mapReduce.finalize} />
-                )}
-              </>
-            )}
-          </DetailSection>
-        );
-
+        subTitle = 'Map-Reduce Operation';
+        json = {
+          map: mapReduce?.map,
+          reduce: mapReduce?.reduce,
+          finalize: mapReduce?.finalize
+        };
+        break;
       case 'update':
-        return (
-          <DetailSection title="Update Operation">
-            {renderDetailRow('Documents Modified', nModified || 0)}
-            <JsonCodeBlock title="Query" data={query} />
-            <JsonCodeBlock title="Update" data={update} />
-          </DetailSection>
-        );
-
-      case 'remove':
-        return (
-          <>
-            <DetailSection title="Remove Operation">
-              {renderDetailRow('Documents Removed', nRemoved || 0)}
-              {renderDetailRow('Limit', limit || 0)}
-            </DetailSection>
-            <DetailSection title="Query Details">
-              <JsonCodeBlock data={query} />
-            </DetailSection>
-          </>
-        );
+        subTitle = 'Query';
+        json = query;
+        sortJson = sort;
+        updateJson = update;
+        break;
       default:
         return null;
     }
+
+    return (
+      <DetailSection title={sectionTitle}>
+        {json && Object.keys(json).length > 0 && <JsonCodeBlock title={subTitle} data={json} />}
+        {sortJson && Object.keys(sortJson).length > 0 && <JsonCodeBlock title="Sort Criteria" data={sortJson} />}
+        {updateJson && Object.keys(updateJson).length > 0 && <JsonCodeBlock title="Update Operations" data={updateJson} />}
+        {distinct && Object.keys(distinct).length > 0 && <JsonCodeBlock title="Distinct" data={distinct} />}
+      </DetailSection>
+    );
   };
 
   const shouldShowPerformanceMetrics = () => {
@@ -273,18 +218,46 @@ DetailSection.propTypes = {
     return commandsWithMetrics.includes(command);
   };
 
-  const renderOverview = () => (
-    <div key="overview-section" className={styles.detailSection}>
-      <h3>Operation Overview</h3>
-      <div className={styles.detailGrid}>
-        {renderDetailRow('Command Type', command)}
-        {renderDetailRow('Class', className)}
-        {(command === 'find' || command === 'query') && renderDetailRow('Limit', limit || 0)}
-        {renderDetailRow('Duration', `${duration}ms`)}
-        {renderDetailRow('Timestamp', formatDate(ts))}
+  const getOperationDetails = () => {
+    switch (command) {
+      case 'find':
+      case 'query':
+        const queryTotal = executionStats?.nReturned || docsReturned;
+        return queryTotal !== undefined ? { title: 'Documents Returned', value: queryTotal } : null;
+      case 'count':
+        const countTotal = docsReturned || executionStats?.nReturned;
+        return countTotal !== undefined ? { title: 'Documents Counted', value: countTotal } : null;
+      case 'delete':
+      case 'remove':
+        return nRemoved ? { title: 'Documents Removed', value: nRemoved } : null;
+      case 'insert':
+        return nInserted ? { title: 'Documents Inserted', value: nInserted } : null;
+      case 'update':
+        return nModified ? { title: 'Documents Modified', value: nModified } : null;
+      case 'distinct':
+        return distinct?.key ? { title: 'Distinct Key', value: distinct.key } : null;
+      default:
+        return null;
+    }
+  };
+
+  const renderOverview = () => {
+
+    return (
+      <div key="overview-section" className={styles.detailSection}>
+        <h3>Operation Overview</h3>
+        <div className={styles.detailGrid}>
+          {renderDetailRow('Command Type', command)}
+          {renderDetailRow('Class', className)}
+          {(command === 'find' || command === 'query') && renderDetailRow('Limit', limit || 0)}
+          {renderDetailRow('Duration', `${duration}ms`)}
+          {renderDetailRow('Timestamp', formatDate(ts))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  const operationDetails = getOperationDetails();
 
   return (
     <div style={{ paddingTop: '0px', paddingLeft: '80px', paddingRight: '80px' }}>
@@ -297,6 +270,7 @@ DetailSection.propTypes = {
             {renderDetailRow('Keys Examined', keysExamined)}
             {renderDetailRow('Docs Examined', docsExamined)}
             {renderDetailRow('Response Length', responseLength)}
+            {operationDetails && renderDetailRow(operationDetails.title, operationDetails.value)}
           </div>
         </div>
       )}

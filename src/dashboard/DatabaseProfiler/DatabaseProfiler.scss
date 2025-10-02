@@ -117,7 +117,7 @@ code[class*="language-"], pre[class*="language-"] {
   h3 {
     color: #ffffff;
     font-size: 17px;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
     font-weight: 600;
   }
 }
@@ -127,16 +127,6 @@ code[class*="language-"], pre[class*="language-"] {
   grid-template-columns: 1fr;
   gap: 5px;
   margin-bottom: 12px;
-
-  &.twoColumns {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 1200px) {
-    &.twoColumns {
-      grid-template-columns: 1fr;
-    }
-  }
 }
 
 .detailRow {
@@ -171,6 +161,7 @@ code[class*="language-"], pre[class*="language-"] {
 }
 
 .queryContainer {
+  margin-top: 20px;
   border-radius: 6px;
   font-size: 13px;
   width: 100%;
