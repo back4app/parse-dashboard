@@ -226,7 +226,23 @@ class Browser extends DashboardView {
 
   getFooterMenuButtons() {
     return this.state.renderFooterMenu || this.state.showTour ? [
-      <a key={0} onClick={() => this.setState({ showTour: true })}>Play intro</a>
+      <a 
+        key={0} 
+        onClick={async () => {
+          this.setState({ showTour: true })
+          const classes = this.props.schema.data.get('classes');
+          const className = 'B4aVehicle';
+          const hasClass = classes.has(className);
+
+          if(classes.size == 0 || !hasClass){
+  
+            await this.createClass(className, false);
+
+            this.addColumn({ type: 'String', name: 'name', required: true });
+            this.addColumn({ type: 'Number', name: 'price', required: true });
+            this.addColumn({ type: 'String', name: 'color', required: false });
+          }
+        }}>Play intro</a>
     ] : null;
   }
 
@@ -268,29 +284,6 @@ class Browser extends DashboardView {
 
   async componentDidMount() {
     this.addLocation(this.props.params.appId);
-  
-    try {
-      await this.props.schema.dispatch(ActionTypes.FETCH);
-      this.handleFetchedSchema();
-      const classes = this.props.schema.data.get('classes');
-      const currentUser = AccountManager.currentUser();
-  
-      if (currentUser.playDatabaseBrowserTutorial && (!classes || classes.size === 0)) {
-        const className = 'B4aVehicle';
-  
-        await this.createClass(className, false);
-
-        this.addColumn({ type: 'String', name: 'name', required: true });
-        this.addColumn({ type: 'Number', name: 'price', required: true });
-        this.addColumn({ type: 'String', name: 'color', required: false });
-      }
-  
-      if (!this.props.params.className) {
-        this.redirectToFirstClass(this.props.schema.data.get('classes'));
-      }
-    } catch (fetchError) {
-      console.error('Error fetching schema:', fetchError);
-    }
   }
   
 
@@ -394,7 +387,7 @@ class Browser extends DashboardView {
       },
       {
         eventId: 'Custom Class Link',
-        element: () => document.querySelector('.class_list [title="B4aVehicle"]') || document.querySelector('.class_list'),
+        element: () => document.querySelector('#section_contents a[title="B4aVehicle"]') || document.querySelector('.class_list'),
         intro: 'This is the new <b>B4aVehicle</b> class just created!',
         position: 'right'
       },
@@ -433,7 +426,7 @@ class Browser extends DashboardView {
     }
 
     const getCustomVehicleClassLink = () => {
-      return document.querySelector('[class^=class_list] [title="B4aVehicle"]');
+      return document.querySelector('#section_contents a[title="B4aVehicle"]');
     };
 
     const getNextComponentReadyPromise = async conditionFn => {
@@ -446,7 +439,9 @@ class Browser extends DashboardView {
       throw new Error('Component not ready');
     };
 
-    let vehicleRowCreated = false;      
+    let vehicleRowCreated = false;
+    const reactProps = this.props;
+    const reactContext = this.context;      
 
 
     return {
@@ -497,36 +492,19 @@ class Browser extends DashboardView {
             break;
           case 3:
             {
-              if (!getCustomVehicleClassLink() && !unexpectedErrorThrown && !vehicleRowCreated) {
-                schema.dispatch(ActionTypes.CREATE_CLASS, {
-                  className: 'B4aVehicle',
-                  fields: {
-                    name: { type: 'String' },
-                    price: { type: 'Number' },
-                    color: { type: 'String' },
-                  }
-                }).catch(e => {
-                  if (e.code === 103 && e.message.includes('already exists')) {
-                    console.log('Class already exists, continue creating the object...');
-                    return;
-                  }
-                  throw e;
-                }).then(async () => {
-                  vehicleRowCreated = true;
+              const Vehicle = Parse.Object.extend('B4aVehicle');
+              const vehicle = new Vehicle();
 
-                  const Vehicle = Parse.Object.extend('B4aVehicle');
-                  const vehicle = new Vehicle();
-
-                  vehicle.set('name', 'Corolla');
-                  vehicle.set('price', 19499);
-                  vehicle.set('color', 'black');
-
-                  const savedObject = await vehicle.save(null, { useMasterKey: true });
-                  return savedObject
-                }).then((savedObject) => {
+              vehicle.set('name', 'Corolla');
+              vehicle.set('price', 19499);
+              vehicle.set('color', 'black');
+              if (getCustomVehicleClassLink() && !vehicleRowCreated) {
+                vehicleRowCreated = true;
+                vehicle.save(null, { useMasterKey: true }).then((savedObject) => {
                   updateState(savedObject)
                 }).then(() => {
-                  introItems[3].element = getCustomVehicleClassLink();
+                  const vehicleLink = document.querySelector('#section_contents a[title="B4aVehicle"]');
+                  introItems[3].element = vehicleLink;
                   this.nextStep();
                 }).catch(e => {
                   if (!unexpectedErrorThrown) {
@@ -540,6 +518,22 @@ class Browser extends DashboardView {
                   this.nextStep();
                 });
                 return false;
+              } else if(!getCustomVehicleClassLink()){
+                schema.dispatch(ActionTypes.CREATE_CLASS, { 
+                  className: 'B4aVehicle', 
+                  fields: { 
+                    name: { type: 'String' }, 
+                    price: { type: 'Number' }, 
+                    color: { type: 'String' }, 
+                  } 
+                }).then(async () => {
+                  vehicleRowCreated = true;
+                  await vehicle.save(null, { useMasterKey: true })
+                }).then(() => {
+                  const vehicleLink = document.querySelector('#section_contents a[title="B4aVehicle"]');
+                  introItems[3].element = vehicleLink;
+                  this.nextStep();
+                })
               }
               const nextButton = getNextButton();
               nextButton.innerHTML = 'Next';
@@ -547,15 +541,13 @@ class Browser extends DashboardView {
               const numberLayer = document.querySelector('.introjs-helperNumberLayer');
               numberLayer.style.marginLeft = 0;
               if (!unexpectedErrorThrown) {
-                this.props.navigate(generatePath(this.context, 'browser/B4aVehicle'));
+                reactProps.navigate(generatePath(reactContext, 'browser/B4aVehicle'));
                 // history.push(this.context.generatePath('browser/B4aVehicle'));
               }
             }
             break;
           case 4:
-            if (!unexpectedErrorThrown) {
-              this._introItems[4].element = document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span');
-            }
+            this._introItems[4].element = document.querySelector('#browser > div');
             break;
           case 5:
             if(unexpectedErrorThrown) {
@@ -582,22 +574,6 @@ class Browser extends DashboardView {
               // Disables the Prev button
               document.querySelector('.introjs-button.introjs-prevbutton').classList.add('introjs-disabled');
               targetElement.style.backgroundColor = 'inherit';
-            }
-            break;
-          case 3:
-            if (!unexpectedErrorThrown) {
-              if (!document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span')){
-                // next row has not rendered yet
-                const nextButton = getNextButton();
-                nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
-                nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
-                getNextComponentReadyPromise(() => document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span'))
-                  .then(() => {
-                    nextButton.innerHTML = 'Next';
-                    nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
-                  })
-              }
-              targetElement.style.backgroundColor = '#0e69a0';
             }
             break;
         }
@@ -814,7 +790,6 @@ class Browser extends DashboardView {
       if (error.code === 403) {errorDeletingNote = error.message;}
 
       if (error.code === 103 && error.message.includes(`already exists`)) {
-        console.log(`Class ${className} already exists`);
         return;
       }
 
