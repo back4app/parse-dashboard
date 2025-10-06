@@ -608,12 +608,12 @@ class Browser extends DashboardView {
             break;
           case 3:
             if (!unexpectedErrorThrown) {
-              if (!document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span')){
+              if (!document.querySelector('#browser div > div:nth-child(1)')){
                 // next row has not rendered yet
                 const nextButton = getNextButton();
                 nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
                 nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
-                getNextComponentReadyPromise(() => document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span'))
+                getNextComponentReadyPromise(() => document.querySelector('#browser > div > div:nth-child(1)'))
                   .then(() => {
                     nextButton.innerHTML = 'Next';
                     nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
