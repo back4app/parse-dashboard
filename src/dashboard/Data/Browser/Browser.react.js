@@ -648,6 +648,10 @@ class Browser extends DashboardView {
       onBeforeExit: function() {
         document.querySelector('#browser').style.pointerEvents = 'auto'
         document.removeEventListener('keydown', blockKeys, true);
+        const allSteps = this._introItems.map(item => item.element).filter(Boolean);
+        allSteps.forEach(el => {
+          el.style.backgroundColor = '';
+        });
         // If is exiting before the last step, avoid exit and shows the last step
         if (this._currentStep < this._introItems.length - 1) {
           this._forcedStep = true;
