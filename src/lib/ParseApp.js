@@ -822,7 +822,7 @@ export default class ParseApp {
         this.useLatestDashboardVersion = useLatestDashboardVersion;
       }
       if (useLatestDashboardVersion !== false && (AccountManager.currentUser().backendBetaUser || !b4aSettings.BACKEND_DASHBOARD_IS_BETA)) {
-        window.location.replace(`${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${this.slug}`);
+        window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${this.slug}/overview`;
       }
     });
     return promise;
