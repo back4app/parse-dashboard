@@ -585,10 +585,8 @@ class Browser extends DashboardView {
               break;
           }
         } catch (error) {
-          console.error('Error on step:', e);
-          if (!unexpectedErrorThrown && this._introItems && this._introItems.length >= 8) {
-            this.goToStep(7);
-          }
+          console.error('Error onBeforeChange:', error);
+          this.goToStep(7);
         }
       },
       onAfterChange: function(targetElement) {
