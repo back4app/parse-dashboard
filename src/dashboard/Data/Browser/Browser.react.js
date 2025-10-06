@@ -61,6 +61,7 @@ import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { pushGTMEvent } from 'lib/gtm.js'
+import { get } from 'jquery';
 
 const BROWSER_LAST_LOCATION = 'b4a_brower_last_location';
 // The initial and max amount of rows fetched by lazy loading
@@ -229,7 +230,6 @@ class Browser extends DashboardView {
       <a 
         key={0} 
         onClick={async () => {
-          this.setState({ showTour: true })
           const classes = this.props.schema.data.get('classes');
           const className = 'B4aVehicle';
           const hasClass = classes.has(className);
@@ -242,6 +242,7 @@ class Browser extends DashboardView {
             this.addColumn({ type: 'Number', name: 'price', required: true });
             this.addColumn({ type: 'String', name: 'color', required: false });
           }
+          this.setState({ showTour: true })
         }}>Play intro</a>
     ] : null;
   }
@@ -333,6 +334,11 @@ class Browser extends DashboardView {
   }
   
   getTourConfig() {
+    const blockKeys = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
     const updateState = (saveObject) => {
   
       this.setState(prev => {
@@ -373,7 +379,7 @@ class Browser extends DashboardView {
         eventId: 'Database Browser Section',
         element: () => document.querySelector('#section_contents > div > div'),
         intro: 'This is the <b>Database Browser</b> section where you can create classes and manage your data using this Dashboard.',
-        position: 'right'
+        position: 'right',
       },
       {
         eventId: 'Custom Class and Object Creation',
@@ -383,18 +389,18 @@ class Browser extends DashboardView {
         ${createClassCode}
         <p class="intro-code-run">Click on the <b>Run</b> button to execute this code.</p>`,
         position: 'right',
-        tooltipClass: 'tourThirdStepStyle'
+        tooltipClass: 'tourThirdStepStyle',
       },
       {
         eventId: 'Custom Class Link',
-        element: () => document.querySelector('#section_contents a[title="B4aVehicle"]') || document.querySelector('.class_list'),
-        intro: 'This is the new <b>B4aVehicle</b> class just created!',
+        element: () => getCustomVehicleClassLink() || document.querySelector('.class_list'),
+        intro: 'This is the new <b>B4aVehicle</b> class we created!',
         position: 'right'
       },
       {
         eventId: 'Custom Class Data Table',
         element: () => document.querySelector('#browser'),
-        intro: 'As you can see the <b>B4aVehicle</b> class already has its first data.',
+        intro: 'As you can see a row has been added in the new <b>B4aVehicle</b> class!',
         position: 'right'
       },
       {
@@ -439,6 +445,23 @@ class Browser extends DashboardView {
       throw new Error('Component not ready');
     };
 
+    async function createB4aVehicleClass() {
+      const Vehicle = Parse.Object.extend('B4aVehicle');
+      const vehicle = new Vehicle();
+    
+      vehicle.set('name', 'Corolla');
+      vehicle.set('price', 19499);
+      vehicle.set('color', 'black');
+    
+      try {
+        const savedObject = await vehicle.save(null, { useMasterKey: true });
+        return savedObject;
+      } catch (error) {
+        console.error('Erro ao criar B4aVehicle:', error);
+        throw error;
+      }
+    }
+
     let vehicleRowCreated = false;
     const reactProps = this.props;
     const reactContext = this.context;      
@@ -447,14 +470,13 @@ class Browser extends DashboardView {
     return {
       steps,
       onBeforeStart: () => {
-        // document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
+        document.addEventListener('keydown', blockKeys, true);
         // document.querySelector('[class^="section_header"][href*="/apidocs"]').style.backgroundColor = "#0c5582";
         if (className !== '_User' && className.indexOf('_') !== -1) {
           this.props.navigate(generatePath(this.context, 'browser/_User'));
           // history.push(this.context.generatePath('browser/_User'));
         }
         post('/tutorial', { databaseBrowser: true });
-
         // Updates the current logged user so that the tutorial won't be played
         // again when the user switches to another page
         user.playDatabaseBrowserTutorial = false;
@@ -462,6 +484,10 @@ class Browser extends DashboardView {
       },
       onBeforeChange: function(targetElement) {
         const introItems = this._introItems;
+        const prevEl = this._introItems[this._currentStep - 1]?.element;
+        if (prevEl) {
+          prevEl.style.backgroundColor = 'transparent';
+        }
         // Fires event if it's not a forced transition
         if (!this._forcedStep) {
           amplitudeLogEvent(`On Database Browser Tour Step ${introItems[this._currentStep].eventId}`)
@@ -492,20 +518,20 @@ class Browser extends DashboardView {
             break;
           case 3:
             {
-              const Vehicle = Parse.Object.extend('B4aVehicle');
-              const vehicle = new Vehicle();
+              const nextButton = getNextButton();
+              if (nextButton) {
+                nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
+                nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
+              }
 
-              vehicle.set('name', 'Corolla');
-              vehicle.set('price', 19499);
-              vehicle.set('color', 'black');
               if (getCustomVehicleClassLink() && !vehicleRowCreated) {
-                vehicleRowCreated = true;
-                vehicle.save(null, { useMasterKey: true }).then((savedObject) => {
+                createB4aVehicleClass().then((savedObject) => {
                   updateState(savedObject)
+                  vehicleRowCreated = true;
                 }).then(() => {
-                  const vehicleLink = document.querySelector('#section_contents a[title="B4aVehicle"]');
-                  introItems[3].element = vehicleLink;
-                  this.nextStep();
+                  introItems[3].element = getCustomVehicleClassLink();
+                  nextButton.innerHTML = 'Next';
+                  nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
                 }).catch(e => {
                   if (!unexpectedErrorThrown) {
                     introItems.splice(3, 2);
@@ -515,9 +541,7 @@ class Browser extends DashboardView {
                     unexpectedErrorThrown = true;
                   }
                   console.error(e);
-                  this.nextStep();
                 });
-                return false;
               } else if(!getCustomVehicleClassLink()){
                 schema.dispatch(ActionTypes.CREATE_CLASS, { 
                   className: 'B4aVehicle', 
@@ -527,16 +551,26 @@ class Browser extends DashboardView {
                     color: { type: 'String' }, 
                   } 
                 }).then(async () => {
-                  vehicleRowCreated = true;
-                  await vehicle.save(null, { useMasterKey: true })
-                }).then(() => {
-                  const vehicleLink = document.querySelector('#section_contents a[title="B4aVehicle"]');
-                  introItems[3].element = vehicleLink;
-                  this.nextStep();
-                })
+                  createB4aVehicleClass().then((savedObject) => {
+                    updateState(savedObject)
+                    vehicleRowCreated = true;
+                  }).then(() => {
+                    introItems[3].element = getCustomVehicleClassLink();
+                    this.nextStep()
+                  })
+                }).catch(e => console.error(e)).finally(() => {
+                  if (!unexpectedErrorThrown) {
+                    introItems.splice(3, 2);
+                    for (let i = 3; i < introItems.length; i++) {
+                      introItems[i].step -= 2;
+                    }
+                    unexpectedErrorThrown = true;
+                  }
+                  console.error(e);
+                });
               }
-              const nextButton = getNextButton();
               nextButton.innerHTML = 'Next';
+              nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
 
               const numberLayer = document.querySelector('.introjs-helperNumberLayer');
               numberLayer.style.marginLeft = 0;
@@ -548,6 +582,8 @@ class Browser extends DashboardView {
             break;
           case 4:
             this._introItems[4].element = document.querySelector('#browser > div');
+            document.querySelector('#browser').scrollLeft = 0;
+            targetElement.style.backgroundColor = 'inherit';
             break;
           case 5:
             if(unexpectedErrorThrown) {
@@ -565,9 +601,20 @@ class Browser extends DashboardView {
             targetElement.style.backgroundColor = 'inherit';
           }
             break;
+          case 7:
+            this.onExit()
+            break;
         }
       },
       onAfterChange: function(targetElement) {
+        const allSteps = this._introItems.map(item => item.element).filter(Boolean);
+        allSteps.forEach(el => {
+          el.style.backgroundColor = '';
+        });
+
+        if (targetElement) {
+          targetElement.style.backgroundColor = '#0e69a0';
+        }
         switch(this._currentStep) {
           case 0:
             if (this._introItems.length === 1) {
@@ -576,9 +623,31 @@ class Browser extends DashboardView {
               targetElement.style.backgroundColor = 'inherit';
             }
             break;
+          case 3:
+            if (!unexpectedErrorThrown) {
+              if (!document.querySelector('#browser > div > div:nth-child(2)')){
+                // next row has not rendered yet
+                const nextButton = getNextButton();
+                nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
+                nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
+                getNextComponentReadyPromise(() => document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span'))
+                  .then(() => {
+                    nextButton.innerHTML = 'Next';
+                    nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
+                  })
+              }
+            }
+            break;
+          case 4:
+            const browserEl = document.querySelector('#browser')
+            browserEl.style.scrollLeft = 0;
+            browserEl.style.pointerEvents = 'none'
+            break;
         }
       },
       onBeforeExit: function() {
+        document.querySelector('#browser').style.pointerEvents = 'auto'
+        document.removeEventListener('keydown', blockKeys, true);
         // If is exiting before the last step, avoid exit and shows the last step
         if (this._currentStep < this._introItems.length - 1) {
           this._forcedStep = true;

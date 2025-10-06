@@ -382,6 +382,23 @@ tr.introjs-showElement > th {
   color: darkgrey;
 }
 
+.tourThirdStepStyle {
+  top: -300px !important;
+}
+
+.tourThirdStepStyle > div.introjs-arrow.left-bottom {
+  bottom: 185px !important;
+}
+
+.disabled-during-tour {
+  pointer-events: none;
+  user-select: none;
+}
+.disabled-during-tour * {
+  pointer-events: none;
+  user-select: none;
+}
+
 /* For retina screens (MacBooks) */
 @media only screen and (max-width: 1728px) and (-webkit-min-device-pixel-ratio: 2),
        only screen and (max-width: 1728px) and (min-resolution: 192dpi) {
