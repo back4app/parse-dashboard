@@ -454,7 +454,7 @@ class Browser extends DashboardView {
       vehicle.set('color', 'black');
 
       try {
-        const savedObject = await vehicle.save(null, { useMasterKey: true });
+        const savedObject = await vehicle.save();
         return savedObject;
       } catch (error) {
         console.error('Error to create B4aVehicle:', error);
@@ -480,6 +480,7 @@ class Browser extends DashboardView {
         AccountManager.setCurrentUser({ user });
       },
       onBeforeChange: async function(targetElement) {
+        document.addEventListener('keydown', blockKeys, true);
         const introItems = this._introItems;
         const prevEl = this._introItems[this._currentStep - 1]?.element;
         if (prevEl) {
@@ -524,6 +525,7 @@ class Browser extends DashboardView {
                 }
             
                 const createClassVehicle = async () => {
+                  let addDisabledClass = false;
                   try {
                     let savedObject;
                     if (getCustomVehicleClassLink() && !vehicleRowCreated) {
@@ -543,13 +545,15 @@ class Browser extends DashboardView {
                     }
             
                   } catch (err) {
-                    console.error('Error on step 3:', err);
                     if (!unexpectedErrorThrown) {
                       unexpectedErrorThrown = true;
+                      addDisabledClass = true;
+                      nextButton.classList.add('introjs-disabled');
+                      nextButton.innerHTML = 'Next'
                       this.goToStep(7);
                     }
                   } finally {
-                    if (nextButton) {
+                    if (nextButton && !addDisabledClass) {
                       nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
                       nextButton.innerHTML = 'Next';
                     }
@@ -626,6 +630,13 @@ class Browser extends DashboardView {
             const browserEl = document.querySelector('#browser')
             browserEl.style.scrollLeft = 0;
             browserEl.style.pointerEvents = 'none'
+            break;
+          case 6:
+            const nextBtn = getNextButton();
+            const prevBtn = getPrevButton();
+
+            nextBtn.style.display = 'inline-block';
+            prevBtn.style.display = 'inline-block';
             break;
         }
       },
