@@ -100,7 +100,7 @@ export const ManageAppFields = ({
         theme={Field.Theme.BLUE}
       />
       <hr className={styles.fieldHr} />      
-      <Field
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
           text='Dashboard'
@@ -114,7 +114,7 @@ export const ManageAppFields = ({
           </span>
         }
         theme={Field.Theme.BLUE}
-      />
+      /> */}
       <hr className={styles.fieldHr} />
       <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
