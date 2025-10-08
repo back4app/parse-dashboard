@@ -1755,7 +1755,7 @@ export default class ParseApp {
       return (
         await axios.get(
           // eslint-disable-next-line no-undef
-          `${b4aSettings.BACK4APP_API_PATH}/parseApp/${this.slug}/getOwnerEmail`,
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/getOwnerEmail`,
           { withCredentials: true }
         )
       ).data;
