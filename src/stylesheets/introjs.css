@@ -1,7 +1,7 @@
 .introjs-overlay {
   position: absolute;
   box-sizing: content-box;
-  z-index: 999999;
+  z-index: 101;
   background-color: #000;
   opacity: 0;
   background: -moz-radial-gradient(center,ellipse farthest-corner,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);

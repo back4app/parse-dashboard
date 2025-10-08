@@ -397,7 +397,7 @@ class Browser extends DashboardView {
         eventId: 'Play Intro Button',
         element: () => document.querySelector('.footer .more'),
         intro: 'You can find this tour and play it again by pressing this button and selecting <b>"Play intro"</b>.',
-        position: 'top'
+        position: 'right'
       }
     ];
     const { context } = this;
@@ -549,6 +549,7 @@ class Browser extends DashboardView {
                     }
             
                   } catch (err) {
+                    document.querySelector('.introjs-overlay').style.zIndex = 99
                     showError(err)
                     if (!unexpectedErrorThrown) {
                       unexpectedErrorThrown = true;
