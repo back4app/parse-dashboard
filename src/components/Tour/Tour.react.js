@@ -31,6 +31,7 @@ export default class Tour extends React.Component {
         showBullets: false,
         scrollToElement: false,
         showStepNumbers: true,
+        keyboardNavigation: false
       });
       this.props.steps.forEach(step => {
         if (typeof step.element === 'function') {

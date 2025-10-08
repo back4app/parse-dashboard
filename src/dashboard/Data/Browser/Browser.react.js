@@ -334,22 +334,6 @@ class Browser extends DashboardView {
   }
   
   getTourConfig() {
-    const blockKeys = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
-    const updateState = (saveObject) => {
-  
-      this.setState(prev => {
-        const newData = prev.data ? [saveObject, ...prev.data] : [saveObject];
-        return {
-          data: newData,
-          counts: { ...prev.counts, B4aVehicle: (prev.counts?.B4aVehicle || 0) + 1 },
-          clp: { ...prev.clp, B4aVehicle: {} }
-        };
-      });
-    }
     const createClassCode = `
       <section class="intro-code">
         <pre><span class="intro-code-keyword">const</span> B4aVehicle = Parse.Object.extend(<span class="intro-code-string">'B4aVehicle'</span>);</pre>
@@ -413,7 +397,7 @@ class Browser extends DashboardView {
         eventId: 'Play Intro Button',
         element: () => document.querySelector('.footer .more'),
         intro: 'You can find this tour and play it again by pressing this button and selecting <b>"Play intro"</b>.',
-        position: 'right'
+        position: 'top'
       }
     ];
     const { context } = this;
@@ -422,6 +406,26 @@ class Browser extends DashboardView {
     const user = AccountManager.currentUser();
 
     let unexpectedErrorThrown = false;
+
+    const blockKeys = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const updateState = (saveObject) => {
+  
+      this.setState(prev => {
+        const newData = prev.data ? [saveObject, ...prev.data] : [saveObject];
+        return {
+          data: newData,
+          counts: { ...prev.counts, B4aVehicle: (prev.counts?.B4aVehicle || 0) + 1 },
+          clp: { ...prev.clp, B4aVehicle: {} }
+        };
+      });
+    }
+    const showError = (error) => {
+      this.showNote(error.message, error)
+    }
 
     const getNextButton = () => {
       return document.querySelector('.introjs-button.introjs-nextbutton');
@@ -545,11 +549,13 @@ class Browser extends DashboardView {
                     }
             
                   } catch (err) {
+                    showError(err)
                     if (!unexpectedErrorThrown) {
                       unexpectedErrorThrown = true;
                       addDisabledClass = true;
-                      nextButton.classList.add('introjs-disabled');
-                      nextButton.innerHTML = 'Next'
+                      nextButton.display = 'none'
+                      const prevButton = getPrevButton()
+                      prevButton.display = 'none'
                       this.goToStep(7);
                     }
                   } finally {
@@ -573,20 +579,6 @@ class Browser extends DashboardView {
                 targetElement.style.backgroundColor = 'inherit';
               }
               break;
-            case 6: {
-              const nextBtn = getNextButton();
-              const prevBtn = getPrevButton();
-              // hide prev & next buttons
-              nextBtn.style.display = 'none';
-              prevBtn.style.display = 'none';
-              // move Done button to right
-              prevBtn.parentElement.style.justifyContent = 'end';
-              targetElement.style.backgroundColor = 'inherit';
-            }
-              break;
-            case 7:
-              this.onExit()
-              break;
           }
         } catch (error) {
           console.error('Error onBeforeChange:', error);
@@ -602,6 +594,7 @@ class Browser extends DashboardView {
         if (targetElement) {
           targetElement.style.backgroundColor = '#0e69a0';
         }
+        
         switch(this._currentStep) {
           case 0:
             if (this._introItems.length === 1) {
@@ -635,8 +628,10 @@ class Browser extends DashboardView {
             const nextBtn = getNextButton();
             const prevBtn = getPrevButton();
 
-            nextBtn.style.display = 'inline-block';
-            prevBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+            prevBtn.style.display = 'none';
+            prevBtn.parentElement.style.justifyContent = 'end';
+            targetElement.style.backgroundColor = 'inherit';
             break;
         }
       },
