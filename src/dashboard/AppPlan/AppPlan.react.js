@@ -151,6 +151,7 @@ class AppPlan extends DashboardView {
     this.state = {
       isLoadingAppPlanData: true,
       appPlanData: null,
+      appPlanName: 'Free Plan',
       appPlanError: null,
       selectedPlan: prices[1],
       billingCycle: 0, // 0 --> monthly || 1 --> yearly
@@ -168,6 +169,7 @@ class AppPlan extends DashboardView {
     this.loadData();
     this.loadPaddle();
     this.getAppOwnerEmail();
+    console.log("CONTEXTTTTT", this.context)
   }
 
   componentDidUnmount() {
@@ -195,7 +197,8 @@ class AppPlan extends DashboardView {
   loadData() {
     this.context.getAppPlanData().then(res => this.setState({
       isLoadingAppPlanData: false,
-      appPlanData: res
+      appPlanData: res,
+      appPlanName: res.planName
     })).catch(err => this.setState({
       isLoadingAppPlanData: false,
       appPlanData: new Error(err.message || err.msg || 'Something went wrong')
@@ -341,6 +344,7 @@ class AppPlan extends DashboardView {
     const loading = this.state.isLoadingAppPlanData;
     const planData = this.state.appPlanData;
     const { selectedPlan, billingCycle } = this.state;
+    const currenUser = AccountManager.currentUser().email;
 
     let content = null;
     if (loading) {
@@ -451,6 +455,15 @@ class AppPlan extends DashboardView {
             ))}
           </div>
         </div>
+
+        {this.state.appPlanName && this.state.appPlanName.indexOf('Free') < 0 && this.state.appPlanName.indexOf('Public') < 0 && (
+          <div>
+            <hr className={styles.hrCancelButton}></hr>
+            <div className={styles.cancelPlanContainer}>
+              <a href={`https://back4app.typeform.com/to/F9OPnK?appid=${this.context.applicationId}&appname=${this.context.name}&useremail=${currenUser}`} target="_blank" className={styles.complianceItemUpgradeBtn}>Cancel Plan</a>
+            </div>
+          </div>
+        )}
 
       </div></div>
     }
