@@ -232,9 +232,9 @@ class Browser extends DashboardView {
         onClick={async () => {
           const classes = this.props.schema.data.get('classes');
           const className = 'B4aVehicle';
-          const hasClass = classes.has(className);
+          const hasVehicleClass = classes.has(className);
 
-          if(classes.size == 0 || !hasClass){
+          if(classes.size == 0 || !hasVehicleClass){
   
             await this.createClass(className, false);
 
@@ -285,6 +285,29 @@ class Browser extends DashboardView {
 
   async componentDidMount() {
     this.addLocation(this.props.params.appId);
+    try {
+      await this.props.schema.dispatch(ActionTypes.FETCH);
+      this.handleFetchedSchema();
+      const classes = this.props.schema.data.get('classes');
+      const currentUser = AccountManager.currentUser();
+      const hasVehicleClass = classes.has('B4aVehicle');
+      console.log(hasVehicleClass)
+  
+      if (currentUser.playDatabaseBrowserTutorial && (!classes || classes.size === 0 || !hasVehicleClass)) {
+  
+        await this.createClass('B4aVehicle', false);
+
+        this.addColumn({ type: 'String', name: 'name', required: true });
+        this.addColumn({ type: 'Number', name: 'price', required: true });
+        this.addColumn({ type: 'String', name: 'color', required: false });
+      }
+  
+      if (!this.props.params.className) {
+        this.redirectToFirstClass(this.props.schema.data.get('classes'));
+      }
+    } catch (error) {
+      console.error('Error to check B4aVehicle class:', error);
+    }
   }
   
 
@@ -423,6 +446,8 @@ class Browser extends DashboardView {
         };
       });
     }
+
+    
     const showError = (error) => {
       this.showNote(error.message, error)
     }
@@ -438,6 +463,14 @@ class Browser extends DashboardView {
     const getCustomVehicleClassLink = () => {
       return document.querySelector('#section_contents a[title="B4aVehicle"]');
     };
+
+    const removeButtons = () => {
+      const prevButton = getPrevButton()
+      const nextButton = getNextButton()
+      nextButton.style.display = 'none'
+      prevButton.style.display = 'none'
+      prevButton.parentElement.style.justifyContent = 'end';
+    }
 
     const getNextComponentReadyPromise = async conditionFn => {
       for (let i = 1; i <= 20; i++) {
@@ -466,7 +499,8 @@ class Browser extends DashboardView {
       }
     }
 
-    let vehicleRowCreated = false;     
+    let vehicleRowCreated = false;    
+    let addDisabledClass = false; 
 
     return {
       steps,
@@ -529,7 +563,6 @@ class Browser extends DashboardView {
                 }
             
                 const createClassVehicle = async () => {
-                  let addDisabledClass = false;
                   try {
                     let savedObject;
                     if (getCustomVehicleClassLink() && !vehicleRowCreated) {
@@ -554,10 +587,14 @@ class Browser extends DashboardView {
                     if (!unexpectedErrorThrown) {
                       unexpectedErrorThrown = true;
                       addDisabledClass = true;
-                      nextButton.display = 'none'
-                      const prevButton = getPrevButton()
-                      prevButton.display = 'none'
-                      this.goToStep(7);
+                      removeButtons()
+                      targetElement.style.backgroundColor = 'inherit';
+                      const elementsRemoved = this._introItems.length - 1;
+                      this._introItems.splice(0, elementsRemoved);
+                      for (let i = 0; i < this._introItems.length; i++) {
+                        this._introItems[i].step -= elementsRemoved;
+                      }
+                      this.goToStep(this._introItems.length);
                     }
                   } finally {
                     if (nextButton && !addDisabledClass) {
@@ -626,12 +663,7 @@ class Browser extends DashboardView {
             browserEl.style.pointerEvents = 'none'
             break;
           case 6:
-            const nextBtn = getNextButton();
-            const prevBtn = getPrevButton();
-
-            nextBtn.style.display = 'none';
-            prevBtn.style.display = 'none';
-            prevBtn.parentElement.style.justifyContent = 'end';
+            removeButtons()
             targetElement.style.backgroundColor = 'inherit';
             break;
         }
@@ -651,6 +683,7 @@ class Browser extends DashboardView {
           for (let i = 0; i < this._introItems.length; i++) {
             this._introItems[i].step -= elementsRemoved;
           }
+          removeButtons()
           this.goToStep(this._introItems.length);
           return false;
         }
