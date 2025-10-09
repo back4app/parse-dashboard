@@ -57,6 +57,7 @@ class DomainSettings extends DashboardView {
       updating: false,
       isEditing: false,
       hasToggleChanged: false,
+      canEdit: false,
 
       errorCustomDomain: null,
       successCustomDomain: null,
@@ -80,6 +81,7 @@ class DomainSettings extends DashboardView {
   componentWillMount() {
     this.loadData();
     this.checkForStripeSession();
+    this.getOwner();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -99,6 +101,11 @@ class DomainSettings extends DashboardView {
   onRefresh() {
     this.setState({ isLoading: true });
     this.loadData();
+  }
+
+  getOwner() {
+    const ownerEmail = this.context.getAppOwnerEmail();
+    this.setState({ canEdit: ownerEmail === AccountManager.currentUser().email });
   }
 
   async loadData() {
@@ -477,29 +484,37 @@ class DomainSettings extends DashboardView {
                       </option>
                     ))}
                   </select>) : (<span style={{ display:'inline-block', marginLeft: '0.5rem' }}>{this.state.currentDomain}</span>)}
-                  <Button
-                    value={this.state.updating ? 'saving...' : 'save'}
-                    onClick={this.handleUpdateHostSettings.bind(this)}
-                    disabled={this.state.updating || !this.state.subdomainName}
-                    primary={true}
-                  />
-                  {this.state.domainSettings.hostSettings.webhost && <Button
-                    value={'cancel'}
-                    onClick={() => this.setState({ isEditing: false })}
-                    disabled={this.state.updating}
-                    color="red"
-                  />}
+                  {this.state.canEdit ? (
+                    <>
+                      <Button
+                        value={this.state.updating ? 'saving...' : 'save'}
+                        onClick={this.handleUpdateHostSettings.bind(this)}
+                        disabled={this.state.updating || !this.state.subdomainName}
+                        primary={true}
+                      />
+                      {this.state.domainSettings.hostSettings.webhost && <Button
+                        value={'cancel'}
+                        onClick={() => this.setState({ isEditing: false })}
+                        disabled={this.state.updating}
+                        color="red"
+                      />}
+                    </>
+                  ) : <></>}
+
                 </div>
               </> : (
                 <>
                   <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.domainSettings.hostSettings.webhost}`} target="_blank" rel="noopener noreferrer">{this.state.domainSettings.hostSettings.webhost}</a></span>
-                  <Button
-                    value={'Edit'}
-                    color="blue"
-                    secondary={true}
-                    onClick={() => this.setState({ isEditing: true })}
-                    disabled={this.state.updating}
-                  /></>
+                  {this.state.canEdit ? (
+                    <Button
+                      value={'Edit'}
+                      color="blue"
+                      secondary={true}
+                      onClick={() => this.setState({ isEditing: true })}
+                      disabled={this.state.updating}
+                    />
+                  ) : <></>}
+                </>
               )}
 
             </div>
@@ -525,14 +540,14 @@ class DomainSettings extends DashboardView {
               <TextInput
                 value={this.state.customDomain}
                 onChange={(val) => this.setState({ customDomain: val })}
-                disabled={this.state.updating || !this.state.canChangeCustomDomain}
+                disabled={this.state.updating || !this.state.canChangeCustomDomain || !this.state.canEdit}
                 placeholder="example.com"
               />
               <Button
                 value="Add"
                 color="green"
                 onClick={this.handleAddCustomDomain}
-                disabled={this.state.updating || !this.state.canChangeCustomDomain || this.state.customDomain.trim().length === 0}
+                disabled={this.state.updating || !this.state.canChangeCustomDomain || this.state.customDomain.trim().length === 0 || !this.state.canEdit}
                 additionalStyles={{ background: 'transparent', border: '1px solid #4CAF50', color: '#4CAF50', borderRadius: '4px', padding: '0.5rem 1rem', fontSize: '14px', minWidth: '80px' }}
               />
             </div>}
@@ -567,7 +582,7 @@ class DomainSettings extends DashboardView {
                     additionalStyles={{
                       padding: '0 0.5rem',
                     }}
-                    disabled={this.state.updating}
+                    disabled={this.state.updating || !this.state.canEdit}
                   />
                 </div>
               ))
