@@ -169,7 +169,6 @@ class AppPlan extends DashboardView {
     this.loadData();
     this.loadPaddle();
     this.getAppOwnerEmail();
-    console.log("CONTEXTTTTT", this.context)
   }
 
   componentDidUnmount() {
@@ -457,11 +456,15 @@ class AppPlan extends DashboardView {
         </div>
 
         {this.state.appPlanName && this.state.appPlanName.indexOf('Free') < 0 && this.state.appPlanName.indexOf('Public') < 0 && (
-          <div>
-            <hr className={styles.hrCancelButton}></hr>
-            <div className={styles.cancelPlanContainer}>
-              <a href={`https://back4app.typeform.com/to/F9OPnK?appid=${this.context.applicationId}&appname=${this.context.name}&useremail=${currenUser}`} target="_blank" className={styles.complianceItemUpgradeBtn}>Cancel Plan</a>
+          <div className={styles.cancelPlanContainer}>
+            <div className={styles.cancelPlanText}>
+              <div className={styles.cancelPlanHeader}>Cancel Plan</div>
+              <div className={styles.cancelPlanSubText}>By canceling your plan, you’ll lose access to premium features, which may impact your app’s performance and data backups.</div>
             </div>
+            <a href={`https://back4app.typeform.com/to/F9OPnK?appid=${this.context.applicationId}&appname=${this.context.name}&useremail=${currenUser}`} target="_blank" className={styles.cancelPlanButton}>
+              <Icon name='x-outline' fill="#FFFFFF" width={14} height={14} className={styles.icon}/>
+              Cancel Plan
+            </a>
           </div>
         )}
 

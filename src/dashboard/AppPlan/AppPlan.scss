@@ -94,30 +94,6 @@
   overflow-x: auto;
 }
 
-.cancelPlanContainer {
-  display: flex;
-  justify-content: center;
-}  
-
-.hrCancelButton{
-  height: 1px;
-  background-color: #344f6f6f;
-  border: none;
-  margin: 25px 0 30px;
-}
-
-.complianceItemUpgradeBtn {
-  outline: none;
-  border: none;
-  border-radius: 2rem;
-  border: 1px solid #34506F;
-  background: rgba(52,80,111,.06);
-  padding: 0.7rem 1.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
 .upgradeCard {
   background: linear-gradient(172deg, #27ae601c 0%, #0f1c328a 30%);
   border: 1px solid #253348;
@@ -197,6 +173,45 @@
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
+  }
+}
+
+
+.cancelPlanContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba($color: $regal-blue, $alpha: 0.5);
+  padding: 1.5rem 1rem;
+  background: rgba($color: $regal-blue, $alpha: 0.06);
+  .cancelPlanText {
+    width: 60%;
+    .cancelPlanHeader{
+      @include SoraFont;
+      font-weight: 500;
+      font-size: 1.125rem;
+      margin-bottom: 10px;
+    }
+    .cancelPlanSubText{
+      font-size: 0.875rem;
+      color: $light-grey;
+    }
+  }
+  .cancelPlanButton {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    align-self: flex-end;
+    outline: none;
+    border-radius: 0.4rem;
+    background: $pink;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    height: fit-content;
+    line-height: 1rem;
   }
 }
 
