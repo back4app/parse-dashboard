@@ -176,6 +176,47 @@
   }
 }
 
+
+.cancelPlanContainer {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba($color: $regal-blue, $alpha: 0.5);
+  padding: 1.5rem 1rem;
+  background: rgba($color: $regal-blue, $alpha: 0.06);
+  .cancelPlanText {
+    .cancelPlanHeader{
+      @include SoraFont;
+      font-weight: 500;
+      font-size: 1.125rem;
+      margin-bottom: 10px;
+    }
+    .cancelPlanSubText{
+      font-size: 0.875rem;
+      color: $light-grey;
+    }
+  }
+  .cancelPlanButton {
+    display: flex;
+    outline: none;
+    border-radius: 0.5rem;
+    border: 1px solid #34506F;
+    background: rgba(255, 255, 255, 0.00);
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    align-self: flex-end;
+    flex-shrink: 0;
+    line-height: 1rem;
+    &:hover{
+      background: rgba(52, 80, 111, 0.1);
+    }
+  }
+}
+
 .usageLimitsTable {
   width: 100%;
   border-collapse: separate;
