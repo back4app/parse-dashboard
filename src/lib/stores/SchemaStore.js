@@ -51,7 +51,7 @@ function SchemaStore(state, action) {
         .apiRequest(
           'POST',
           'schemas/' + action.className,
-          { className: action.className },
+          { className: action.className, classLevelPermissions: action.clp },
           { useMasterKey: true }
         )
         .then(({ fields, classLevelPermissions }) => {
