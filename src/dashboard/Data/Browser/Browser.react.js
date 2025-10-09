@@ -85,8 +85,6 @@ class Browser extends DashboardView {
     this.subsection = 'Browser'
     this.noteTimeout = null;
 
-    const user = AccountManager.currentUser();
-
     this.state = {
       showCreateClassDialog: false,
       showAddColumnDialog: false,
@@ -129,7 +127,7 @@ class Browser extends DashboardView {
       isUnique: false,
       uniqueField: null,
       keepAddingCols: false,
-      showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
+      showTour: false,
       renderFooterMenu: !isMobile(),
       openSecurityDialog: false,
 
@@ -283,7 +281,7 @@ class Browser extends DashboardView {
     window.addEventListener('resize', this.windowResizeHandler);
   }
 
-  async componentDidMount() {
+  async componentDidMount() { 
     this.addLocation(this.props.params.appId);
     try {
       await this.props.schema.dispatch(ActionTypes.FETCH);
@@ -292,13 +290,20 @@ class Browser extends DashboardView {
       const currentUser = AccountManager.currentUser();
       const hasVehicleClass = classes.has('B4aVehicle');
   
-      if (currentUser.playDatabaseBrowserTutorial && (!classes || classes.size === 0 || !hasVehicleClass)) {
+      if (!isMobile() && 
+        currentUser && currentUser.playDatabaseBrowserTutorial && 
+        (!classes || classes.size === 0 || !hasVehicleClass)) {
   
         await this.createClass('B4aVehicle', false);
 
         this.addColumn({ type: 'String', name: 'name', required: true });
         this.addColumn({ type: 'Number', name: 'price', required: true });
         this.addColumn({ type: 'String', name: 'color', required: false });
+        this.setState(() => {
+          return {
+            showTour: true
+          };
+        });
       }
   
       if (!this.props.params.className) {
