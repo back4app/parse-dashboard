@@ -599,6 +599,7 @@ class DomainSettings extends DashboardView {
       <div className={styles.domainSettingsContainer}>
         <div className={styles.heading}>Web Hosting</div>
         <div className={styles.subheading}>You can use this section to enable a subdomain to host your pages and create your own custom domain.</div>
+        {!this.state.canEdit && <div className={styles.helperText}>Only the app owner can edit this section.</div>}
         <div className={styles.formContainer}>
           {content}
         </div>
