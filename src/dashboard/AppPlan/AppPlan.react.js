@@ -462,7 +462,6 @@ class AppPlan extends DashboardView {
               <div className={styles.cancelPlanSubText}>By canceling your plan, you’ll lose access to premium features, which may impact your app’s performance and data backups.</div>
             </div>
             <a href={`https://back4app.typeform.com/to/F9OPnK?appid=${this.context.applicationId}&appname=${this.context.name}&useremail=${currenUser}`} target="_blank" className={styles.cancelPlanButton}>
-              <Icon name='x-outline' fill="#FFFFFF" width={14} height={14} className={styles.icon}/>
               Cancel Plan
             </a>
           </div>

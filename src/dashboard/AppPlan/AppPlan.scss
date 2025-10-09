@@ -179,6 +179,7 @@
 
 .cancelPlanContainer {
   display: flex;
+  gap: 1rem;
   justify-content: space-between;
   margin-top: 2rem;
   border-radius: 0.5rem;
@@ -186,7 +187,6 @@
   padding: 1.5rem 1rem;
   background: rgba($color: $regal-blue, $alpha: 0.06);
   .cancelPlanText {
-    width: 60%;
     .cancelPlanHeader{
       @include SoraFont;
       font-weight: 500;
@@ -200,18 +200,20 @@
   }
   .cancelPlanButton {
     display: flex;
-    gap: 5px;
-    align-items: center;
-    align-self: flex-end;
     outline: none;
-    border-radius: 0.4rem;
-    background: $pink;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid #34506F;
+    background: rgba(255, 255, 255, 0.00);
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
     font-weight: 500;
     flex-shrink: 0;
-    height: fit-content;
+    align-self: flex-end;
+    flex-shrink: 0;
     line-height: 1rem;
+    &:hover{
+      background: rgba(52, 80, 111, 0.1);
+    }
   }
 }
 
