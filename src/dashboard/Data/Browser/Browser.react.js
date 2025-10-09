@@ -291,7 +291,6 @@ class Browser extends DashboardView {
       const classes = this.props.schema.data.get('classes');
       const currentUser = AccountManager.currentUser();
       const hasVehicleClass = classes.has('B4aVehicle');
-      console.log(hasVehicleClass)
   
       if (currentUser.playDatabaseBrowserTutorial && (!classes || classes.size === 0 || !hasVehicleClass)) {
   
