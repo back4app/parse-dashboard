@@ -104,7 +104,7 @@ class DomainSettings extends DashboardView {
   }
 
   getOwner() {
-    this.setState({ canEdit: this.props.initialFields.owner_email === AccountManager.currentUser().email });
+    this.setState({ canEdit: this.context.feedbackEmail === AccountManager.currentUser().email });
   }
 
   async loadData() {
