@@ -13,6 +13,9 @@ import baseStyles from 'stylesheets/base.scss';
 
 export default class B4aToggle extends React.Component {
   toLeft() {
+    if (this.props.disabled) {
+      return;
+    }
     if (this.props.type === B4aToggle.Types.TWO_WAY || this.props.type === B4aToggle.Types.CUSTOM) {
       this.props.onChange(this.props.optionLeft);
     } else {
@@ -21,6 +24,9 @@ export default class B4aToggle extends React.Component {
   }
 
   toRight() {
+    if (this.props.disabled) {
+      return;
+    }
     if (this.props.type === B4aToggle.Types.TWO_WAY || this.props.type === B4aToggle.Types.CUSTOM) {
       this.props.onChange(this.props.optionRight);
     } else {
@@ -29,6 +35,9 @@ export default class B4aToggle extends React.Component {
   }
 
   toggle() {
+    if (this.props.disabled) {
+      return;
+    }
     if (this.props.type === B4aToggle.Types.TWO_WAY || this.props.type === B4aToggle.Types.CUSTOM) {
       if (this.props.value === this.props.optionLeft) {
         this.props.onChange(this.props.optionRight);
@@ -102,13 +111,16 @@ export default class B4aToggle extends React.Component {
     if (this.props.darkBg) {
       toggleClasses.push(styles.darkBg);
     }
+    if (this.props.disabled) {
+      toggleClasses.push(styles.disabled);
+    }
     return (
-      <div className={styles.toggle} style={this.props.additionalStyles || {}}>
+      <div className={toggleClasses.join(' ')} style={this.props.additionalStyles || {}}>
         {this.props.invertLabels ? (<>
-          <div onClick={this.toRight.bind(this)} className={[styles.option, styles.optionLeft, !left ? styles.active : ''].join(' ')}>{labelRight}</div>
-          <div onClick={this.toLeft.bind(this)} className={[styles.option, styles.optionRight, left ? styles.active : '', left && colored ? styles.colored : ''].join(' ')}>{labelLeft}</div>
-        </>) : (<><div onClick={this.toLeft.bind(this)} className={[styles.option, styles.optionLeft, left ? styles.active : '', left && colored ? styles.colored : ''].join(' ')}>{labelLeft}</div>
-          <div onClick={this.toRight.bind(this)} className={[styles.option, styles.optionRight, !left ? styles.active : ''].join(' ')}>{labelRight}</div></>)}
+          <div onClick={this.props.disabled ? null : this.toRight.bind(this)} className={[styles.option, styles.optionLeft, !left ? styles.active : '', this.props.disabled ? styles.disabled : ''].join(' ')}>{labelRight}</div>
+          <div onClick={this.props.disabled ? null : this.toLeft.bind(this)} className={[styles.option, styles.optionRight, left ? styles.active : '', left && colored ? styles.colored : '', this.props.disabled ? styles.disabled : ''].join(' ')}>{labelLeft}</div>
+        </>) : (<><div onClick={this.props.disabled ? null : this.toLeft.bind(this)} className={[styles.option, styles.optionLeft, left ? styles.active : '', left && colored ? styles.colored : '', this.props.disabled ? styles.disabled : ''].join(' ')}>{labelLeft}</div>
+          <div onClick={this.props.disabled ? null : this.toRight.bind(this)} className={[styles.option, styles.optionRight, !left ? styles.active : '', this.props.disabled ? styles.disabled : ''].join(' ')}>{labelRight}</div></>)}
       </div>
     );
   }
@@ -132,6 +144,7 @@ B4aToggle.propTypes = {
     'Flag describing is toggle is colored. [For Toggle.Type.CUSTOM]'
   ),
   darkBg: PropTypes.bool,
+  disabled: PropTypes.bool.describe('Disables the toggle component, preventing user interaction.'),
   additionalStyles: PropTypes.object.describe('Additional styles for Toggle component.'),
 };
 

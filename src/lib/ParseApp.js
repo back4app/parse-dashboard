@@ -68,6 +68,7 @@ export default class ParseApp {
     this.name = appName;
     this.parseOptions = parseOptions;
     this.feedbackEmail = feedbackEmail;
+    this.isOwner = custom && custom.isOwner;
     this.createdAt = created_at ? new Date(created_at) : new Date();
     this.applicationId = appId;
     this.slug = appNameForURL || appName;

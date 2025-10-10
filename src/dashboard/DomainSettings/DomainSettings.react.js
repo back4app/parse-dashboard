@@ -104,8 +104,7 @@ class DomainSettings extends DashboardView {
   }
 
   getOwner() {
-    const ownerEmail = this.context.getAppOwnerEmail();
-    this.setState({ canEdit: ownerEmail === AccountManager.currentUser().email });
+    this.setState({ canEdit: !!this.context.isOwner });
   }
 
   async loadData() {
@@ -426,6 +425,7 @@ class DomainSettings extends DashboardView {
                 value={this.state.activated}
                 onChange={this.handleToggleChange}
                 type={B4aToggle.Types.YES_NO}
+                disabled={!this.state.canEdit}
               />
             </div>
           }
