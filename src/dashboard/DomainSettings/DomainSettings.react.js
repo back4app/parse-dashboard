@@ -212,7 +212,7 @@ class DomainSettings extends DashboardView {
             value="Save Changes"
             primary={true}
             onClick={this.handleUpdateHostSettings.bind(this)}
-            disabled={!this.state.canEdit || this.state.updating}
+            disabled={this.state.updating}
             width="auto"
             additionalStyles={{ marginLeft: '10px' }}
           />
@@ -425,6 +425,7 @@ class DomainSettings extends DashboardView {
                 value={this.state.activated}
                 onChange={this.handleToggleChange}
                 type={B4aToggle.Types.YES_NO}
+                disabled={!this.state.canEdit}
               />
             </div>
           }
