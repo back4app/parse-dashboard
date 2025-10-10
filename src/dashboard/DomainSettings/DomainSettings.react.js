@@ -212,7 +212,7 @@ class DomainSettings extends DashboardView {
             value="Save Changes"
             primary={true}
             onClick={this.handleUpdateHostSettings.bind(this)}
-            disabled={this.state.updating}
+            disabled={!this.state.canEdit || this.state.updating}
             width="auto"
             additionalStyles={{ marginLeft: '10px' }}
           />
