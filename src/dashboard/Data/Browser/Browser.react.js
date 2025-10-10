@@ -621,6 +621,7 @@ class Browser extends DashboardView {
                 targetElement.style.backgroundColor = 'inherit';
               }
               break;
+
           }
         } catch (error) {
           console.error('Error onBeforeChange:', error);
@@ -635,6 +636,13 @@ class Browser extends DashboardView {
 
         if (targetElement) {
           targetElement.style.backgroundColor = '#0e69a0';
+        }
+
+        const nextButton = getNextButton();
+        const prevButton = getPrevButton();
+        if (this._currentStep !== 6) {
+          if (nextButton) nextButton.style.display = 'inline-block';
+          if (prevButton) prevButton.style.display = 'inline-block';
         }
         
         switch(this._currentStep) {
@@ -667,8 +675,8 @@ class Browser extends DashboardView {
             browserEl.style.pointerEvents = 'none'
             break;
           case 6:
-            removeButtons()
             targetElement.style.backgroundColor = 'inherit';
+            removeButtons()
             break;
         }
       },
