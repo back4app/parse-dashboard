@@ -504,7 +504,7 @@ class Browser extends DashboardView {
       vehicle.set('color', 'black');
 
       try {
-        const savedObject = await vehicle.save();
+        const savedObject = await vehicle.save(null, { useMasterKey: true });
         return savedObject;
       } catch (error) {
         console.error('Error to create B4aVehicle:', error);
