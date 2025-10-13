@@ -61,6 +61,7 @@ import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { pushGTMEvent } from 'lib/gtm.js'
+import { get } from 'jquery';
 
 const BROWSER_LAST_LOCATION = 'b4a_brower_last_location';
 // The initial and max amount of rows fetched by lazy loading
@@ -69,7 +70,7 @@ const MAX_ROWS_FETCHED = 200;
 const MySwal = withReactContent(Swal);
 const postgresqlAlert = {
   text:
-    'Thank you for your interest in using Back4App with PostgreSQL. We are working hard to make this database available and will notify you once we release it. In the meantime, we’ve just created your App using MongoDB 3.6, so you can use Back4App.',
+    'Thank you for your interest in using Back4app with PostgreSQL. We are working hard to make this database available and will notify you once we release it. In the meantime, we’ve just created your App using MongoDB 3.6, so you can use Back4app.',
   imageUrl: postgresqlImg,
   imageWidth: 200,
   imageAlt: 'Postgresql Image'
@@ -83,8 +84,6 @@ class Browser extends DashboardView {
     this.section = 'Database';
     this.subsection = 'Browser'
     this.noteTimeout = null;
-
-    const user = AccountManager.currentUser();
 
     this.state = {
       showCreateClassDialog: false,
@@ -128,7 +127,7 @@ class Browser extends DashboardView {
       isUnique: false,
       uniqueField: null,
       keepAddingCols: false,
-      showTour: !isMobile() && user && user.playDatabaseBrowserTutorial,
+      showTour: false,
       renderFooterMenu: !isMobile(),
       openSecurityDialog: false,
 
@@ -225,8 +224,25 @@ class Browser extends DashboardView {
   }
 
   getFooterMenuButtons() {
+    
     return this.state.renderFooterMenu || this.state.showTour ? [
-      <a key={0} onClick={() => this.setState({ showTour: true })}>Play intro</a>
+      <a 
+        key={0}
+        onClick={async () => {
+          const classes = this.props.schema.data.get('classes');
+          const className = 'B4aVehicle';
+          const hasVehicleClass = classes.has(className);
+
+          if(classes.size == 0 || !hasVehicleClass){
+  
+            await this.createClass(className, false);
+
+            this.addColumn({ type: 'String', name: 'name', required: true });
+            this.addColumn({ type: 'Number', name: 'price', required: true });
+            this.addColumn({ type: 'String', name: 'color', required: false });
+          }
+          this.setState({ showTour: true })
+        }}>Play intro</a>
     ] : null;
   }
 
@@ -243,7 +259,6 @@ class Browser extends DashboardView {
     if (!currentApp.preventSchemaEdits) {
       this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" /> Add class</span>, this.showCreateClass.bind(this));
     }
-
     this.props.schema.dispatch(ActionTypes.FETCH).then(() => {
       this.handleFetchedSchema();
       !this.props.params.className && this.redirectToFirstClass(this.props.schema.data.get('classes'));
@@ -267,9 +282,39 @@ class Browser extends DashboardView {
     window.addEventListener('resize', this.windowResizeHandler);
   }
 
-  componentDidMount() {
+  async componentDidMount() { 
     this.addLocation(this.props.params.appId);
+    try {
+      await this.props.schema.dispatch(ActionTypes.FETCH);
+      this.handleFetchedSchema();
+      const classes = this.props.schema.data.get('classes');
+      const currentUser = AccountManager.currentUser();
+      const hasVehicleClass = classes.has('B4aVehicle');
+  
+      if (!isMobile() && 
+        currentUser && currentUser.playDatabaseBrowserTutorial && 
+        (!classes || classes.size === 0 || !hasVehicleClass)) {
+  
+        await this.createClass('B4aVehicle', false);
+
+        this.addColumn({ type: 'String', name: 'name', required: true });
+        this.addColumn({ type: 'Number', name: 'price', required: true });
+        this.addColumn({ type: 'String', name: 'color', required: false });
+        this.setState(() => {
+          return {
+            showTour: true
+          };
+        });
+      }
+  
+      if (!this.props.params.className) {
+        this.redirectToFirstClass(this.props.schema.data.get('classes'));
+      }
+    } catch (error) {
+      console.error('Error to check B4aVehicle class:', error);
+    }
   }
+  
 
   componentWillUnmount() {
     this.removeLocation();
@@ -315,8 +360,9 @@ class Browser extends DashboardView {
       this.prefetchData(nextProps, nextContext);
     }
   }
-
+  
   getTourConfig() {
+    
     const createClassCode = `
       <section class="intro-code">
         <pre><span class="intro-code-keyword">const</span> B4aVehicle = Parse.Object.extend(<span class="intro-code-string">'B4aVehicle'</span>);</pre>
@@ -336,38 +382,39 @@ class Browser extends DashboardView {
         <pre>};</pre>
       </section>
     `;
+    // window.open(`${b4aSettings.DASHBOARD_PATH}/apidocs/${applicationId}${classApiId}`, '_blank')
     const steps = [
       {
-        eventId: 'Connect to Back4App',
-        intro: 'Congratulations, you’ve created your App Backend on Back4App. As a next step, we recommend <a href="https://www.back4app.com/docs/get-started/parse-sdk" style="color: #169CEE">adding Back4App to your App Project.</a>',
+        eventId: 'Connect to Back4app',
+        intro: 'Congratulations, you’ve created your App Backend on Back4app. As a next step, we recommend <a target="_blank" href="https://www.back4app.com/docs/get-started/parse-sdk" style="color: #169CEE">adding Back4app to your App Project.</a>',
         position: 'center'
       },
       {
         eventId: 'Database Browser Section',
         element: () => document.querySelector('#section_contents > div > div'),
         intro: 'This is the <b>Database Browser</b> section where you can create classes and manage your data using this Dashboard.',
-        position: 'right'
+        position: 'right',
       },
       {
         eventId: 'Custom Class and Object Creation',
-        element: () => document.querySelectorAll('.section')[2],
-        intro: `It’s very simple to save data on Back4App from your front-end.<br /><br />
+        element: () => document.querySelectorAll('.section')[3],
+        intro: `It’s very simple to save data on Back4app from your front-end.<br /><br />
         On the <b>API Reference</b> section, you can find the auto-generated code below that creates a class and persist data on it.<br />
         ${createClassCode}
         <p class="intro-code-run">Click on the <b>Run</b> button to execute this code.</p>`,
         position: 'right',
-        tooltipClass: 'tourThirdStepStyle'
+        tooltipClass: 'tourThirdStepStyle',
       },
       {
         eventId: 'Custom Class Link',
-        element: () => document.querySelector('.class_list [title="B4aVehicle"]') || document.querySelector('.class_list'),
-        intro: 'This is the new <b>B4aVehicle</b> class just created!',
+        element: () => getCustomVehicleClassLink() || document.querySelector('.class_list'),
+        intro: 'This is the <b>B4aVehicle</b> class we created previously!',
         position: 'right'
       },
       {
         eventId: 'Custom Class Data Table',
         element: () => document.querySelector('#browser'),
-        intro: 'As you can see the <b>B4aVehicle</b> class already has its first data.',
+        intro: 'As you can see, this is where the rows added to the <b>B4aVehicle</b> class will be shown.',
         position: 'right'
       },
       {
@@ -381,6 +428,12 @@ class Browser extends DashboardView {
         element: () => document.querySelector('.footer .more'),
         intro: 'You can find this tour and play it again by pressing this button and selecting <b>"Play intro"</b>.',
         position: 'right'
+      },
+      {
+        eventId: 'This is a fake step, created to close the tour without errors',
+        element: () => document.querySelector('.footer .more'),
+        intro: 'You can find this tour and play it again by pressing this button and selecting <b>"Play intro"</b>.',
+        position: 'right'
       }
     ];
     const { context } = this;
@@ -388,7 +441,29 @@ class Browser extends DashboardView {
     const { className } = this.props.params;
     const user = AccountManager.currentUser();
 
+
     let unexpectedErrorThrown = false;
+
+    const blockKeys = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const updateState = (saveObject) => {
+  
+      this.setState(prev => {
+        const newData = prev.data ? [saveObject, ...prev.data] : [saveObject];
+        return {
+          data: newData,
+          counts: { ...prev.counts, B4aVehicle: (prev.counts?.B4aVehicle || 0) + 1 },
+          clp: { ...prev.clp, B4aVehicle: {} }
+        };
+      });
+    }
+    
+    const showError = (error) => {
+      this.showNote("Couldn’t add a new row, continuing the tour.", error)
+    }
 
     const getNextButton = () => {
       return document.querySelector('.introjs-button.introjs-nextbutton');
@@ -398,39 +473,70 @@ class Browser extends DashboardView {
       return document.querySelector('.introjs-button.introjs-prevbutton')
     }
 
+    const getCancelButton = () => {
+      return document.querySelector('.introjs-button.introjs-skipbutton')
+    }
+
     const getCustomVehicleClassLink = () => {
-      return document.querySelector('[class^=class_list] [title="B4aVehicle"]');
+      return document.querySelector('#section_contents a[title="B4aVehicle"]');
     };
 
-    const getNextComponentReadyPromise = async conditionFn => {
-      for (let i = 1; i <= 20; i++) {
-        if (conditionFn()) {
-          return;
-        }
-        await new Promise(resolve => setTimeout(resolve, i * 50));
+    const removeButtons = () => {
+      const prevButton = getPrevButton()
+      const nextButton = getNextButton()
+      nextButton.style.display = 'none'
+      prevButton.style.display = 'none'
+      prevButton.parentElement.style.justifyContent = 'end';
+    }
+
+    async function createB4aVehicleClass() {
+      const Vehicle = Parse.Object.extend('B4aVehicle');
+      const vehicle = new Vehicle();
+    
+      vehicle.set('name', 'Corolla');
+      vehicle.set('price', 19499);
+      vehicle.set('color', 'black');
+
+      try {
+        const savedObject = await vehicle.save();
+        return savedObject;
+      } catch (error) {
+        console.error('Error to create B4aVehicle:', error);
+        throw error;
       }
-      throw new Error('Component not ready');
-    };
+    }
+
+    let vehicleRowCreated = false;
+    let forcedCancelTour = false  
 
     return {
       steps,
       onBeforeStart: () => {
-        // document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
+        document.addEventListener('keydown', blockKeys, true);
         // document.querySelector('[class^="section_header"][href*="/apidocs"]').style.backgroundColor = "#0c5582";
         if (className !== '_User' && className.indexOf('_') !== -1) {
           this.props.navigate(generatePath(this.context, 'browser/_User'));
           // history.push(this.context.generatePath('browser/_User'));
         }
         post('/tutorial', { databaseBrowser: true });
-
         // Updates the current logged user so that the tutorial won't be played
         // again when the user switches to another page
         user.playDatabaseBrowserTutorial = false;
         AccountManager.setCurrentUser({ user });
+        const popup = Array.from(document.querySelectorAll('a'))
+          .find(a => a.textContent.trim() === 'Play intro');
+        if(popup){
+          const divPopup = popup.closest('div');
+          divPopup.style.display = 'none'
+        }
       },
-      onBeforeChange: function(targetElement) {
+      onBeforeChange: async function(targetElement) {
+        document.addEventListener('keydown', blockKeys, true);
         const introItems = this._introItems;
-
+        const prevEl = this._introItems[this._currentStep - 1]?.element;
+        if (prevEl) {
+          prevEl.style.backgroundColor = 'transparent';
+        }
         // Fires event if it's not a forced transition
         if (!this._forcedStep) {
           amplitudeLogEvent(`On Database Browser Tour Step ${introItems[this._currentStep].eventId}`)
@@ -438,127 +544,158 @@ class Browser extends DashboardView {
         } else {
           this._forcedStep = false;
         }
-        switch(this._currentStep) {
-          case 0:
-          case 1:
-            {
-              const nextButton = getNextButton();
-              if (nextButton) {
-                nextButton.innerHTML = 'Next';
+        try {
+          switch(this._currentStep) {
+            case 0:
+              const allSteps = this._introItems.map(item => item.element).filter(Boolean);
+              allSteps.forEach(el => {
+                el.style.backgroundColor = '';
+              });
+            case 1:
+              {
+                const nextButton = getNextButton();
+                if (nextButton) {
+                  nextButton.innerHTML = 'Next';
+                }
+                if (this._currentStep === 1) {
+                  document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
+                }
               }
-              if (this._currentStep === 1) {
-                document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
+              break;
+            case 2:
+              {
+                const stepElement = document.querySelector('.introjs-helperNumberLayer');
+                stepElement.style.marginLeft = '20px';
+                const nextButton = getNextButton();
+                nextButton.innerHTML = 'Run';
               }
-            }
-            break;
-          case 2:
-            {
-              const stepElement = document.querySelector('.introjs-helperNumberLayer');
-              stepElement.style.marginLeft = '20px';
-              const nextButton = getNextButton();
-              nextButton.innerHTML = 'Run';
-            }
-            break;
-          case 3:
-            {
-              if (!getCustomVehicleClassLink() && !unexpectedErrorThrown) {
-                schema.dispatch(ActionTypes.CREATE_CLASS, {
-                  className: 'B4aVehicle',
-                  fields: {
-                    name: { type: 'String' },
-                    price: { type: 'Number' },
-                    color: { type: 'String' },
-                  }
-                }).then(() => {
-                  return context.apiRequest('POST', '/classes/B4aVehicle', { name: 'Corolla', price: 19499, color: 'black' }, { useMasterKey: true });
-                }).then(() => {
-                  introItems[3].element = getCustomVehicleClassLink();
-                  this.nextStep();
-                }).catch(e => {
-                  if (!unexpectedErrorThrown) {
-                    console.log(introItems);
-                    introItems.splice(3, 2);
-                    for (let i = 3; i < introItems.length; i++) {
-                      introItems[i].step -= 2;
+              break;
+            case 3:
+              {
+                const nextButton = getNextButton();
+            
+                const createClassVehicle = async () => {
+                  try {
+                    let savedObject;
+                    if (getCustomVehicleClassLink() && !vehicleRowCreated) {
+                      savedObject = await createB4aVehicleClass();
+                    } else if (!getCustomVehicleClassLink()) {
+                      try {
+                        
+                        await schema.dispatch(ActionTypes.CREATE_CLASS, { 
+                          className: 'B4aVehicle', 
+                          fields: { name: { type: 'String' }, price: { type: 'Number' }, color: { type: 'String' } } 
+                        });
+                        savedObject = await createB4aVehicleClass();
+                      } catch (error) {
+                      }
                     }
-                    unexpectedErrorThrown = true;
+                    if(savedObject){
+                      updateState(savedObject);
+                      vehicleRowCreated = true;
+                      this._introItems[3].element = getCustomVehicleClassLink();
+                    }    
+            
+                  } catch (err) {
+                    showError(err)
+                    if (!unexpectedErrorThrown) {
+                      unexpectedErrorThrown = true;
+                    }
+                  } finally {
+                    if (nextButton) {
+                      nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
+                      nextButton.innerHTML = 'Next';
+                    }
                   }
-                  console.error(e);
-                  this.nextStep();
-                });
-                return false;
-              }
-              const nextButton = getNextButton();
-              nextButton.innerHTML = 'Next';
-
-              const numberLayer = document.querySelector('.introjs-helperNumberLayer');
-              numberLayer.style.marginLeft = 0;
-              if (!unexpectedErrorThrown) {
-                this.props.navigate(generatePath(this.context, 'browser/B4aVehicle'));
-                // history.push(this.context.generatePath('browser/B4aVehicle'));
-              }
-            }
-            break;
-          case 4:
-            if (!unexpectedErrorThrown) {
-              this._introItems[4].element = document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span');
-            }
-            break;
-          case 5:
-            if(unexpectedErrorThrown) {
+                };
+            
+                createClassVehicle(); 
+              }           
+              break;
+            case 4:
+              this._introItems[4].element = document.querySelector('#browser > div');
+              document.querySelector('#browser').scrollLeft = 0;
               targetElement.style.backgroundColor = 'inherit';
-            }
-            break;
-          case 6: {
-            const nextBtn = getNextButton();
-            const prevBtn = getPrevButton();
-            // hide prev & next buttons
-            nextBtn.style.display = 'none';
-            prevBtn.style.display = 'none';
-            // move Done button to right
-            prevBtn.parentElement.style.justifyContent = 'end';
-            targetElement.style.backgroundColor = 'inherit';
+              break;
+            case 5:
+              if(unexpectedErrorThrown) {
+                targetElement.style.backgroundColor = 'inherit';
+              }
+              break;
           }
-            break;
+        } catch (error) {
+          console.error('Error onBeforeChange:', error);
+          this.goToStep(7);
         }
       },
       onAfterChange: function(targetElement) {
+        const allSteps = this._introItems.map(item => item.element).filter(Boolean);
+        allSteps.forEach(el => {
+          el.style.backgroundColor = '';
+        });
+
+        if (targetElement) {
+          targetElement.style.backgroundColor = '#0e69a0';
+        }
+
+        const cancelButton = getCancelButton();
+        
         switch(this._currentStep) {
           case 0:
+            if(cancelButton && forcedCancelTour) {
+              cancelButton.innerHTML = 'Done'
+            }
             if (this._introItems.length === 1) {
               // Disables the Prev button
               document.querySelector('.introjs-button.introjs-prevbutton').classList.add('introjs-disabled');
               targetElement.style.backgroundColor = 'inherit';
             }
             break;
-          case 3:
-            if (!unexpectedErrorThrown) {
-              if (!document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span')){
-                // next row has not rendered yet
-                const nextButton = getNextButton();
-                nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
-                nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
-                getNextComponentReadyPromise(() => document.querySelector('[class^=browser] [class^=tableRow] > :nth-child(2) span'))
-                  .then(() => {
-                    nextButton.innerHTML = 'Next';
-                    nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
-                  })
-              }
-              targetElement.style.backgroundColor = '#0e69a0';
+          case 4:
+            const browserEl = document.querySelector('#browser')
+            browserEl.style.scrollLeft = 0;
+            browserEl.style.pointerEvents = 'none'
+            break;
+          case 5:
+            const nextButton = getNextButton();
+            const prevButton = getPrevButton();
+
+            if (nextButton && prevButton) {
+              nextButton.style.display = 'inline-block'
+              prevButton.style.display = 'inline-block'
             }
+            break;
+          case 6:
+            targetElement.style.backgroundColor = 'inherit';
+            removeButtons()
+
+            if(cancelButton) {
+              cancelButton.innerHTML = 'Done'
+            }
+
             break;
         }
       },
       onBeforeExit: function() {
+        const allSteps = this._introItems.map(item => item.element).filter(Boolean);
+        allSteps.forEach(el => {
+          el.style.backgroundColor = '';
+        });
+        removeButtons()
+        document.querySelector('#browser').style.pointerEvents = 'auto'
+        document.removeEventListener('keydown', blockKeys, true);
+        forcedCancelTour = true
+
         // If is exiting before the last step, avoid exit and shows the last step
-        if (this._currentStep < this._introItems.length - 1) {
+        if (this._currentStep < this._introItems.length - 2) {
           this._forcedStep = true;
-          const elementsRemoved = this._introItems.length - 1;
+          const elementsRemoved = this._introItems.length - 2;
           this._introItems.splice(0, elementsRemoved);
           for (let i = 0; i < this._introItems.length; i++) {
             this._introItems[i].step -= elementsRemoved;
           }
-          this.goToStep(this._introItems.length);
+          removeButtons()
+          this.goToStep(this._introItems.length - 1);
           return false;
         }
       },
@@ -748,7 +885,7 @@ class Browser extends DashboardView {
     if (semver.lte(this.context.serverInfo.parseServerVersion, '3.1.1')) {
       clp = {};
     }
-    this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className, clp }).then(() => {
+    return this.props.schema.dispatch(ActionTypes.CREATE_CLASS, { className, clp }).then(() => {
       this.state.counts[className] = 0;
       this.state.clp[className] = clp;
       this.props.navigate(generatePath(this.context, 'browser/' + className));
@@ -759,6 +896,10 @@ class Browser extends DashboardView {
     }).catch(error => {
       let errorDeletingNote = 'Internal server error'
       if (error.code === 403) {errorDeletingNote = error.message;}
+
+      if (error.code === 103 && error.message.includes(`already exists`)) {
+        return;
+      }
 
       this.showNote(errorDeletingNote, true);
     }).finally(() => {

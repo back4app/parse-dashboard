@@ -1,7 +1,7 @@
 .introjs-overlay {
   position: absolute;
   box-sizing: content-box;
-  z-index: 999999;
+  z-index: 101;
   background-color: #000;
   opacity: 0;
   background: -moz-radial-gradient(center,ellipse farthest-corner,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.9) 100%);
@@ -54,8 +54,7 @@ tr.introjs-showElement > th {
   box-sizing: content-box;
   position: absolute;
   z-index: 9999998;
-  background-color: #FFF;
-  background-color: rgba(255,255,255,.9);
+  background-color: rgba(255, 255, 255, 0.300);
   border: 1px solid #777;
   border: 1px solid rgba(0,0,0,.5);
   border-radius: 4px;
@@ -383,12 +382,31 @@ tr.introjs-showElement > th {
   color: darkgrey;
 }
 
-@media only screen and (max-width: 1440px) {
+.tourThirdStepStyle {
+  top: -300px !important;
+}
+
+.tourThirdStepStyle > div.introjs-arrow.left-bottom {
+  bottom: 185px !important;
+}
+
+.disabled-during-tour {
+  pointer-events: none;
+  user-select: none;
+}
+.disabled-during-tour * {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* For retina screens (MacBooks) */
+@media only screen and (max-width: 1728px) and (-webkit-min-device-pixel-ratio: 2),
+       only screen and (max-width: 1728px) and (min-resolution: 192dpi) {
   .tourThirdStepStyle {
-    top: -375px !important;
+    top: -100px !important;
   }
 
   .tourThirdStepStyle > div.introjs-arrow.left-bottom {
-    bottom: 95px !important;
+    bottom: 390px !important;
   }
 }

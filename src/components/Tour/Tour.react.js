@@ -13,6 +13,29 @@ const getComponentReadyPromise = async conditionFn => {
   throw new Error('Component not ready');
 };
 
+const lastStepExit = (intro) => {
+  return window.addEventListener(
+    'keydown',
+    (e) => {
+      const totalSteps = intro._introItems.length;
+      const currentStep = intro._currentStep;
+
+      const advanceKeys = ['Enter', 'ArrowRight', 'ArrowDown', ' '];
+
+      if (advanceKeys.includes(e.key)) {
+        if (currentStep === totalSteps - 1) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          intro.exit();
+          return false;
+        }
+      }
+    },
+    true
+  );
+}
+
 export default class Tour extends React.Component {
   constructor () {
     super();
@@ -31,6 +54,7 @@ export default class Tour extends React.Component {
         showBullets: false,
         scrollToElement: false,
         showStepNumbers: true,
+        disableInteraction: true
       });
       this.props.steps.forEach(step => {
         if (typeof step.element === 'function') {
@@ -69,6 +93,8 @@ export default class Tour extends React.Component {
       this.props.onBeforeStart && this.props.onBeforeStart();
 
       intro.start();
+
+      lastStepExit(intro);
 
       // Fires analytics event when tour begins
       // eslint-disable-next-line no-undef
