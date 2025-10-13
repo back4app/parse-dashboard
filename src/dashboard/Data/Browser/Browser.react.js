@@ -383,7 +383,7 @@ class Browser extends DashboardView {
     const steps = [
       {
         eventId: 'Connect to Back4App',
-        intro: 'Congratulations, you’ve created your App Backend on Back4App. As a next step, we recommend <a href="https://www.back4app.com/docs/get-started/parse-sdk" style="color: #169CEE">adding Back4App to your App Project.</a>',
+        intro: 'Congratulations, you’ve created your App Backend on Back4App. As a next step, we recommend <a target="_blank" href="https://www.back4app.com/docs/get-started/parse-sdk" style="color: #169CEE">adding Back4App to your App Project.</a>',
         position: 'center'
       },
       {
