@@ -167,6 +167,13 @@ class DatabaseProfile extends DashboardView {
           description="You are not authorized to access the Query Performance Monitor."
         />
       );
+    } else if (databaseProfilerError?.message === 'DATABASE_OUTSIDE_B4A') {
+      return (
+        <B4aEmptyState
+          title="Database Outside Back4app"
+          description="The database is not hosted with us, so we can't provide the query performance monitor."
+        />
+      );
     }
     return (
       <B4aEmptyState
