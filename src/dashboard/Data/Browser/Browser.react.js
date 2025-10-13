@@ -224,9 +224,10 @@ class Browser extends DashboardView {
   }
 
   getFooterMenuButtons() {
+    
     return this.state.renderFooterMenu || this.state.showTour ? [
       <a 
-        key={0} 
+        key={0}
         onClick={async () => {
           const classes = this.props.schema.data.get('classes');
           const className = 'B4aVehicle';
@@ -457,9 +458,15 @@ class Browser extends DashboardView {
       });
     }
 
+    const closeFooterMenu = () => {
+      this.setState({
+        renderFooterMenu: false
+      });
+    }
+
     
     const showError = (error) => {
-      this.showNote("ERRO ON TOUR", error)
+      this.showNote("Error to add row, continuing...", error)
     }
 
     const getNextButton = () => {
@@ -495,7 +502,7 @@ class Browser extends DashboardView {
       vehicle.set('color', 'black');
 
       try {
-        const savedObject = await vehicle.save(null, { useMasterKey: true });
+        const savedObject = await vehicle.save();
         return savedObject;
       } catch (error) {
         console.error('Error to create B4aVehicle:', error);
@@ -519,6 +526,10 @@ class Browser extends DashboardView {
         // again when the user switches to another page
         user.playDatabaseBrowserTutorial = false;
         AccountManager.setCurrentUser({ user });
+        const popup = Array.from(document.querySelectorAll('a'))
+          .find(a => a.textContent.trim() === 'Play intro');
+        const divPopup = popup.closest('div');
+        divPopup.style.display = 'none'
       },
       onBeforeChange: async function(targetElement) {
         document.addEventListener('keydown', blockKeys, true);
@@ -587,7 +598,6 @@ class Browser extends DashboardView {
                     }    
             
                   } catch (err) {
-                    document.querySelector('.introjs-overlay').style.zIndex = 99
                     showError(err)
                     if (!unexpectedErrorThrown) {
                       unexpectedErrorThrown = true;
