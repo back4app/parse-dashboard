@@ -503,7 +503,8 @@ class Browser extends DashboardView {
       }
     }
 
-    let vehicleRowCreated = false;    
+    let vehicleRowCreated = false;
+    let forcedCancelTour = false  
 
     return {
       steps,
@@ -521,8 +522,10 @@ class Browser extends DashboardView {
         AccountManager.setCurrentUser({ user });
         const popup = Array.from(document.querySelectorAll('a'))
           .find(a => a.textContent.trim() === 'Play intro');
-        const divPopup = popup.closest('div');
-        divPopup.style.display = 'none'
+        if(popup){
+          const divPopup = popup.closest('div');
+          divPopup.style.display = 'none'
+        }
       },
       onBeforeChange: async function(targetElement) {
         document.addEventListener('keydown', blockKeys, true);
@@ -616,7 +619,6 @@ class Browser extends DashboardView {
                 targetElement.style.backgroundColor = 'inherit';
               }
               break;
-
           }
         } catch (error) {
           console.error('Error onBeforeChange:', error);
@@ -632,9 +634,14 @@ class Browser extends DashboardView {
         if (targetElement) {
           targetElement.style.backgroundColor = '#0e69a0';
         }
+
+        const cancelButton = getCancelButton();
         
         switch(this._currentStep) {
           case 0:
+            if(cancelButton && forcedCancelTour) {
+              cancelButton.innerHTML = 'Done'
+            }
             if (this._introItems.length === 1) {
               // Disables the Prev button
               document.querySelector('.introjs-button.introjs-prevbutton').classList.add('introjs-disabled');
@@ -658,7 +665,6 @@ class Browser extends DashboardView {
           case 6:
             targetElement.style.backgroundColor = 'inherit';
             removeButtons()
-            const cancelButton = getCancelButton();
 
             if(cancelButton) {
               cancelButton.innerHTML = 'Done'
@@ -675,18 +681,20 @@ class Browser extends DashboardView {
         removeButtons()
         document.querySelector('#browser').style.pointerEvents = 'auto'
         document.removeEventListener('keydown', blockKeys, true);
+        forcedCancelTour = true
+
         // If is exiting before the last step, avoid exit and shows the last step
-        // if (this._currentStep < this._introItems.length - 1) {
-        //   this._forcedStep = true;
-        //   const elementsRemoved = this._introItems.length - 1;
-        //   this._introItems.splice(0, elementsRemoved);
-        //   for (let i = 0; i < this._introItems.length; i++) {
-        //     this._introItems[i].step -= elementsRemoved;
-        //   }
-        //   removeButtons()
-        //   this.goToStep(this._introItems.length);
-        //   return false;
-        // }
+        if (this._currentStep < this._introItems.length - 2) {
+          this._forcedStep = true;
+          const elementsRemoved = this._introItems.length - 2;
+          this._introItems.splice(0, elementsRemoved);
+          for (let i = 0; i < this._introItems.length; i++) {
+            this._introItems[i].step -= elementsRemoved;
+          }
+          removeButtons()
+          this.goToStep(this._introItems.length - 1);
+          return false;
+        }
       },
       onExit: () => {
         document.querySelector('#section_contents > div > div').style.backgroundColor = '';
