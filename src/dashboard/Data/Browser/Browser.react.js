@@ -405,13 +405,13 @@ class Browser extends DashboardView {
       {
         eventId: 'Custom Class Link',
         element: () => getCustomVehicleClassLink() || document.querySelector('.class_list'),
-        intro: 'This is the new <b>B4aVehicle</b> class we created!',
+        intro: 'This is the <b>B4aVehicle</b> class we created previously!',
         position: 'right'
       },
       {
         eventId: 'Custom Class Data Table',
         element: () => document.querySelector('#browser'),
-        intro: 'As you can see a row has been added in the new <b>B4aVehicle</b> class!',
+        intro: 'As you can see, this is where the rows added to the <b>B4aVehicle</b> class will be shown.',
         position: 'right'
       },
       {
@@ -422,6 +422,12 @@ class Browser extends DashboardView {
       },
       {
         eventId: 'Play Intro Button',
+        element: () => document.querySelector('.footer .more'),
+        intro: 'You can find this tour and play it again by pressing this button and selecting <b>"Play intro"</b>.',
+        position: 'right'
+      },
+      {
+        eventId: 'This is a fake step, created to close the tour without errors',
         element: () => document.querySelector('.footer .more'),
         intro: 'You can find this tour and play it again by pressing this button and selecting <b>"Play intro"</b>.',
         position: 'right'
@@ -453,7 +459,7 @@ class Browser extends DashboardView {
 
     
     const showError = (error) => {
-      this.showNote(error.message, error)
+      this.showNote("ERRO ON TOUR", error)
     }
 
     const getNextButton = () => {
@@ -462,6 +468,10 @@ class Browser extends DashboardView {
 
     const getPrevButton = () => {
       return document.querySelector('.introjs-button.introjs-prevbutton')
+    }
+
+    const getCancelButton = () => {
+      return document.querySelector('.introjs-button.introjs-skipbutton')
     }
 
     const getCustomVehicleClassLink = () => {
@@ -475,16 +485,6 @@ class Browser extends DashboardView {
       prevButton.style.display = 'none'
       prevButton.parentElement.style.justifyContent = 'end';
     }
-
-    const getNextComponentReadyPromise = async conditionFn => {
-      for (let i = 1; i <= 20; i++) {
-        if (conditionFn()) {
-          return;
-        }
-        await new Promise(resolve => setTimeout(resolve, i * 50));
-      }
-      throw new Error('Component not ready');
-    };
 
     async function createB4aVehicleClass() {
       const Vehicle = Parse.Object.extend('B4aVehicle');
@@ -504,7 +504,6 @@ class Browser extends DashboardView {
     }
 
     let vehicleRowCreated = false;    
-    let addDisabledClass = false; 
 
     return {
       steps,
@@ -538,6 +537,10 @@ class Browser extends DashboardView {
         try {
           switch(this._currentStep) {
             case 0:
+              const allSteps = this._introItems.map(item => item.element).filter(Boolean);
+              allSteps.forEach(el => {
+                el.style.backgroundColor = '';
+              });
             case 1:
               {
                 const nextButton = getNextButton();
@@ -561,47 +564,36 @@ class Browser extends DashboardView {
               {
                 const nextButton = getNextButton();
             
-                if (nextButton) {
-                  nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
-                  nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
-                }
-            
                 const createClassVehicle = async () => {
                   try {
                     let savedObject;
                     if (getCustomVehicleClassLink() && !vehicleRowCreated) {
                       savedObject = await createB4aVehicleClass();
                     } else if (!getCustomVehicleClassLink()) {
-                      await schema.dispatch(ActionTypes.CREATE_CLASS, { 
-                        className: 'B4aVehicle', 
-                        fields: { name: { type: 'String' }, price: { type: 'Number' }, color: { type: 'String' } } 
-                      });
-                      savedObject = await createB4aVehicleClass();
+                      try {
+                        
+                        await schema.dispatch(ActionTypes.CREATE_CLASS, { 
+                          className: 'B4aVehicle', 
+                          fields: { name: { type: 'String' }, price: { type: 'Number' }, color: { type: 'String' } } 
+                        });
+                        savedObject = await createB4aVehicleClass();
+                      } catch (error) {
+                      }
                     }
-            
-                    if (savedObject) {
+                    if(savedObject){
                       updateState(savedObject);
                       vehicleRowCreated = true;
                       this._introItems[3].element = getCustomVehicleClassLink();
-                    }
+                    }    
             
                   } catch (err) {
                     document.querySelector('.introjs-overlay').style.zIndex = 99
                     showError(err)
                     if (!unexpectedErrorThrown) {
                       unexpectedErrorThrown = true;
-                      addDisabledClass = true;
-                      removeButtons()
-                      targetElement.style.backgroundColor = 'inherit';
-                      const elementsRemoved = this._introItems.length - 1;
-                      this._introItems.splice(0, elementsRemoved);
-                      for (let i = 0; i < this._introItems.length; i++) {
-                        this._introItems[i].step -= elementsRemoved;
-                      }
-                      this.goToStep(this._introItems.length);
                     }
                   } finally {
-                    if (nextButton && !addDisabledClass) {
+                    if (nextButton) {
                       nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
                       nextButton.innerHTML = 'Next';
                     }
@@ -637,13 +629,6 @@ class Browser extends DashboardView {
         if (targetElement) {
           targetElement.style.backgroundColor = '#0e69a0';
         }
-
-        const nextButton = getNextButton();
-        const prevButton = getPrevButton();
-        if (this._currentStep !== 6) {
-          if (nextButton) nextButton.style.display = 'inline-block';
-          if (prevButton) prevButton.style.display = 'inline-block';
-        }
         
         switch(this._currentStep) {
           case 0:
@@ -653,52 +638,52 @@ class Browser extends DashboardView {
               targetElement.style.backgroundColor = 'inherit';
             }
             break;
-          case 3:
-            if (!unexpectedErrorThrown) {
-              if (!document.querySelector('#browser div > div:nth-child(1)')){
-                // next row has not rendered yet
-                const nextButton = getNextButton();
-                nextButton.innerHTML = `<div class="${styles.spinnerBorder}" role="status"></div>`;
-                nextButton.classList.add('introjs-disabled', styles.tourLoadingBtn);
-                getNextComponentReadyPromise(() => document.querySelector('#browser > div > div:nth-child(1)'))
-                  .then(() => {
-                    nextButton.innerHTML = 'Next';
-                    nextButton.classList.remove('introjs-disabled', styles.tourLoadingBtn);
-                  })
-              }
-              targetElement.style.backgroundColor = '#0e69a0';
-            }
-            break;
           case 4:
             const browserEl = document.querySelector('#browser')
             browserEl.style.scrollLeft = 0;
             browserEl.style.pointerEvents = 'none'
             break;
+          case 5:
+            const nextButton = getNextButton();
+            const prevButton = getPrevButton();
+
+            if (nextButton && prevButton) {
+              nextButton.style.display = 'inline-block'
+              prevButton.style.display = 'inline-block'
+            }
+            break;
           case 6:
             targetElement.style.backgroundColor = 'inherit';
             removeButtons()
+            const cancelButton = getCancelButton();
+
+            if(cancelButton) {
+              cancelButton.innerHTML = 'Done'
+            }
+
             break;
         }
       },
       onBeforeExit: function() {
-        document.querySelector('#browser').style.pointerEvents = 'auto'
-        document.removeEventListener('keydown', blockKeys, true);
         const allSteps = this._introItems.map(item => item.element).filter(Boolean);
         allSteps.forEach(el => {
           el.style.backgroundColor = '';
         });
+        removeButtons()
+        document.querySelector('#browser').style.pointerEvents = 'auto'
+        document.removeEventListener('keydown', blockKeys, true);
         // If is exiting before the last step, avoid exit and shows the last step
-        if (this._currentStep < this._introItems.length - 1) {
-          this._forcedStep = true;
-          const elementsRemoved = this._introItems.length - 1;
-          this._introItems.splice(0, elementsRemoved);
-          for (let i = 0; i < this._introItems.length; i++) {
-            this._introItems[i].step -= elementsRemoved;
-          }
-          removeButtons()
-          this.goToStep(this._introItems.length);
-          return false;
-        }
+        // if (this._currentStep < this._introItems.length - 1) {
+        //   this._forcedStep = true;
+        //   const elementsRemoved = this._introItems.length - 1;
+        //   this._introItems.splice(0, elementsRemoved);
+        //   for (let i = 0; i < this._introItems.length; i++) {
+        //     this._introItems[i].step -= elementsRemoved;
+        //   }
+        //   removeButtons()
+        //   this.goToStep(this._introItems.length);
+        //   return false;
+        // }
       },
       onExit: () => {
         document.querySelector('#section_contents > div > div').style.backgroundColor = '';
