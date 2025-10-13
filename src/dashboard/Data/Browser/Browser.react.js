@@ -457,16 +457,9 @@ class Browser extends DashboardView {
         };
       });
     }
-
-    const closeFooterMenu = () => {
-      this.setState({
-        renderFooterMenu: false
-      });
-    }
-
     
     const showError = (error) => {
-      this.showNote("Error to add row, continuing...", error)
+      this.showNote("Couldn’t add a new row, continuing the tour.", error)
     }
 
     const getNextButton = () => {
