@@ -399,7 +399,7 @@ class Browser extends DashboardView {
         eventId: 'Custom Class and Object Creation',
         element: () => document.querySelectorAll('.section')[3],
         intro: `It’s very simple to save data on Back4app from your front-end.<br /><br />
-        On the <a target="_blank" href="${b4aSettings.DASHBOARD_PATH}/apidocs/${applicationId}${classApiId}"><b>API Reference</b></a> section, you can find the auto-generated code below that creates a class and persist data on it.<br />
+        On the <b>API Reference</b> section, you can find the auto-generated code below that creates a class and persist data on it.<br />
         ${createClassCode}
         <p class="intro-code-run">Click on the <b>Run</b> button to execute this code.</p>`,
         position: 'right',
@@ -440,8 +440,6 @@ class Browser extends DashboardView {
     const { schema } = this.props;
     const { className } = this.props.params;
     const user = AccountManager.currentUser();
-    let applicationId = context.applicationId
-    let classApiId = `#${className ? className === 'User' ? 'user-api' : `${className}-custom-class` : `custom-class`}`
 
 
     let unexpectedErrorThrown = false;
