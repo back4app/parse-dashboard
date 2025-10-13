@@ -70,7 +70,7 @@ const MAX_ROWS_FETCHED = 200;
 const MySwal = withReactContent(Swal);
 const postgresqlAlert = {
   text:
-    'Thank you for your interest in using Back4App with PostgreSQL. We are working hard to make this database available and will notify you once we release it. In the meantime, we’ve just created your App using MongoDB 3.6, so you can use Back4App.',
+    'Thank you for your interest in using Back4app with PostgreSQL. We are working hard to make this database available and will notify you once we release it. In the meantime, we’ve just created your App using MongoDB 3.6, so you can use Back4app.',
   imageUrl: postgresqlImg,
   imageWidth: 200,
   imageAlt: 'Postgresql Image'
@@ -383,8 +383,8 @@ class Browser extends DashboardView {
     `;
     const steps = [
       {
-        eventId: 'Connect to Back4App',
-        intro: 'Congratulations, you’ve created your App Backend on Back4App. As a next step, we recommend <a target="_blank" href="https://www.back4app.com/docs/get-started/parse-sdk" style="color: #169CEE">adding Back4App to your App Project.</a>',
+        eventId: 'Connect to Back4app',
+        intro: 'Congratulations, you’ve created your App Backend on Back4app. As a next step, we recommend <a target="_blank" href="https://www.back4app.com/docs/get-started/parse-sdk" style="color: #169CEE">adding Back4app to your App Project.</a>',
         position: 'center'
       },
       {
@@ -396,7 +396,7 @@ class Browser extends DashboardView {
       {
         eventId: 'Custom Class and Object Creation',
         element: () => document.querySelectorAll('.section')[3],
-        intro: `It’s very simple to save data on Back4App from your front-end.<br /><br />
+        intro: `It’s very simple to save data on Back4app from your front-end.<br /><br />
         On the <b>API Reference</b> section, you can find the auto-generated code below that creates a class and persist data on it.<br />
         ${createClassCode}
         <p class="intro-code-run">Click on the <b>Run</b> button to execute this code.</p>`,
