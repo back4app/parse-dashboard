@@ -481,6 +481,12 @@ class Browser extends DashboardView {
       return document.querySelector('#section_contents a[title="B4aVehicle"]');
     };
 
+    const redirectToB4aVehicleClass = () => {
+      this.props.navigate(generatePath(context || this.context, 'browser/B4aVehicle'), {
+        replace: true,
+      });
+    }
+
     const removeButtons = () => {
       const prevButton = getPrevButton()
       const nextButton = getNextButton()
@@ -560,6 +566,7 @@ class Browser extends DashboardView {
                 if (this._currentStep === 1) {
                   document.querySelector('#section_contents > div > div').style.backgroundColor = '#0e69a0';
                 }
+                redirectToB4aVehicleClass()
               }
               break;
             case 2:
