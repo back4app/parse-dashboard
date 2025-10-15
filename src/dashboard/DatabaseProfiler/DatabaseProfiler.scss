@@ -2,13 +2,27 @@
   z-index: 1000 !important;
 }
 
+code[class*="language-"], pre[class*="language-"] {
+  background: #111214 !important;
+}
+
+.pre-wrap {
+  max-height: auto;
+}
+
 .pageContainer {
   position: relative;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-top: 64px; /* Account for header */
-  overflow: hidden; /* Prevent double scrollbars */
+  padding-top: 64px;
+  /* Account for header */
+  overflow: hidden;
+  /* Prevent double scrollbars */
+}
+
+.marginTopContent {
+  margin-top: 80px;
 }
 
 .mainContent {
@@ -21,18 +35,19 @@
   margin-left: 10px;
   cursor: pointer;
   color: #ffffff;
-  
+
   &:hover {
     opacity: 0.8;
   }
 
   svg {
-    fill: currentColor;  // Make SVG icon inherit the text color
+    fill: currentColor; // Make SVG icon inherit the text color
   }
 }
 
 .row {
   transition: all 0.3s ease;
+
   &:hover {
     cursor: pointer;
     box-shadow: 0px 1px 0px 0px rgba(193, 226, 255, 0.16);
@@ -43,7 +58,8 @@
 .detailView {
   padding: 20px;
   background: #0c1e35;
-  margin-top: 0px; /* Account for toolbar height */
+  margin-top: 0px;
+  /* Account for toolbar height */
   box-sizing: border-box;
 }
 
@@ -93,11 +109,15 @@
 
 .detailSection {
   margin-bottom: 24px;
+  border-radius: 7px;
+  border: 0.1px solid #ffffff29;
+  padding: 20px 20px 10px 20px;
+  background-color: #10203a;
 
   h3 {
     color: #ffffff;
-    font-size: 14px;
-    margin-bottom: 12px;
+    font-size: 17px;
+    margin-bottom: 20px;
     font-weight: 600;
   }
 }
@@ -105,28 +125,17 @@
 .detailGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 5px;
   margin-bottom: 12px;
-
-  &.twoColumns {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 1200px) {
-    &.twoColumns {
-      grid-template-columns: 1fr;
-    }
-  }
 }
 
 .detailRow {
   display: flex;
+  padding: 5px;
   align-items: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
+  font-size: 15px;
   transition: all 0.2s ease;
-  min-height: 48px;
   box-sizing: border-box;
 
   &:hover {
@@ -135,12 +144,13 @@
 }
 
 .detailLabel {
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
-  margin-right: 24px;
-  width: 160px;
+  color: #ffffff9c;
+  margin-right: 10px;
   flex-shrink: 0;
-  font-size: 13px;
+
+  &::after {
+    content: ":";
+  }
 }
 
 .detailValue {
@@ -151,17 +161,18 @@
 }
 
 .queryContainer {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px;
+  margin-top: 20px;
   border-radius: 6px;
   font-size: 13px;
   width: 100%;
   line-height: 1.5;
   box-sizing: border-box;
-  max-height: 200px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
-  
+  margin-bottom: 20px;
+  position: relative;
+
   h4 {
     margin: 0 0 8px 0;
     font-size: 13px;
@@ -171,54 +182,40 @@
   pre {
     width: 100%;
     flex: 1;
-    overflow: auto;
     margin: 0;
-    padding: 8px;
-    background: rgba(0, 0, 0, 0.2);
+    background: #111214 !important;
+    margin: 0 !important;
     border-radius: 4px;
     font-size: 12px;
     white-space: pre-wrap;
-    word-break: break-all;
-    max-height: 150px;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 3px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 3px;
-      
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
-    }
+    min-height: 200px;
+    border-radius: 4px;
+    padding: 0rem 1.5rem 1.5rem 0 !important;
+    overflow-x: auto;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    font-family: 'Roboto Mono', monospace !important;
+    padding-left: 3.5em !important;
   }
 }
 
-.title {
+.contentTitle {
+  background: #345070;
   color: #ffffff;
   font-size: 14px;
   font-weight: 500;
-  margin-bottom: 12px;
-}
+  padding: 8px 30px;
+  border-radius: 5px 5px 0px 0px;
 
-.code {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 4px;
-  padding: 12px;
+  button {
+    float: right;
+  }
 }
 
 .booleanTag {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
+  padding: 4px 12px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
