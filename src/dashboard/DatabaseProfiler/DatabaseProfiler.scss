@@ -123,7 +123,7 @@ code[class*="language-"], pre[class*="language-"] {
 }
 
 .detailGrid {
-  display: grid;
+  display: block;
   grid-template-columns: 1fr;
   gap: 5px;
   margin-bottom: 12px;
