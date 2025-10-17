@@ -13,7 +13,7 @@ export default yup.object({
     }),
     accountLockout: yup.object({
       duration: yup.number().positive().max(100000),
-      threshold: yup.number().positive().max(1000)
+      threshold: yup.number().positive().max(999).min(1)
     })
   })
 });
