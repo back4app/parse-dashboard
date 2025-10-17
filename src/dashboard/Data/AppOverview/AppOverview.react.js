@@ -58,6 +58,9 @@ class AppOverview extends DashboardView {
       isLoadingSlowQueries: true,
       slowQueries: undefined,
 
+      // Performance card global time limit
+      globalTimeLimit: '60',
+
       showCopiedTooltip: false,
       showConnectAppModal: false,
       showMCPSetupModal: false,
@@ -72,6 +75,7 @@ class AppOverview extends DashboardView {
     this.copyText = this.copyText.bind(this);
     this.loadCardInformation = this.loadCardInformation.bind(this);
     this.pollSchemas = this.pollSchemas.bind(this);
+    this.handleLimitChange = this.handleLimitChange.bind(this);
   }
 
   componentWillMount() {
@@ -111,6 +115,60 @@ class AppOverview extends DashboardView {
     }
   }
 
+  handleLimitChange(type, value) {
+    console.log(`Changing global limit to ${value} minutes`);
+    this.setState({
+      globalTimeLimit: value
+    }, () => {
+      // Recarregar todos os dados com o novo limite
+      this.loadAllPerformanceData(this.context, value);
+    });
+  }
+
+  loadAllPerformanceData(currentApp, limit) {
+    const minutes = parseInt(limit);
+
+    // Load Average Response Time
+    this.setState({ isLoadingAvgResponseTime: true });
+    currentApp.fetchAvgResponseTime(minutes).then(res => this.setState({
+      isLoadingAvgResponseTime: false,
+      avgResponseTime: res.avgResTime
+    })).catch(err => this.setState({
+      isLoadingAvgResponseTime: false,
+      avgResponseTime: new Error(err.message || err.msg || 'Something went wrong')
+    }));
+
+    // Load Response Status
+    this.setState({ isLoadingResponseStatus: true });
+    currentApp.fetchRequestStatus(minutes).then(res => this.setState({
+      isLoadingResponseStatus: false,
+      responseStatus: res
+    })).catch(err => this.setState({
+      isLoadingResponseStatus: false,
+      responseStatus: new Error(err.message || err.msg || 'Something went wrong')
+    }));
+
+    // Load Slow Queries
+    this.setState({ isLoadingSlowQueries: true });
+    const fromDate = new Date(Date.now() - (minutes * 60 * 1000));
+    const toDate = new Date();
+    const { promise } = currentApp.getAnalyticsSlowQueries({
+      path: '',
+      method: '',
+      respStatus: '',
+      respTime: '',
+      from: fromDate,
+      to: toDate
+    });
+    promise.then(res => this.setState({
+      isLoadingSlowQueries: false,
+      slowQueries: res
+    })).catch(err => this.setState({
+      isLoadingSlowQueries: false,
+      slowQueries: new Error(err.message || err.msg || 'Something went wrong')
+    }));
+  }
+
   loadCardInformation(currentApp) {
     currentApp = currentApp ? currentApp : this.context
 
@@ -143,48 +201,8 @@ class AppOverview extends DashboardView {
       securityReport: new Error(err.message || err.msg || 'Something went wrong')
     }));
 
-    // load slow request count
-    const date = new Date();
-    const { promise } = currentApp.getAnalyticsSlowQueries({
-      path: '',
-      method: '',
-      respStatus: '',
-      respTime: '',
-      from: new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate() - 31
-      ),
-      to: new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate() + 1
-      )
-    });
-    promise.then(res => this.setState({
-      isLoadingSlowQueries: false,
-      slowQueries: res
-    })).catch(err => this.setState({
-      isLoadingSlowQueries: false,
-      slowQueries: new Error(err.message || err.msg || 'Something went wrong')
-    }));
-
-    currentApp.fetchRequestStatus().then(res => this.setState({
-      isLoadingResponseStatus: false,
-      responseStatus: res
-    })).catch(err => this.setState({
-      isLoadingResponseStatus: false,
-      responseStatus: new Error(err.message || err.msg || 'Something went wrong')
-    }));
-
-    // currentApp.fetchAppHealthStatus().then(res => console.log(res));
-    currentApp.fetchAvgResponseTime().then(res => this.setState({
-      isLoadingAvgResponseTime: false,
-      avgResponseTime: res.avgResTime
-    })).catch(err => this.setState({
-      isLoadingAvgResponseTime: false,
-      avgResponseTime: new Error(err.message || err.msg || 'Something went wrong')
-    }));
+    // Load performance data with current global limit
+    this.loadAllPerformanceData(currentApp, this.state.globalTimeLimit);
 
     // load webhosting information
     currentApp.getCustomDomain().then(res => this.setState({
@@ -298,12 +316,12 @@ class AppOverview extends DashboardView {
           <AppPerformanceCard
             isLoadingAvgResponseTime={this.state.isLoadingAvgResponseTime}
             avgResponseTime={this.state.avgResponseTime}
-
             isLoadingResponseStatus={this.state.isLoadingResponseStatus}
             responseStatus={this.state.responseStatus}
-
             isLoadingSlowQueries={this.state.isLoadingSlowQueries}
             slowQueries={this.state.slowQueries}
+            handleLimitChange={this.handleLimitChange}
+            globalTimeLimit={this.state.globalTimeLimit}
           />
 
           <div className={styles.cardsContainer}>

@@ -76,11 +76,11 @@ const AvgResponseTimeCard = ({ isLoadingAvgResponseTime, avgResponseTime }) => {
   return <div className={styles.avgResponseTimeCard}>
     <div className={styles.headerTextDiv}>
       <div className={styles.headerText}>Average Response Time</div>
-      <div className={styles.rightText}>last 60 mins</div>
     </div>
     {content}
   </div>
 }
+
 
 const ResponseStatusCard = ({ isLoadingResponseStatus, responseStatus }) => {
   let content;
@@ -118,7 +118,6 @@ const ResponseStatusCard = ({ isLoadingResponseStatus, responseStatus }) => {
   return <div className={styles.responseStatusCard}>
     <div className={styles.headerTextDiv}>
       <div className={styles.headerText}>Response Status</div>
-      <div className={styles.rightText}>last 60 mins</div>
     </div>
     {content}
   </div>
@@ -150,16 +149,49 @@ const SlowQueriesCard = ({ isLoadingSlowQueries, slowQueries }) => {
 }
 
 
-const AppPerformanceCard = ({ isLoadingAvgResponseTime, avgResponseTime, isLoadingResponseStatus, responseStatus, isLoadingSlowQueries, slowQueries }) => {
+const AppPerformanceCard = ({
+  isLoadingAvgResponseTime,
+  avgResponseTime,
+  isLoadingResponseStatus,
+  responseStatus,
+  isLoadingSlowQueries,
+  slowQueries,
+  handleLimitChange,
+  globalTimeLimit
+}) => {
   return (
     <div className={styles.performanceCard}>
       <div className={styles.performanceCardHeader}>
-        Response Performance
+        <div className={styles.performanceCardTitle}>Response Performance</div>
+        <div className={styles.globalFilterDropdown}>
+          <select
+            name="global-time-filter"
+            id="global-time-filter"
+            defaultValue={globalTimeLimit || '60'}
+            disabled={isLoadingAvgResponseTime || isLoadingResponseStatus || isLoadingSlowQueries}
+            onChange={(e) => handleLimitChange && handleLimitChange('global', e.target.value)}
+          >
+            <option value="05">last 05 min</option>
+            <option value="10">last 10 min</option>
+            <option value="15">last 15 min</option>
+            <option value="30">last 30 min</option>
+            <option value="60">last 60 min</option>
+          </select>
+        </div>
       </div>
       <div className={styles.performanceCardContent}>
-        <AvgResponseTimeCard isLoadingAvgResponseTime={isLoadingAvgResponseTime} avgResponseTime={avgResponseTime} />
-        <ResponseStatusCard isLoadingResponseStatus={isLoadingResponseStatus} responseStatus={responseStatus} />
-        <SlowQueriesCard isLoadingSlowQueries={isLoadingSlowQueries} slowQueries={slowQueries} />
+        <AvgResponseTimeCard
+          isLoadingAvgResponseTime={isLoadingAvgResponseTime}
+          avgResponseTime={avgResponseTime}
+        />
+        <ResponseStatusCard
+          isLoadingResponseStatus={isLoadingResponseStatus}
+          responseStatus={responseStatus}
+        />
+        <SlowQueriesCard
+          isLoadingSlowQueries={isLoadingSlowQueries}
+          slowQueries={slowQueries}
+        />
       </div>
     </div>
   )

@@ -492,9 +492,48 @@
       border: 1px solid #253348;
 
       & .performanceCardHeader {
-        font-weight: 700;
-        line-height: 140%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 12px;
+
+        & .performanceCardTitle {
+          font-weight: 700;
+          line-height: 140%;
+        }
+
+        & .globalFilterDropdown {
+          select {
+            background: #1B3454;
+            border: 1px solid #34506F;
+            border-radius: 4px;
+            color: $white;
+            font-size: 12px;
+            padding: 6px 10px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+
+            &:hover {
+              border-color: #4A6B8A;
+            }
+
+            &:focus {
+              border-color: $light-blue;
+              box-shadow: 0 0 0 2px rgba($light-blue, 0.2);
+            }
+
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
+
+            option {
+              background: #1B3454;
+              color: $white;
+            }
+          }
+        }
       }
 
       & .performanceCardContent {
@@ -532,12 +571,45 @@
             & .rightText {
               font-size: 11px;
               color: #ccc;
-            }  
+            }
+
+            & .filterDropdown {
+              select {
+                background: #1B3454;
+                border: 1px solid #34506F;
+                border-radius: 4px;
+                color: $white;
+                font-size: 11px;
+                padding: 4px 8px;
+                cursor: pointer;
+                outline: none;
+                transition: all 0.2s ease;
+
+                &:hover {
+                  border-color: #4A6B8A;
+                }
+
+                &:focus {
+                  border-color: $light-blue;
+                  box-shadow: 0 0 0 2px rgba($light-blue, 0.2);
+                }
+
+                &:disabled {
+                  opacity: 0.5;
+                  cursor: not-allowed;
+                }
+
+                option {
+                  background: #1B3454;
+                  color: $white;
+                }
+              }
+            }
           }            
         }
 
         & .avgResponseTimeCard {
-          min-width: 300px;
+          min-width: 280px;
           flex: 0;
           & .content {
             display: flex;
@@ -598,16 +670,19 @@
         }
 
         & .responseStatusCard {
+          flex: 1;
+          min-width: 200px;
+
           & .statsRow {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 12px;
+            gap: 10px;
+            margin-top: 10px;
 
             & .statusCode {
-              font-size: 12px;
+              font-size: 11px;
               color: #ccc;
-              width: 100px;
+              width: 90px;
             }
             
             & .progressBarContainer {
@@ -624,14 +699,15 @@
             }
 
             & .requestCount { 
-              font-size: 12px;
+              font-size: 11px;
               color: #ccc;
-              width: 50px;
+              width: 45px;
             }
 
             & .percentage {
-              font-size: 12px;
+              font-size: 11px;
               color: #ccc;
+              width: 40px;
             }
           }
         } 
