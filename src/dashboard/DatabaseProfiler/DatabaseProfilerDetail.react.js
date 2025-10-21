@@ -184,6 +184,12 @@ DetailSection.propTypes = {
         sortJson = sort;
         updateJson = update;
         break;
+      case 'command':
+        subTitle = 'Command';
+        json = query;
+        sortJson = sort;
+        updateJson = update;
+      break;
       case 'mapReduce':
         subTitle = 'Map-Reduce Operation';
         json = {
@@ -214,7 +220,7 @@ DetailSection.propTypes = {
 
   const shouldShowPerformanceMetrics = () => {
     // List of commands that should show performance metrics
-    const commandsWithMetrics = ['find', 'query', 'aggregate', 'count', 'distinct', 'findAndModify'];
+    const commandsWithMetrics = ['find', 'query', 'aggregate', 'count', 'distinct', 'findAndModify', 'command'];
     return commandsWithMetrics.includes(command);
   };
 
@@ -236,6 +242,8 @@ DetailSection.propTypes = {
         return nModified ? { title: 'Documents Modified', value: nModified } : null;
       case 'distinct':
         return distinct?.key ? { title: 'Distinct Key', value: distinct.key } : null;
+      case 'command':
+        return executionStats?.nReturned ? { title: 'Documents Returned', value: executionStats.nReturned } : null;
       default:
         return null;
     }
