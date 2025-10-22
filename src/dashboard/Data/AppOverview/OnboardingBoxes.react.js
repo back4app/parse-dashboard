@@ -5,6 +5,7 @@ import AIAgentIcon from './AIAgentIcon.react';
 import OnboardingIcons from './OnboardingIcons.react';
 import { Link } from 'react-router-dom';
 import back4app2 from 'lib/back4app2';
+import axios from 'lib/axios';
 
 const queryText = (type, appName, appId) => {
   switch (type) {
@@ -17,37 +18,51 @@ const queryText = (type, appName, appId) => {
   }
 }
 
-const OnboardingBoxes = ({ appName, slug, appId, openConnectModal }) => {
+const OnboardingBoxes = ({ appName, slug, appId, openConnectModal, currentUser }) => {
   const [showOnboardingBoxes, setShowOnboardingBoxes] = useState(true);
   const [featuresBox, setFeaturesBox] = useState(true);
   const [hideOnboarding, setHideOnboarding] = useState(false);
   const [hideFeatures, setHideFeatures] = useState(false);
   const [agentLoading, setAgentLoading] = useState('');
   const [agentError, setAgentError] = useState({ type: '', message: '' });
-
+  
   useEffect(() => {
-    const hideOnboardingValue = localStorage.getItem(`onboarding-app-${slug}`);
-    const hideFeaturesValue = localStorage.getItem(`features-app-${slug}`);
-    if (hideOnboardingValue === 'hide') {
+    const hideOnboardingValue = currentUser.playOverviewBoxes?.hideOnboarding;
+    const hideFeaturesValue = currentUser.playOverviewBoxes?.hideFeatures;
+    if (hideOnboardingValue === true) {
       setHideOnboarding(true);
     } else {
       setHideOnboarding(false);
     }
-    if (hideFeaturesValue === 'hide') {
+    if (hideFeaturesValue === true) {
       setHideFeatures(true);
     } else {
       setHideFeatures(false);
     }
   }, [slug]);
 
-  const handleHideOnboarding = () => {
-    localStorage.setItem(`onboarding-app-${slug}`, 'hide');
-    setHideOnboarding(true);
+  const handleHideOnboarding = async () => {
+    try {
+      setHideOnboarding(true);
+      await axios.post(`${b4aSettings.BACK4APP_API_PATH}/b4aUser/updateOverviewBoxes`, 
+        { hideOnboarding: true },
+        { withCredentials: true }
+      )
+    } catch (error) {
+      console.error("Error to hideOnboxing", error)
+    }
   };
 
-  const handleHideFeatures = () => {
-    localStorage.setItem(`features-app-${slug}`, 'hide');
-    setHideFeatures(true);
+  const handleHideFeatures = async () => {
+    try {
+      setHideFeatures(true);
+      await axios.post(`${b4aSettings.BACK4APP_API_PATH}/b4aUser/updateOverviewBoxes`, 
+        { hideFeatures: true },
+        { withCredentials: true }
+      )
+    } catch (error) {
+      console.error("Error to hideOnboxing", error)
+    }
   };
 
   const handleGenerateWithAI = async (type) => {
