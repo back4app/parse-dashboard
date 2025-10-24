@@ -19,6 +19,7 @@ import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import buttonStyles from 'components/Button/Button.scss';
 import baseStyles from 'stylesheets/base.scss';
 import modalStyles from 'components/B4aModal/B4aModal.scss';
+import CloudCodeSampleModal from './CloudCodeSampleModal.react'
 
 import 'jstree/dist/themes/default/style.css'
 import 'components/B4ACodeTree/B4AJsTree.css'
@@ -64,10 +65,15 @@ export default class B4ACodeTree extends React.Component {
       selectedNodeData: null,
       loadingFileId: null,
       errorFileData: null,
+      openCloudCodeSample: false,
     }
 
     // Used to track the latest file load request
     this.loadRequestId = 0;
+  }
+
+  openCloudCodeSampleModal() {
+    this.setState({ openCloudCodeSample: true })
   }
 
   getFileType(file) {
@@ -436,6 +442,12 @@ export default class B4ACodeTree extends React.Component {
         <div className={styles.filePreview}>
           {content}
         </div>
+        <div className={styles.codeSampleButton} onClick={this.openCloudCodeSampleModal.bind(this)}>
+          <Icon name="b4a-info-circle" width={18} height={18} fill="#F9F9F9" /> 
+        </div>
+        { this.state.openCloudCodeSample &&
+          <CloudCodeSampleModal closeModal={() => this.setState({ openCloudCodeSample: false })}></CloudCodeSampleModal>
+        }
       </div>
     );
   }

@@ -21,6 +21,7 @@ import B4aModal from 'components/B4aModal/B4aModal.react';
 import { withRouter } from 'lib/withRouter';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
 import { pushGTMEvent } from 'lib/gtm.js';
+import CloudCodeSampleModal from 'components/B4ACodeTree/CloudCodeSampleModal.react'
 
 @withRouter
 class B4ACloudCode extends CloudCode {
@@ -45,7 +46,9 @@ class B4ACloudCode extends CloudCode {
 
       // Parameters used to on/off alerts
       showTips: localStorage.getItem(this.alertTips) !== 'false',
-      showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false'
+      showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false',
+
+      showCloudCodeSample: false
     };
 
     this.onLogClick = this.onLogClick.bind(this);
@@ -249,6 +252,9 @@ class B4ACloudCode extends CloudCode {
   async fetchSource() {
     try {
       const response = await axios.get(this.getPath(), { withCredentials: true })
+      const emptyDir = response.data?.emptyDir ?? false;
+      console.log("Empty Dir: ", emptyDir)
+      this.setState({ showCloudCodeSample: emptyDir })
       if (response.data && response.data.tree) {
         this.setState({ files: response.data.tree, loading: false })
         $('#tree').jstree().refresh(true);
@@ -271,6 +277,7 @@ class B4ACloudCode extends CloudCode {
   renderContent() {
     let content = null;
     let title = null;
+    let cloudCodeSample = null
     const footer = null;
 
     // Show loading page before fetch data
@@ -312,12 +319,21 @@ class B4ACloudCode extends CloudCode {
         currentApp={this.context}
         cloudCodeChanges={this.cloudCodeChanges}
       />
+
+      cloudCodeSample = <div>
+        { this.state.showCloudCodeSample &&
+          <div className={styles.codeSampleButton}>
+            <CloudCodeSampleModal closeModal={() => this.setState({ showCloudCodeSample: false })}></CloudCodeSampleModal>
+          </div>
+        }
+      </div>
     }
 
     return (
       <div className={`${styles.source} ${styles['b4a-source']}`} >
         {title}
         {content}
+        {cloudCodeSample}
         {this.state.modal}
       </div>
     );

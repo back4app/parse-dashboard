@@ -41,6 +41,93 @@
   flex: 1;
 }
 
+.codeSampleButton{
+  display: flex;
+  height: fit-content;
+  position: fixed;
+  top: calc(100% - 2rem) !important;
+  width: 20rem;
+  justify-content: end;
+  cursor: pointer;
+}
+
+.cloudCodeSampleModal{
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vw;
+  padding: 30px;
+  max-height: 60vh;
+  background: #253348;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: width 0.5s cubic-bezier(1, 0, 0, 1);
+  overflow: auto;
+  & .cloudCodeSampleModalTitle {
+    @include SoraFont();
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    & .closeIcon {
+      cursor: pointer;
+    }
+  }
+
+  & .docsLink {
+    padding-top: 20px;
+    a{
+      color: $blue;
+      & :hover{
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.codeBlockContainer {
+  position: relative;
+  padding-top: 0.5rem;
+  background: $regal-blue;
+  border-radius: 4px;
+
+  & .codeBlockHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0rem 1.5rem;
+  }
+
+  pre {
+    background: #111214 !important;
+    border-radius: 4px;
+    padding: 0rem 1.5rem 1.5rem 0!important;
+    margin: 1rem 0;
+    overflow-x: auto;
+    margin: none !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    font-family: 'Roboto Mono', monospace !important;
+    padding-left: 3.5em !important;
+
+    pre.line-numbers:before {
+      background: transparent !important;
+    }
+
+    code {
+      font-family: 'Roboto Mono', monospace !important;
+      font-size: 13px;
+      background: #111214 !important;
+    }
+  }
+
+  code {
+    font-family: 'Roboto Mono', monospace !important;
+    font-size: 13px;
+    background: #111214 !important;
+  }
+}
+
 .files-box{
   background-color: $dark-blue;
   padding-top: 1.88rem;
