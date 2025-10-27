@@ -11,7 +11,7 @@ import Icon from 'components/Icon/Icon.react';
 import styles from 'components/Toolbar/Toolbar.scss';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
-import { useNavigate, useNavigationType, NavigationType } from 'react-router-dom';
+import { useNavigate, useNavigationType } from 'react-router-dom';
 
 const POPOVER_CONTENT_ID = 'toolbarStatsPopover';
 
@@ -148,12 +148,17 @@ const Toolbar = props => {
                     <Icon name='b4a-unlock-icon' fill='#27AE60' width={16} height={16}></Icon>
                   }
                 </div>
-                <div className={styles.publicAccessName}>
+              </div> </div> }
+              { props.section === 'Database' &&
+                <div 
+                  className={styles.publicAccessName} 
+                  style={{marginLeft: `${props.className == '_Installation' ? '3rem' : '0.5rem'}`}}
+                >
                   <span>{props.className}</span>
                   <span>{props.details}</span>
                 </div>
-                {/* <a href="javascript:void(0)" className={styles.publicAccessLink}><small>{props.readWritePermissions}</small></a> */}
-              </div> </div> }
+                /* <a href="javascript:void(0)" className={styles.publicAccessLink}><small>{props.readWritePermissions}</small></a> */
+              }
           </div>
         </div>
       </div>

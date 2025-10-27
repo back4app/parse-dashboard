@@ -115,6 +115,31 @@ body:global(.sidebarCollapsed) {
   color: $light-grey;
 }
 
+.publicAccessName {
+  @include InterFont;
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem;
+  line-height: 140%;
+  span:nth-child(1) {
+    font-weight: 700;
+  }
+  span:nth-child(2){
+    font-size: 0.875rem;
+    color: #ccc;
+  }
+}
+.publicAccessLink {
+  cursor: pointer;
+}
+a {
+  cursor: default;
+  height: auto;
+  border-left: none;
+  text-decoration: underline;
+  color: white;
+}
+
 .details {
   color: #80848f;
   font-size: 10px;
@@ -148,30 +173,6 @@ body:global(.sidebarCollapsed) {
     height: 28px;
     background: rgba(249, 249, 249, 0.06);
     border-radius: 1.25rem;
-  }
-  .publicAccessName {
-    @include InterFont;
-    display: flex;
-    flex-direction: column;
-    margin-left: 0.5rem;
-    line-height: 140%;
-    span:nth-child(1) {
-      font-weight: 700;
-    }
-    span:nth-child(2){
-      font-size: 0.875rem;
-      color: #ccc;
-    }
-  }
-  .publicAccessLink {
-    cursor: pointer;
-  }
-  a {
-    cursor: default;
-    height: auto;
-    border-left: none;
-    text-decoration: underline;
-    color: white;
   }
 }
 
