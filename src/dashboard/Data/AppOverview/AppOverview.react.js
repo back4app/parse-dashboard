@@ -70,7 +70,6 @@ class AppOverview extends DashboardView {
       webhostingError: undefined,
 
       currentUser: user,
-
     };
     this.copyText = this.copyText.bind(this);
     this.loadCardInformation = this.loadCardInformation.bind(this);
@@ -308,7 +307,7 @@ class AppOverview extends DashboardView {
 
           <ComplianceCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} isSignedBAA={this.context.custom.isSignedBAA} />
 
-          <OnboardingBoxes slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
+          <OnboardingBoxes  currentUser={AccountManager.currentUser()} slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
