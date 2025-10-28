@@ -249,6 +249,9 @@ class DatabaseProfile extends DashboardView {
         },
         customData: { appId: this.context.applicationId, planId },
         allowLogout: false,
+        customer: {
+          email: this.state.appOwnerEmail,
+        }
       });
     });
   };
