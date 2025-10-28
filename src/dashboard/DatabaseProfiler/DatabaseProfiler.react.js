@@ -274,6 +274,7 @@ class DatabaseProfile extends DashboardView {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' , marginBottom: '40px'}}>
           <B4aEmptyState
+            imgSrc={null}
             title="Upgrade Required"
             description="Query Performance Monitor is available exclusively on Dedicated plans."
           />
