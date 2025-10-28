@@ -142,7 +142,6 @@ const prices = [
   },
 ];
 
-
 @withRouter
 class AppPlan extends DashboardView {
   constructor() {
@@ -524,3 +523,7 @@ const PriceCard = ({ plan, active, cycle, onClick }) => {
     </div>
   );
 };
+
+export {
+  prices,
+}

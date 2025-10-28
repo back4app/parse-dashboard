@@ -16,7 +16,11 @@ import stylesTable from 'dashboard/TableView.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Icon from 'components/Icon/Icon.react';
 import DatabaseProfilerDetail from './DatabaseProfilerDetail.react';
-
+import { prices } from 'dashboard/AppPlan/AppPlan.react';
+import Button from 'components/Button/Button.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
+import { initializePaddle } from '@paddle/paddle-js';
+import AccountManager from 'lib/AccountManager';
 
 @withRouter
 class DatabaseProfile extends DashboardView {
@@ -30,6 +34,9 @@ class DatabaseProfile extends DashboardView {
       databaseProfilerError: null,
       selectedRowId: null,
       showBackButton: false,
+      paddle: null,
+      openCheckout: false,
+      applicationId: null,
     };
   }
 
@@ -38,6 +45,8 @@ class DatabaseProfile extends DashboardView {
       isLoadingDatabaseProfiler: true,
     });
     this.loadData();
+    this.loadPaddle();
+    this.getAppOwnerEmail();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -84,12 +93,95 @@ class DatabaseProfile extends DashboardView {
     }
   }
 
+  async getAppOwnerEmail() {
+    let appOwnerEmail;
+    if (!this.context.custom.isOwner) {
+      const { ownerEmail } = await this.context.getAppOwnerEmail();
+      appOwnerEmail = ownerEmail;
+    } else {
+      appOwnerEmail = AccountManager.currentUser().email;
+    }
+    this.setState({ appOwnerEmail });
+  }
+
+  loadPaddle() {
+    const paddleOptions = {
+      token: b4aSettings.PADDLE_TOKEN || 'test_0270ab179b4f4abd7aa228c7014',
+      environment: process.env.SENTRY_ENV === 'production' ? 'production' : 'sandbox',
+      pwCustomer: {}
+    };
+
+    const paddleEventCallback = async (data) => {
+      if (data.name === 'checkout.completed') {
+        const paymentData = {
+          appId: data.data.custom_data.app_id,
+          customerId: data.data.customer.id,
+          planName: data.data.items[0].product.name,
+          transactionId: data.data.transaction_id,
+          checkoutId: data.data.id,
+          results: data.data,
+          planId: data.data.custom_data.plan_id,
+          email: data.data.customer.email,
+        };
+
+        try {
+          await fetch(`${b4aSettings.BACK4APP_CHECKOUT_URL}/save-subscription`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(paymentData),
+          });
+        } catch (e) { }
+
+        try {
+          const amplitudePayload = {
+            api_key: b4aSettings.BACK4APP_AMPLITUDE_KEY,
+            events: [
+              {
+                user_id: paymentData.email || 'unknown',
+                event_type: 'At Checkout - Subscription Successful',
+                time: Date.now(),
+                event_properties: {
+                  appId: paymentData.appId,
+                  planName: paymentData.planName,
+                  planType: data.data.items[0].billing_cycle.interval,
+                  subscriptionTotal: data.data.totals.total,
+                }
+              }
+            ]
+          };
+          await fetch('https://api.amplitude.com/2/httpapi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(amplitudePayload)
+          });
+        } catch (error) { }
+      }
+      if (data.name === 'checkout.closed') {
+        this.setState({ openCheckout: false });
+      }
+    };
+
+    initializePaddle({ ...paddleOptions, eventCallback: paddleEventCallback }).then(
+      (paddleInstance) => {
+        if (paddleInstance) {
+          this.setState({ paddle: paddleInstance });
+        }
+      },
+    );
+  }
+
   handleBackClick = () => {
     this.setState({
       selectedRowId: null,
       showBackButton: false
     });
   };
+
+  componentWillUnmount() {
+    this.setState({ openCheckout: false });
+  }
 
   renderToolbar() {
     const { showBackButton } = this.state;
@@ -137,6 +229,38 @@ class DatabaseProfile extends DashboardView {
     );
   }
 
+  handleUpgradeClick = () => {
+    // Find Dedicated plan
+    const dedicatedPlan = prices.find(plan => plan.name === 'Dedicated');
+    if (!dedicatedPlan) { return; }
+    this.setState({ openCheckout: true }, () => {
+      const productId = dedicatedPlan.monthlyProductId;
+      const planId = dedicatedPlan.monthlyPlanId;
+      this.state.paddle?.Checkout.open({
+        items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
+        title: dedicatedPlan.name,
+        settings: {
+          displayMode: 'inline',
+          theme: 'light',
+          locale: 'en',
+          variant: 'one-page',
+          frameTarget: 'checkout-container',
+          frameInitialHeight: '450',
+          frameStyle: 'width: 100%; min-width: 312px; max-height: 80vh; background-color: #f9f9f9; border: none;'
+        },
+        customData: { appId: this.context.applicationId, planId },
+        allowLogout: false,
+        customer: {
+          email: this.state.appOwnerEmail,
+        }
+      });
+    });
+  };
+
+  handleComparePlansClick = (applicationId) => {
+    window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${applicationId}/plan-usage`;
+  };
+
   renderError() {
     const { databaseProfilerError } = this.state;
     if (databaseProfilerError?.message.includes('not found')) {
@@ -148,24 +272,78 @@ class DatabaseProfile extends DashboardView {
       );
     } else if (databaseProfilerError?.message === 'PLAN_NOT_SUPPORTED') {
       return (
-        <B4aEmptyState
-          title="Plan Not Supported"
-          description="Query Performance Monitor is available only on dedicated plans. Please upgrade to a supported plan to access this feature."
-        />
-      );
-    } else if (databaseProfilerError?.message === 'NOT_SUPPORTED_DATABASE') {
-      return (
-        <B4aEmptyState
-          title="Database Not Supported"
-          description="Query Performance Monitor is currently only available for MongoDB databases. Support for other database types will be added in future updates."
-        />
-      );
-    } else if (databaseProfilerError?.message === 'UNAUTHORIZED') {
-      return (
-        <B4aEmptyState
-          title="Unauthorized"
-          description="You are not authorized to access the Query Performance Monitor."
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' , marginBottom: '40px'}}>
+          <B4aEmptyState
+            imgSrc={null}
+            title="Upgrade Required"
+            description="Query Performance Monitor is available exclusively on Dedicated plans."
+          />
+          {/* Dedicated plan highlight card */}
+          <div style={{
+            width: '100%',
+            maxWidth: '440px',
+            marginTop: 16,
+            borderRadius: 8,
+            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.02)',
+            padding: 24,
+          }}>
+            {/* Header row: plan name + badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <div style={{
+                fontWeight: 600,
+                color: 'var(--text-primary, #fff)'
+              }}>Dedicated</div>
+              <span style={{
+                fontSize: 12,
+                padding: '2px 8px',
+                borderRadius: 999,
+                background: 'rgba(16,185,129,0.15)',
+                color: 'rgb(16,185,129)'
+              }}>Unlimited requests</span>
+            </div>
+
+            {/* Price block */}
+            <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <div style={{ fontSize: 40, fontWeight: 700, lineHeight: 1, color: 'var(--text-primary, #fff)' }}>$500</div>
+              <div style={{ color: 'var(--text-secondary, #a0aec0)', marginTop: 4 }}>per App / Month</div>
+              <div style={{ color: 'var(--text-tertiary, #718096)', fontSize: 12 }}>Billed Monthly</div>
+            </div>
+
+            {/* Features list */}
+            <div style={{ display: 'grid', rowGap: 8, marginBottom: 16 }}>
+              {[
+                'Unlimited Requests',
+                '10 CPUs / 14 GB',
+                '8 GB Data Storage',
+                '2 TB Data Transfer',
+                '1 TB File Storage',
+                'Point-in-Time Backups',
+                'SOC 2 and ISO 27001',
+              ].map((text, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary, #fff)' }}>
+                  <Icon name='b4a-check-icon' width={14} height={14} fill='rgb(16,185,129)' />
+                  <span>{text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Choose plan to entire div with button */}
+            <div style={{ display: 'flex', justifyContent: 'center' }} className={styles.upgradeCard}>
+              <Button primary value="Buy now" onClick={this.handleUpgradeClick}  />
+            </div>
+          </div>
+
+          {/* Compare plans link */}
+          <div style={{ marginTop: 16, color: 'var(--text-tertiary, #a0aec0)' }}>
+            Upgrade now to unlock production-grade infrastructure
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <a onClick={() => this.handleComparePlansClick(this.context.slug)} style={{ cursor: 'pointer', color: 'var(--link-color, #60a5fa)' }}>
+              Compare all plans
+            </a>
+          </div>
+        </div>
       );
     } else if (databaseProfilerError?.message === 'DATABASE_OUTSIDE_B4A') {
       return (
@@ -243,7 +421,7 @@ class DatabaseProfile extends DashboardView {
     }
 
     const extras = this.renderExtras ? this.renderExtras() : null;
-    
+
     return (
       <div>
         <B4aLoaderContainer loading={isLoadingDatabaseProfiler}>
@@ -253,7 +431,18 @@ class DatabaseProfile extends DashboardView {
             {extras}
           </div>
         </B4aLoaderContainer>
-      {toolbar}
+        {toolbar}
+
+        {this.state.openCheckout ? (
+          <B4aModal
+            type={B4aModal.Types.DEFAULT}
+            width={'80vw'}
+            customFooter={<div></div>}
+            onCancel={() => this.setState({ openCheckout: false })}
+          >
+            <div className="checkout-container"></div>
+          </B4aModal>
+        ) : null}
       </div>
     );
   }
