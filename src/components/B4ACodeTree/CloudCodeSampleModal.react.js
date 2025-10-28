@@ -19,78 +19,139 @@ import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
 // eslint-disable-next-line no-unused-vars
 import customPrisma from 'stylesheets/b4a-prisma.css';
 
-const CloudCodeSample = {
-    'js-browser': {
-      icon: 'js-icon',
-      name: 'JavaScript (Browser)',
-      iconColor: '#f7df1c',
-      blocks: [
-        {
-          title: 'Cloud Functions',
-          content: `~~~javascript
-Parse.Cloud.define("averageStars", async (request) => {
-    const query = new Parse.Query("Review");
-    query.equalTo("movie", request.params.movie);
-    const results = await query.find();
-    let sum = 0;
-    for (let i = 0; i < results.length; ++i) {
-        sum += results[i].get("stars");
-    }
-    return sum / results.length;
+const getCloudCodeSample = (currentApp) => {
+    return {
+        'js-browser': {
+            icon: 'js-icon',
+            name: 'JavaScript (Browser)',
+            iconColor: '#f7df1c',
+            blocks: [
+              {
+                  title: '<b>Cloud Functions:</b> Are custom functions you can define and run on the server.',
+                  content: `
+~~~javascript
+Parse.Cloud.define("hello", async (request) => {
+    console.log("Hello from Cloud Code!");
+    return "Hello from Cloud Code!";
 });
 ~~~`
-        },
-        {
-            title: 'Here is how you have to call it via REST API.',
-            content: String.raw`~~~bash
+              },
+              {
+                  title: 'Here is how you have to call it via REST API.',
+                  content: String.raw`
+~~~bash
 curl -X POST \
-    -H "X-Parse-Application-Id: YOUR_APPLICATION_ID" \
-    -H "X-Parse-REST-API-Key: YOUR_REST_API_KEY" \
+    -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
+    -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
+    ${currentApp.serverURL}/functions/hello
+~~~`
+              },
+              {
+                title: '<b>Cloud Functions (Data Manipulation):</b> Are Cloud Functions to create, edit, or retrieve objects in your database.',
+                content: `
+~~~javascript
+Parse.Cloud.define("createObject", async (request) => {
+    const b4aClass = new Parse.Object("B4aSampleClass");
+    b4aClass.set("name", request.params.name);
+    b4aClass.set("value", request.params.value);
+    await b4aClass.save(null, { useMasterKey: true });
+    return "Object created successfully!";
+});
+~~~`
+              },
+              {
+                  title: 'Here is how you have to call it via REST API.',
+                  content: String.raw`
+~~~bash
+curl -X POST \
+    -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
+    -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
     -H "Content-Type: application/json" \
-    -d '{ "movie": "The Matrix" }' \
-    https://YOUR.PARSE-SERVER.HERE/parse/functions/averageStars
+    -d '{"name":"b4aObject1","value": 27}' \
+    ${currentApp.serverURL}/functions/createObject
 ~~~`
-        },
-        {
-          title: 'Cloud Jobs',
-          content: `~~~javascript
-Parse.Cloud.job("myJob", (request) =>  {
-    // params: passed in the job call
-    // headers: from the request that triggered the job
-    // log: the ParseServer logger passed in the request
-    // message: a function to update the status message of the job object
-    const { params, headers, log, message } = request;
-    message("I just started");
-    return doSomethingVeryLong(request);
+              },
+              {
+                title: 'Now we can retrieve that object with this function:',
+                content: `
+~~~javascript
+Parse.Cloud.define("getObjects", async (request) => {
+    const query = new Parse.Query("B4aSampleClass");
+    const objects = await query.find({ useMasterKey: true });
+
+    return objects.map(obj => ({
+        id: obj.id,
+        name: obj.get("name"),
+        value: obj.get("value"),
+    }));
 });
 ~~~`
-        },
-        {
-            title: 'Here is how you have to call it via REST API.',
-            content: String.raw`~~~bash
+              },
+              {
+                  title: 'Here is how you have to call it via REST API.',
+                  content: String.raw`
+~~~bash
 curl -X POST \
-    -H 'X-Parse-Application-Id: YOUR_APPLICATION_ID' \
-    -H 'X-Parse-Master-Key: YOUR_MASTER_KEY' \
-    https://YOUR.PARSE-SERVER.HERE/parse/jobs/myJob
+    -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
+    -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
+    -H "Content-Type: application/json" \
+    ${currentApp.serverURL}/functions/getObjects
 ~~~`
-        },
-        {
-          title: 'Cloud Triggers',
-          content: `~~~javascript
-Parse.Cloud.beforeSave("Review", (request) => {
-    const comment = request.object.get("comment");
-    if (comment.length > 140) {
-        // Truncate and add a ...
-        request.object.set("comment", comment.substring(0, 137) + "...");
+              },
+              {
+                  title: '<b>Cloud Triggers:</b> Are special functions that run automatically before or after certain database actions.',
+                  content: `
+~~~javascript
+Parse.Cloud.beforeSave("B4aSampleClass", (request) => {
+    // Set value property to 0 if not send 
+    if (request.object.get("value") === undefined) {
+        request.object.set("value", 0);
     }
 });
 ~~~`
-        },
-        
-      ]
+              },
+              {
+                  title: 'To see this trigger in action, you need to perform a save operation on the database. You can use the createObject function created earlier.',
+                  content: String.raw`
+~~~bash
+curl -X POST \
+    -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
+    -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
+    -H "Content-Type: application/json" \
+    -d '{"name":"b4aObject2"}' \
+    ${currentApp.serverURL}/functions/createObject
+~~~`
+              },
+              {
+                  title: '<b>Cloud Jobs:</b> Are background tasks that you can schedule or run manually from your dashboard.',
+                  content: `
+~~~javascript
+Parse.Cloud.job("activeAllObjects", async (request) => {
+    const query = new Parse.Query("B4aSampleClass");
+    const objects = await query.find({ useMasterKey: true });
+
+    for (const obj of objects) {
+        obj.set("isActive", true);
+        await obj.save(null, { useMasterKey: true });
     }
-};
-  
+});
+~~~`
+              },
+              {
+                  title: 'Here is how you have to call it. Jobs can be only excute with the Master Key.',
+                  content: String.raw`
+~~~bash
+curl -X POST \
+    -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
+    -H "X-Parse-Master-Key: YOUR_MASTER_KEY" \
+    ${currentApp.serverURL}/jobs/activeAllObjects
+~~~`
+              },     
+            ]
+        }
+    }
+}
+ 
 
 const origin = new Position(0, 0);
 
@@ -118,7 +179,10 @@ const CodeBlock = ({ title, content }) => {
     return (
         <div className={styles.codeBlockContainer}>
             <div className={styles.codeBlockHeader}>
-                <div className={styles.languageLabel}>{title}</div>
+            <div
+                className={styles.languageLabel}
+                dangerouslySetInnerHTML={{ __html: title }}
+            />
                 <div className={styles.copyButtonWrapper}>
                     {copied && <div className={styles.copyTooltip}>Copied!</div>}
                     <button
@@ -146,8 +210,9 @@ const CodeBlock = ({ title, content }) => {
     );
 };
   
-const CloudCodeSampleModal = ({ closeModal }) => {
-    const sample = CloudCodeSample['js-browser'];
+const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
+    console.log("current in cloud", currentApp)
+    const sample = getCloudCodeSample(currentApp)['js-browser'];
 
     const handleOverlayClick = (e) => {
         if (e.target === e.currentTarget) {
@@ -179,8 +244,8 @@ const CloudCodeSampleModal = ({ closeModal }) => {
                         />
                     ))}
                     <div className={styles.docsLink}>
-                        You can check docs in <a href='https://docs.parseplatform.org/cloudcode/guide' target='_blank'>
-                            docs.parseplatform.org/cloudcode/guide
+                        You can check docs in <a href='https://www.back4app.com/docs/get-started/read-and-write-data' target='_blank'>
+                            back4app.com/docs/get-started/read-and-write-data
                         </a>.    
                     </div>
                 </div>

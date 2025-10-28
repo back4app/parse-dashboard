@@ -11,6 +11,8 @@ import B4ATreeActions from 'components/B4ACodeTree/B4ATreeActions';
 import Swal from 'sweetalert2';
 import folderInfoIcon from './icons/folder-info.png';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
+import B4aCloudEmpty from 'components/B4aCloudEmpty/B4aCloudEmpty.react';
+import B4aCloudPublicEmpty from 'components/B4aCloudEmpty/B4aCloudPublicEmpty.react';
 // import CloudCodeChanges from 'lib/CloudCodeChanges';
 import PropTypes from 'lib/PropTypes';
 import Icon from 'components/Icon/Icon.react';
@@ -61,6 +63,7 @@ export default class B4ACodeTree extends React.Component {
       files: this.props.files,
       isImage: false,
       selectedFolder: 0,
+      currentFolder: null,
       isFolderSelected: true,
       selectedNodeData: null,
       loadingFileId: null,
@@ -74,6 +77,19 @@ export default class B4ACodeTree extends React.Component {
 
   openCloudCodeSampleModal() {
     this.setState({ openCloudCodeSample: true })
+  }
+
+  selectSpecificFile(fileName) {
+    const tree = $('#tree').jstree(true);
+    if (!tree) return;
+  
+    const node = tree.get_json('#', { flat: true }).find(n => n.text === fileName);
+  
+    if (node) {
+      B4ATreeActions.selectFileOnTree(node.id);
+    } else {
+      console.warn('Arquivo não encontrado na árvore.');
+    }
   }
 
   getFileType(file) {
@@ -211,7 +227,16 @@ export default class B4ACodeTree extends React.Component {
         }
       }
     }
-    this.setState({ source, selectedFile, nodeId, extension, isImage, selectedFolder, isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder' })
+    this.setState({ 
+      source, 
+      selectedFile, 
+      nodeId, 
+      extension, 
+      isImage, 
+      selectedFolder, 
+      isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder' ,
+      currentFolder: selected.text
+    })
   }
 
   // method to identify the selected tree node
@@ -323,10 +348,28 @@ export default class B4ACodeTree extends React.Component {
       content = <img style={{ width: '100%', height: '100%', objectFit: 'scale-down' }} src={this.state.source} />;
     }
     else if (this.state.isFolderSelected === true) {
-      content = this.state.source && this.state.source !== '' ? <B4aEmptyState
-        margin="46px 0 0 0"
-        imgSrc={folderInfoIcon}
-        description={this.state.source} /> : <div></div>;
+      content = 
+        this.state.currentFolder && this.state.currentFolder === 'cloud' ?
+          <B4aCloudEmpty
+            imgSrc={folderInfoIcon}
+            selectMainJs={() => this.selectSpecificFile('main.js')}
+            currentApp={this.props.currentApp}
+          />
+        : this.state.currentFolder === 'public' ?
+          <B4aCloudPublicEmpty
+            imgSrc={folderInfoIcon}
+            selectIndex={() => this.selectSpecificFile('index.html')}
+            currentApp={this.props.currentApp}
+          /> 
+        :
+        this.state.source && this.state.source !== '' ? 
+          <B4aEmptyState
+            margin="46px 0 0 0"
+            imgSrc={folderInfoIcon}
+            description={this.state.source} 
+          /> 
+        : 
+        <div></div>;
     }
     else if (this.state.selectedFile) {
       content = <div className={`${styles.filesPreviewWrapper}`}>
@@ -442,12 +485,6 @@ export default class B4ACodeTree extends React.Component {
         <div className={styles.filePreview}>
           {content}
         </div>
-        <div className={styles.codeSampleButton} onClick={this.openCloudCodeSampleModal.bind(this)}>
-          <Icon name="b4a-info-circle" width={18} height={18} fill="#F9F9F9" /> 
-        </div>
-        { this.state.openCloudCodeSample &&
-          <CloudCodeSampleModal closeModal={() => this.setState({ openCloudCodeSample: false })}></CloudCodeSampleModal>
-        }
       </div>
     );
   }

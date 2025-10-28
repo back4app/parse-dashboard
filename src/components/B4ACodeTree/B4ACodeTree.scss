@@ -35,20 +35,10 @@
   position: absolute;
   top: $toolbar-height; // toolbar height
   width: 100%;
-  height: calc(100% - $toolbar-height); // toolbar height
+  min-height: calc(100% - $toolbar-height); // toolbar height
   display: flex;
   flex-wrap: wrap;
   flex: 1;
-}
-
-.codeSampleButton{
-  display: flex;
-  height: fit-content;
-  position: fixed;
-  top: calc(100% - 2rem) !important;
-  width: 20rem;
-  justify-content: end;
-  cursor: pointer;
 }
 
 .cloudCodeSampleModal{
