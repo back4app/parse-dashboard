@@ -20,6 +20,7 @@ import { prices } from 'dashboard/AppPlan/AppPlan.react';
 import Button from 'components/Button/Button.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import { initializePaddle } from '@paddle/paddle-js';
+import AccountManager from 'lib/AccountManager';
 
 @withRouter
 class DatabaseProfile extends DashboardView {
@@ -279,7 +280,7 @@ class DatabaseProfile extends DashboardView {
           {/* Dedicated plan highlight card */}
           <div style={{
             width: '100%',
-            maxWidth: 640,
+            maxWidth: '440px',
             marginTop: 16,
             borderRadius: 8,
             border: '1px solid rgba(255,255,255,0.08)',
@@ -302,7 +303,7 @@ class DatabaseProfile extends DashboardView {
             </div>
 
             {/* Price block */}
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
               <div style={{ fontSize: 40, fontWeight: 700, lineHeight: 1, color: 'var(--text-primary, #fff)' }}>$500</div>
               <div style={{ color: 'var(--text-secondary, #a0aec0)', marginTop: 4 }}>per App / Month</div>
               <div style={{ color: 'var(--text-tertiary, #718096)', fontSize: 12 }}>Billed Monthly</div>
@@ -328,7 +329,7 @@ class DatabaseProfile extends DashboardView {
 
             {/* Choose plan to entire div with button */}
             <div style={{ display: 'flex', justifyContent: 'center' }} className={styles.upgradeCard}>
-              <Button primary value="Choose Dedicated" onClick={this.handleUpgradeClick}  />
+              <Button primary value="Buy now" onClick={this.handleUpgradeClick}  />
             </div>
           </div>
 
