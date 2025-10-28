@@ -10,6 +10,14 @@ code[class*="language-"], pre[class*="language-"] {
   max-height: auto;
 }
 
+.upgradeCard {
+  button {
+    width: 100%;
+    height: auto;
+    padding: 5px 20px;
+  }
+}
+
 .pageContainer {
   position: relative;
   height: 100vh;
@@ -19,6 +27,7 @@ code[class*="language-"], pre[class*="language-"] {
   /* Account for header */
   overflow: hidden;
   /* Prevent double scrollbars */
+
 }
 
 .marginTopContent {
