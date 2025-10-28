@@ -146,11 +146,11 @@ class DatabaseProfile extends DashboardView {
           description="The app was not found."
         />
       );
-    } else if (databaseProfilerError?.message === 'FREE_PLAN_NOT_SUPPORTED') {
+    } else if (databaseProfilerError?.message === 'PLAN_NOT_SUPPORTED') {
       return (
         <B4aEmptyState
-          title="Free Plan Not Supported"
-          description="Query Performance Monitor is currently only available for paid plans. Please upgrade to a paid plan to use this feature."
+          title="Plan Not Supported"
+          description="Query Performance Monitor is available only on dedicated plans. Please upgrade to a supported plan to access this feature."
         />
       );
     } else if (databaseProfilerError?.message === 'NOT_SUPPORTED_DATABASE') {
