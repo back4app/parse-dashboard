@@ -45,6 +45,7 @@ class DatabaseProfile extends DashboardView {
     });
     this.loadData();
     this.loadPaddle();
+    this.getAppOwnerEmail();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -89,6 +90,17 @@ class DatabaseProfile extends DashboardView {
     } finally {
       this.setState({ isLoadingDatabaseProfiler: false });
     }
+  }
+
+  async getAppOwnerEmail() {
+    let appOwnerEmail;
+    if (!this.context.custom.isOwner) {
+      const { ownerEmail } = await this.context.getAppOwnerEmail();
+      appOwnerEmail = ownerEmail;
+    } else {
+      appOwnerEmail = AccountManager.currentUser().email;
+    }
+    this.setState({ appOwnerEmail });
   }
 
   loadPaddle() {
