@@ -143,7 +143,7 @@ Parse.Cloud.job("activeAllObjects", async (request) => {
 ~~~bash
 curl -X POST \
     -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
-    -H "X-Parse-Master-Key: YOUR_MASTER_KEY" \
+    -H "X-Parse-Master-Key: ${currentApp.masterKey}" \
     ${currentApp.serverURL}/jobs/activeAllObjects
 ~~~`
               },     
@@ -228,7 +228,7 @@ const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
             >
                 <div className={styles.cloudCodeSampleModal}>
                     <div className={styles.cloudCodeSampleModalTitle}>
-                        <h1>The examples below shows you how a Cloud Code looks like.</h1>
+                        <h1>The examples below show you what Cloud Code looks like.</h1>
                         <div className={styles.closeIcon} onClick={closeModal}>
                             <Icon name="close" fill="#f9f9f9" width={14} height={14} />
                         </div>
