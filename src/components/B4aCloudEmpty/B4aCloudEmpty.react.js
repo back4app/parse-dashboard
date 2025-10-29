@@ -124,7 +124,7 @@ const B4aCloudEmpty = ({ imgSrc = ghostImg, dark = true, selectMainJs, currentAp
                                 }}
                             >
                                 {`\`\`\`bash
-                                curl -X POST https://${currentApp.serverURL}/functions/hello
+                                curl -X POST ${currentApp.serverURL}/functions/hello
                                 `}
                             </ReactMarkdown>
 

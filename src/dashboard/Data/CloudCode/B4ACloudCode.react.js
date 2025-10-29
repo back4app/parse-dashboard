@@ -251,34 +251,42 @@ class B4ACloudCode extends CloudCode {
   async fetchSource() {
     try {
       const response = await axios.get(this.getPath(), { withCredentials: true })
-      // variable to check if is a new app
-      const emptyDir = response.data?.emptyDir ?? false;
-      
       if (response.data && response.data.tree) {
-        // change folder icon and to show files pending tag to new apps
-        if (emptyDir) {
-          this.setState({
-            showCloudCodeSample: emptyDir,
-            updatedFiles: ['j1_6', 'j1_8']
+        const tree = response.data.tree;
+
+        const cloudFolder = tree.find(folder => folder.text === 'cloud');
+        const publicFolder = tree.find(folder => folder.text === 'public');
+
+        const mainJsNotExists = cloudFolder?.mainJsNotExists ?? false;
+        const indexHtmlNotExists = publicFolder?.indexHtmlNotExists ?? false;
+
+        let updatedFiles = [];
+
+        if (mainJsNotExists && cloudFolder?.children?.length) {
+          cloudFolder.children.forEach(file => {
+            if (file.text === 'main.js') {
+              file.type = 'new-file';
+            }
           });
-          response.data.tree.forEach(folder => {
-            if (folder.text === 'cloud' && folder.children?.length) {
-              folder.children.forEach(file => {
-                if (file.text === 'main.js') {
-                  file.type = 'new-file';
-                }
-              })
-            }
-            if (folder.text === 'public' && folder.children?.length) {
-              folder.children.forEach(file => {
-                if (file.text === 'index.html') {
-                  file.type = 'new-file';
-                }
-              })
-            }
-          })
+          updatedFiles.push('j1_6');
+          this.setState({ updatedFiles: updatedFiles })
         }
-        this.setState({ files: response.data.tree, loading: false })
+
+        if (indexHtmlNotExists && publicFolder?.children?.length) {
+          publicFolder.children.forEach(file => {
+            if (file.text === 'index.html') {
+              file.type = 'new-file';
+            }
+          });
+          updatedFiles.push('j1_8');
+          this.setState({ updatedFiles: updatedFiles })
+        }
+
+        this.setState({
+          files: tree,
+          loading: false
+        });
+
         $('#tree').jstree().refresh(true);
       }
     } catch(err) {
@@ -338,7 +346,14 @@ class B4ACloudCode extends CloudCode {
         setUpdatedFile={(newFiles) => {
           this.setState(prevState => {
             const updated = Array.isArray(newFiles) ? newFiles : [newFiles];
-            const merged = [...new Set([...prevState.updatedFiles, ...updated])];
+            const merged = [...prevState.updatedFiles];
+        
+            updated.forEach(file => {
+              if (!merged.includes(file)) {
+                merged.push(file);
+              }
+            });
+        
             return { updatedFiles: merged };
           });
         }}
