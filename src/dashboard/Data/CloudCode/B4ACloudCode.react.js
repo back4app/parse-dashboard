@@ -47,7 +47,7 @@ class B4ACloudCode extends CloudCode {
       showTips: localStorage.getItem(this.alertTips) !== 'false',
       showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false',
 
-      showCloudCodeSample: false
+      hideBlocker: false
     };
 
     this.onLogClick = this.onLogClick.bind(this);
@@ -90,7 +90,7 @@ class B4ACloudCode extends CloudCode {
     await this.fetchSource();
     // define the parameters to show unsaved changes warning modal
     this.unblock = this.props.navigator.block(tx => {
-      if (this.state.unsavedChanges || this.state.updatedFiles.length > 0) {
+      if ((this.state.unsavedChanges || this.state.updatedFiles.length > 0) && this.state.hideBlocker == false) {
         const unblock = this.unblock.bind(this);
         const autoUnblockingTx = {
           ...tx,
@@ -280,6 +280,10 @@ class B4ACloudCode extends CloudCode {
           });
           updatedFiles.push('j1_8');
           this.setState({ updatedFiles: updatedFiles })
+        }
+
+        if(mainJsNotExists || indexHtmlNotExists) {
+          this.setState({ hideBlocker: true })
         }
 
         this.setState({

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 // import Icon from 'components/Icon/Icon.react';
 import ghostImg from './ghost.png';
 import styles from 'components/B4aCloudEmpty/B4aCloudEmpty.scss';
@@ -47,7 +48,8 @@ const CodeBlock = ({ content }) => {
 };
 
 
-const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, currentApp }) => {
+const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex }) => {
+    const { appId } = useParams();
     return (
         <div className={styles.content + ` ${!dark ? styles.light : ''}`}>
             <img src={imgSrc} alt="empty state" />
@@ -99,7 +101,7 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, curr
                                 <button
                                     className={styles.mainJsButton} 
                                     onClick={() => window.open(
-                                        `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${currentApp.appId}/domain-settings`,
+                                        `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${appId}/domain-settings`,
                                         '_blank'
                                     )}
                                 >
@@ -116,8 +118,8 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, curr
                     className={styles.mainJsButton} 
                     onClick={() => selectIndex()}
                 >
-                    <Icon name="B4a-upload-file-icon" fill="#F9F9F9" width={18} height={18} />
-                    <span>Upload Files to Public Folder</span>
+                    {/* <Icon name="B4a-upload-file-icon" fill="#F9F9F9" width={18} height={18} /> */}
+                    <span>{'</> Open index.html'}</span>
                 </button>
             </div>
         </div>
