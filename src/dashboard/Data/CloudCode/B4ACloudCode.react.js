@@ -221,7 +221,7 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
       />;
-      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal });
+      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal, hideBlocker: false });
       this.cloudCodeChanges.clearChanges();
       $('#tree').jstree(true).redraw(true);
       this.fetchSource();

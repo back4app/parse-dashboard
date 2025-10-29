@@ -97,9 +97,11 @@ const B4aCloudEmpty = ({ imgSrc = ghostImg, dark = true, selectMainJs, currentAp
                                     code: ({ value }) => <CodeBlock content={value} />
                                 }}
                             >
-                                {`\`\`\`js
-                                Parse.Cloud.define("hello", () => "Hello from Cloud Code!");
-                                `}
+{`\`\`\`js
+Parse.Cloud.define("hello", () => {
+    return "Hello from Cloud Code!";
+});
+`}
                             </ReactMarkdown>
 
                             {/* <pre>Parse.Cloud.define("hello", () = "Hello from Cloud Code!");</pre> */}
