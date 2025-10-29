@@ -211,11 +211,19 @@ const CodeBlock = ({ title, content }) => {
 };
   
 const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
-    console.log("current in cloud", currentApp)
     const sample = getCloudCodeSample(currentApp)['js-browser'];
+    const [mouseDownOutside, setMouseDownOutside] = useState(false);
 
-    const handleOverlayClick = (e) => {
+    const handleMouseDown = (e) => {
         if (e.target === e.currentTarget) {
+          setMouseDownOutside(true);
+        } else {
+          setMouseDownOutside(false);
+        }
+    };
+
+    const handleMouseUp = (e) => {
+        if (mouseDownOutside && e.target === e.currentTarget) {
             closeModal();
         }
     };
@@ -223,7 +231,8 @@ const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
     return (
         <Popover fadeIn fixed position={origin} modal color="rgba(17,13,17,0.8)">
             <div 
-                onClick={handleOverlayClick} 
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
                 style={{ position: 'relative', width: '100%', height: '100%' }}
             >
                 <div className={styles.cloudCodeSampleModal}>

@@ -84,7 +84,7 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex }) =>
                     <li>
                         <div className={styles.numberList}>2</div>
                         <div className={styles.contentList}>
-                            <div><b>Enable your hosting URL </b>— After uploading files, click Deploy and enable your web hosting URL. Your site will be available instantly at a unique Back4App subdomain:</div>
+                            <div><b>Enable your hosting URL </b>— After uploading files, click Deploy and enable your web hosting URL. Your site will be available instantly at a unique Back4app subdomain:</div>
                             <div className={styles.cardCode}>
                                 <ReactMarkdown
                                     renderers={{
