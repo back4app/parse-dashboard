@@ -103,7 +103,6 @@ curl -X POST \
                   content: `
 ~~~javascript
 Parse.Cloud.beforeSave("B4aSampleClass", (request) => {
-    // Set value property to 0 if not send 
     if (request.object.get("value") === undefined) {
         request.object.set("value", 0);
     }
