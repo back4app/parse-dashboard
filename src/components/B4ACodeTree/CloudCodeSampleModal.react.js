@@ -27,7 +27,7 @@ const getCloudCodeSample = (currentApp) => {
             iconColor: '#f7df1c',
             blocks: [
               {
-                  title: '<b>Cloud Functions:</b> Are custom functions you can define and run on the server.',
+                  title: '<b>Cloud Functions:</b> Are custom functions that allow to execute logic on the backend.',
                   content: `
 ~~~javascript
 Parse.Cloud.define("hello", async (request) => {
@@ -47,7 +47,7 @@ curl -X POST \
 ~~~`
               },
               {
-                title: '<b>Cloud Functions (Data Manipulation):</b> Are Cloud Functions to create, edit, or retrieve objects in your database.',
+                title: '<b>Cloud Functions (Data Manipulation):</b> Are functions to create, edit, or retrieve objects in your database.',
                 content: `
 ~~~javascript
 Parse.Cloud.define("createObject", async (request) => {
@@ -99,7 +99,7 @@ curl -X POST \
 ~~~`
               },
               {
-                  title: '<b>Cloud Triggers:</b> Are special functions that run automatically before or after certain database actions.',
+                  title: '<b>Cloud Triggers:</b> Are specific functions that run automatically before or after certain database actions.',
                   content: `
 ~~~javascript
 Parse.Cloud.beforeSave("B4aSampleClass", (request) => {
@@ -246,7 +246,7 @@ const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
                     <div className={styles.docsLink}>
                         You can check docs in <a href='https://www.back4app.com/docs/get-started/read-and-write-data' target='_blank'>
                             back4app.com/docs/get-started/read-and-write-data
-                        </a>.    
+                        </a>.
                     </div>
                 </div>
             </div>

@@ -67,10 +67,8 @@
   & .docsLink {
     padding-top: 20px;
     a{
+      cursor: pointer;
       color: $blue;
-      & :hover{
-        text-decoration: underline;
-      }
     }
   }
 }

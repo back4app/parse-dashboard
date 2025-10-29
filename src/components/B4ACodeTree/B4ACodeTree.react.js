@@ -75,10 +75,6 @@ export default class B4ACodeTree extends React.Component {
     this.loadRequestId = 0;
   }
 
-  openCloudCodeSampleModal() {
-    this.setState({ openCloudCodeSample: true })
-  }
-
   selectSpecificFile(fileName) {
     const tree = $('#tree').jstree(true);
     if (!tree) return;

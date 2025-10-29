@@ -48,81 +48,80 @@ const CodeBlock = ({ content }) => {
 
 
 const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, currentApp }) => {
-
-  return (
-    <div className={styles.content + ` ${!dark ? styles.light : ''}`}>
-        <img src={imgSrc} alt="empty state" />
-        <div className={styles.titleSection}>
-            <h1 className={styles.title}>Web Hosting — Deploy Static Sites Instantly</h1>
-            <h2 className={styles.description}>Deploy your static websites, HTML pages, JavaScript apps, and assets directly to Back4App. Your files are served globally with automatic HTTPS and custom domain support.</h2>
-        </div>
-        <div className={styles.cardSection}>
-            <h1>How it works</h1>
-            <ul className={styles.cardList}>
-                <li>
-                    <div className={styles.numberList}>1</div>
-                    <div className={styles.contentList}>
-                        <div>
-                            <b>Upload your files</b> — Drop your HTML, CSS, JavaScript, images, and other static assets into the <span onClick={() => selectIndex()} className={styles.mainJsText}>public </span>folder. You can organize files in subdirectories as needed.
-                        </div>
-                        <div className={styles.cardCode}>
-                            <ReactMarkdown
-                                renderers={{
-                                    code: ({ value }) => <CodeBlock content={value} />
-                                }}
-                            >
+    return (
+        <div className={styles.content + ` ${!dark ? styles.light : ''}`}>
+            <img src={imgSrc} alt="empty state" />
+            <div className={styles.titleSection}>
+                <h1 className={styles.title}>Web Hosting — Deploy Static Sites Instantly</h1>
+                <h2 className={styles.description}>Deploy your static websites, HTML pages, JavaScript apps, and assets directly to Back4App. Your files are served globally with automatic HTTPS and custom domain support.</h2>
+            </div>
+            <div className={styles.cardSection}>
+                <h1>How it works</h1>
+                <ul className={styles.cardList}>
+                    <li>
+                        <div className={styles.numberList}>1</div>
+                        <div className={styles.contentList}>
+                            <div>
+                                <b>Upload your files</b> — Drop your HTML, CSS, JavaScript, images, and other static assets into the <span onClick={() => selectIndex()} className={styles.mainJsText}>public </span>folder. You can organize files in subdirectories as needed.
+                            </div>
+                            <div className={styles.cardCode}>
+                                <ReactMarkdown
+                                    renderers={{
+                                        code: ({ value }) => <CodeBlock content={value} />
+                                    }}
+                                >
 {`\`\`\`text
     public/
     ├── index.html
-    ├── styles.css
-    └── app.js`}
-                            </ReactMarkdown>
+    ├── login.html
+    └── styles.css`}
+                                </ReactMarkdown>
+                            </div>
                         </div>
-                    </div>
-                </li>
-                <li>
-                    <div className={styles.numberList}>2</div>
-                    <div className={styles.contentList}>
-                        <div><b>Enable your hosting URL </b>— After uploading files, click Deploy and enable your web hosting URL. Your site will be available instantly at a unique Back4App subdomain:</div>
-                        <div className={styles.cardCode}>
-                            <ReactMarkdown
-                                renderers={{
-                                    code: ({ value }) => <CodeBlock content={value} />
-                                }}
-                            >
-                                {`\`\`\`bash
-                                https://your-app.back4app.io
-                                `}
-                            </ReactMarkdown>
+                    </li>
+                    <li>
+                        <div className={styles.numberList}>2</div>
+                        <div className={styles.contentList}>
+                            <div><b>Enable your hosting URL </b>— After uploading files, click Deploy and enable your web hosting URL. Your site will be available instantly at a unique Back4App subdomain:</div>
+                            <div className={styles.cardCode}>
+                                <ReactMarkdown
+                                    renderers={{
+                                        code: ({ value }) => <CodeBlock content={value} />
+                                    }}
+                                >
+                                    {`\`\`\`bash
+                                    https://your-app.back4app.io
+                                    `}
+                                </ReactMarkdown>
 
+                            </div>
+                            <div className={styles.enableHostingButton}>
+                                <button
+                                    className={styles.mainJsButton} 
+                                    onClick={() => window.open(
+                                        `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${currentApp.appId}/domain-settings`,
+                                        '_blank'
+                                    )}
+                                >
+                                    <Icon name="b4a-globe-icon" className={styles.globeIcon} width={18} height={18} />
+                                    <span>Enable Web Hosting</span>
+                                </button>
+                            </div>
                         </div>
-                        <div className={styles.enableHostingButton}>
-                            <button
-                                className={styles.mainJsButton} 
-                                onClick={() => window.open(
-                                    `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${currentApp.applicationId}/domain-settings`,
-                                    '_blank'
-                                )}
-                            >
-                                <Icon name="b4a-globe-icon" className={styles.globeIcon} width={18} height={18} />
-                                <span style={{ marginBottom: '2px' }}>Enable Web Hosting</span>
-                            </button>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            </div>
+            <div className={styles.filesPublicButton}>
+                <button
+                    className={styles.mainJsButton} 
+                    onClick={() => selectIndex()}
+                >
+                    <Icon name="B4a-upload-file-icon" fill="#F9F9F9" width={18} height={18} />
+                    <span>Upload Files to Public Folder</span>
+                </button>
+            </div>
         </div>
-        <div className={styles.filesPublicButton}>
-            <button
-                className={styles.mainJsButton} 
-                onClick={() => selectIndex()}
-            >
-                <Icon name="B4a-upload-file-icon" fill="#F9F9F9" width={18} height={18} />
-                <span style={{ marginBottom: '2px' }}>Upload Files to Public Folder</span>
-            </button>
-        </div>
-    </div>
-  )
+    )
 }
 
 export default B4aCloudPublicEmpty;

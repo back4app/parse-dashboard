@@ -123,9 +123,11 @@ const B4aCloudEmpty = ({ imgSrc = ghostImg, dark = true, selectMainJs, currentAp
                                     code: ({ value }) => <CodeBlock content={value} />
                                 }}
                             >
-                                {`\`\`\`bash
-                                curl -X POST ${currentApp.serverURL}/functions/hello
-                                `}
+{`\`\`\`bash
+curl -X POST ${currentApp.serverURL}/functions/hello \\
+    -H "X-Parse-Application-Id: ${currentApp && currentApp.applicationId ? currentApp.applicationId : 'YOUR_APP_ID'}" \\
+    -H "X-Parse-REST-API-Key: ${currentApp && currentApp.restKey ? currentApp.restKey : 'YOUR_REST_KEY'}"
+`}
                             </ReactMarkdown>
 
                         </div>
