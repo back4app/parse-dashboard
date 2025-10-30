@@ -47,7 +47,8 @@ class B4ACloudCode extends CloudCode {
       showTips: localStorage.getItem(this.alertTips) !== 'false',
       showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false',
 
-      hideBlocker: false
+      hideBlocker: false,
+      hasDeployed: true
     };
 
     this.onLogClick = this.onLogClick.bind(this);
@@ -253,6 +254,7 @@ class B4ACloudCode extends CloudCode {
       const response = await axios.get(this.getPath(), { withCredentials: true })
       if (response.data && response.data.tree) {
         const tree = response.data.tree;
+        
 
         const cloudFolder = tree.find(folder => folder.text === 'cloud');
         const publicFolder = tree.find(folder => folder.text === 'public');
@@ -283,7 +285,7 @@ class B4ACloudCode extends CloudCode {
         }
 
         if(mainJsNotExists || indexHtmlNotExists) {
-          this.setState({ hideBlocker: true })
+          this.setState({ hideBlocker: true, hasDeployed: false })
         }
 
         this.setState({
@@ -366,6 +368,7 @@ class B4ACloudCode extends CloudCode {
         parentState={this.setState.bind(this)}
         currentApp={this.context}
         cloudCodeChanges={this.cloudCodeChanges}
+        hasDeployed={this.state.hasDeployed}
       />
     }
 

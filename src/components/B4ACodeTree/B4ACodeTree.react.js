@@ -350,11 +350,13 @@ export default class B4ACodeTree extends React.Component {
             imgSrc={folderInfoIcon}
             selectMainJs={() => this.selectSpecificFile('main.js')}
             currentApp={this.props.currentApp}
+            hasDeployed={this.props.hasDeployed}
           />
         : this.state.currentFolder === 'public' ?
           <B4aCloudPublicEmpty
             imgSrc={folderInfoIcon}
             selectIndex={() => this.selectSpecificFile('index.html')}
+            hasDeployed={this.props.hasDeployed}
           /> 
         :
         this.state.source && this.state.source !== '' ? 
