@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import Popover from 'components/Popover/Popover.react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import Position from 'lib/Position';
 import Icon from 'components/Icon/Icon.react';
 import styles from 'components/B4ACodeTree/B4ACodeTree.scss';
+import Popover from 'components/Popover/Popover.react';
+import Position from 'lib/Position';
 
-// Import Prism Line Numbers plugin
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
-
-import 'prismjs/components/prism-markup-templating.js';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-bash';
-
-import 'prismjs/plugins/line-numbers/prism-line-numbers'
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
-
-// eslint-disable-next-line no-unused-vars
-import customPrisma from 'stylesheets/b4a-prisma.css';
 
 const getCloudCodeSample = (currentApp) => {
     return {
@@ -150,20 +137,21 @@ curl -X POST \
         }
     }
 }
+
+const origin = new Position(0, 0)
  
-
-const origin = new Position(0, 0);
-
 const CodeBlock = ({ title, content }) => {
     const [copied, setCopied] = useState(false);
   
     const codeText = content.trim();
   
+    const codeRef = useRef(null);
+
     useEffect(() => {
-        if (typeof Prism !== 'undefined') {
-            Prism.highlightAll();
+        if (codeRef.current && typeof Prism !== 'undefined') {
+            Prism.highlightElement(codeRef.current);
         }
-    }, [codeText]);
+    }, []);
   
     const copyToClipboard = async () => {
         try {
@@ -176,14 +164,14 @@ const CodeBlock = ({ title, content }) => {
     };
   
     return (
-        <div className={styles.codeBlockContainer}>
+        <div className={styles.codeBlockCloudSample}>
             <div className={styles.codeBlockHeader}>
             <div
                 className={styles.languageLabel}
                 dangerouslySetInnerHTML={{ __html: title }}
             />
-                <div className={styles.copyButtonWrapper}>
-                    {copied && <div className={styles.copyTooltip}>Copied!</div>}
+                <div className={styles.copyButtonCloudSample}>
+                    {copied && <div className={styles.copyTooltipCloudSample}>Copied!</div>}
                     <button
                         className={styles.copyButton}
                         onClick={copyToClipboard}
@@ -203,7 +191,9 @@ const CodeBlock = ({ title, content }) => {
                 className="line-numbers"
                 style={{ backgroundColor: 'rgba(17,13,17,0.8)' }}
             >
-                <code className="language-javascript">{codeText}</code>
+                <code ref={codeRef} className="language-javascript">
+                    {codeText}
+                </code>
             </pre>
         </div>
     );
@@ -211,30 +201,60 @@ const CodeBlock = ({ title, content }) => {
   
 const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
     const sample = getCloudCodeSample(currentApp)['js-browser'];
-    const [mouseDownOutside, setMouseDownOutside] = useState(false);
 
-    const handleMouseDown = (e) => {
-        if (e.target === e.currentTarget) {
-          setMouseDownOutside(true);
-        } else {
-          setMouseDownOutside(false);
+    const startRef = useRef(null);
+    const overlayRef = useRef(null);
+
+    const handlePointerDown = (e) => {
+        startRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleClick = (e) => {
+        if (!overlayRef.current) return;
+        
+        const dx = e.clientX - startRef.current.x;
+        const dy = e.clientY - startRef.current.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 5 && e.target === overlayRef.current) {
+        closeModal();
         }
     };
 
-    const handleMouseUp = (e) => {
-        if (mouseDownOutside && e.target === e.currentTarget) {
-            closeModal();
-        }
-    };
-  
+    useEffect(() => {
+        const toolbar = document.querySelector('#toolbar');
+        const sidebar = document.querySelector('#sidebar');
+        const codeContainer = document.querySelector('#codeContainer');
+        const navbar = document.querySelector('nav');
+    
+        if (toolbar) toolbar.style.userSelect = 'none';
+        if (sidebar) sidebar.style.userSelect = 'none';
+        if (codeContainer) codeContainer.style.userSelect = 'none';
+        if (navbar) navbar.style.userSelect = 'none'
+    
+        return () => {
+            if (toolbar) toolbar.style.userSelect = '';
+            if (sidebar) sidebar.style.userSelect = '';
+            if (codeContainer) codeContainer.style.userSelect = '';
+            if (navbar) navbar.style.userSelect = '';
+        };
+    }, []);
+
     return (
-        <Popover fadeIn fixed position={origin} modal color="rgba(17,13,17,0.8)">
-            <div 
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
+        <Popover 
+            fadeIn 
+            position={origin} 
+            modal 
+            color="rgba(17,13,17,0.8)"
+            contentId="cloud-code-sample-modal"
+        >
+             <div 
+                ref={overlayRef}
+                onPointerDown={handlePointerDown}
+                onClick={handleClick}
                 style={{ position: 'relative', width: '100%', height: '100%' }}
             >
-                <div className={styles.cloudCodeSampleModal}>
+                <div className={styles.cloudCodeSampleModal} id="cloud-code-sample-modal">
                     <div className={styles.cloudCodeSampleModalTitle}>
                         <h1>The examples below show you what Cloud Code looks like.</h1>
                         <div className={styles.closeIcon} onClick={closeModal}>

@@ -397,7 +397,7 @@ export default class B4ACodeTree extends React.Component {
     }
 
     return (
-      <div className={styles.codeContainer} style={this.props.style ? this.props.style : {}}>
+      <div className={styles.codeContainer} style={this.props.style ? this.props.style : {}} id="codeContainer">
         <div className={styles.fileSelector}>
           <div className={`${styles['files-box']}`}>
             <div className={styles['files-header']} >

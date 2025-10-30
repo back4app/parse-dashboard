@@ -76,7 +76,7 @@
   }
 }
 
-.codeBlockContainer {
+.codeBlockCloudSample {
   position: relative;
   padding-top: 0.5rem;
   background: $regal-blue;
@@ -122,8 +122,8 @@
     background: #111214 !important;
   }
 
-  .copyButtonWrapper {
-    .copyTooltip {
+  .copyButtonCloudSample {
+    .copyTooltipCloudSample {
       position: absolute;
       bottom: calc(100% + 8px);
       left: calc(100% - 110px);

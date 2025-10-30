@@ -35,7 +35,8 @@ const CodeBlock = ({ content }) => {
             <code 
                 className="language-javascript"
                 style={{
-                    right: '20px'
+                    right: '20px',
+                    backgroundColor: 'rgba(17,13,17,0.8)'
                 }}
             >
                 {codeText}
