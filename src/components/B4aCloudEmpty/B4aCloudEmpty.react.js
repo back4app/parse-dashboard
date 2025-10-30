@@ -45,7 +45,7 @@ const CodeBlock = ({ content }) => {
 
   return (
     <div className={styles.codeBlockContainer}>
-        <pre className="line-numbers" style={{ backgroundColor: 'rgba(17,13,17,0.8)' }}>
+        <pre className="line-numbers">
             <code className="language-javascript">{codeText}</code>
         </pre>
         <div className={styles.copyButtonWrapper}>

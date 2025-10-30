@@ -31,12 +31,10 @@ const CodeBlock = ({ content }) => {
 
   return (
     <div className={styles.codeBlockContainer}>
-        <pre style={{ backgroundColor: 'rgba(17,13,17,0.8)' }}>
+        <pre style={{ backgroundColor: 'rgba(17,13,17,0.8)', paddingLeft: '1.5rem' }}>
             <code 
                 className="language-javascript"
                 style={{
-                    position: 'relative',
-                    top: '10px',
                     right: '20px'
                 }}
             >
