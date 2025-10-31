@@ -322,7 +322,7 @@ class B4ACloudCode extends CloudCode {
             <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" />{' '}
             <small>
               Files pending deploy
-              {(this.state.updatedFiles.length > 0) &&
+              {(this.state.updatedFiles.length > 0 && this.state.hasDeployed) &&
                 ` (${this.state.updatedFiles.length})`}
             </small>
           </div>
