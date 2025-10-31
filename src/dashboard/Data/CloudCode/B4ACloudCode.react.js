@@ -262,7 +262,6 @@ class B4ACloudCode extends CloudCode {
         const mainJsNotExists = cloudFolder?.mainJsNotExists ?? false;
         const indexHtmlNotExists = publicFolder?.indexHtmlNotExists ?? false;
 
-        let updatedFiles = [];
 
         if (mainJsNotExists && cloudFolder?.children?.length) {
           cloudFolder.children.forEach(file => {
@@ -270,8 +269,6 @@ class B4ACloudCode extends CloudCode {
               file.type = 'new-file';
             }
           });
-          updatedFiles.push('j1_6');
-          this.setState({ updatedFiles: updatedFiles })
         }
 
         if (indexHtmlNotExists && publicFolder?.children?.length) {
@@ -280,8 +277,6 @@ class B4ACloudCode extends CloudCode {
               file.type = 'new-file';
             }
           });
-          updatedFiles.push('j1_8');
-          this.setState({ updatedFiles: updatedFiles })
         }
 
         if(mainJsNotExists || indexHtmlNotExists) {
@@ -348,22 +343,7 @@ class B4ACloudCode extends CloudCode {
       </B4ACloudCodeToolbar>
 
       content = <B4ACodeTree
-        // setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}
-        setUpdatedFile={(newFiles) => {
-          this.setState(prevState => {
-            const updated = Array.isArray(newFiles) ? newFiles : [newFiles];
-            const merged = [...prevState.updatedFiles];
-        
-            updated.forEach(file => {
-              if (!merged.includes(file)) {
-                merged.push(file);
-              }
-            });
-        
-            return { updatedFiles: merged };
-          });
-        }}
-        
+        setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}        
         files={this.state.files}
         parentState={this.setState.bind(this)}
         currentApp={this.context}
