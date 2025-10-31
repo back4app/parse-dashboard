@@ -48,7 +48,7 @@ class B4ACloudCode extends CloudCode {
       showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false',
 
       hideBlocker: false,
-      hasDeployed: true
+      hasDeployed: true,
     };
 
     this.onLogClick = this.onLogClick.bind(this);
@@ -262,11 +262,10 @@ class B4ACloudCode extends CloudCode {
         const mainJsNotExists = cloudFolder?.mainJsNotExists ?? false;
         const indexHtmlNotExists = publicFolder?.indexHtmlNotExists ?? false;
 
-
         if (mainJsNotExists && cloudFolder?.children?.length) {
           cloudFolder.children.forEach(file => {
             if (file.text === 'main.js') {
-              file.type = 'new-file';
+              file.type = 'yellow-file';
             }
           });
         }
@@ -274,7 +273,7 @@ class B4ACloudCode extends CloudCode {
         if (indexHtmlNotExists && publicFolder?.children?.length) {
           publicFolder.children.forEach(file => {
             if (file.text === 'index.html') {
-              file.type = 'new-file';
+              file.type = 'yellow-file';
             }
           });
         }
@@ -309,7 +308,6 @@ class B4ACloudCode extends CloudCode {
     let content = null;
     let title = null;
     const footer = null;
-    console.log(this.state.updatedFiles)
     // Show loading page before fetch data
     if (this.state.loading) {
       content = <B4aLoaderContainer loading={true} solid={false}>
@@ -319,7 +317,7 @@ class B4ACloudCode extends CloudCode {
       
       title = <B4ACloudCodeToolbar>
         {
-          (this.state.updatedFiles.length > 0 || !this.state.hasDeployed)&&
+          (this.state.updatedFiles.length > 0 || !this.state.hasDeployed) &&
           <div className={styles.ccStatusIcon}>
             <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" />{' '}
             <small>
@@ -348,7 +346,10 @@ class B4ACloudCode extends CloudCode {
       </B4ACloudCodeToolbar>
 
       content = <B4ACodeTree
-        setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}        
+        setUpdatedFile={(updatedFiles) => {
+          console.log('Updated files diff:', updatedFiles);
+          this.setState({ updatedFiles });
+        }}       
         files={this.state.files}
         parentState={this.setState.bind(this)}
         currentApp={this.context}

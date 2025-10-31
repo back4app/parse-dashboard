@@ -67,8 +67,7 @@ export default class B4ACodeTree extends React.Component {
       isFolderSelected: true,
       selectedNodeData: null,
       loadingFileId: null,
-      errorFileData: null,
-      openCloudCodeSample: false,
+      errorFileData: null
     }
 
     // Used to track the latest file load request
@@ -272,6 +271,21 @@ export default class B4ACodeTree extends React.Component {
 
   updateCodeOnNewFile(type, text, id){
     if (type === 'delete-file') {
+      if(!this.props.hasDeployed && (text === 'main.js' || text === 'index.html')) {
+        this.props.cloudCodeChanges.removeFile(id);
+        this.props.cloudCodeChanges.clearChanges();
+        if ($('#tree').jstree().get_json().length > 0) {
+          const cloudFolder = $('#tree').jstree().get_json()[0].id;
+          $('#tree').jstree('select_node', cloudFolder);
+        }
+        this.props.setUpdatedFile(0);
+
+        this.selectCloudFolder();
+    
+        B4ATreeActions.refreshEmptyFolderIcons();
+        return
+      }
+
       // this.props.cloudCodeChanges.removeFile(text);
       this.props.cloudCodeChanges.removeFile(id);
       if ($('#tree').jstree().get_json().length > 0) {
