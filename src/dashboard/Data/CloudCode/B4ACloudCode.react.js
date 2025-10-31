@@ -309,7 +309,7 @@ class B4ACloudCode extends CloudCode {
     let content = null;
     let title = null;
     const footer = null;
-
+    console.log(this.state.updatedFiles)
     // Show loading page before fetch data
     if (this.state.loading) {
       content = <B4aLoaderContainer loading={true} solid={false}>
@@ -319,9 +319,14 @@ class B4ACloudCode extends CloudCode {
       
       title = <B4ACloudCodeToolbar>
         {
-          this.state.updatedFiles.length > 0 &&
+          (this.state.updatedFiles.length > 0 || !this.state.hasDeployed)&&
           <div className={styles.ccStatusIcon}>
-            <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" /> <small>Files pending deploy ({this.state.updatedFiles.length})</small>
+            <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" />{' '}
+            <small>
+              Files pending deploy
+              {(this.state.updatedFiles.length > 0) &&
+                ` (${this.state.updatedFiles.length})`}
+            </small>
           </div>
         }
         <Button
