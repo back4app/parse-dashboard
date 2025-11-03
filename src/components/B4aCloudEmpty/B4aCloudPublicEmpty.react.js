@@ -93,7 +93,7 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, hasD
                                         }}
                                     >
                                         {`\`\`\`bash
-                                        https://your-app.back4app.io
+                                        https://your-app.b4a.app
                                         `}
                                     </ReactMarkdown>
 
