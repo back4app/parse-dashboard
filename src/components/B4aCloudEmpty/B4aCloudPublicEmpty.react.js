@@ -54,7 +54,7 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, hasD
             <img src={imgSrc} alt="empty state" />
             <div className={styles.titleSection}>
                 <h1 className={styles.title}>Web Hosting — Deploy Static Sites Instantly</h1>
-                <h2 className={styles.description}>Deploy your static websites, HTML pages, JavaScript apps, and assets directly to Back4App. Your files are served globally with automatic HTTPS and custom domain support.</h2>
+                <h2 className={styles.description}>Deploy your static websites, HTML pages, JavaScript apps, and assets directly to Back4app. Your files are served globally with automatic HTTPS and custom domain support.</h2>
             </div>
             { !hasDeployed && (
                 <>

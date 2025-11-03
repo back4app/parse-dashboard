@@ -258,8 +258,11 @@ export default class B4ACodeTree extends React.Component {
     $('#tree').jstree().redraw(true);
 
     // set updated files.
-    this.props.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().id);
-    this.props.setUpdatedFile(this.props.cloudCodeChanges.getFiles());
+    let cloneUpdatedFiles = [...this.props.updatedFiles];
+    if(!cloneUpdatedFiles.includes('j1_mainJS') && !cloneUpdatedFiles.includes('j1_indexHTML')){
+      this.props.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().id);
+      this.props.setUpdatedFile(this.props.cloudCodeChanges.getFiles());
+    }
   }
 
   selectCloudFolder() {
@@ -270,21 +273,38 @@ export default class B4ACodeTree extends React.Component {
   }
 
   updateCodeOnNewFile(type, text, id){
+
     if (type === 'delete-file') {
-      if(!this.props.hasDeployed && (text === 'main.js' || text === 'index.html')) {
-        this.props.cloudCodeChanges.removeFile(id);
-        this.props.cloudCodeChanges.clearChanges();
+      if (!this.props.hasDeployed) {
+        let cloneUpdatedFiles = [...this.props.updatedFiles];
+
+        // Mapping auto created files and specific IDs
+        const specialFiles = {
+          'main.js': 'j1_mainJS',
+          'index.html': 'j1_indexHTML'
+        };
+
+        // Define which ID to use
+        const fileIdToRemove = specialFiles[text] && cloneUpdatedFiles.includes(specialFiles[text])
+          ? specialFiles[text]
+          : id;
+
+        // Remove from cloudCodeChanges and cloneArray
+        this.props.cloudCodeChanges.removeFile(fileIdToRemove);
+        cloneUpdatedFiles = cloneUpdatedFiles.filter(f => f !== fileIdToRemove);
+
+        // Reselect folder and update UI
         if ($('#tree').jstree().get_json().length > 0) {
           const cloudFolder = $('#tree').jstree().get_json()[0].id;
           $('#tree').jstree('select_node', cloudFolder);
         }
-        this.props.setUpdatedFile(0);
+
+        this.props.setUpdatedFile(cloneUpdatedFiles);  
 
         this.selectCloudFolder();
-    
         B4ATreeActions.refreshEmptyFolderIcons();
-        return
-      }
+        return;
+      }    
 
       // this.props.cloudCodeChanges.removeFile(text);
       this.props.cloudCodeChanges.removeFile(id);

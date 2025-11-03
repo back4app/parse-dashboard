@@ -266,6 +266,8 @@ class B4ACloudCode extends CloudCode {
           cloudFolder.children.forEach(file => {
             if (file.text === 'main.js') {
               file.type = 'yellow-file';
+              this.cloudCodeChanges.addFile('j1_mainJS')
+              this.setState({ updatedFiles: this.cloudCodeChanges.getFiles() })
             }
           });
         }
@@ -274,6 +276,8 @@ class B4ACloudCode extends CloudCode {
           publicFolder.children.forEach(file => {
             if (file.text === 'index.html') {
               file.type = 'yellow-file';
+              this.cloudCodeChanges.addFile('j1_indexHTML')
+              this.setState({ updatedFiles: this.cloudCodeChanges.getFiles() })
             }
           });
         }
@@ -317,13 +321,11 @@ class B4ACloudCode extends CloudCode {
       
       title = <B4ACloudCodeToolbar>
         {
-          (this.state.updatedFiles.length > 0 || !this.state.hasDeployed) &&
+          (this.state.updatedFiles.length > 0) &&
           <div className={styles.ccStatusIcon}>
             <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" />{' '}
             <small>
-              Files pending deploy
-              {(this.state.updatedFiles.length > 0 && this.state.hasDeployed) &&
-                ` (${this.state.updatedFiles.length})`}
+              Files pending deploy ({this.state.updatedFiles.length})
             </small>
           </div>
         }
@@ -346,10 +348,8 @@ class B4ACloudCode extends CloudCode {
       </B4ACloudCodeToolbar>
 
       content = <B4ACodeTree
-        setUpdatedFile={(updatedFiles) => {
-          console.log('Updated files diff:', updatedFiles);
-          this.setState({ updatedFiles });
-        }}       
+        updatedFiles={this.state.updatedFiles}
+        setUpdatedFile={(updatedFiles) => {this.setState({ updatedFiles })}}     
         files={this.state.files}
         parentState={this.setState.bind(this)}
         currentApp={this.context}

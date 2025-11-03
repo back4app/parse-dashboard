@@ -13,29 +13,29 @@ const getCloudCodeSample = (currentApp) => {
             name: 'JavaScript (Browser)',
             iconColor: '#f7df1c',
             blocks: [
-              {
-                  title: '<b>Cloud Functions:</b> Are custom functions that allow to execute logic on the backend.',
-                  content: `
+                {
+                    title: '<b>Cloud Functions:</b> Are custom functions that allow to execute logic on the backend.',
+                    content: `
 ~~~javascript
 Parse.Cloud.define("hello", async (request) => {
     console.log("Hello from Cloud Code!");
     return "Hello from Cloud Code!";
 });
 ~~~`
-              },
-              {
-                  title: 'Here is how you have to call it via REST API.',
-                  content: String.raw`
+                },
+                {
+                    title: 'Here is how you have to call it via REST API.',
+                    content: String.raw`
 ~~~bash
 curl -X POST \
     -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
     -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
     ${currentApp.serverURL}/functions/hello
 ~~~`
-              },
-              {
-                title: '<b>Cloud Functions (Data Manipulation):</b> Are functions to create, edit, or retrieve objects in your database.',
-                content: `
+                },
+                {
+                    title: 'This example creates an object in your class.',
+                    content: `
 ~~~javascript
 Parse.Cloud.define("createObject", async (request) => {
     const b4aClass = new Parse.Object("B4aSampleClass");
@@ -45,22 +45,33 @@ Parse.Cloud.define("createObject", async (request) => {
     return "Object created successfully!";
 });
 ~~~`
-              },
-              {
-                  title: 'Here is how you have to call it via REST API.',
-                  content: String.raw`
+                },
+                {
+                    title: '<b>Cloud Triggers:</b> Is a function that automatically runs when certain events happen in your database classes. — such as when an object is saved, updated, deleted, or queried.',
+                    content: `
+~~~javascript
+Parse.Cloud.beforeSave("B4aSampleClass", (request) => {
+    if (request.object.get("value") === undefined) {
+        request.object.set("value", 0);
+    }
+});
+~~~`
+                },
+                {
+                    title: 'You can use the createObject function created earlier and omit the value property to see the trigger in action.',
+                    content: String.raw`
 ~~~bash
 curl -X POST \
     -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
     -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
     -H "Content-Type: application/json" \
-    -d '{"name":"b4aObject1","value": 27}' \
+    -d '{"name":"b4aObject"}' \
     ${currentApp.serverURL}/functions/createObject
 ~~~`
-              },
-              {
-                title: 'Now we can retrieve that object with this function:',
-                content: `
+                },
+                {
+                    title: 'Now we can retrieve the object created with this function:',
+                    content: `
 ~~~javascript
 Parse.Cloud.define("getObjects", async (request) => {
     const query = new Parse.Query("B4aSampleClass");
@@ -73,10 +84,10 @@ Parse.Cloud.define("getObjects", async (request) => {
     }));
 });
 ~~~`
-              },
-              {
-                  title: 'Here is how you have to call it via REST API.',
-                  content: String.raw`
+                },
+                {
+                    title: 'Here is how you have to call it via REST API.',
+                    content: String.raw`
 ~~~bash
 curl -X POST \
     -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
@@ -84,33 +95,10 @@ curl -X POST \
     -H "Content-Type: application/json" \
     ${currentApp.serverURL}/functions/getObjects
 ~~~`
-              },
-              {
-                  title: '<b>Cloud Triggers:</b> Are specific functions that run automatically before or after certain database actions.',
-                  content: `
-~~~javascript
-Parse.Cloud.beforeSave("B4aSampleClass", (request) => {
-    if (request.object.get("value") === undefined) {
-        request.object.set("value", 0);
-    }
-});
-~~~`
-              },
-              {
-                  title: 'To see this trigger in action, you need to perform a save operation on the database. You can use the createObject function created earlier.',
-                  content: String.raw`
-~~~bash
-curl -X POST \
-    -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
-    -H "X-Parse-REST-API-Key: ${currentApp.restKey}" \
-    -H "Content-Type: application/json" \
-    -d '{"name":"b4aObject2"}' \
-    ${currentApp.serverURL}/functions/createObject
-~~~`
-              },
-              {
-                  title: '<b>Cloud Jobs:</b> Are background tasks that you can schedule or run manually from your dashboard.',
-                  content: `
+                },
+                {
+                    title: `<b>Cloud Jobs:</b> Are background routines that can be scheduled or triggered to run automatically, ideal for long-running or maintenance tasks.`,
+                    content: `
 ~~~javascript
 Parse.Cloud.job("activeAllObjects", async (request) => {
     const query = new Parse.Query("B4aSampleClass");
@@ -122,17 +110,17 @@ Parse.Cloud.job("activeAllObjects", async (request) => {
     }
 });
 ~~~`
-              },
-              {
-                  title: 'Here is how you have to call it. Jobs can be only excute with the Master Key.',
-                  content: String.raw`
+                },
+                {
+                    title: 'Here is how you have to call it. Jobs can be only excute with the Master Key.',
+                    content: String.raw`
 ~~~bash
 curl -X POST \
     -H "X-Parse-Application-Id: ${currentApp.applicationId}" \
     -H "X-Parse-Master-Key: ${currentApp.masterKey}" \
     ${currentApp.serverURL}/jobs/activeAllObjects
 ~~~`
-              },     
+                },     
             ]
         }
     }
