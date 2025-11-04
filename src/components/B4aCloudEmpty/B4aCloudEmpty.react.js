@@ -62,7 +62,14 @@ const CodeBlock = ({ content }) => {
 const B4aCloudEmpty = ({ imgSrc = ghostImg, dark = true, selectMainJs, currentApp, hasDeployed }) => {
     const [openCloudCodeSample, setOpenCloudCodeSample] = useState(false);
 
+    useEffect(() => {
+
+    })
+
     const handleCloudCodeSample = () => {
+        if(!openCloudCodeSample) {
+            import('../B4ACodeTree/CloudCodeSampleModal.react')
+        }
         setOpenCloudCodeSample(prev => !prev);    
     }
 
