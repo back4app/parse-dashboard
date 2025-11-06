@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Suspense, lazy } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Icon from 'components/Icon/Icon.react';
 import styles from 'components/B4ACodeTree/B4ACodeTree.scss';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 
+const CodeBlock = lazy(() => import('components/CodeBlock/CodeBlock.react'));
 
 const getCloudCodeSample = (currentApp) => {
     return {
@@ -128,65 +129,6 @@ curl -X POST \
 
 const origin = new Position(0, 0)
  
-const CodeBlock = ({ title, content }) => {
-    const [copied, setCopied] = useState(false);
-  
-    const codeText = content.trim();
-  
-    const codeRef = useRef(null);
-
-    useEffect(() => {
-        if (codeRef.current && typeof Prism !== 'undefined') {
-            Prism.highlightElement(codeRef.current);
-        }
-    }, []);
-  
-    const copyToClipboard = async () => {
-        try {
-            await navigator.clipboard.writeText(codeText);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-        }
-    };
-  
-    return (
-        <div className={styles.codeBlockCloudSample}>
-            <div className={styles.codeBlockHeader}>
-            <div
-                className={styles.languageLabel}
-                dangerouslySetInnerHTML={{ __html: title }}
-            />
-                <div className={styles.copyButtonCloudSample}>
-                    {copied && <div className={styles.copyTooltipCloudSample}>Copied!</div>}
-                    <button
-                        className={styles.copyButton}
-                        onClick={copyToClipboard}
-                        title="Copy to clipboard"
-                    >
-                    <Icon
-                        name={copied ? 'b4a-check-icon' : 'b4a-copy-icon'}
-                        fill={copied ? '#27AE60' : '#C1E2FF'}
-                        width={14}
-                        height={14}
-                    />
-                    </button>
-                </div>
-            </div>
-    
-            <pre
-                className="line-numbers"
-                style={{ backgroundColor: 'rgba(17,13,17,0.8)' }}
-            >
-                <code ref={codeRef} className="language-javascript">
-                    {codeText}
-                </code>
-            </pre>
-        </div>
-    );
-};
-  
 const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
     const sample = getCloudCodeSample(currentApp)['js-browser'];
 
@@ -249,16 +191,22 @@ const CloudCodeSampleModal = ({ closeModal, currentApp }) => {
                             <Icon name="close" fill="#f9f9f9" width={14} height={14} />
                         </div>
                     </div>
-                    {sample.blocks.map((block) => (
-                        <ReactMarkdown
-                            children={block.content}
-                            renderers={{
-                                code: ({ value }) => (
-                                    <CodeBlock title={block.title} content={value} />
-                                )
-                            }}
-                        />
-                    ))}
+                    <Suspense fallback={<div>Loading...</div>}>
+                        {sample.blocks.map((block, i) => (
+                            <ReactMarkdown
+                                key={i}
+                                children={block.content}
+                                renderers={{
+                                    code: ({ value }) => (
+                                        <CodeBlock
+                                            title={block.title}
+                                            content={value}
+                                        />
+                                    )
+                                }}
+                            />
+                        ))}
+                    </Suspense>
                     <div className={styles.docsLink}>
                         You can check docs in <a href='https://www.back4app.com/docs/get-started/read-and-write-data' target='_blank'>
                             back4app.com/docs/get-started/read-and-write-data

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { useParams } from 'react-router-dom';
 // import Icon from 'components/Icon/Icon.react';
 import ghostImg from './ghost.png';
@@ -20,32 +20,7 @@ import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
 // eslint-disable-next-line no-unused-vars
 import customPrisma from 'stylesheets/b4a-prisma.css';
 
-const CodeBlock = ({ content }) => {
-  const codeText = content.trim();
-
-  useEffect(() => {
-    if (typeof Prism !== 'undefined') {
-      Prism.highlightAll();
-    }
-  }, [codeText]);
-
-  return (
-    <div className={styles.codeBlockContainer}>
-        <pre style={{ backgroundColor: 'rgba(17,13,17,0.8)', paddingLeft: '1.5rem' }}>
-            <code 
-                className="language-javascript"
-                style={{
-                    right: '20px',
-                    backgroundColor: 'rgba(17,13,17,0.8)'
-                }}
-            >
-                {codeText}
-            </code>
-        </pre>
-    </div>
-  );
-};
-
+const CodeBlock = lazy(() => import('components/CodeBlock/CodeBlock.react'));
 
 const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, hasDeployed }) => {
     const { appId } = useParams();
@@ -68,11 +43,19 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, hasD
                                     <b>Upload your files</b> — Drop your HTML, CSS, JavaScript, images, and other static assets into the <span onClick={() => selectIndex()} className={styles.mainJsText}>public </span>folder. You can organize files in subdirectories as needed.
                                 </div>
                                 <div className={styles.cardCode}>
-                                    <ReactMarkdown
-                                        renderers={{
-                                            code: ({ value }) => <CodeBlock content={value} />
-                                        }}
-                                    >
+                                <ReactMarkdown
+                                    renderers={{
+                                        code: ({ language, value }) => (
+                                            <CodeBlock
+                                                language="javascript"
+                                                content={value}
+                                                hasTitle={false}
+                                                hideLineNumbers={true}
+                                                hideCopyButton={true}
+                                            />
+                                        ),
+                                    }}
+                                >
 {`\`\`\`text
     public/
     ├── index.html
@@ -87,16 +70,25 @@ const B4aCloudPublicEmpty = ({ imgSrc = ghostImg, dark = true, selectIndex, hasD
                             <div className={styles.contentList}>
                                 <div><b>Enable your hosting URL </b>— After uploading files, click Deploy and enable your web hosting URL. Your site will be available instantly at a unique Back4app subdomain:</div>
                                 <div className={styles.cardCode}>
-                                    <ReactMarkdown
-                                        renderers={{
-                                            code: ({ value }) => <CodeBlock content={value} />
-                                        }}
-                                    >
-                                        {`\`\`\`bash
-                                        https://your-app.b4a.app
-                                        `}
-                                    </ReactMarkdown>
-
+                                    <Suspense fallback={null}>
+                                        <ReactMarkdown
+                                            renderers={{
+                                                code: ({ value }) => (
+                                                    <CodeBlock
+                                                        language="javascript"
+                                                        content={value}
+                                                        hasTitle={false}
+                                                        hideLineNumbers={true}
+                                                        hideCopyButton={true}
+                                                    />
+                                                ),
+                                            }}
+                                        >
+                                            {`\`\`\`bash
+                                            https://your-app.b4a.app
+                                            `}
+                                        </ReactMarkdown>
+                                    </Suspense>
                                 </div>
                                 <div className={styles.enableHostingButton}>
                                     <button

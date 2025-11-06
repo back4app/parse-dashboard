@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import ghostImg from './ghost.png';
 import styles from 'components/B4aCloudEmpty/B4aCloudEmpty.scss';
 
@@ -7,64 +7,10 @@ import ReactMarkdown from 'react-markdown';
 import Button from 'components/Button/Button.react';
 
 const LazyCloudCodeSampleModal = lazy(() => import('../B4ACodeTree/CloudCodeSampleModal.react'));
-
-
-const CodeBlock = ({ content }) => {
-    const [copied, setCopied] = useState(false);
-
-    const codeText = content.trim();
-
-    const codeRef = useRef(null);
-
-    useEffect(() => {
-        if (codeRef.current && typeof Prism !== 'undefined') {
-            Prism.highlightElement(codeRef.current);
-        }
-    }, []);
-
-    const copyToClipboard = async () => {
-        try {
-            await navigator.clipboard.writeText(codeText);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-        }
-    };
-
-    return (
-        <div className={styles.codeBlockCloudEmpty}>
-            <pre className="line-numbers">
-                <code ref={codeRef} className="language-javascript">
-                    {codeText}
-                </code>
-            </pre>
-            <div className={styles.copyButtonCloudEmpty}>
-                {copied && <div className={styles.copyTooltipCloudEmpty}>Copied!</div>}
-                <button
-                    className={styles.copyButton}
-                    onClick={copyToClipboard}
-                    title="Copy to clipboard"
-                >
-                    <Icon
-                        name={copied ? 'b4a-check-icon' : 'b4a-copy-icon'}
-                        fill={copied ? '#27AE60' : '#C1E2FF'}
-                        width={14}
-                        height={14}
-                    />
-                </button>
-            </div>
-        </div>
-    );
-};
-
+const CodeBlock = lazy(() => import('components/CodeBlock/CodeBlock.react'));
 
 const B4aCloudEmpty = ({ imgSrc = ghostImg, dark = true, selectMainJs, currentApp, hasDeployed }) => {
     const [openCloudCodeSample, setOpenCloudCodeSample] = useState(false);
-
-    useEffect(() => {
-
-    })
 
     const handleCloudCodeSample = () => {
         if(!openCloudCodeSample) {
@@ -93,17 +39,25 @@ const B4aCloudEmpty = ({ imgSrc = ghostImg, dark = true, selectMainJs, currentAp
                                     <b>Write your function</b> — Use the Cloud Code syntax. <span onClick={() => handleCloudCodeSample()} className={styles.mainJsText}>See examples →</span>
                                 </div>
                                 <div className={styles.cardCode}>
-                                    <ReactMarkdown
-                                        renderers={{
-                                            code: ({ value }) => <CodeBlock content={value} />
-                                        }}
-                                    >
+                                    <Suspense fallback={null}>    
+                                        <ReactMarkdown
+                                            renderers={{
+                                                code: ({ language, value }) => (
+                                                    <CodeBlock 
+                                                        language={language} 
+                                                        content={value} 
+                                                        hasTitle={false}
+                                                    />
+                                                ),
+                                            }}
+                                        >
 {`\`\`\`js
 Parse.Cloud.define("hello", () => {
     return "Hello from Cloud Code!";
 });
 `}
-                                    </ReactMarkdown>
+                                        </ReactMarkdown>
+                                    </Suspense>
 
                                     {/* <pre>Parse.Cloud.define("hello", () = "Hello from Cloud Code!");</pre> */}
                                 </div>
@@ -121,17 +75,25 @@ Parse.Cloud.define("hello", () => {
                             <div className={styles.contentList}>
                                 <div><b>Call it via API or SDK </b>— After deployment, your function is live and callable:</div>
                                 <div className={styles.cardCode}>
-                                    <ReactMarkdown
-                                        renderers={{
-                                            code: ({ value }) => <CodeBlock content={value} />
-                                        }}
-                                    >
+                                    <Suspense fallback={null}>    
+                                        <ReactMarkdown
+                                            renderers={{
+                                                code: ({ language, value }) => (
+                                                    <CodeBlock
+                                                        language={language}
+                                                        content={value}
+                                                        hasTitle={false}
+                                                    />
+                                                ),
+                                            }}
+                                        >
 {`\`\`\`bash
 curl -X POST ${currentApp.serverURL}/functions/hello \\
     -H "X-Parse-Application-Id: ${currentApp && currentApp.applicationId ? currentApp.applicationId : 'YOUR_APP_ID'}" \\
     -H "X-Parse-REST-API-Key: ${currentApp && currentApp.restKey ? currentApp.restKey : 'YOUR_REST_KEY'}"
 `}
-                                    </ReactMarkdown>
+                                        </ReactMarkdown>
+                                    </Suspense>
 
                                 </div>
                             </div>
