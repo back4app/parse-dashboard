@@ -14,9 +14,6 @@ import 'prismjs/components/prism-markup-templating.js';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-bash';
 
-import 'prismjs/plugins/line-numbers/prism-line-numbers'
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
-
 // eslint-disable-next-line no-unused-vars
 import customPrisma from 'stylesheets/b4a-prisma.css';
 
