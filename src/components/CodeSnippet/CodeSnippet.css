@@ -168,7 +168,7 @@ pre.line-numbers:before {
 }
 
 pre.line-numbers > code {
-  position: relative;
+  position: sticky !important;
   top: 10px;
 }
 

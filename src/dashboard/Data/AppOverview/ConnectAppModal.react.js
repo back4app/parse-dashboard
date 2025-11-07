@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
@@ -25,6 +25,7 @@ import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
 // eslint-disable-next-line no-unused-vars
 import customPrisma from 'stylesheets/b4a-prisma.css';
 
+const CodeBlock = lazy(() => import('components/CodeBlock/CodeBlock.react'));
 
 const LanguageDocMap = {
   rest: {
@@ -873,52 +874,6 @@ function deleteObject($objectId) {
 };
 const origin = new Position(0, 0);
 
-const CodeBlock = ({ language, value }) => {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (typeof Prism !== 'undefined') {
-      Prism.highlightAll();
-    }
-  }, [value, language]);
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
-  };
-
-  return (
-    <div className={styles.codeBlockContainer}>
-      <div className={styles.codeBlockHeader}>
-        <div className={styles.languageLabel}>{language}</div>
-        <div className={styles.copyButtonWrapper}>
-          {copied && (
-            <div className={styles.copyTooltip}>
-              Copied!
-            </div>
-          )}
-          <button className={styles.copyButton} onClick={copyToClipboard} title="Copy to clipboard">
-            <Icon
-              name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`}
-              fill={copied ? '#27AE60' : '#C1E2FF'}
-              width={14}
-              height={14}
-            />
-          </button>
-        </div>
-      </div>
-      <pre className="line-numbers">
-        <code className={`language-${language}`}>{value}</code>
-      </pre>
-    </div>
-  );
-};
-
 const ConnectAppModal = ({ closeModal }) => {
   const [selectedLanguage, setSelectedLanguage] = useState(LanguageDocMap['js-browser']);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -970,12 +925,16 @@ const ConnectAppModal = ({ closeModal }) => {
           </div>
         </div>
         <div className={styles.connectAppModalContent} style={{ overflow: 'auto' }}>
-          <ReactMarkdown
-            renderers={{
-              code: CodeBlock,
-            }}
-            children={selectedLanguage.content}
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <ReactMarkdown
+              renderers={{
+                code: ({ language, value }) => (
+                  <CodeBlock language={language} value={value} />
+                ),
+              }}
+              children={selectedLanguage.content}
+            />
+          </Suspense>
         </div>
       </div>
     </Popover>

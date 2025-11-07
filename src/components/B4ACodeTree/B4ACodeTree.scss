@@ -35,10 +35,121 @@
   position: absolute;
   top: $toolbar-height; // toolbar height
   width: 100%;
-  height: calc(100% - $toolbar-height); // toolbar height
+  min-height: calc(100% - $toolbar-height); // toolbar height
   display: flex;
   flex-wrap: wrap;
   flex: 1;
+}
+
+.cloudCodeSampleModal{
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vw;
+  padding: 30px;
+  max-height: 60vh;
+  background: #253348;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: width 0.5s cubic-bezier(1, 0, 0, 1);
+  overflow: auto;
+  & .cloudCodeSampleModalTitle {
+    h1{
+      user-select: none
+    }
+    @include SoraFont();
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    & .closeIcon {
+      cursor: pointer;
+    }
+  }
+
+  & .docsLink {
+    padding-top: 20px;
+    a{
+      cursor: pointer;
+      color: $blue;
+    }
+  }
+}
+
+.codeBlockCloudSample {
+  position: relative;
+  padding-top: 0.5rem;
+  background: $regal-blue;
+  border-radius: 4px;
+
+  & .codeBlockHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0rem 1.5rem;
+  }
+
+  .languageLabel {
+    user-select: none;
+  }
+
+  pre {
+    background: #111214 !important;
+    border-radius: 4px;
+    padding: 1.175rem 1.5rem 1.5rem 0!important;
+    margin: 1rem 0;
+    overflow-x: auto;
+    margin: none !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    font-family: 'Roboto Mono', monospace !important;
+    padding-left: 3.5em !important;
+
+    pre.line-numbers:before {
+      background: transparent !important;
+    }
+
+    code {
+      font-family: 'Roboto Mono', monospace !important;
+      font-size: 13px;
+      background: #111214 !important;
+    }
+  }
+
+  code {
+    font-family: 'Roboto Mono', monospace !important;
+    font-size: 13px;
+    background: #111214 !important;
+  }
+
+  .copyButtonCloudSample {
+    .copyTooltipCloudSample {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: calc(100% - 110px);
+      transform: translateX(50%);
+      background: $dark-grey;
+      color: $white;
+      border-radius: 5px;
+      padding: .625rem 1rem;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0px 6px 16px 0px #0000001A;
+      animation: fadeIn 0.2s ease-in-out;
+  
+      &::after {
+          content: '';
+          position: absolute;
+          left: 55%;
+          bottom: -4px;
+          transform: translateX(-50%) rotate(45deg);
+          width: 8px;
+          height: 8px;
+          background: $dark-grey;
+      }
+    }
+  }
+
 }
 
 .files-box{

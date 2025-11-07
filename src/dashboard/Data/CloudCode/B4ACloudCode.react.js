@@ -45,7 +45,10 @@ class B4ACloudCode extends CloudCode {
 
       // Parameters used to on/off alerts
       showTips: localStorage.getItem(this.alertTips) !== 'false',
-      showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false'
+      showWhatIs: localStorage.getItem(this.alertWhatIs) !== 'false',
+
+      hideBlocker: false,
+      hasDeployed: true,
     };
 
     this.onLogClick = this.onLogClick.bind(this);
@@ -88,7 +91,7 @@ class B4ACloudCode extends CloudCode {
     await this.fetchSource();
     // define the parameters to show unsaved changes warning modal
     this.unblock = this.props.navigator.block(tx => {
-      if (this.state.unsavedChanges || this.state.updatedFiles.length > 0) {
+      if ((this.state.unsavedChanges || this.state.updatedFiles.length > 0) && this.state.hideBlocker == false) {
         const unblock = this.unblock.bind(this);
         const autoUnblockingTx = {
           ...tx,
@@ -219,7 +222,7 @@ class B4ACloudCode extends CloudCode {
         confirmText='Ok, got it'
         onConfirm={() => this.setState({ modal: null })}
       />;
-      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal });
+      this.setState({updatedFiles: [], unsavedChanges: false, modal: successModal, hideBlocker: false });
       this.cloudCodeChanges.clearChanges();
       $('#tree').jstree(true).redraw(true);
       this.fetchSource();
@@ -250,7 +253,44 @@ class B4ACloudCode extends CloudCode {
     try {
       const response = await axios.get(this.getPath(), { withCredentials: true })
       if (response.data && response.data.tree) {
-        this.setState({ files: response.data.tree, loading: false })
+        const tree = response.data.tree;
+        
+
+        const cloudFolder = tree.find(folder => folder.text === 'cloud');
+        const publicFolder = tree.find(folder => folder.text === 'public');
+
+        const mainJsNotExists = cloudFolder?.mainJsNotExists ?? false;
+        const indexHtmlNotExists = publicFolder?.indexHtmlNotExists ?? false;
+
+        if (mainJsNotExists && cloudFolder?.children?.length) {
+          cloudFolder.children.forEach(file => {
+            if (file.text === 'main.js') {
+              file.type = 'yellow-file';
+              this.cloudCodeChanges.addFile('j1_mainJS')
+              this.setState({ updatedFiles: this.cloudCodeChanges.getFiles() })
+            }
+          });
+        }
+
+        if (indexHtmlNotExists && publicFolder?.children?.length) {
+          publicFolder.children.forEach(file => {
+            if (file.text === 'index.html') {
+              file.type = 'yellow-file';
+              this.cloudCodeChanges.addFile('j1_indexHTML')
+              this.setState({ updatedFiles: this.cloudCodeChanges.getFiles() })
+            }
+          });
+        }
+
+        if(mainJsNotExists || indexHtmlNotExists) {
+          this.setState({ hideBlocker: true, hasDeployed: false })
+        }
+
+        this.setState({
+          files: tree,
+          loading: false
+        });
+
         $('#tree').jstree().refresh(true);
       }
     } catch(err) {
@@ -272,19 +312,21 @@ class B4ACloudCode extends CloudCode {
     let content = null;
     let title = null;
     const footer = null;
-
     // Show loading page before fetch data
     if (this.state.loading) {
       content = <B4aLoaderContainer loading={true} solid={false}>
         <div className={styles.loading}></div>
       </B4aLoaderContainer>
     } else { // render cloud code page
-
+      
       title = <B4ACloudCodeToolbar>
         {
-          this.state.updatedFiles.length > 0 &&
+          (this.state.updatedFiles.length > 0) &&
           <div className={styles.ccStatusIcon}>
-            <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" /> <small>Files pending deploy ({this.state.updatedFiles.length})</small>
+            <Icon name="b4a-info-circle" width={16} height={16} fill="#FBFF3B" />{' '}
+            <small>
+              Files pending deploy ({this.state.updatedFiles.length})
+            </small>
           </div>
         }
         <Button
@@ -306,11 +348,13 @@ class B4ACloudCode extends CloudCode {
       </B4ACloudCodeToolbar>
 
       content = <B4ACodeTree
-        setUpdatedFile={(updatedFiles) => this.setState({ updatedFiles })}
+        updatedFiles={this.state.updatedFiles}
+        setUpdatedFile={(updatedFiles) => {this.setState({ updatedFiles })}}     
         files={this.state.files}
         parentState={this.setState.bind(this)}
         currentApp={this.context}
         cloudCodeChanges={this.cloudCodeChanges}
+        hasDeployed={this.state.hasDeployed}
       />
     }
 
