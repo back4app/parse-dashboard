@@ -311,7 +311,7 @@ class DomainSettings extends DashboardView {
     let content = null;
 
     if (
-      !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentDomain.trim().length === 0) {
+      !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentSubdomain.trim().length === 0 && this.state.customDomainArray.length === 0) {
       content = <Fieldset>
         <Field
           label={<Label text="Upgrade your plan" dark={true} description="Please upgrade your plan to activate your web hosting." />}
