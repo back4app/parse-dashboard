@@ -1795,14 +1795,15 @@ export default class ParseApp {
   }
 
   async removeCustomDomain(hostSettings) {
-    console.log(`${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/customdomain`)
     try {
       return (
         await axios.delete(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/customdomain`,
-          { hostSettings },
-          { withCredentials: true }
+          {
+            data: { hostSettings },
+            withCredentials: true,
+          }
         )
       ).data;
     } catch (err) {

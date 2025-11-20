@@ -41,6 +41,7 @@ class DomainSettings extends DashboardView {
 
       isUserVerified: false,
       canChangeCustomDomain: false,
+      canChangeSubdomain: false,
       showCardValidation: true,
 
       subdomainName: '',
@@ -57,19 +58,12 @@ class DomainSettings extends DashboardView {
       updating: false,
       isEditing: false,
       hasToggleChanged: false,
-      canEdit: false,
+      canEdit: true,
 
       errorCustomDomain: null,
       successCustomDomain: null,
       errorUpdateWebHost: null,
       successUpdateWebHost: null,
-
-      // Session verification states
-      isVerifyingSession: false,
-      sessionVerificationError: null,
-      verifiedSessionId: null,
-      showSuccessMessage: false,
-
     };
     this.onRefresh = this.onRefresh.bind(this);
     this.handleSubdomainChange = this.handleSubdomainChange.bind(this);
@@ -80,8 +74,6 @@ class DomainSettings extends DashboardView {
 
   componentWillMount() {
     this.loadData();
-    this.checkForStripeSession();
-    this.getOwner();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -103,13 +95,11 @@ class DomainSettings extends DashboardView {
     this.loadData();
   }
 
-  getOwner() {
-    this.setState({ canEdit: !!this.context.isOwner });
-  }
-
   async loadData() {
+    console.log("STATE", this.state);
     try {
       const response = await this.context.getCustomDomain();
+      console.log("RESPONSE", response);
       this.setState({ domainSettings: response });
       await this.loadHostSettings(response);
     } catch (error) {
@@ -120,7 +110,7 @@ class DomainSettings extends DashboardView {
   }
 
   async loadHostSettings(response) {
-    const { hostSettings: appHostSettings, domains, canChangeCustomDomain, createdAt } = response;
+    const { hostSettings: appHostSettings, domains, canChangeCustomDomain, canChangeSubdomain, createdAt } = response;
 
     let customDomainArray = [];
     let subdomainName = '';
@@ -129,7 +119,6 @@ class DomainSettings extends DashboardView {
     let isActivated = false;
     let hasPermission = false;
     let isUserVerified = false;
-    let alertValidationCreditCard = true;
 
     if (domains && domains.length > 0) {
       customDomainArray = domains;
@@ -151,9 +140,11 @@ class DomainSettings extends DashboardView {
     }
 
     hasPermission = (!response.featuresPermission || response.featuresPermission.webHostLiveQuery === 'Write');
+
+    console.log("response", createdAt);
+
     if (response && ((appHostSettings.serverURL && appHostSettings.activated) || (createdAt && ((new Date() - new Date(createdAt)) > (6 * 30 * 24 * 60 * 60 * 1000))))) {
       isUserVerified = true;
-      alertValidationCreditCard = false;
     }
 
     if (!isUserVerified) {
@@ -161,26 +152,22 @@ class DomainSettings extends DashboardView {
         const plan = await this.context.getAppPlanData();
         if (plan && plan.planName && (plan.planName.indexOf('Free') < 0) && (plan.planName.indexOf('Public') < 0)) {
           isUserVerified = true;
-          alertValidationCreditCard = false;
         } else {
           const currentUser = AccountManager.currentUser();
           if (currentUser && currentUser.verification.cardValidation) {
             isUserVerified = true;
-            alertValidationCreditCard = false;
           }
         }
       } catch (planError) {
         const currentUser = AccountManager.currentUser();
         if (currentUser && currentUser.verification.cardValidation) {
           isUserVerified = true;
-          alertValidationCreditCard = false;
         }
       }
     }
 
     this.setState({
       isUserVerified,
-      showCardValidation: alertValidationCreditCard,
 
       subdomainName,
       currentSubdomain,
@@ -192,6 +179,7 @@ class DomainSettings extends DashboardView {
 
       hasPermission,
       canChangeCustomDomain,
+      canChangeSubdomain,
     });
   }
 
@@ -296,7 +284,9 @@ class DomainSettings extends DashboardView {
         }, 5000);
       });
     } catch (error) {
-      this.setState({ errorUpdateWebHost: error.message || 'Something went wrong!' }, () => {
+      console.error('error updating web host', error);
+      
+      this.setState({ errorUpdateWebHost: error || 'Something went wrong!' }, () => {
         setTimeout(() => {
           this.setState({ errorUpdateWebHost: null });
         }, 5000);
@@ -309,111 +299,32 @@ class DomainSettings extends DashboardView {
   async verifyUser() {
     try {
       const user = await back4app2.me();
-      if (user && user.verification.cardValidation) {
-        this.setState({ isUserVerified: true, showCardValidation: false });
+      if (user) {
+        this.setState({ isUserVerified: true });
       }
     } catch (e) {
       console.log('user validation failed!')
     }
   }
 
-  checkForStripeSession() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
-
-    if (sessionId && sessionId !== this.state.verifiedSessionId) {
-      this.verifyStripeSession(sessionId);
-    }
-  }
-
-  async verifyStripeSession(sessionId) {
-    try {
-      this.setState({
-        isVerifyingSession: true,
-        sessionVerificationError: null
-      });
-
-      await back4app2.stripeSessionStatus(sessionId);
-
-      // Session verification successful
-      this.setState({
-        isVerifyingSession: false,
-        verifiedSessionId: sessionId,
-        showSuccessMessage: true
-      });
-
-      const user = AccountManager.currentUser();
-      user.verification.cardValidation = true;
-      AccountManager.setCurrentUser({ user });
-
-      // Show success message for 2 seconds, then close modal and update state
-      setTimeout(() => {
-        this.setState({
-          showSuccessMessage: false,
-          isUserVerified: true,
-          showCardValidation: false
-        });
-      }, 2000);
-
-    } catch (error) {
-      console.error('Error verifying stripe session:', error);
-
-      this.setState({
-        isVerifyingSession: false,
-        sessionVerificationError: error.message || 'Failed to verify payment. Please try again.',
-        showCardValidation: true
-      });
-    } finally {
-      // Clean up URL regardless of success or error
-      const url = new URL(window.location);
-      url.searchParams.delete('session_id');
-      window.history.replaceState({}, '', url);
-    }
-  }
-
   getDisplayContent() {
     let content = null;
 
-    if (this.state.isVerifyingSession || this.state.showSuccessMessage) {
-      content = <B4aModal
-        type={B4aModal.Types.DEFAULT}
-        title={this.state.showSuccessMessage ? 'Payment Verified' : 'Verifying payment'}
-        subtitle={this.state.showSuccessMessage ? 'Your payment has been successfully verified!' : 'Please wait while we verify your payment...'}
-        width={'60vw'}
-        customFooter={<div></div>}
-      >
-        <div className={styles.paymentVerificationModal}>
-          {this.state.showSuccessMessage ? (
-            <div className={styles.successContainer}>
-              <Icon name="b4a-success-check" width={24} height={24} />
-              <div className={styles.successText}>Payment verification successful!</div>
-            </div>
-          ) : (
-            <div className={styles.spinnerContainer}>
-              <div className={styles.spinner}></div>
-              <div className={styles.spinnerText}>Loading...</div>
-            </div>
-          )}
-        </div>
-      </B4aModal>
-    } else if (this.state.showCardValidation) {
+    if (
+      !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentSubdomain.trim().length === 0 && this.state.customDomainArray.length === 0) {
       content = <Fieldset>
         <Field
-          label={<Label text="Verify your card" dark={true} description="You must verify your card to activate your web hosting." />}
+          label={<Label text="Upgrade your plan" dark={true} description="Please upgrade your plan to activate your web hosting." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-            <StripeValidateCard
-              onClick={() => this.setState({ cardValidationError: null, sessionVerificationError: null })}
-              onError={(err) => this.setState({ cardValidationError: err.message || 'Something went wrong!' })}
-              onSuccess={() => this.verifyUser()}
-            />
+            <Link to={`/apps/${this.context.slug}/plan-usage`}>
+              <Button
+                value="Upgrade Plan"
+                primary={true}
+              />
+            </Link>
           </div>}
           theme={Field.Theme.BLUE}
         />
-        {(this.state.cardValidationError || this.state.sessionVerificationError) && (
-          <div className={styles.error}>
-            {this.state.cardValidationError || this.state.sessionVerificationError}
-          </div>
-        )}
       </Fieldset>
     } else if (this.state.isUserVerified) {
       content = <><Fieldset>
@@ -421,12 +332,21 @@ class DomainSettings extends DashboardView {
           label={<Label text="Activate Web Hosting" dark={true} description="Toggle to enable or disable web hosting for your app." />}
           input={
             <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-              <B4aToggle
-                value={this.state.activated}
-                onChange={this.handleToggleChange}
-                type={B4aToggle.Types.YES_NO}
-                disabled={!this.state.canEdit}
-              />
+              {this.state.canChangeSubdomain || this.state.currentSubdomain.trim().length > 0 ? (
+                <B4aToggle
+                  value={this.state.activated}
+                  onChange={this.handleToggleChange}
+                  type={B4aToggle.Types.YES_NO}
+                  disabled={!this.state.canChangeSubdomain && this.state.currentSubdomain.trim().length === 0}
+                />
+              ) : (
+                <Link to={`/apps/${this.context.slug}/plan-usage`}>
+                  <Button
+                    value="Upgrade Plan"
+                    primary={true}
+                  />
+                </Link>
+              )}           
             </div>
           }
           theme={Field.Theme.BLUE}
@@ -484,7 +404,7 @@ class DomainSettings extends DashboardView {
                       </option>
                     ))}
                   </select>) : (<span style={{ display:'inline-block', marginLeft: '0.5rem' }}>{this.state.currentDomain}</span>)}
-                  {this.state.canEdit ? (
+                  {this.state.canChangeSubdomain || this.state.currentSubdomain.trim().length > 0 ? (
                     <>
                       <Button
                         value={this.state.updating ? 'saving...' : 'save'}
@@ -505,7 +425,7 @@ class DomainSettings extends DashboardView {
               </> : (
                 <>
                   <span className={styles.subdomainContainer}><a className={styles.subdomain} href={`https://${this.state.domainSettings.hostSettings.webhost}`} target="_blank" rel="noopener noreferrer">{this.state.domainSettings.hostSettings.webhost}</a></span>
-                  {this.state.canEdit ? (
+                  {this.state.canChangeSubdomain || this.state.currentSubdomain.trim().length > 0 ? (
                     <Button
                       value={'Edit'}
                       color="blue"
@@ -526,30 +446,44 @@ class DomainSettings extends DashboardView {
       </Fieldset>
 
       <Fieldset legend="Custom Domain" description={this.state.canChangeCustomDomain ? 'Configure a custom address to your app.' : 'Upgrade to Pay as You Go Plan to add your custom domain.'}>
-        {!this.state.canChangeCustomDomain && <Link to={`/apps/${this.context.slug}/plan-usage`}>
-          <Button
-            value="Upgrade Plan"
-            primary={true}
-          />
-        </Link>}
 
-        <div style={{ marginTop: this.state.canChangeCustomDomain ? '0' : '1rem', opacity: this.state.canChangeCustomDomain ? 1 : 0.5, pointerEvents: this.state.canChangeCustomDomain ? 'auto' : 'none' }}>
+        <div style={{ marginTop: this.state.canChangeCustomDomain ? '0' : '1rem' }}>
           <Field
             label={<Label text="Custom domain" dark={true} description="Enter your custom domain" />}
-            input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <TextInput
-                value={this.state.customDomain}
-                onChange={(val) => this.setState({ customDomain: val })}
-                disabled={this.state.updating || !this.state.canChangeCustomDomain || !this.state.canEdit}
-                placeholder="example.com"
-              />
-              <Button
-                value="Add"
-                color="green"
-                onClick={this.handleAddCustomDomain}
-                disabled={this.state.updating || !this.state.canChangeCustomDomain || this.state.customDomain.trim().length === 0 || !this.state.canEdit}
-                additionalStyles={{ background: 'transparent', border: '1px solid #4CAF50', color: '#4CAF50', borderRadius: '4px', padding: '0.5rem 1rem', fontSize: '14px', minWidth: '80px' }}
-              />
+            input={<div style={{ 
+              width: '100%', 
+              padding: '0 1rem', 
+              textAlign: 'right', 
+              display: 'flex', 
+              gap: '0.5rem', 
+              alignItems: 'center',
+              justifyContent: this.state.canChangeCustomDomain ? 'space-between' : 'flex-end'
+            }}>
+              {this.state.canChangeCustomDomain ? (
+                <>
+                  <TextInput
+                    value={this.state.customDomain}
+                    onChange={(val) => this.setState({ customDomain: val })}
+                    disabled={this.state.updating}
+                    placeholder="example.com"
+                  />
+                  <Button
+                    value="Add"
+                    color="green"
+                    onClick={this.handleAddCustomDomain}
+                    disabled={this.state.updating}
+                    additionalStyles={{ background: 'transparent', border: '1px solid #4CAF50', color: '#4CAF50', borderRadius: '4px', padding: '0.5rem 1rem', fontSize: '14px', minWidth: '80px' }}
+                  />
+                </>
+              ) : (
+                <Link to={`/apps/${this.context.slug}/plan-usage`}>
+                  <Button
+                    value="Upgrade Plan"
+                    primary={true}
+                  />
+                </Link>
+              )}
+              
             </div>}
             theme={Field.Theme.BLUE}
           />
@@ -582,7 +516,7 @@ class DomainSettings extends DashboardView {
                     additionalStyles={{
                       padding: '0 0.5rem',
                     }}
-                    disabled={this.state.updating || !this.state.canEdit}
+                    disabled={this.state.updating || (!this.state.canChangeCustomDomain && this.state.customDomainArray.length === 0)}
                   />
                 </div>
               ))
@@ -599,7 +533,6 @@ class DomainSettings extends DashboardView {
       <div className={styles.domainSettingsContainer}>
         <div className={styles.heading}>Web Hosting</div>
         <div className={styles.subheading}>You can use this section to enable a subdomain to host your pages and create your own custom domain.</div>
-        {!this.state.canEdit && <div className={styles.helperText}>Only the app owner can edit this section.</div>}
         <div className={styles.formContainer}>
           {content}
         </div>
