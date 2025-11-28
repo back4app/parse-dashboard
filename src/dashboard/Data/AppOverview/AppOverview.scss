@@ -1444,6 +1444,70 @@
   }
 }
 
+.mcpSelectIDEContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 1.5rem 0;
+  border: 1px solid #253348;
+  border-radius: 8px;
+  background: #10203A;
+  overflow: hidden;
+  padding: 1.5rem;
+  gap: 1rem;
+
+  & .mcpChoiceIDEList {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  & .mcpChoiceIDE {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #34506F;
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    width: 100%;
+    gap: 1rem;
+    & .mcpChoiceTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      span:first-child {
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 140%;
+      }
+      span:last-child {
+        font-size: 0.75rem;
+        font-weight: 400;
+      }
+    }
+    & .mcpConnectBtn {
+      outline: none;
+      border: none;
+      border-radius: 0.5rem;
+      border: 1px solid #34506F;
+      background: rgba(255, 255, 255, 0.00);
+      padding: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      flex-shrink: 0;
+      align-self: flex-end;
+
+      &:hover {
+        background: rgba($regal-blue, 0.1);
+      }
+    }
+  }
+
+
+  & svg {
+    fill: $light-blue;
+  }
+}
+
 @keyframes rotating {
   from {
     -ms-transform: rotate(0deg);

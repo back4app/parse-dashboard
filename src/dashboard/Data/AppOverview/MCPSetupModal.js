@@ -307,16 +307,16 @@ const getIDEContent = (ide, automatic, mcpKey) => {
   }
 }
 
-const MCPSetupModal = ({ closeModal, context }) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedIDE, setSelectedIDE] = useState(null);
+const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [automatic, setAutomatic] = useState(true);
   const [mcpKey, setMcpKey] = useState('YOUR_ACCOUNT_KEY');
 
-  const handleIDEClick = (ide) => {
-    setSelectedIDE(ide);
-    setCurrentStep(1);
-  };
+  useEffect(() => {
+    if (!selectedIDE) {
+      setCurrentStep(1);
+    }
+  }, [selectedIDE]);
 
   useEffect(() => {
     const getMcpKey = async () => {
@@ -332,28 +332,7 @@ const MCPSetupModal = ({ closeModal, context }) => {
 
   let content = null;
 
-  if (currentStep === 0) {
-    content = (
-      <div className={styles.mcpModalStep1}>
-        <div className={styles.mcpModalTitle}>Select Your IDE</div>
-        <div className={styles.mcpModalDescription}>Pick the IDE you want to use with the back4app MCP</div>
-        <div className={styles.mcpChoiceList}>
-          <div className={styles.mcpChoice} onClick={() => handleIDEClick('cursor')}>
-            <Icon name="b4a-cursor-icon" width={60} height={60} />
-            <div className={styles.mcpChoiceTitle}>Cursor</div>
-          </div>
-          <div className={styles.mcpChoice} onClick={() => handleIDEClick('vscode')}>
-            <Icon name="b4a-vscode-icon" width={60} height={60} />
-            <div className={styles.mcpChoiceTitle}>VSCode</div>
-          </div>
-          <div className={styles.mcpChoice} onClick={() => handleIDEClick('windsurf')}>
-            <Icon name="b4a-windsurf-icon" width={60} height={60} />
-            <div className={styles.mcpChoiceTitle}>Windsurf</div>
-          </div>
-        </div>
-      </div>
-    );
-  } else if (currentStep === 1) {
+  if (currentStep === 1) {
     content = (
       <div className={styles.mcpModalStep2}>
         <div className={styles.mcpModalStep2Header}>
