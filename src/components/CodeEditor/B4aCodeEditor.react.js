@@ -6,6 +6,7 @@ import { css } from '@codemirror/lang-css';
 import { json } from '@codemirror/lang-json';
 import { xml } from '@codemirror/lang-xml';
 import { linter, lintGutter } from '@codemirror/lint';
+import { search } from '@codemirror/search';
 import globals from 'globals';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
@@ -140,6 +141,7 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode, readO
       extensions={[
         ...getLanguageExtension(),
         lintGutter(),
+        search({ top: true})
       ]}
       onChange={(value) => {
         handleCodeChange(value)
