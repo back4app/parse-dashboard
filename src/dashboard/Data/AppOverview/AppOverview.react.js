@@ -26,6 +26,7 @@ import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
 import { Link } from 'react-router-dom';
 
+import MCPIntegrationIDE from './MCPIntegrationIDE.js';
 const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
 const LazyMCPSetupModal = lazy(() => import('./MCPSetupModal.js'));
 
@@ -64,6 +65,7 @@ class AppOverview extends DashboardView {
       showCopiedTooltip: false,
       showConnectAppModal: false,
       showMCPSetupModal: false,
+      selectedMcpIde: null,
 
       isLoadingWebhosting: true,
       webhosting: undefined,
@@ -75,6 +77,7 @@ class AppOverview extends DashboardView {
     this.loadCardInformation = this.loadCardInformation.bind(this);
     this.pollSchemas = this.pollSchemas.bind(this);
     this.handleLimitChange = this.handleLimitChange.bind(this);
+    this.handleMcpIdeClick = this.handleMcpIdeClick.bind(this);
   }
 
   componentWillMount() {
@@ -121,6 +124,13 @@ class AppOverview extends DashboardView {
     }, () => {
       // Recarregar todos os dados com o novo limite
       this.loadAllPerformanceData(this.context, value);
+    });
+  }
+
+  handleMcpIdeClick(ide) {
+    this.setState({
+      showMCPSetupModal: true,
+      selectedMcpIde: ide
     });
   }
 
@@ -266,7 +276,6 @@ class AppOverview extends DashboardView {
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
               <hr />
               <button className={styles.appContentBtn} onClick={() => this.setState({ showConnectAppModal: true })}>Connect App</button>
-              <button className={styles.appMCPBtn} onClick={() => this.setState({ showMCPSetupModal: true })}>MCP Setup</button>
             </div>
             <div className={styles.appInformationBox}>
               <div className={styles.appInfoCardHeader}>App Information</div>
@@ -304,6 +313,7 @@ class AppOverview extends DashboardView {
               </div>
             </div>
           </div>
+          <MCPIntegrationIDE handleSelectedIDE={this.handleMcpIdeClick} />
 
           <ComplianceCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} isSignedBAA={this.context.custom.isSignedBAA} />
 
@@ -380,8 +390,12 @@ class AppOverview extends DashboardView {
 
         {this.state.showMCPSetupModal && (
           <Suspense fallback={'Loading...'}>
-            <LazyMCPSetupModal closeModal={() => this.setState({ showMCPSetupModal: false })} context={this.context} />
-          </Suspense>
+            <LazyMCPSetupModal 
+              closeModal={() => this.setState({ showMCPSetupModal: false, selectedMcpIde: null })} 
+              context={this.context} 
+              selectedIDE={this.state.selectedMcpIde}
+            />
+          </Suspense> 
         )}
       </div>
     );
