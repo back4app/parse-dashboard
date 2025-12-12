@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
+import { Link } from 'react-router-dom';
 
 const AppSecurityCard = ({ appId, loading, securityReport }) => {
   let content = null;
@@ -30,9 +31,9 @@ const AppSecurityCard = ({ appId, loading, securityReport }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Security</div>
-        <a href={`${b4aSettings.BACK4APP_API_PATH}/apps/${appId}/reports/security`} role='button' className={styles.logsLink}>
+        <Link to={`/apps/${appId}/reports/security`} role='button' className={styles.logsLink}>
           Go to Security
-        </a>
+        </Link>
       </div>
       <div className={styles.securityReport}>
         {content}
