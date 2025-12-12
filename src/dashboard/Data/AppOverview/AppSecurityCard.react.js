@@ -30,7 +30,9 @@ const AppSecurityCard = ({ appId, loading, securityReport }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Security</div>
-        <a href={`${b4aSettings.BACK4APP_API_PATH}/apps/status/${appId}`} role='button' className={styles.logsLink}>Go to Security</a>
+        <a href={`${b4aSettings.BACK4APP_API_PATH}/apps/${appId}/reports/security`} role='button' className={styles.logsLink}>
+          Go to Security
+        </a>
       </div>
       <div className={styles.securityReport}>
         {content}
