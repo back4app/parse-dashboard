@@ -209,47 +209,47 @@ const generateDeeplink = (ide, mcpKey) => {
 
 const getVerifyContent = (ide) => {
   if (ide === 'cursor') {
-    return <div className={styles.text}>Navigate to: <strong>Cursor &gt; Full Settings &gt; MCP</strong></div>
+    return <div className={styles.text}><span>Navigate to: </span><strong>Cursor &gt; Full Settings &gt; MCP</strong></div>
   } else if (ide === 'windsurf') {
-    return <div className={styles.text}>Navigate to: <strong>Windsurf &gt; Find the toolbar above the Cascade input and click on refresh</strong></div>
+    return <div className={styles.text}><span>Navigate to: </span><strong>Windsurf &gt; Find the toolbar above the Cascade input and click on refresh</strong></div>
   } else if (ide === 'vscode') {
-    return <div className={styles.text}>Navigate to: <strong>VSCode &gt; Click on configure tools on the Agent Mode (Copilot) and find the back4app MCP tools.</strong></div>
+    return <div className={styles.text}><span>Navigate to: </span><strong>VSCode &gt; Click on configure tools on the Agent Mode (Copilot) and find the back4app MCP tools.</strong></div>
   }
 }
 
 const getManualInstructions = (ide) => {
   if (ide === 'cursor') {
     return <>
-      <div className={styles.step}>1. Open MCP Settings</div>
-      <div className={styles.text}>Navigate to: <strong>Cursor-&gt;Settings-&gt;Cursor Settings-&gt;MCP</strong></div>
+      <div className={styles.step}><span>1. Open MCP Settings</span></div>
+      <div className={styles.text}><span>Navigate to: </span><strong>Cursor-&gt;Settings-&gt;Cursor Settings-&gt;MCP</strong></div>
 
       <div style={{ margin: '1rem 0' }}></div>
 
-      <div className={styles.step}>2. Add MCP Server Configuration</div>
-      <div className={styles.text}>Click <strong>&apos;+ Add new global MCP server&apos;</strong> button.</div>
-      <div className={styles.text}>Copy & Paste the code below into opened &apos;<strong>mcp.json</strong>&apos; file </div></>
+      <div className={styles.step}><span>2. Add MCP Server Configuration</span></div>
+      <div className={styles.text}><span>Click </span><strong>&apos;+ Add new global MCP server&apos;</strong><span> button.</span></div>
+      <div className={styles.text}><span>Copy &amp; Paste the code below into opened &apos;</span><strong>mcp.json</strong><span>&apos; file</span></div></>
   } else if (ide === 'windsurf') {
     return <>
-      <div className={styles.step}>1. Open MCP Settings</div>
-      <div className={styles.text}>Navigate to: <strong>Windsurf-&gt;Casade assistant</strong></div>
+      <div className={styles.step}><span>1. Open MCP Settings</span></div>
+      <div className={styles.text}><span>Navigate to: </span><strong>Windsurf-&gt;Casade assistant</strong></div>
 
       <div style={{ margin: '1rem 0' }}></div>
 
-      <div className={styles.step}>2. Add MCP Server Configuration</div>
-      <div className={styles.text}>Tap on the hammer (MCP) icon, then Configure to open the configuration file</div>
-      <div className={styles.text} style={{ marginTop: '.5rem' }}>Add the following configuration:</div>
+      <div className={styles.step}><span>2. Add MCP Server Configuration</span></div>
+      <div className={styles.text}><span>Tap on the hammer (MCP) icon, then Configure to open the configuration file</span></div>
+      <div className={styles.text} style={{ marginTop: '.5rem' }}><span>Add the following configuration:</span></div>
     </>
   } else if (ide === 'vscode') {
     return <>
-      <div className={styles.step}>1. Open MCP Settings</div>
-      <div className={styles.text}>Navigate to: <strong>VSCode(Copilot)-&gt;Go to root directory of your project</strong></div>
-      <div className={styles.text}>Create a .vscode folder if it doesn't exist</div>
+      <div className={styles.step}><span>1. Open MCP Settings</span></div>
+      <div className={styles.text}><span>Navigate to: </span><strong>VSCode(Copilot)-&gt;Go to root directory of your project</strong></div>
+      <div className={styles.text}><span>Create a .vscode folder if it doesn&apos;t exist</span></div>
 
       <div style={{ margin: '1rem 0' }}></div>
 
-      <div className={styles.step}>2. Add MCP Server Configuration</div>
-      <div className={styles.text}>Create a mcp.json file in the .vscode folder</div>
-      <div className={styles.text} style={{ marginTop: '.5rem' }}>Add the following configuration:</div>
+      <div className={styles.step}><span>2. Add MCP Server Configuration</span></div>
+      <div className={styles.text}><span>Create a mcp.json file in the .vscode folder</span></div>
+      <div className={styles.text} style={{ marginTop: '.5rem' }}><span>Add the following configuration:</span></div>
     </>
   }
 }
@@ -262,8 +262,8 @@ const getIDEContent = (ide, automatic, mcpKey) => {
       <div>
         {deeplink && (
           <>
-            <div className={styles.step}>1. One-click installation (Recommended)</div>
-            <div className={styles.text}>Click the button below to automatically install and configure the MCP server:</div>
+            <div className={styles.step}><span>1. One-click installation (Recommended)</span></div>
+            <div className={styles.text}><span>Click the button below to automatically install and configure the MCP server:</span></div>
             <div style={{ margin: '1rem 0' }}>
               <Button
                 primary={true}
@@ -272,21 +272,21 @@ const getIDEContent = (ide, automatic, mcpKey) => {
               />
             </div>
             <div style={{ margin: '1rem 0' }}></div>
-            <div className={styles.step}>2. Alternative: Terminal installation</div>
-            <div className={styles.text}>Or copy and run the command below in your terminal to install {ide}:</div>
+            <div className={styles.step}><span>2. Alternative: Terminal installation</span></div>
+            <div className={styles.text}><span>Or copy and run the command below in your terminal to install </span><span>{ide}</span><span>:</span></div>
             <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
             <div style={{ margin: '1rem 0' }}></div>
-            <div className={styles.step}>3. Verify your connection</div>
+            <div className={styles.step}><span>3. Verify your connection</span></div>
             {getVerifyContent(ide)}
           </>
         )}
         {!deeplink && (
           <>
-            <div className={styles.step}>1. Run the installation command</div>
-            <div className={styles.text}>Copy and run the command below in your terminal to install {ide}.</div>
+            <div className={styles.step}><span>1. Run the installation command</span></div>
+            <div className={styles.text}><span>Copy and run the command below in your terminal to install </span><span>{ide}</span><span>.</span></div>
             <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
             <div style={{ margin: '1rem 0' }}></div>
-            <div className={styles.step}>2. Verify your connection</div>
+            <div className={styles.step}><span>2. Verify your connection</span></div>
             {getVerifyContent(ide)}
           </>
         )}
@@ -297,10 +297,10 @@ const getIDEContent = (ide, automatic, mcpKey) => {
       <div>
         {getManualInstructions(ide)}
         <div style={{ margin: '1rem 0' }}></div>
-        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>macOS / Linux</strong>
+        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}><span>macOS / Linux</span></strong>
         <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, true)} />
         <div style={{ margin: '1rem 0' }}></div>
-        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}>Windows</strong>
+        <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}><span>Windows</span></strong>
         <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, false)} />
       </div>
     );
@@ -337,9 +337,9 @@ const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
       <div className={styles.mcpModalStep2}>
         <div className={styles.mcpModalStep2Header}>
           <Icon name={`b4a-${selectedIDE}-icon`} width={26} height={30} fill="#C1E2FF" />
-          <div className={styles.mcpModalStep2Title}>Install  MCP on {selectedIDE}</div>
+          <div className={styles.mcpModalStep2Title}><span>Install MCP on </span><span>{selectedIDE}</span></div>
         </div>
-        <div className={styles.mcpModalStep2Description}>Follow the steps below to get MCP working with {selectedIDE}.</div>
+        <div className={styles.mcpModalStep2Description}><span>Follow the steps below to get MCP working with </span><span>{selectedIDE}</span><span>.</span></div>
         <div className={styles.mcpTabButtons}>
           <B4aTabToggle
             value={automatic ? 'Automatic' : 'Manual'}
@@ -349,7 +349,9 @@ const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
           />
         </div>
         {/* Step instructions go here */}
-        {getIDEContent(selectedIDE, automatic, mcpKey)}
+        <div key={automatic ? 'automatic' : 'manual'}>
+          {getIDEContent(selectedIDE, automatic, mcpKey)}
+        </div>
 
         <div className={styles.mcpModalStep2Footer} style={{ marginTop: '2rem' }}>
           <Button

@@ -350,7 +350,7 @@ class AppOverview extends DashboardView {
                 </div>
               </a>
 
-              <a href="https://dashboard.back4app.com/apidocs" target="_blank" rel="noopener noreferrer">
+              <a href={`https://dashboard.back4app.com/apidocs/${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">
                 <div className={styles.docsCard}>
                   <div className={styles.docsCardTitle}>API Reference <Icon name="b4a-right-arrrow-icon" fill="#15A9FF" width={16} height={16} /></div>
                   <div className={styles.docsCardDescription}>Learn how to integrate our API.</div>
