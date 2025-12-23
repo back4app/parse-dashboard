@@ -238,7 +238,10 @@
 
 .filesPreviewWrapper {
   height: 100%;
-  overflow: hidden;
+  // Important: don't create an overflow-clipping ancestor here, otherwise
+  // CodeMirror's search panel (position: sticky) won't stick to the actual
+  // scroll container (which is higher up in the dashboard layout).
+  overflow: visible;
   
   .filesPreviewHeader {
     @include InterFont;
@@ -258,6 +261,20 @@
       border: none;
       outline: none;
     }
+  }
+
+  // Keep CodeMirror's search panel visible while scrolling the code area.
+  // The search panel is rendered by @codemirror/search (Ctrl/Cmd+F).
+  :global(.cm-panels-top) {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #0A0B0C;
+    border-bottom: 1px solid rgba(249, 249, 249, 0.06);
+  }
+
+  :global(.cm-panels-top .cm-search) {
+    background: #0A0B0C;
   }
 }
 
