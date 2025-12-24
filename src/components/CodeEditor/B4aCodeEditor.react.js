@@ -7,6 +7,7 @@ import { json } from '@codemirror/lang-json';
 import { xml } from '@codemirror/lang-xml';
 import { linter, lintGutter } from '@codemirror/lint';
 import { search } from '@codemirror/search';
+import { EditorView } from '@codemirror/view';
 import globals from 'globals';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
@@ -141,7 +142,11 @@ const B4aCodeEditor = forwardRef(({ code: initialCode, onCodeChange, mode, readO
       extensions={[
         ...getLanguageExtension(),
         lintGutter(),
-        search({ top: true})
+        search({
+          top: true,
+          // Ensure Enter/Next/Prev in the search panel scrolls the editor to the selected match.
+          scrollToMatch: (range) => EditorView.scrollIntoView(range.from, { y: 'center' }),
+        })
       ]}
       onChange={(value) => {
         handleCodeChange(value)
