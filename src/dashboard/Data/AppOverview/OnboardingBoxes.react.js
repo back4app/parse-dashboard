@@ -65,52 +65,6 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal, currentUser }
     }
   };
 
-  const handleGenerateWithAI = async (type) => {
-    try {
-      setAgentError({ type: '', message: '' });
-      setAgentLoading(type);
-      const response = await back4app2.redirectToAgent(queryText(type, appName, appId));
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      window.location.href = `${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents/${response.id}`;
-    } catch (err) {
-      console.error(err);
-      setAgentError({ type, message: err.message || 'Failed to generate. Please try again.' });
-      setAgentLoading('');
-    }
-  };
-
-  const renderButton = (type, text) => {
-    const isLoading = agentLoading === type;
-    const hasError = agentError.type === type;
-
-    return (
-      <button
-        className={`${styles.secondaryButton} ${hasError ? styles.errorButton : ''}`}
-        onClick={() => handleGenerateWithAI(type)}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <>
-            <Icon name="status-spinner" width={16} height={16} fill="#C1E2FF" className={styles.spinnerStatus} />
-            Generating...
-          </>
-        ) : hasError ? (
-          <>
-            <Icon name="b4a-error-icon" width={16} height={16} fill="#FF4444" />
-            Try Again
-          </>
-        ) : (
-          <>
-            <AIAgentIcon />
-            {text}
-          </>
-        )}
-      </button>
-    );
-  };
-
   return (
     <>
       {!hideOnboarding && (
@@ -141,10 +95,6 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal, currentUser }
                       <Link to={`/apps/${slug}/browser`}>
                         <button className={styles.primaryButton}>Start from scratch</button>
                       </Link>
-                      {renderButton('database', 'Generate with AI')}
-                      {agentError.type === 'database' && (
-                        <div className={styles.errorMessage}>{agentError.message}</div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -165,10 +115,6 @@ const OnboardingBoxes = ({ appName, slug, appId, openConnectModal, currentUser }
                       <Link to={`/apps/${slug}/cloud_code`}>
                         <button className={styles.primaryButton}>Write & Deploy Yourself</button>
                       </Link>
-                      {renderButton('cloud-code', 'Deploy with AI')}
-                      {agentError.type === 'cloud-code' && (
-                        <div className={styles.errorMessage}>{agentError.message}</div>
-                      )}
                     </div>
                   </div>
                 </div>
