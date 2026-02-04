@@ -27,7 +27,7 @@ class BrowserCell extends Component {
     this.cellRef = React.createRef();
     this.copyableValue = undefined;
     this.selectedScript = null;
-    
+
     // Calculate initial state immediately
     const isExpanded = false;
     const { content, classes, copyableValue } = this.calculateCellData(props, isExpanded);
@@ -189,15 +189,17 @@ class BrowserCell extends Component {
         content = (
           <span>
             {str.substring(0, 40)}...{' '}
-            <span
-              style={{ color: '#27AE60', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                this.setState({ isExpanded: true }, () => this.renderCellContent());
-              }}
-            >
-              (See more)
-            </span>
+            {!props.isEditing && (
+              <span
+                style={{ color: '#27AE60', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px', flexShrink: 0 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  this.setState({ isExpanded: true }, () => this.renderCellContent());
+                }}
+              >
+                (See more)
+              </span>
+            )}
           </span>
         );
       } else {
@@ -208,7 +210,7 @@ class BrowserCell extends Component {
     if (props.markRequiredField && props.isRequired && props.value == null) {
       classes.push(styles.required);
     }
-    
+
     return { content, classes, copyableValue };
   }
 
@@ -219,7 +221,7 @@ class BrowserCell extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.value !== prevProps.value) {
+    if (this.props.value !== prevProps.value || this.props.isEditing !== prevProps.isEditing) {
       this.renderCellContent();
       this.props.value?._previousSave
         ?.then(() => this.renderCellContent())
