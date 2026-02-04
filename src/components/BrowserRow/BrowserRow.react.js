@@ -157,6 +157,7 @@ export default class BrowserRow extends Component {
                 scripts={this.props.scripts}
                 handleCellClick={this.props.handleCellClick}
                 selectedCells={this.props.selectedCells}
+                isEditing={this.props.isEditing && currentCol === j}
               />
               <div className={styles.cellSeparator}></div>
             </div>
