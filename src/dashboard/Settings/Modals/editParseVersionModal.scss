@@ -1,0 +1,256 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.modal {
+  @include modalAnimation();
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 540px;
+  background: $mid-blue;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  padding: 1.5rem 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  @include InterFont;
+  color: $white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.label {
+  @include InterFont;
+  font-size: 14px;
+  color: rgba($white, 0.5);
+}
+
+/* Custom dark select/dropdown */
+.selectWrapper {
+  position: relative;
+}
+
+.selectBtn {
+  @include InterFont;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background: $regal-blue;
+  border: none;
+  border-radius: 8px;
+  color: $white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: lighten($regal-blue, 4%);
+  }
+}
+
+.selectMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 130px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: $mid-blue;
+  border: 1px solid $regal-blue;
+  border-radius: 8px;
+  z-index: 10;
+  
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $regal-blue;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba($white, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba($white, 0.5);
+    }
+  }
+}
+
+.selectOption {
+  @include InterFont;
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba($regal-blue, 0.5);
+  color: $white;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba($regal-blue, 0.6);
+  }
+
+  &Active {
+    background: $regal-blue;
+  }
+
+  &Disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: rgba($white, 0.4);
+
+    &:hover {
+      background: none;
+    }
+  }
+}
+
+.selectEmpty {
+  @include InterFont;
+  padding: 32px 16px;
+  text-align: center;
+  color: rgba($white, 0.4);
+  font-size: 14px;
+}
+
+/* Npm modules collapsible */
+.npmSection {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.npmToggle {
+  @include InterFont;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background: $regal-blue;
+  border: none;
+  border-radius: 8px;
+  color: $white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: lighten($regal-blue, 4%);
+  }
+
+  &Open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.chevron {
+  display: inline-flex;
+  transition: transform 0.2s ease;
+}
+
+.chevronUp {
+  transform: rotate(180deg);
+}
+
+.npmList {
+  max-height: 320px;
+  overflow-y: auto;
+  border-top: 1px solid $regal-blue;
+  background: $dark;
+}
+
+.npmItem {
+  @include InterFont;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  font-size: 14px;
+}
+
+.npmName {
+  @include CourierFont;
+  color: $cta-green;
+  font-size: 14px;
+}
+
+.npmVersion {
+  @include InterFont;
+  font-size: 12px;
+  color: rgba($white, 0.6);
+  background: $regal-blue;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.npmEmpty {
+  @include InterFont;
+  padding: 32px 16px;
+  text-align: center;
+  color: rgba($white, 0.4);
+  font-size: 14px;
+}
+
+.note {
+  @include InterFont;
+  font-size: 13px;
+  text-align: center;
+  padding: 0.25rem 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@include modalKeyframes();
