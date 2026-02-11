@@ -27,7 +27,7 @@ export const DangerzoneFields = ({
 <Fieldset
   legend='Danger Zone'
   description='These options will affect your app'>
-    <Field
+    {/* <Field
       labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
       label={<Label
         text='Push Notification from Client'
@@ -56,7 +56,7 @@ export const DangerzoneFields = ({
         </span>
       }
       theme={Field.Theme.BLUE}
-    />
+    /> */}
     
  { databaseURL?.split('://')[0] !== "postgres" && 
   <Field
