@@ -1,6 +1,19 @@
 @import 'stylesheets/globals.scss';
 @import 'stylesheets/back4app.scss';
 
+.modal {
+  // Keep the responsive behavior only for this modal.
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+}
+
+.modalBody {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
 .content {
   display: flex;
   flex-direction: column;
@@ -133,6 +146,7 @@
 .npmSection {
   border-radius: 8px;
   overflow: hidden;
+  margin: 10px 0;
 }
 
 .npmHeader {

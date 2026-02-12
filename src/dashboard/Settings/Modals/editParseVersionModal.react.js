@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
 import Icon from 'components/Icon/Icon.react';
 import FormNote from 'components/FormNote/FormNote.react';
 import styles from 'dashboard/Settings/Modals/editParseVersionModal.scss';
+import modalStyles from 'components/B4aModal/B4aModal.scss';
+import Popover from 'components/Popover/Popover.react';
+import Position from 'lib/Position';
+
+const origin = new Position(0, 0);
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
@@ -108,82 +112,105 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
     : (processing ? 'Loading...' : 'Select version');
 
   return (
-    <B4aModal
-      type={B4aModal.Types.DEFAULT}
-      title='Parse Server Version'
-      subtitle='Select a version for your app'
-      cancelText='Cancel'
-      confirmText={processing ? 'Saving...' : 'Save Changes'}
-      disableConfirm={!hasChanged || processing || selectedVersion?.disabled}
-      disableCancel={processing}
-      onCancel={close}
-      onConfirm={save}
-    >
-      <div className={styles.content}>
-        <div className={styles.label}>Select Version</div>
+    <Popover fadeIn={true} fixed={true} position={origin} modal={true} color="rgba(17,13,17,0.8)">
+      <div
+        className={[modalStyles.modal, styles.modal].join(' ')}
+        style={{ width: '35vw', minWidth: 360 }}
+      >
+        <Icon onClick={close} width={10} height={10} className={modalStyles.closeIcon} name="close" fill="#10203A" />
 
-        <div className={styles.selectWrapper}>
-          <button
-            type='button'
-            className={styles.selectBtn}
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <span className={styles.selectBtnText}>{displayVersion}</span>
-            <span className={`${styles.chevron} ${dropdownOpen ? styles.chevronUp : ''}`}>
-              <Icon name='b4a-chevron-down' width={14} height={14} fill='#10203A' />
-            </span>
-          </button>
+        <div className={modalStyles.header}>
+          <div className={modalStyles.title}>Parse Server Version</div>
+          <div className={modalStyles.subtitle}>Select a version for your app</div>
+        </div>
 
-          {dropdownOpen && (
-            <div className={styles.selectMenu}>
-              {parseVersions.length > 0 ? (
-                parseVersions.map((v) => (
-                  <button
-                    key={v.version}
-                    type='button'
-                      className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.version === currentParseVersion ? styles.selectOptionCurrent : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
-                    onClick={() => {
-                      if (!v.disabled) {
-                        setSelectedVersion(v);
-                        setDropdownOpen(false);
-                      }
-                    }}
-                    disabled={v.disabled}
-                  >
-                    {v.version === currentParseVersion
-                      ? `${v.version} - ${v.description || ''} (current)`
-                      : `${v.version} - ${v.description || ''}`}
-                  </button>
-                ))
-              ) : (
-                <div className={styles.selectEmpty}>No versions available</div>
+        <div className={styles.modalBody}>
+          <div className={styles.content}>
+            <div className={styles.label}>Select Version</div>
+
+            <div className={styles.selectWrapper}>
+              <button
+                type='button'
+                className={styles.selectBtn}
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <span className={styles.selectBtnText}>{displayVersion}</span>
+                <span className={`${styles.chevron} ${dropdownOpen ? styles.chevronUp : ''}`}>
+                  <Icon name='b4a-chevron-down' width={14} height={14} fill='#10203A' />
+                </span>
+              </button>
+
+              {dropdownOpen && (
+                <div className={styles.selectMenu}>
+                  {parseVersions.length > 0 ? (
+                    parseVersions.map((v) => (
+                      <button
+                        key={v.version}
+                        type='button'
+                        className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.version === currentParseVersion ? styles.selectOptionCurrent : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
+                        onClick={() => {
+                          if (!v.disabled) {
+                            setSelectedVersion(v);
+                            setDropdownOpen(false);
+                          }
+                        }}
+                        disabled={v.disabled}
+                      >
+                        {v.version === currentParseVersion
+                          ? `${v.version} - ${v.description || ''} (current)`
+                          : `${v.version} - ${v.description || ''}`}
+                      </button>
+                    ))
+                  ) : (
+                    <div className={styles.selectEmpty}>No versions available</div>
+                  )}
+                </div>
               )}
             </div>
+          </div>
+
+          <div className={styles.npmSection}>
+            <div className={styles.npmHeader}>Installed npm modules</div>
+            <div className={styles.npmList}>
+              {npmModules.length > 0 ? (
+                npmModules.map(({ name, version }, idx) => (
+                  <div key={`${name}-${version}-${idx}`} className={styles.npmItem}>
+                    <span className={styles.npmName}>{name}</span>
+                    <span className={styles.npmVersion}>{version || ''}</span>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.npmEmpty}>No npm modules installed</div>
+              )}
+            </div>
+          </div>
+
+          {note !== '' && (
+            <FormNote show={note !== ''} color={noteColor}>
+              {note}
+            </FormNote>
           )}
         </div>
 
-        <div className={styles.npmSection}>
-          <div className={styles.npmHeader}>Installed npm modules</div>
-          <div className={styles.npmList}>
-            {npmModules.length > 0 ? (
-              npmModules.map(({ name, version }, idx) => (
-                <div key={`${name}-${version}-${idx}`} className={styles.npmItem}>
-                  <span className={styles.npmName}>{name}</span>
-                  <span className={styles.npmVersion}>{version || ''}</span>
-                </div>
-              ))
-            ) : (
-              <div className={styles.npmEmpty}>No npm modules installed</div>
-            )}
-          </div>
+        <div className={modalStyles.footer} style={{ textAlign: 'right' }}>
+          <Button
+            color="white"
+            width="auto"
+            additionalStyles={{ border: '1px solid #ccc', color: '#303338' }}
+            value="Cancel"
+            onClick={close}
+            disabled={processing}
+          />
+          <Button
+            primary={true}
+            value={processing ? 'Saving...' : 'Save Changes'}
+            color="green"
+            disabled={!hasChanged || processing || selectedVersion?.disabled}
+            onClick={save}
+            progress={processing}
+          />
         </div>
-
-        {note !== '' && (
-          <FormNote show={note !== ''} color={noteColor}>
-            {note}
-          </FormNote>
-        )}
       </div>
-    </B4aModal>
+    </Popover>
   );
 };
