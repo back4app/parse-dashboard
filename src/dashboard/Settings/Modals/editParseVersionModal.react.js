@@ -91,6 +91,17 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
       setProcessing(true);
       setNote('');
       await context.changeParseServerVersion(selectedVersion.version);
+
+      // Update local in-memory app state and refetch settings fields
+      // so the UI updates without a full page reload.
+      context.parseVersion = selectedVersion.version;
+      if (context?.settings) {
+        context.settings.lastFetched = new Date(0); // bust 60s cache in fetchSettingsFields()
+      }
+      if (typeof context.fetchSettingsFields === 'function') {
+        await context.fetchSettingsFields();
+      }
+
       close();
     } catch (e) {
       setNote(e?.error || e?.message || 'Failed to save version');
