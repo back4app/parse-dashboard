@@ -61,7 +61,7 @@ export const ManageAppFields = ({
                 text='Parse Version'
                 description={
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                    <span style={{ color: '#27AE60' }}>{parseVersion}</span>
+                    <span>{parseVersion}</span>
                     {onEditParseVersion && (
                       <button
                         type='button'

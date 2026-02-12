@@ -105,6 +105,11 @@
     background: rgba($dark, 0.04);
   }
 
+  &Current {
+    // Match hover background to highlight the app's current version.
+    background: rgba($dark, 0.04);
+  }
+
   &Disabled {
     opacity: 0.5;
     cursor: not-allowed;

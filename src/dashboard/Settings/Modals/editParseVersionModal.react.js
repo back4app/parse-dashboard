@@ -91,18 +91,8 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
       setProcessing(true);
       setNote('');
       await context.changeParseServerVersion(selectedVersion.version);
-
-      // Update local in-memory app state and refetch settings fields
-      // so the UI updates without a full page reload.
-      context.parseVersion = selectedVersion.version;
-      if (context?.settings) {
-        context.settings.lastFetched = new Date(0); // bust 60s cache in fetchSettingsFields()
-      }
-      if (typeof context.fetchSettingsFields === 'function') {
-        await context.fetchSettingsFields();
-      }
-
-      close();
+      // Force UI refresh so the new parseVersion shows everywhere.
+      window.location.reload();
     } catch (e) {
       setNote(e?.error || e?.message || 'Failed to save version');
       setNoteColor('red');
@@ -151,7 +141,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
                   <button
                     key={v.version}
                     type='button'
-                    className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
+                      className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.version === currentParseVersion ? styles.selectOptionCurrent : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
                     onClick={() => {
                       if (!v.disabled) {
                         setSelectedVersion(v);
