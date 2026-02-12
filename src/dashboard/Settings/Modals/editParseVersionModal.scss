@@ -1,48 +1,6 @@
 @import 'stylesheets/globals.scss';
 @import 'stylesheets/back4app.scss';
 
-.modal {
-  @include modalAnimation();
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 540px;
-  background: $mid-blue;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  padding: 1.5rem 2rem;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.title {
-  @include InterFont;
-  color: $white;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.closeBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  opacity: 0.7;
-  transition: opacity 0.15s ease;
-
-  &:hover {
-    opacity: 1;
-  }
-}
-
 .content {
   display: flex;
   flex-direction: column;
@@ -52,10 +10,10 @@
 .label {
   @include InterFont;
   font-size: 14px;
-  color: rgba($white, 0.5);
+  color: rgba($dark, 0.65);
 }
 
-/* Custom dark select/dropdown */
+/* Select/dropdown (match B4aModal light theme) */
 .selectWrapper {
   position: relative;
 }
@@ -68,31 +26,42 @@
   width: 100%;
   height: 48px;
   padding: 0 16px;
-  background: $regal-blue;
-  border: none;
+  background: $white;
+  border: 1px solid rgba($dark, 0.15);
   border-radius: 8px;
-  color: $white;
+  color: $dark;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {
-    background: lighten($regal-blue, 4%);
+    border-color: rgba($dark, 0.28);
   }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.selectBtnText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .selectMenu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
-  max-height: 130px;
+  // limit height and enable scroll
+  max-height: 370px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: $mid-blue;
-  border: 1px solid $regal-blue;
+  background: $white;
+  border: 1px solid rgba($dark, 0.15);
   border-radius: 8px;
-  z-index: 10;
+  z-index: 9999;
   
   // Custom scrollbar styling
   &::-webkit-scrollbar {
@@ -100,16 +69,16 @@
   }
   
   &::-webkit-scrollbar-track {
-    background: $regal-blue;
+    background: rgba($dark, 0.05);
     border-radius: 4px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: rgba($white, 0.3);
+    background: rgba($dark, 0.22);
     border-radius: 4px;
     
     &:hover {
-      background: rgba($white, 0.5);
+      background: rgba($dark, 0.32);
     }
   }
 }
@@ -119,10 +88,10 @@
   display: block;
   width: 100%;
   padding: 12px 16px;
-  background: none;
+  background: $white;
   border: none;
-  border-bottom: 1px solid rgba($regal-blue, 0.5);
-  color: $white;
+  border-bottom: 1px solid rgba($dark, 0.08);
+  color: $dark;
   font-size: 14px;
   text-align: left;
   cursor: pointer;
@@ -133,20 +102,16 @@
   }
 
   &:hover {
-    background: rgba($regal-blue, 0.6);
-  }
-
-  &Active {
-    background: $regal-blue;
+    background: rgba($dark, 0.04);
   }
 
   &Disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    color: rgba($white, 0.4);
+    color: rgba($dark, 0.45);
 
     &:hover {
-      background: none;
+      background: $white;
     }
   }
 }
@@ -155,7 +120,7 @@
   @include InterFont;
   padding: 32px 16px;
   text-align: center;
-  color: rgba($white, 0.4);
+  color: rgba($dark, 0.45);
   font-size: 14px;
 }
 
@@ -165,7 +130,7 @@
   overflow: hidden;
 }
 
-.npmToggle {
+.npmHeader {
   @include InterFont;
   display: flex;
   align-items: center;
@@ -173,21 +138,15 @@
   width: 100%;
   height: 48px;
   padding: 0 16px;
-  background: $regal-blue;
-  border: none;
-  border-radius: 8px;
-  color: $white;
+  background: $white;
+  border: 1px solid rgba($dark, 0.15);
+  border-radius: 8px 8px 0 0;
+  color: $dark;
   font-size: 14px;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  cursor: default;
 
   &:hover {
-    background: lighten($regal-blue, 4%);
-  }
-
-  &Open {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-color: rgba($dark, 0.28);
   }
 }
 
@@ -203,8 +162,9 @@
 .npmList {
   max-height: 320px;
   overflow-y: auto;
-  border-top: 1px solid $regal-blue;
-  background: $dark;
+  border: 1px solid rgba($dark, 0.15);
+  border-top: none;
+  background: #33333308;
 }
 
 .npmItem {
@@ -214,19 +174,24 @@
   justify-content: space-between;
   padding: 14px 16px;
   font-size: 14px;
+  border-top: 1px solid rgba($dark, 0.06);
+
+  &:first-child {
+    border-top: none;
+  }
 }
 
 .npmName {
   @include CourierFont;
-  color: $cta-green;
+  color: $dark;
   font-size: 14px;
 }
 
 .npmVersion {
   @include InterFont;
   font-size: 12px;
-  color: rgba($white, 0.6);
-  background: $regal-blue;
+  color: rgba($dark, 0.75);
+  background: rgba($dark, 0.06);
   padding: 4px 10px;
   border-radius: 4px;
 }
@@ -235,22 +200,7 @@
   @include InterFont;
   padding: 32px 16px;
   text-align: center;
-  color: rgba($white, 0.4);
+  color: rgba($dark, 0.45);
   font-size: 14px;
 }
 
-.note {
-  @include InterFont;
-  font-size: 13px;
-  text-align: center;
-  padding: 0.25rem 0;
-}
-
-.footer {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-@include modalKeyframes();

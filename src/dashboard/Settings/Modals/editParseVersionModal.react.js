@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Popover from 'components/Popover/Popover.react';
-import Position from 'lib/Position';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
 import Icon from 'components/Icon/Icon.react';
+import FormNote from 'components/FormNote/FormNote.react';
 import styles from 'dashboard/Settings/Modals/editParseVersionModal.scss';
-
-const origin = new Position(0, 0);
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
   const [parseVersions, setParseVersions] = useState([]);
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [npmModulesExpanded, setNpmModulesExpanded] = useState(false);
   const [note, setNote] = useState('');
   const [noteColor, setNoteColor] = useState('red');
 
@@ -85,6 +82,24 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   const close = () => setParentState({ showEditParseVersionModal: false });
 
+  const save = async () => {
+    if (!selectedVersion?.version) {
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      setNote('');
+      await context.changeParseServerVersion(selectedVersion.version);
+      close();
+    } catch (e) {
+      setNote(e?.error || e?.message || 'Failed to save version');
+      setNoteColor('red');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const displayVersion = selectedVersion
     ? (selectedVersion.version === currentParseVersion
       ? `${selectedVersion.version} - ${selectedVersion.description || ''} (current)`
@@ -92,127 +107,82 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
     : (processing ? 'Loading...' : 'Select version');
 
   return (
-    <Popover fadeIn={true} fixed={true} position={origin} modal={true} color='rgba(17,13,17,0.8)'>
-      <div className={styles.modal}>
-        {/* Header */}
-        <div className={styles.header}>
-          <div className={styles.title}>Parse Server Version</div>
-          <button type='button' className={styles.closeBtn} onClick={close}>
-            <Icon name='close' width={10} height={10} fill='#C1E2FF' />
+    <B4aModal
+      type={B4aModal.Types.DEFAULT}
+      title='Parse Server Version'
+      subtitle='Select a version for your app'
+      cancelText='Cancel'
+      confirmText={processing ? 'Saving...' : 'Save Changes'}
+      disableConfirm={!hasChanged || processing || selectedVersion?.disabled}
+      disableCancel={processing}
+      onCancel={close}
+      onConfirm={save}
+    >
+      <div className={styles.content}>
+        <div className={styles.label}>Select Version</div>
+
+        <div className={styles.selectWrapper}>
+          <button
+            type='button'
+            className={styles.selectBtn}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <span className={styles.selectBtnText}>{displayVersion}</span>
+            <span className={`${styles.chevron} ${dropdownOpen ? styles.chevronUp : ''}`}>
+              <Icon name='b4a-chevron-down' width={14} height={14} fill='#10203A' />
+            </span>
           </button>
-        </div>
 
-        {/* Content */}
-        <div className={styles.content}>
-          <div className={styles.label}>Select Version</div>
-
-          {/* Custom dark dropdown */}
-          <div className={styles.selectWrapper}>
-            <button
-              type='button'
-              className={styles.selectBtn}
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <span>{displayVersion}</span>
-              <span className={`${styles.chevron} ${dropdownOpen ? styles.chevronUp : ''}`}>
-                <Icon name='b4a-chevron-down' width={14} height={14} fill='#C1E2FF' />
-              </span>
-            </button>
-            {dropdownOpen && (
-              <div className={styles.selectMenu}>
-                {parseVersions.length > 0 ? (
-                  parseVersions.map((v) => (
-                    <button
-                      key={v.version}
-                      type='button'
-                      className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
-                      onClick={() => {
-                        if (!v.disabled) {
-                          setSelectedVersion(v);
-                          setDropdownOpen(false);
-                        }
-                      }}
-                      disabled={v.disabled}
-                    >
-                      {v.version === currentParseVersion 
-                        ? `${v.version} - ${v.description || ''} (current)` 
-                        : `${v.version} - ${v.description || ''}`}
-                    </button>
-                  ))
-                ) : (
-                  <div className={styles.selectEmpty}>No versions available</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Npm modules collapsible */}
-          <div className={styles.npmSection}>
-            <button
-              type='button'
-              className={`${styles.npmToggle} ${npmModulesExpanded ? styles.npmToggleOpen : ''}`}
-              onClick={() => setNpmModulesExpanded(!npmModulesExpanded)}
-            >
-              <span>Installed npm modules</span>
-              <span className={`${styles.chevron} ${npmModulesExpanded ? styles.chevronUp : ''}`}>
-                <Icon name='b4a-chevron-down' width={14} height={14} fill='#C1E2FF' />
-              </span>
-            </button>
-            {npmModulesExpanded && (
-              <div className={styles.npmList}>
-                {npmModules.length > 0 ? (
-                  npmModules.map(({ name, version }, idx) => (
-                    <div key={`${name}-${version}-${idx}`} className={styles.npmItem}>
-                      <span className={styles.npmName}>{name}</span>
-                      <span className={styles.npmVersion}>{version || ''}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className={styles.npmEmpty}>No npm modules installed</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {note !== '' && (
-            <div className={styles.note} style={{ color: noteColor === 'red' ? '#E85C3E' : '#27AE60' }}>
-              {note}
+          {dropdownOpen && (
+            <div className={styles.selectMenu}>
+              {parseVersions.length > 0 ? (
+                parseVersions.map((v) => (
+                  <button
+                    key={v.version}
+                    type='button'
+                    className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
+                    onClick={() => {
+                      if (!v.disabled) {
+                        setSelectedVersion(v);
+                        setDropdownOpen(false);
+                      }
+                    }}
+                    disabled={v.disabled}
+                  >
+                    {v.version === currentParseVersion
+                      ? `${v.version} - ${v.description || ''} (current)`
+                      : `${v.version} - ${v.description || ''}`}
+                  </button>
+                ))
+              ) : (
+                <div className={styles.selectEmpty}>No versions available</div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className={styles.footer}>
-          <Button color='white' value='Cancel' width='auto' onClick={close} additionalStyles={{ background: 'transparent', border: '1px solid #34506F', color: '#C1E2FF' }} />
-          <Button 
-            primary={true} 
-            color='green' 
-            value={processing ? 'Saving...' : 'Save Changes'} 
-            width='auto' 
-            disabled={!hasChanged || processing || selectedVersion?.disabled} 
-            onClick={async () => {
-              if (!selectedVersion?.version) {
-                return;
-              }
-          
-              try {
-                setProcessing(true);
-                setNote('');
-                await context.changeParseServerVersion(selectedVersion.version);
-          
-                // window.location.reload();
-          
-                close();
-              } catch (e) {
-                setNote(e?.error || e?.message || 'Failed to save version');
-                setNoteColor('red');
-              } finally {
-                setProcessing(false);
-              }
-            }}
-          />
+        <div className={styles.npmSection}>
+          <div className={styles.npmHeader}>Installed npm modules</div>
+          <div className={styles.npmList}>
+            {npmModules.length > 0 ? (
+              npmModules.map(({ name, version }, idx) => (
+                <div key={`${name}-${version}-${idx}`} className={styles.npmItem}>
+                  <span className={styles.npmName}>{name}</span>
+                  <span className={styles.npmVersion}>{version || ''}</span>
+                </div>
+              ))
+            ) : (
+              <div className={styles.npmEmpty}>No npm modules installed</div>
+            )}
+          </div>
         </div>
+
+        {note !== '' && (
+          <FormNote show={note !== ''} color={noteColor}>
+            {note}
+          </FormNote>
+        )}
       </div>
-    </Popover>
+    </B4aModal>
   );
 };
