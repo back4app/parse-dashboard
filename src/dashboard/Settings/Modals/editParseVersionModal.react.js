@@ -82,7 +82,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
   }, []);
 
   const npmModules = parseDependencies(selectedVersion?.dependencies ?? selectedVersion?.npmModules);
-  const hasChanged = selectedVersion && selectedVersion.version !== currentParseVersion;
+  const hasSelectedVersion = !!selectedVersion?.version;
 
   const close = () => setParentState({ showEditParseVersionModal: false });
 
@@ -187,9 +187,11 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
           </div>
 
           {note !== '' && (
-            <FormNote show={note !== ''} color={noteColor}>
-              {note}
-            </FormNote>
+            <div style={{ marginBottom: '10px' }}>
+              <FormNote show={note !== ''} color={noteColor}>
+                {note}
+              </FormNote>
+            </div>
           )}
         </div>
 
@@ -206,7 +208,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
             primary={true}
             value={processing ? 'Saving...' : 'Save Changes'}
             color="green"
-            disabled={!hasChanged || processing || selectedVersion?.disabled}
+            disabled={!hasSelectedVersion || processing}
             onClick={save}
             progress={processing}
           />
