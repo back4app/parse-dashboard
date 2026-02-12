@@ -119,14 +119,15 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
       >
         <Icon onClick={close} width={10} height={10} className={modalStyles.closeIcon} name="close" fill="#10203A" />
 
-        <div className={modalStyles.header}>
-          <div className={modalStyles.title}>Parse Server Version</div>
-          <div className={modalStyles.subtitle}>Select a version for your app</div>
+        <div className={`${modalStyles.header} ${styles.header}`}>
+          <div className={modalStyles.title}>Manage Parse Version</div>
+          <div className={modalStyles.subtitle}>Change the Parse Server version by selecting the version you want to use for this app.
+          </div>
         </div>
 
         <div className={styles.modalBody}>
           <div className={styles.content}>
-            <div className={styles.label}>Select Version</div>
+
 
             <div className={styles.selectWrapper}>
               <button
