@@ -79,7 +79,8 @@ export default class FlowView extends React.Component {
         });
       }
       Promise.resolve(this.props.validate({ changes: newChanges }))
-        .catch(({ errors }) => {
+        .catch(err => {
+          const { errors = [] } = err || {};
           this.setState({
             saveError: 'Validation failed',
             errors
@@ -107,13 +108,14 @@ export default class FlowView extends React.Component {
       if(key === 'collaborators'){
         this.handleClickSaveButton();
       }
-      this.props.validate({ changes: newChanges })
-        .catch(({ errors }) => {
+      Promise.resolve(this.props.validate({ changes: newChanges }))
+        .catch(err => {
+          const { errors = [] } = err || {};
           this.setState({
             saveError: 'Validation failed',
             errors
           });
-        })
+        });
 
     }
   }
@@ -172,7 +174,13 @@ export default class FlowView extends React.Component {
     const form = renderForm({ fields, changes, setField, resetFields, setFieldJson, errors: this.state.errors });
     const flowModals = <div>{renderModals.map((modal, key) => <div key={key}>{modal}</div>)}</div>
 
-    const invalidFormMessage = validate({ changes, fields });
+    let invalidFormMessage = validate({ changes, fields });
+    if (invalidFormMessage && typeof invalidFormMessage.then === 'function') {
+      // Validation side effects (field-level errors) are handled in setField/setFieldJson.
+      // During render, avoid unhandled async validation rejections.
+      invalidFormMessage.catch(() => {});
+      invalidFormMessage = '';
+    }
     const hasFormValidationError =
       React.isValidElement(invalidFormMessage) ||
       (invalidFormMessage && invalidFormMessage.length > 0);

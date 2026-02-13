@@ -266,6 +266,11 @@ export default class DashboardView extends React.Component {
       link: '/domain-settings',
     });
 
+    settingsSections.push({
+      name: 'Parse Options',
+      link: '/parse-options',
+    });
+
     const logsSubSections = [];
 
     logsSubSections.push({

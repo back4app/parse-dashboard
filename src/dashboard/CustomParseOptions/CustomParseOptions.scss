@@ -1,0 +1,228 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    position: relative;
+    overflow: auto;
+  }
+}
+
+.formWrapper {
+  padding: 0;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 5rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .formWrapper {
+    padding: 0 2rem;
+  }
+}
+
+.domainSettingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+  }
+
+  .helperText {
+    @include InterFont;
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+  }
+
+  .warning {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: #EB5178;
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+    background: #eb51781a;
+    border: 1px solid #EB5178;
+    border-radius: 4px;
+  }
+
+  .formContainer {
+    margin-top: 1.5rem;
+  }
+
+  .fieldHr {
+    margin: 4px 0;
+    border: 0;
+  }
+}
+
+
+.error {
+  background: #EB5178;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  padding: 0.2rem 0.5rem;
+  width: 100%;
+  text-align: center;
+  transition: height 0.3s ease-in-out;
+}
+
+.success {
+  background: $cta-green;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  padding: 0.2rem 0.5rem;
+  width: 100%;
+  text-align: center;
+  transition: height 0.3s ease-in-out;
+}
+
+.validateBtn {
+  background: $white;
+  color: $dark;
+}
+
+.note {
+  color: $light-grey;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 140%;
+  margin-top: 0.5rem;
+}
+
+.customDomainList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  & > .customDomainItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 14px;
+    border-bottom: 1px solid $dark;
+    padding: 0.5rem 1rem;
+  }
+  & > .lastItem {
+    border-bottom: none;
+  }
+  & > .noDomains {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+    color: $light-grey;
+    font-style: italic;
+  }
+}
+
+.subdomainContainer {
+  flex: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paymenytVerfiicationModal {
+  color: $dark;
+  text-align: center;
+  font-size: 1.25rem;
+  .spinner {
+    
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.paymentVerificationModal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.spinnerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinnerText {
+  font-size: 1rem;
+  color: $white;
+  text-align: center;
+  font-weight: 500;
+}
+
+.successContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.successIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: $cta-green;
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.successText {
+  font-size: 1.1rem;
+  color: $white;
+  text-align: center;
+  font-weight: 500;
+}
+
+.subdomain {
+  color: $old-blue;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+  &:hover {
+    text-decoration: underline;
+  }
+}

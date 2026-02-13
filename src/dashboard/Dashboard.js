@@ -69,6 +69,7 @@ import Deployments from './Deployments/Deployments.react';
 import DeploymentDetails from './Deployments/DeploymentDetails.react';
 import { useAppPageTracking } from './instrument';
 import DomainSettings from './DomainSettings/DomainSettings.react';
+import CustomParseOptions from './CustomParseOptions/CustomParseOptions.react';
 
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
 const LazyPlayground = lazy(() => import('./Data/Playground/Playground.react'));
@@ -496,6 +497,7 @@ class Dashboard extends React.Component {
         <Route path="server-settings/" element={<ServerSettings />} />
         <Route path="server-settings/:targetPage" element={<ServerSettings />} />
         <Route path="domain-settings" element={<DomainSettings />} />
+        <Route path="parse-options" element={<CustomParseOptions />} />
 
         <Route path="index/:className" element={<IndexManager />} />
         <Route path="index" element={<IndexManager />} />
