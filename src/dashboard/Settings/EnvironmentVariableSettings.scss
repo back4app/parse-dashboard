@@ -126,13 +126,7 @@
   cursor: default;
 }
 
-.actions {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: flex-start;
-}
+// actions moved to Toolbar
 
 .emptyState {
   margin: 2.5rem 0 2rem;
@@ -142,22 +136,6 @@
   color: $light-grey;
   font-size: 0.95rem;
   text-align: center;
-}
-
-.addVarButton {
-  color: $cta-green;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.saveButtonWrap {
-  display: inline-flex;
 }
 
 .errorBox {
@@ -171,3 +149,10 @@
   white-space: pre-wrap;
 }
 
+.inlineErrorText {
+  @include InterFont;
+  margin-top: 0.75rem;
+  color: $error-red;
+  font-size: 0.875rem;
+  line-height: 140%;
+}

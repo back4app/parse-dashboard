@@ -15,6 +15,7 @@ import TextInput from 'components/TextInput/TextInput.react';
 import Icon from 'components/Icon/Icon.react';
 import Button from 'components/Button/Button.react';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
+import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import styles from './EnvironmentVariableSettings.scss';
 
 @withRouter
@@ -32,9 +33,20 @@ export default class EnvironmentVariableSettings extends DashboardView {
       note: null,
       isErrorNote: false,
       inlineError: null,
+      isContentTooLong: false,
     };
 
     this._nextRowId = 1;
+  }
+
+  isRowContentTooLong(row) {
+    const name = row?.name ? String(row.name) : '';
+    const value = row?.value ? String(row.value) : '';
+    return name.length >= 100 || value.length >= 100;
+  }
+
+  computeIsContentTooLong(rows) {
+    return Array.isArray(rows) && rows.some(r => this.isRowContentTooLong(r));
   }
 
   componentDidMount() {
@@ -58,7 +70,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
           value: envVarsObj[name] == null ? '' : String(envVarsObj[name]),
           hidden: true,
         }));
-      this.setState({ rows });
+      this.setState({ rows, isContentTooLong: this.computeIsContentTooLong(rows) });
     } catch (e) {
       this.setState({ loadError: e?.message || String(e) });
     } finally {
@@ -102,10 +114,26 @@ export default class EnvironmentVariableSettings extends DashboardView {
   };
 
   updateRow = (id, patch) => {
-    this.setState(prev => ({
-      rows: prev.rows.map(r => (r.id === id ? { ...r, ...patch } : r)),
-      inlineError: null,
-    }));
+    this.setState(prev => {
+      const rows = prev.rows.map(r => {
+        if (r.id !== id) {
+          return r;
+        }
+        const next = { ...r, ...patch };
+        if (Object.prototype.hasOwnProperty.call(patch, 'name')) {
+          next.name = String(next.name || '').slice(0, 100);
+        }
+        if (Object.prototype.hasOwnProperty.call(patch, 'value')) {
+          next.value = String(next.value || '').slice(0, 100);
+        }
+        return next;
+      });
+      return {
+        rows,
+        inlineError: null,
+        isContentTooLong: this.computeIsContentTooLong(rows),
+      };
+    });
   };
 
   toggleHidden = (id) => {
@@ -204,6 +232,9 @@ export default class EnvironmentVariableSettings extends DashboardView {
                       disabled={this.state.saving}
                     />
                   </div>
+                  {(row.name ? String(row.name).length : 0) >= 100 ? (
+                    <div className={styles.fieldInlineError}>Content is too long</div>
+                  ) : null}
                 </div>
 
                 <div className={styles.fieldBlock}>
@@ -237,6 +268,9 @@ export default class EnvironmentVariableSettings extends DashboardView {
                       </button>
                     </div>
                   </div>
+                  {(row.value ? String(row.value).length : 0) >= 100 ? (
+                    <div className={styles.fieldInlineError}>Content is too long</div>
+                  ) : null}
                 </div>
 
                 <button
@@ -263,27 +297,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
             <div className={styles.errorBox}>{this.state.inlineError}</div>
           ) : null}
 
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.addVarButton}
-              onClick={this.addRow}
-              disabled={this.state.saving}
-            >
-              <Icon name="b4a-add-outline-circle" width={18} height={18} fill="#27AE60" />
-              Add variable
-            </button>
-
-            <div className={styles.saveButtonWrap}>
-              <Button
-                value={this.state.saving ? 'Saving…' : 'Save Settings'}
-                primary={true}
-                color="green"
-                onClick={this.save}
-                disabled={this.state.isLoading || this.state.saving}
-              />
-            </div>
-          </div>
         </div>
       );
     }
@@ -295,7 +308,34 @@ export default class EnvironmentVariableSettings extends DashboardView {
             {content}
           </div>
         </B4aLoaderContainer>
-        <Toolbar section="Settings" subsection="Environment Variable" />
+        <Toolbar section="Settings" subsection="Environment Variable">
+          <button
+            type="button"
+            className={browserStyles.addBtn}
+            style={{
+              opacity: this.state.saving ? 0.5 : 1,
+              cursor: this.state.saving ? 'not-allowed' : 'pointer',
+            }}
+            onClick={() => {
+              if (this.state.saving) {
+                return;
+              }
+              this.addRow();
+            }}
+          >
+            <Icon name="b4a-add-outline-circle" width={18} height={18} />
+            <span>Add variable</span>
+          </button>
+          <Button
+            value={this.state.saving ? 'Saving…' : 'Save Settings'}
+            primary={true}
+            color="green"
+            onClick={this.save}
+            disabled={this.state.isLoading || this.state.saving || this.state.isContentTooLong}
+            width="auto"
+            additionalStyles={{ marginLeft: '10px' }}
+          />
+        </Toolbar>
         <B4aNotification note={this.state.note} isErrorNote={this.state.isErrorNote} />
       </div>
     );
