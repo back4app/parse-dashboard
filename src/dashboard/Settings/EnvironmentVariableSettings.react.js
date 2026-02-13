@@ -232,9 +232,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
                       disabled={this.state.saving}
                     />
                   </div>
-                  {(row.name ? String(row.name).length : 0) >= 100 ? (
-                    <div className={styles.fieldInlineError}>Content is too long</div>
-                  ) : null}
                 </div>
 
                 <div className={styles.fieldBlock}>
@@ -268,9 +265,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
                       </button>
                     </div>
                   </div>
-                  {(row.value ? String(row.value).length : 0) >= 100 ? (
-                    <div className={styles.fieldInlineError}>Content is too long</div>
-                  ) : null}
                 </div>
 
                 <button
@@ -283,6 +277,10 @@ export default class EnvironmentVariableSettings extends DashboardView {
                 >
                   <Icon name="b4a-delete-icon" width={18} height={18} fill="#E85C3E" />
                 </button>
+
+                {this.isRowContentTooLong(row) ? (
+                  <div className={styles.rowInlineError}>Content is too long</div>
+                ) : null}
               </div>
             ))}
           </div>
