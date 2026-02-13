@@ -266,6 +266,11 @@ export default class DashboardView extends React.Component {
       link: '/domain-settings',
     });
 
+    settingsSections.push({
+      name: 'Environment Variable',
+      link: '/settings/environment-variable',
+    });
+
     const logsSubSections = [];
 
     logsSubSections.push({
