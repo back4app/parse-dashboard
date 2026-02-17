@@ -1,20 +1,20 @@
 import React from 'react';
 import Field from 'components/Field/Field.react';
-import VisibilityField from 'components/VisibilityField/VisibilityField.react';
+// import VisibilityField from 'components/VisibilityField/VisibilityField.react';
 import FieldSettings from 'components/FieldSettings/FieldSettings.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
-import FormButton from 'components/FormButton/FormButton.react';
+// import FormButton from 'components/FormButton/FormButton.react';
 import B4aKeyField from 'components/KeyField/B4aKeyField.react';
 import Label from 'components/Label/Label.react';
 import LabelSettings from 'components/LabelSettings/LabelSettings.react';
-import NumericInputSettings from 'components/NumericInputSettings/NumericInputSettings.react';
-import B4aToggle from 'components/Toggle/B4aToggle.react';
-import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
+// import NumericInputSettings from 'components/NumericInputSettings/NumericInputSettings.react';
+// import B4aToggle from 'components/Toggle/B4aToggle.react';
+// import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 } from 'dashboard/Settings/Fields/Constants';
 import PropTypes from 'lib/PropTypes';
-import getError from 'dashboard/Settings/Util/getError';
+// import getError from 'dashboard/Settings/Util/getError';
 import styles from 'dashboard/Settings/GeneralSettings.scss';
 
 export const ManageAppFields = ({
@@ -115,8 +115,8 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       /> */}
-      <hr className={styles.fieldHr} />
-      <Field
+      {/* <hr className={styles.fieldHr} /> */}
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
         label={<Label text='Password policy' description={'Manage password policies for this app'} dark={true} />}
@@ -249,8 +249,8 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       />
-      <hr className={styles.fieldHr} />
-      <Field
+      <hr className={styles.fieldHr} /> */}
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO Account lockout
         label={<Label text='Account lockout' description='Manage account lockout policies' dark={true} />}
@@ -296,7 +296,7 @@ export const ManageAppFields = ({
           </div>
         }
         theme={Field.Theme.BLUE}
-      />
+      /> */}
     </Fieldset>
   );
 }
