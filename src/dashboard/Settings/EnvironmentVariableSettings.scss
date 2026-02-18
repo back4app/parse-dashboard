@@ -117,18 +117,43 @@
 }
 
 .deleteButton {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  border: 1px solid rgba(232, 92, 62, 0.35);
-  background: rgba(232, 92, 62, 0.1);
+  @include buttonReset;
+  cursor: pointer;
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.valueCell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.valueText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.valueToggleButton {
+  @include buttonReset;
+  padding: 0;
+  border: none;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
 
-.deleteButton:disabled {
+.valueToggleButton:disabled {
   opacity: 0.6;
   cursor: default;
 }

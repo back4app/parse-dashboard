@@ -65,10 +65,10 @@ export const ManageAppFields = ({
                     {onEditParseVersion && (
                       <button
                         type='button'
-                        className={styles.editIconBtn}
+                        className={styles.changeActionBtn}
                         onClick={onEditParseVersion}
                       >
-                        <Icon name='edit-pencil-icon' width={14} height={14} fill='#C1E2FF' />
+                        Change
                       </button>
                     )}
                   </span>

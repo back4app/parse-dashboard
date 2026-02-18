@@ -5,369 +5,335 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import DashboardView from 'dashboard/DashboardView.react';
 import React from 'react';
-import Toolbar from 'components/Toolbar/Toolbar.react';
 import { withRouter } from 'lib/withRouter';
-import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
-import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
-import TextInput from 'components/TextInput/TextInput.react';
-import Icon from 'components/Icon/Icon.react';
+import TableView from 'dashboard/TableView.react';
+import TableHeader from 'components/Table/TableHeader.react';
+import Toolbar from 'components/Toolbar/Toolbar.react';
 import Button from 'components/Button/Button.react';
-import B4aModal from 'components/B4aModal/B4aModal.react';
+import Icon from 'components/Icon/Icon.react';
+import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
+import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import B4aFormModal from 'components/FormModal/B4aFormModal.react';
+import Field from 'components/Field/Field.react';
+import Label from 'components/Label/Label.react';
+import TextInput from 'components/TextInput/TextInput.react';
+import FormNote from 'components/FormNote/FormNote.react';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import styles from './EnvironmentVariableSettings.scss';
 
 @withRouter
-export default class EnvironmentVariableSettings extends DashboardView {
+export default class EnvironmentVariableSettings extends TableView {
   constructor() {
     super();
     this.section = 'App Settings';
     this.subsection = 'Environment Variables';
 
     this.state = {
-      isLoading: true,
+      loading: true,
       loadError: null,
+      envVars: {},
       rows: [],
-      saving: false,
+
       note: null,
       isErrorNote: false,
-      inlineError: null,
-      isContentTooLong: false,
-      initialRowsSignature: '[]',
-      isDirty: false,
-      modal: null,
+
+      showNewModal: false,
+      showEditModal: false,
+      showDeleteModal: false,
+
+      modalOriginalKey: '',
+      modalKey: '',
+      modalValue: '',
+      modalTouched: false,
+
+      deletingKey: '',
     };
-
-    this._nextRowId = 1;
-    this.unblock = null;
-    this.onBeforeUnloadEnvVars = null;
   }
 
-  openUnsavedChangesModal = ({ onConfirm }) => {
-    const warningModal = (
-      <B4aModal
-        type={B4aModal.Types.DEFAULT}
-        showCancel={false}
-        width={380}
-        icon="b4a-warn-fill-icon"
-        iconSize={44}
-        iconFill="#cccccc"
-        title="Leave this page?"
-        subtitle="Changes you made may not be saved."
-        customFooter={
-          <div style={{ textAlign: 'center' }}>
-            <Button
-              color="white"
-              width="auto"
-              additionalStyles={{
-                border: '1px solid #ccc',
-                color: '#303338',
-                marginRight: 12,
-              }}
-              value="Cancel"
-              onClick={() => this.setState({ modal: null })}
-            />
-            <Button
-              primary={true}
-              color="blue"
-              width="auto"
-              value="Leave"
-              onClick={() => {
-                this.setState({ modal: null });
-                if (typeof onConfirm === 'function') {
-                  onConfirm();
-                }
-              }}
-            />
-          </div>
-        }
-      />
-    );
-    this.setState({ modal: warningModal });
-  };
-
-  rowsSignature(rows) {
-    const normalized = (Array.isArray(rows) ? rows : [])
-      .map(r => ({
-        name: (r?.name || '').trim(),
-        value: r?.value == null ? '' : String(r.value),
-      }))
-      .filter(({ name, value }) => name.length > 0 || value.length > 0)
-      .sort((a, b) => a.name.localeCompare(b.name) || a.value.localeCompare(b.value));
-    return JSON.stringify(normalized);
-  }
-
-  isValidEnvVarName(name) {
-    return /^[_a-zA-Z]\w*$/.test(name);
-  }
-
-  hasInvalidEnvVarNamesAfterEdit(rows) {
-    return Array.isArray(rows) && rows.some(r => {
-      const name = r?.name == null ? '' : String(r.name);
-      return !!r?.nameTouched && name.length > 0 && !this.isValidEnvVarName(name);
-    });
-  }
-
-  isRowContentTooLongAfterEdit(row) {
-    const name = row?.name ? String(row.name) : '';
-    const value = row?.value ? String(row.value) : '';
-    return (
-      (row?.nameTouched && name.length >= 100) ||
-      (row?.valueTouched && value.length >= 100)
-    );
-  }
-
-  computeIsContentTooLong(rows) {
-    return Array.isArray(rows) && rows.some(r => this.isRowContentTooLongAfterEdit(r));
-  }
-
-  componentDidMount() {
-    this.loadData();
-
-    // Block in-app navigation (e.g. Sidebar) when there are unsaved changes
-    if (this.props.navigator && typeof this.props.navigator.block === 'function') {
-      this.unblock = this.props.navigator.block(tx => {
-        if (this.state.isDirty && this.state.saving === false) {
-          const unblock = this.unblock && this.unblock.bind(this);
-          const autoUnblockingTx = {
-            ...tx,
-            retry() {
-              if (unblock) {
-                unblock();
-              }
-              tx.retry();
-            },
-          };
-          this.openUnsavedChangesModal({
-            onConfirm: () => autoUnblockingTx.retry(),
-          });
-        } else {
-          if (this.unblock) {
-            this.unblock();
-          }
-          tx.retry();
-        }
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const wasDirty = !!prevState?.isDirty;
-    const isDirty = !!this.state.isDirty;
-
-    if (!wasDirty && isDirty) {
-      if (!this.onBeforeUnloadEnvVars) {
-        this.onBeforeUnloadEnvVars = (e) => {
-          // Trigger browser native dialog on true reload/close
-          e.preventDefault();
-          // eslint-disable-next-line no-param-reassign
-          e.returnValue = '';
-          return '';
-        };
-      }
-      window.addEventListener('beforeunload', this.onBeforeUnloadEnvVars);
-    } else if (wasDirty && !isDirty) {
-      window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.unblock) {
-      this.unblock();
-    }
-    window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
+  hasWritePermission() {
+    return this.context?.isOwner !== false;
   }
 
   setNote(note, isErrorNote = false) {
     this.setState({ note, isErrorNote });
   }
 
+  isValidEnvVarName(name) {
+    return /^[_a-zA-Z]\w*$/.test(name);
+  }
+
+  buildRowsFromEnvVars(envVarsObj) {
+    const env = envVarsObj && typeof envVarsObj === 'object' ? envVarsObj : {};
+    return Object.keys(env)
+      .sort((a, b) => a.localeCompare(b))
+      .map(key => ({
+        key,
+        value: env[key] == null ? '' : String(env[key]),
+        hidden: true,
+      }));
+  }
+
   async loadData() {
     try {
-      this.setState({ isLoading: true, loadError: null, inlineError: null });
-      const result = await this.context.getEnvVars(); // GET
-      const envVarsObj = (result && result.envVars) || {};
-      const rows = Object.keys(envVarsObj)
-        .sort((a, b) => a.localeCompare(b))
-        .map(name => ({
-          id: String(this._nextRowId++),
-          name,
-          value: envVarsObj[name] == null ? '' : String(envVarsObj[name]),
-          hidden: true,
-          nameError: null,
-          nameTouched: false,
-          valueTouched: false,
-        }));
-      const initialRowsSignature = this.rowsSignature(rows);
-      this.setState({
-        rows,
-        // do not show/trigger "Content is too long" on initial load
-        isContentTooLong: false,
-        initialRowsSignature,
-        isDirty: false,
-      });
+      this.setState({ loading: true, loadError: null });
+      const result = await this.context.getEnvVars();
+      const envVars = (result && result.envVars) || {};
+      const rows = this.buildRowsFromEnvVars(envVars);
+      this.setState({ envVars, rows });
     } catch (e) {
       this.setState({ loadError: e?.message || String(e) });
     } finally {
-      this.setState({ isLoading: false });
+      this.setState({ loading: false });
     }
   }
-  
-  save = async () => {
-    const { envVars, error } = this.buildEnvVarsPayload();
-    if (error) { /* ... */ return; }
-  
-    try {
-      this.setState({ saving: true, inlineError: null });
-      await this.context.updateEnvVars(envVars); // POST { envVars }
-      this.setNote('Environment variables saved.', false);
-      await this.loadData();
-    } catch (e) {
-      const msg = e?.message || String(e);
-      this.setState({ inlineError: msg });
-      this.setNote(msg, true);
-    } finally {
-      this.setState({ saving: false });
-    }
-  };
-  
-  addRow = () => {
-    this.setState(prev => {
-      const emptyIdx = prev.rows.findIndex(r => !(r.name || '').trim());
-      if (emptyIdx !== -1) {
-        const rows = prev.rows.map((r, idx) =>
-          idx === emptyIdx ? { ...r, nameError: 'A variable name is must!' } : r
-        );
-        return { rows, inlineError: null };
-      }
 
-      const nextRows = [
-        ...prev.rows,
-        { id: String(this._nextRowId++), name: '', value: '', hidden: true, nameError: null, nameTouched: false, valueTouched: false },
-      ];
-      return {
-        rows: nextRows,
-        inlineError: null,
-        isDirty: this.rowsSignature(nextRows) !== prev.initialRowsSignature,
-      };
-    });
+  componentDidMount() {
+    this.loadData();
+  }
+
+  onRefresh = () => {
+    this.loadData();
   };
 
-  deleteRow = (id) => {
-    this.setState(prev => {
-      const nextRows = prev.rows.filter(r => r.id !== id);
-      return {
-        rows: nextRows,
-        inlineError: null,
-        isDirty: this.rowsSignature(nextRows) !== prev.initialRowsSignature,
-      };
-    });
-  };
-
-  updateRow = (id, patch) => {
-    this.setState(prev => {
-      const rows = prev.rows.map(r => {
-        if (r.id !== id) {
-          return r;
-        }
-        const next = { ...r, ...patch };
-        if (Object.prototype.hasOwnProperty.call(patch, 'name')) {
-          next.nameTouched = true;
-          next.name = String(next.name || '').slice(0, 100);
-          if (next.name.length > 0 && !this.isValidEnvVarName(next.name)) {
-            next.nameError = `Invalid variable name: ${next.name}`;
-          } else if ((next.name || '').trim().length > 0) {
-            next.nameError = null;
-          }
-        }
-        if (Object.prototype.hasOwnProperty.call(patch, 'value')) {
-          next.valueTouched = true;
-          next.value = String(next.value || '').slice(0, 100);
-        }
-        return next;
-      });
-      return {
-        rows,
-        inlineError: null,
-        isContentTooLong: this.computeIsContentTooLong(rows),
-        isDirty: this.rowsSignature(rows) !== prev.initialRowsSignature,
-      };
-    });
-  };
-
-  toggleHidden = (id) => {
+  toggleHidden = (key) => {
     this.setState(prev => ({
-      rows: prev.rows.map(r => (r.id === id ? { ...r, hidden: !r.hidden } : r)),
+      rows: prev.rows.map(r => (r.key === key ? { ...r, hidden: !r.hidden } : r)),
     }));
   };
 
-  buildEnvVarsPayload() {
-    const trimmed = this.state.rows.map(r => ({
-      ...r,
-      rawName: r.name == null ? '' : String(r.name),
-      name: (r.name || '').trim(),
-      value: r.value == null ? '' : String(r.value),
-    }));
+  validateKeyValue({ keyRaw, valueRaw, originalKey }) {
+    const key = keyRaw == null ? '' : String(keyRaw);
+    const value = valueRaw == null ? '' : String(valueRaw);
 
-    // ignore completely empty rows (new row before typing)
-    const meaningful = trimmed.filter(r => r.name.length > 0 || r.value.length > 0);
-
-    for (const row of meaningful) {
-      if (!row.name.length) {
-        return { error: 'Each variable must have a NAME.' };
-      }
-      if (!this.isValidEnvVarName(row.rawName || '')) {
-        return { error: `Invalid variable name: ${row.rawName || ''}` };
-      }
+    if (!key.length) {
+      return { error: 'Each variable must have a NAME.' };
+    }
+    if (!this.isValidEnvVarName(key)) {
+      return { error: `Invalid variable name: ${key}` };
+    }
+    if (key.length >= 100 || value.length >= 100) {
+      return { error: 'Content is too long' };
     }
 
-    const seen = new Set();
-    for (const row of meaningful) {
-      const key = row.name;
-      if (seen.has(key)) {
-        return { error: `Duplicated variable name: ${key}` };
-      }
-      seen.add(key);
+    const keyTrim = key.trim();
+    const valueTrim = value.trim();
+
+    if (originalKey !== keyTrim && Object.prototype.hasOwnProperty.call(this.state.envVars || {}, keyTrim)) {
+      return { error: `Duplicated variable name: ${keyTrim}` };
     }
 
-    const envVars = {};
-    meaningful.forEach(r => {
-      envVars[r.name] = r.value;
-    });
-    return { envVars, error: null };
+    return { keyTrim, valueTrim, error: null };
   }
 
-  save = async () => {
-    if (this.state.saving) {
-      return;
-    }
-    const { envVars, error } = this.buildEnvVarsPayload();
-    if (error) {
-      this.setState({ inlineError: error });
-      this.setNote(error, true);
-      return;
-    }
-
+  persistEnvVars = async (nextEnvVars) => {
     try {
-      this.setState({ saving: true, inlineError: null });
-      await this.context.updateEnvVars(envVars);
+      await this.context.updateEnvVars(nextEnvVars);
       this.setNote('Environment variables saved.', false);
       await this.loadData();
     } catch (e) {
       const msg = e?.message || String(e);
-      this.setState({ inlineError: msg });
       this.setNote(msg, true);
-    } finally {
-      this.setState({ saving: false });
+      throw { message: msg };
     }
   };
 
-  renderContent() {
-    let content = null;
+  openNewModal = () => {
+    this.setState({ showNewModal: true, modalTouched: false });
+  };
+
+  openEditModal = (row) => {
+    this.setState({
+      showEditModal: true,
+      modalOriginalKey: row.key,
+      modalKey: row.key,
+      modalValue: row.value,
+      modalTouched: false,
+    });
+  };
+
+  openDeleteModal = (key) => {
+    this.setState({ showDeleteModal: true, deletingKey: key });
+  };
+
+  clearModalFields = () => {
+    this.setState({
+      modalOriginalKey: '',
+      modalKey: '',
+      modalValue: '',
+      modalTouched: false,
+      deletingKey: '',
+    });
+  };
+
+  modalValidationError(originalKey) {
+    if (!this.state.modalTouched) {
+      return '';
+    }
+    const { error } = this.validateKeyValue({
+      keyRaw: this.state.modalKey,
+      valueRaw: this.state.modalValue,
+      originalKey,
+    });
+    return error || '';
+  }
+
+  submitCreate = () => {
+    const { keyTrim, valueTrim, error } = this.validateKeyValue({
+      keyRaw: this.state.modalKey,
+      valueRaw: this.state.modalValue,
+      originalKey: null,
+    });
+    if (error) {
+      return Promise.reject({ message: error });
+    }
+    const next = { ...(this.state.envVars || {}) };
+    next[keyTrim] = valueTrim;
+    return this.persistEnvVars(next);
+  };
+
+  submitEdit = () => {
+    const originalKey = this.state.modalOriginalKey || '';
+    const { keyTrim, valueTrim, error } = this.validateKeyValue({
+      keyRaw: this.state.modalKey,
+      valueRaw: this.state.modalValue,
+      originalKey,
+    });
+    if (error) {
+      return Promise.reject({ message: error });
+    }
+    const next = { ...(this.state.envVars || {}) };
+    if (originalKey && originalKey !== keyTrim) {
+      delete next[originalKey];
+    }
+    next[keyTrim] = valueTrim;
+    return this.persistEnvVars(next);
+  };
+
+  submitDelete = () => {
+    const key = this.state.deletingKey || '';
+    const next = { ...(this.state.envVars || {}) };
+    delete next[key];
+    return this.persistEnvVars(next);
+  };
+
+  renderToolbar() {
+    const canWrite = this.hasWritePermission();
+    return (
+      <Toolbar section="Settings" subsection="Environment Variables">
+        <a
+          className={browserStyles.toolbarButton}
+          style={{ margin: 0, border: 'none' }}
+          onClick={this.onRefresh}
+          role="button"
+        >
+          <Icon name="b4a-refresh-icon" width={18} height={18} />
+        </a>
+
+        <Button
+          primary={true}
+          color="green"
+          width="auto"
+          additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
+          value={
+            <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <Icon
+                width={16}
+                height={16}
+                name="b4a-add-outline-circle"
+                fill="#f9f9f9"
+                style={{ display: 'inline-block', marginRight: '0.5rem' }}
+              />
+              Add variable
+            </span>
+          }
+          onClick={() => {
+            if (!canWrite) {
+              return;
+            }
+            this.openNewModal();
+          }}
+          disabled={!canWrite}
+        />
+      </Toolbar>
+    );
+  }
+
+  renderHeaders() {
+    return [
+      <TableHeader width={35} key="Key">
+        Key
+      </TableHeader>,
+      <TableHeader width={55} key="Value">
+        Value
+      </TableHeader>,
+      <TableHeader width={10} key="Delete">
+        &nbsp;
+      </TableHeader>,
+    ];
+  }
+
+  renderRow(row) {
+    const canWrite = this.hasWritePermission();
+    const rowStyle = canWrite ? { cursor: 'pointer' } : {};
+    const showEdit = canWrite ? () => this.openEditModal(row) : null;
+
+    const valueText = row.hidden ? (row.value ? '••••••••' : '') : row.value;
+
+    return (
+      <tr key={row.key} className={styles.envVarRow}>
+        <td style={rowStyle} onClick={showEdit} width={'35%'}>
+          {row.key}
+        </td>
+        <td style={rowStyle} onClick={showEdit} width={'55%'}>
+          <div className={styles.valueCell}>
+            <span className={styles.valueText}>{valueText}</span>
+            <button
+              type="button"
+              className={styles.valueToggleButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                this.toggleHidden(row.key);
+              }}
+              aria-label={row.hidden ? 'Show value' : 'Hide value'}
+              title={row.hidden ? 'Show' : 'Hide'}
+            >
+              <Icon
+                name={row.hidden ? 'b4a-visibility-off-icon' : 'b4a-visibility-icon'}
+                width={18}
+                height={18}
+                fill="#27AE60"
+              />
+            </button>
+          </div>
+        </td>
+        <td width={'10%'}>
+          <button
+            type="button"
+            className={styles.deleteButton}
+            disabled={!canWrite}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!canWrite) {
+                return;
+              }
+              this.openDeleteModal(row.key);
+            }}
+            aria-label="Delete variable"
+            title="Delete"
+          >
+            <Icon name="b4a-delete-icon" fill="#E85C3E" width={16} height={16} />
+          </button>
+        </td>
+      </tr>
+    );
+  }
+
+  renderEmpty() {
     if (this.state.loadError) {
-      content = (
+      return (
         <div className={styles.errorStateWrapper}>
           <EmptyGhostState
             title="Error loading environment variables"
@@ -375,148 +341,175 @@ export default class EnvironmentVariableSettings extends DashboardView {
           />
         </div>
       );
-    } else {
-      content = (
-        <div className={styles.mainContent}>
-          <div className={styles.heading}>Environment Variables</div>
-          <div className={styles.subheading}>
-            Customize your environment variables using KEY=VALUE format. Put each variable in one line
-          </div>
-
-          <div className={styles.varsList}>
-            {this.state.rows.map(row => (
-              <div key={row.id} className={styles.varRow}>
-                <div className={styles.fieldBlock}>
-                  <div className={styles.fieldLabel}>NAME</div>
-                  <div className={styles.inputShell}>
-                    <TextInput
-                      className={styles.rowInput}
-                      height={44}
-                      padding="10px 12px"
-                      value={row.name}
-                      placeholder="MY_VARIABLE"
-                      onChange={(name) => this.updateRow(row.id, { name })}
-                      disabled={this.state.saving}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.fieldBlock}>
-                  <div className={styles.fieldLabel}>VALUE</div>
-                  <div className={styles.valueInput}>
-                    <div className={`${styles.inputShell} ${styles.valueShell}`}>
-                      <TextInput
-                        className={styles.rowInput}
-                        height={44}
-                        padding="10px 44px 10px 12px"
-                        value={row.value}
-                        placeholder="••••••••"
-                        hidden={row.hidden}
-                        name={`env_var_value_${row.id}`}
-                        autoComplete="new-password"
-                        data-lpignore="true"
-                        data-1p-ignore="true"
-                        data-bwignore="true"
-                        onChange={(value) => this.updateRow(row.id, { value })}
-                        disabled={this.state.saving}
-                      />
-                      <button
-                        type="button"
-                        className={styles.insideIconButton}
-                        onClick={() => this.toggleHidden(row.id)}
-                        disabled={this.state.saving}
-                        aria-label={row.hidden ? 'Show value' : 'Hide value'}
-                        title={row.hidden ? 'Show' : 'Hide'}
-                      >
-                        <Icon
-                          name={row.hidden ? 'b4a-visibility-off-icon' : 'b4a-visibility-icon'}
-                          width={18}
-                          height={18}
-                          fill="#27AE60"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  className={styles.deleteButton}
-                  onClick={() => this.deleteRow(row.id)}
-                  disabled={this.state.saving}
-                  aria-label="Delete variable"
-                  title="Delete"
-                >
-                  <Icon name="b4a-delete-icon" width={18} height={18} fill="#E85C3E" />
-                </button>
-
-                {row.nameError ? (
-                  <div className={styles.rowInlineError}>{row.nameError}</div>
-                ) : this.isRowContentTooLongAfterEdit(row) ? (
-                  <div className={styles.rowInlineError}>Content is too long</div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-
-          {this.state.rows.length === 0 ? (
-            <div className={styles.emptyState}>
-              No environment variables yet
-            </div>
-          ) : null}
-
-          {this.state.inlineError ? (
-            <div className={styles.errorBox}>{this.state.inlineError}</div>
-          ) : null}
-
-        </div>
-      );
     }
 
+    const canWrite = this.hasWritePermission();
     return (
-      <div>
-        <B4aLoaderContainer loading={this.state.isLoading}>
-          <div className={styles.content}>
-            {content}
-          </div>
-        </B4aLoaderContainer>
-        <Toolbar section="Settings" subsection="Environment Variables">
-          <button
-            type="button"
-            className={browserStyles.addBtn}
-            style={{
-              opacity: this.state.saving || this.context?.isOwner === false ? 0.5 : 1,
-              cursor: this.state.saving || this.context?.isOwner === false ? 'not-allowed' : 'pointer',
-            }}
-            onClick={() => {
-              if (this.state.saving || this.context?.isOwner === false) {
-                return;
-              }
-              this.addRow();
-            }}
-          >
-            <Icon name="b4a-add-outline-circle" width={18} height={18} />
-            <span>Add variable</span>
-          </button>
-          <Button
-            value={this.state.saving ? 'Saving…' : 'Save Settings'}
-            primary={true}
-            color="green"
-            onClick={this.save}
-            disabled={
-              this.state.isLoading ||
-              this.state.saving ||
-              this.state.isContentTooLong ||
-              !this.state.isDirty ||
-              this.hasInvalidEnvVarNamesAfterEdit(this.state.rows)
-            }
-            width="auto"
-            additionalStyles={{ marginLeft: '10px' }}
-          />
-        </Toolbar>
-        <B4aNotification note={this.state.note} isErrorNote={this.state.isErrorNote} />
-        {this.state.modal}
-      </div>
+      <B4aEmptyState
+        title="Environment Variables"
+        description="Customize your environment variables using KEY=VALUE format. Put each variable in one line."
+        cta={canWrite ? 'Add variable' : ''}
+        action={() => {
+          if (!canWrite) {
+            return;
+          }
+          this.openNewModal();
+        }}
+      />
     );
+  }
+
+  tableData() {
+    if (this.state.loading) {
+      return undefined;
+    }
+    if (this.state.loadError) {
+      return [];
+    }
+    return this.state.rows;
+  }
+
+  renderExtras() {
+    const canWrite = this.hasWritePermission();
+    const createError = this.modalValidationError(null);
+    const editError = this.modalValidationError(this.state.modalOriginalKey || '');
+
+    const createEnabled = canWrite && (() => {
+      const { error } = this.validateKeyValue({
+        keyRaw: this.state.modalKey,
+        valueRaw: this.state.modalValue,
+        originalKey: null,
+      });
+      return !error;
+    })();
+
+    const editEnabled = canWrite && (() => {
+      const { error } = this.validateKeyValue({
+        keyRaw: this.state.modalKey,
+        valueRaw: this.state.modalValue,
+        originalKey: this.state.modalOriginalKey || '',
+      });
+      return !error;
+    })();
+
+    const newModal = (
+      <B4aFormModal
+        key="new"
+        title="Add variable"
+        open={this.state.showNewModal}
+        onSubmit={this.submitCreate}
+        onClose={() => this.setState({ showNewModal: false })}
+        submitText="Create"
+        inProgressText={'Creating\u2026'}
+        clearFields={this.clearModalFields}
+        enabled={createEnabled}
+      >
+        <Field
+          label={<Label text="Key" />}
+          input={
+            <TextInput
+              padding="0 1rem"
+              dark={false}
+              placeholder="MY_VARIABLE"
+              onChange={(value) => this.setState({ modalKey: String(value || '').slice(0, 100), modalTouched: true })}
+              value={this.state.modalKey}
+            />
+          }
+        />
+        <Field
+          label={<Label text="Value" />}
+          input={
+            <TextInput
+              padding="0 1rem"
+              dark={false}
+              placeholder="••••••••"
+              name="env_var_modal_value"
+              autoComplete="new-password"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              data-bwignore="true"
+              onChange={(value) => this.setState({ modalValue: String(value || '').slice(0, 100), modalTouched: true })}
+              value={this.state.modalValue}
+            />
+          }
+        />
+        <FormNote show={!!createError} color="red">
+          {createError}
+        </FormNote>
+      </B4aFormModal>
+    );
+
+    const editModal = (
+      <B4aFormModal
+        key="edit"
+        title="Edit variable"
+        open={this.state.showEditModal}
+        onSubmit={this.submitEdit}
+        onClose={() => this.setState({ showEditModal: false })}
+        submitText="Save"
+        inProgressText={'Saving\u2026'}
+        clearFields={this.clearModalFields}
+        enabled={editEnabled}
+      >
+        <Field
+          label={<Label text="Key" />}
+          input={
+            <TextInput
+              padding="0 1rem"
+              dark={false}
+              placeholder="MY_VARIABLE"
+              onChange={(value) => this.setState({ modalKey: String(value || '').slice(0, 100), modalTouched: true })}
+              value={this.state.modalKey}
+            />
+          }
+        />
+        <Field
+          label={<Label text="Value" />}
+          input={
+            <TextInput
+              padding="0 1rem"
+              dark={false}
+              placeholder="••••••••"
+              name="env_var_modal_value"
+              autoComplete="new-password"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              data-bwignore="true"
+              onChange={(value) => this.setState({ modalValue: String(value || '').slice(0, 100), modalTouched: true })}
+              value={this.state.modalValue}
+            />
+          }
+        />
+        <FormNote show={!!editError} color="red">
+          {editError}
+        </FormNote>
+      </B4aFormModal>
+    );
+
+    const deleteModal = (
+      <B4aFormModal
+        key="delete"
+        title="Delete variable"
+        subtitle="This action is irreversible."
+        open={this.state.showDeleteModal}
+        type={B4aModal.Types.DANGER}
+        onSubmit={this.submitDelete}
+        onClose={() => this.setState({ showDeleteModal: false })}
+        submitText="Delete"
+        inProgressText={'Deleting\u2026'}
+        clearFields={this.clearModalFields}
+        enabled={canWrite && !!this.state.deletingKey}
+      />
+    );
+
+    const notification = (
+      <B4aNotification
+        key="note"
+        note={this.state.note}
+        isErrorNote={this.state.isErrorNote}
+      />
+    );
+
+    return [newModal, editModal, deleteModal, notification];
   }
 }
