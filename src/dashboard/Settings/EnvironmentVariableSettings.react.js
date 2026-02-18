@@ -23,7 +23,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
   constructor() {
     super();
     this.section = 'App Settings';
-    this.subsection = 'Environment Variable';
+    this.subsection = 'Environment Variables';
 
     this.state = {
       isLoading: true,
@@ -34,19 +34,35 @@ export default class EnvironmentVariableSettings extends DashboardView {
       isErrorNote: false,
       inlineError: null,
       isContentTooLong: false,
+      initialRowsSignature: '[]',
+      isDirty: false,
     };
 
     this._nextRowId = 1;
   }
 
-  isRowContentTooLong(row) {
+  rowsSignature(rows) {
+    const normalized = (Array.isArray(rows) ? rows : [])
+      .map(r => ({
+        name: (r?.name || '').trim(),
+        value: r?.value == null ? '' : String(r.value),
+      }))
+      .filter(({ name, value }) => name.length > 0 || value.length > 0)
+      .sort((a, b) => a.name.localeCompare(b.name) || a.value.localeCompare(b.value));
+    return JSON.stringify(normalized);
+  }
+
+  isRowContentTooLongAfterEdit(row) {
     const name = row?.name ? String(row.name) : '';
     const value = row?.value ? String(row.value) : '';
-    return name.length >= 100 || value.length >= 100;
+    return (
+      (row?.nameTouched && name.length >= 100) ||
+      (row?.valueTouched && value.length >= 100)
+    );
   }
 
   computeIsContentTooLong(rows) {
-    return Array.isArray(rows) && rows.some(r => this.isRowContentTooLong(r));
+    return Array.isArray(rows) && rows.some(r => this.isRowContentTooLongAfterEdit(r));
   }
 
   componentDidMount() {
@@ -69,8 +85,18 @@ export default class EnvironmentVariableSettings extends DashboardView {
           name,
           value: envVarsObj[name] == null ? '' : String(envVarsObj[name]),
           hidden: true,
+          nameError: null,
+          nameTouched: false,
+          valueTouched: false,
         }));
-      this.setState({ rows, isContentTooLong: this.computeIsContentTooLong(rows) });
+      const initialRowsSignature = this.rowsSignature(rows);
+      this.setState({
+        rows,
+        // do not show/trigger "Content is too long" on initial load
+        isContentTooLong: false,
+        initialRowsSignature,
+        isDirty: false,
+      });
     } catch (e) {
       this.setState({ loadError: e?.message || String(e) });
     } finally {
@@ -97,20 +123,36 @@ export default class EnvironmentVariableSettings extends DashboardView {
   };
   
   addRow = () => {
-    this.setState(prev => ({
-      rows: [
+    this.setState(prev => {
+      const emptyIdx = prev.rows.findIndex(r => !(r.name || '').trim());
+      if (emptyIdx !== -1) {
+        const rows = prev.rows.map((r, idx) =>
+          idx === emptyIdx ? { ...r, nameError: 'A variable name is must!' } : r
+        );
+        return { rows, inlineError: null };
+      }
+
+      const nextRows = [
         ...prev.rows,
-        { id: String(this._nextRowId++), name: '', value: '', hidden: true },
-      ],
-      inlineError: null,
-    }));
+        { id: String(this._nextRowId++), name: '', value: '', hidden: true, nameError: null, nameTouched: false, valueTouched: false },
+      ];
+      return {
+        rows: nextRows,
+        inlineError: null,
+        isDirty: this.rowsSignature(nextRows) !== prev.initialRowsSignature,
+      };
+    });
   };
 
   deleteRow = (id) => {
-    this.setState(prev => ({
-      rows: prev.rows.filter(r => r.id !== id),
-      inlineError: null,
-    }));
+    this.setState(prev => {
+      const nextRows = prev.rows.filter(r => r.id !== id);
+      return {
+        rows: nextRows,
+        inlineError: null,
+        isDirty: this.rowsSignature(nextRows) !== prev.initialRowsSignature,
+      };
+    });
   };
 
   updateRow = (id, patch) => {
@@ -121,9 +163,14 @@ export default class EnvironmentVariableSettings extends DashboardView {
         }
         const next = { ...r, ...patch };
         if (Object.prototype.hasOwnProperty.call(patch, 'name')) {
+          next.nameTouched = true;
           next.name = String(next.name || '').slice(0, 100);
+          if ((next.name || '').trim().length > 0) {
+            next.nameError = null;
+          }
         }
         if (Object.prototype.hasOwnProperty.call(patch, 'value')) {
+          next.valueTouched = true;
           next.value = String(next.value || '').slice(0, 100);
         }
         return next;
@@ -132,6 +179,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
         rows,
         inlineError: null,
         isContentTooLong: this.computeIsContentTooLong(rows),
+        isDirty: this.rowsSignature(rows) !== prev.initialRowsSignature,
       };
     });
   };
@@ -257,7 +305,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
                         title={row.hidden ? 'Show' : 'Hide'}
                       >
                         <Icon
-                          name={row.hidden ? 'b4a-visibility-icon' : 'b4a-visibility-off-icon'}
+                          name={row.hidden ? 'b4a-visibility-off-icon' : 'b4a-visibility-icon'}
                           width={18}
                           height={18}
                           fill="#27AE60"
@@ -278,7 +326,9 @@ export default class EnvironmentVariableSettings extends DashboardView {
                   <Icon name="b4a-delete-icon" width={18} height={18} fill="#E85C3E" />
                 </button>
 
-                {this.isRowContentTooLong(row) ? (
+                {row.nameError ? (
+                  <div className={styles.rowInlineError}>{row.nameError}</div>
+                ) : this.isRowContentTooLongAfterEdit(row) ? (
                   <div className={styles.rowInlineError}>Content is too long</div>
                 ) : null}
               </div>
@@ -306,7 +356,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
             {content}
           </div>
         </B4aLoaderContainer>
-        <Toolbar section="Settings" subsection="Environment Variable">
+        <Toolbar section="Settings" subsection="Environment Variables">
           <button
             type="button"
             className={browserStyles.addBtn}
@@ -329,7 +379,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
             primary={true}
             color="green"
             onClick={this.save}
-            disabled={this.state.isLoading || this.state.saving || this.state.isContentTooLong}
+            disabled={this.state.isLoading || this.state.saving || this.state.isContentTooLong || !this.state.isDirty}
             width="auto"
             additionalStyles={{ marginLeft: '10px' }}
           />

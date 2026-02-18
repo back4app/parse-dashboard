@@ -19,7 +19,9 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'domain-settings', 
   'Domain Settings', 
   'environment-variable', 
-  'Environment Variable'
+  'Environment Variable',
+  'Environment Variables',
+  'environment-variables'
 ];
 
 export const canAccess = (serverInfo, route) => {
