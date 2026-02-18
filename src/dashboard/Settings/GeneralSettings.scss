@@ -73,3 +73,20 @@
 	margin: 4px 0;
 	border: 0;
 }
+
+.editIconBtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 5px;
+	background: lighten($regal-blue, 8%);
+	border: none;
+	cursor: pointer;
+	transition: background 0.15s ease;
+
+	&:hover {
+		background: lighten($regal-blue, 14%);
+	}
+}
