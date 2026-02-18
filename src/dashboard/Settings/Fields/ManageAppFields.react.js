@@ -13,6 +13,7 @@ import LabelSettings from 'components/LabelSettings/LabelSettings.react';
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 } from 'dashboard/Settings/Fields/Constants';
+import Icon from 'components/Icon/Icon.react';
 import PropTypes from 'lib/PropTypes';
 // import getError from 'dashboard/Settings/Util/getError';
 import styles from 'dashboard/Settings/GeneralSettings.scss';
@@ -29,7 +30,8 @@ export const ManageAppFields = ({
   databaseVersion,
   useLatestDashboardVersion,
   setUseLatestDashboardVersion,
-  backendBetaUser
+  backendBetaUser,
+  onEditParseVersion,
 }) => {
 
   return (
@@ -57,7 +59,20 @@ export const ManageAppFields = ({
               labelWidth={'50%'}
               label={<LabelSettings
                 text='Parse Version'
-                description={<span>{parseVersion}</span>}
+                description={
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                    <span>{parseVersion}</span>
+                    {onEditParseVersion && (
+                      <button
+                        type='button'
+                        className={styles.editIconBtn}
+                        onClick={onEditParseVersion}
+                      >
+                        <Icon name='edit-pencil-icon' width={14} height={14} fill='#C1E2FF' />
+                      </button>
+                    )}
+                  </span>
+                }
               />}
             />
           </div>
@@ -313,5 +328,6 @@ ManageAppFields.propTypes = {
   mongoVersion: PropTypes.string.describe('Database version'),
   errors: PropTypes.array.describe('An array of errors'),
   isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
-  permissions: PropTypes.object.describe('App permissions')
+  permissions: PropTypes.object.describe('App permissions'),
+  onEditParseVersion: PropTypes.func.describe('Callback to open the edit parse version modal')
 }

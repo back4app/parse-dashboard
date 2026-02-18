@@ -480,6 +480,16 @@ export default class ParseApp {
     return AJAX.get(path);
   }
 
+  supportedParseServerVersionsForApp() {
+    const path = `/parse-version/${this.slug}`;
+    return AJAX.get(path);
+  }
+
+  changeParseServerVersion(parseVersion) {
+    const path = `/parse-version/${this.slug}/`;
+    return AJAX.post(path, { parseVersion });
+  }
+
   checkStorage() {
     const path = `/parse-app/${this.slug}/check-storage`;
     return AJAX.post(path);
