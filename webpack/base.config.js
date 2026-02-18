@@ -43,16 +43,16 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        // When using local "file:" deps / npm link, webpack may follow the symlink
-        // and see the real path outside of node_modules. In that case babel-loader
-        // will run on already-built library output and can inject ESM `import`
-        // statements, which then fails to parse under the current webpack module type.
-        // We exclude the library build output from babel-loader.
-        exclude: (modulePath) => {
-          if (/node_modules/.test(modulePath)) {return true;}
-          return /backend-dashboard-pages[\\/]+dist[\\/]+/.test(modulePath);
-        },
-        use: ['babel-loader'],
+        oneOf: [
+          {
+            include: /backend-components[\\/]dist[\\/]/,
+            type: 'javascript/auto',
+          },
+          {
+            exclude: /node_modules/,
+            use: ['babel-loader'],
+          },
+        ],
       },
       {
         test: /\.scss$/,
