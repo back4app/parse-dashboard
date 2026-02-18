@@ -45,6 +45,7 @@ class CustomParseOptions extends DashboardView {
       },
       loadingError: null,
       canChangeCustomParseOptions: false,
+      hasOtherConfigsPermission: true,
     };
     this.onRefresh = this.onRefresh.bind(this);
   }
@@ -69,16 +70,19 @@ class CustomParseOptions extends DashboardView {
     // Support matrix based only on provided back4app parse-server Config.js versions:
     // 7.5.2, 6.2.0, 5.2.3, 4.10.4, 3.10.0, 2.8.4.1
     return {
-      serverSettings: false, // maxUploadSize/preserveFileName are not present in provided Config.js files
+      serverSettings: true,
       passwordPolicy: true,
       accountLockout: true,
       customPages: true,
       sessionLength: true,
+      emailVerifyTokenValidityDuration: true,
       expireInactiveSessions: true,
       enforcePrivateUsers: atLeast('5.2.3'),
       allowClientClassCreation: atLeast('7.5.2'),
-      enableAnonymousUsers: false,
-      allowCustomObjectId: false,
+      enableAnonymousUsers: true,
+      enableSingleSchemaCache: true,
+      allowCustomObjectId: true,
+      objectIdSize: true,
     };
   }
 
@@ -105,8 +109,11 @@ class CustomParseOptions extends DashboardView {
     try {
       const response = await this.context.getParseOptions();
       const { permissions = {} } = response;
+      const featuresPermission = response.featuresPermission || null;
       const otherConfigs = response.otherConfigs || {};
       const parseOptions = response.parseOptions || {};
+      const isOwner = this.context && this.context.custom && this.context.custom.isOwner === true;
+      const hasOtherConfigsPermission = isOwner || !featuresPermission || featuresPermission.otherConfigs === 'Write';
 
       // parseOptions is the source of truth for all overlapping keys.
       // Use deep merge so nested objects are merged too, with parseOptions taking precedence.
@@ -128,6 +135,7 @@ class CustomParseOptions extends DashboardView {
 
       this.setState({
         canChangeCustomParseOptions: permissions.canChangeCustomParseOptions !== false,
+        hasOtherConfigsPermission,
         initialFields: { customOptions },
       });
     } catch (error) {
@@ -205,6 +213,72 @@ class CustomParseOptions extends DashboardView {
           )}
 
           <div style={!this.state.canChangeCustomParseOptions ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
+
+          <Fieldset
+            legend='Core Configuration'
+            description='Core Parse Server endpoints and database connection.'
+          >
+            <Field
+              label={
+                <Label
+                  text='Core Configuration'
+                  description='Manage server URL and database URI settings'
+                  dark={true}
+                />
+              }
+              input={
+                <div style={{ flex: 1 }}>
+                  <FieldSettings
+                    containerStyles={{ borderTop: 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    error={getError(errors, 'customOptions.publicServerURL')}
+                    label={
+                      <LabelSettings
+                        text='Public ServerURL'
+                        description='URL accessible by the Parse JavaScript SDK'
+                      />
+                    }
+                    input={
+                      <TextInputSettings
+                        placeholder='Enter Public ServerURL'
+                        value={customOptions?.publicServerURL ?? ''}
+                        error={getError(errors, 'customOptions.publicServerURL')}
+                        onChange={({ target: { value } }) =>
+                          setCustomOption('publicServerURL', value)
+                        }
+                      />
+                    }
+                  />
+                  <FieldSettings
+                    containerStyles={{ borderBottom: 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    error={getError(errors, 'customOptions.databaseURI')}
+                    label={
+                      <LabelSettings
+                        text='DatabaseURI'
+                        description='Database connection URI (MongoDB or PostgreSQL)'
+                      />
+                    }
+                    input={
+                      <TextInputSettings
+                        placeholder='Enter DatabaseURI'
+                        value={customOptions?.databaseURI ?? ''}
+                        error={getError(errors, 'customOptions.databaseURI')}
+                        onChange={({ target: { value } }) =>
+                          setCustomOption('databaseURI', value)
+                        }
+                      />
+                    }
+                  />
+                </div>
+              }
+              theme={Field.Theme.BLUE}
+            />
+          </Fieldset>
+
+          <hr className={styles.fieldHr} />
 
           {versionSupport.serverSettings && <Fieldset
             legend='Server Settings'
@@ -618,8 +692,47 @@ class CustomParseOptions extends DashboardView {
                       />
                     }
                   />}
+                  {versionSupport.emailVerifyTokenValidityDuration && <FieldSettings
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    error={getError(errors, 'customOptions.emailVerifyTokenValidityDuration')}
+                    label={
+                      <LabelSettings
+                        text='Email Verify Token Validity Duration'
+                        description='Email verification token expiration (in seconds)'
+                      />
+                    }
+                    input={
+                      <NumericInputSettings
+                        min={1}
+                        value={customOptions?.emailVerifyTokenValidityDuration ?? ''}
+                        error={getError(errors, 'customOptions.emailVerifyTokenValidityDuration')}
+                        onChange={value =>
+                          setCustomOption('emailVerifyTokenValidityDuration', parseIntegerValue(value))
+                        }
+                      />
+                    }
+                  />}
+                  {versionSupport.enableSingleSchemaCache && <FieldSettings
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    label={
+                      <LabelSettings
+                        text='Enable Single Schema Cache'
+                        description='Use a single schema cache for all requests'
+                      />
+                    }
+                    input={
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 16px' }}
+                        value={customOptions?.enableSingleSchemaCache}
+                        onChange={value =>
+                          setCustomOption('enableSingleSchemaCache', value)
+                        }
+                      />
+                    }
+                  />}
                   {versionSupport.expireInactiveSessions && <FieldSettings
-                    containerStyles={{ borderBottom: 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
                     label={
@@ -634,6 +747,28 @@ class CustomParseOptions extends DashboardView {
                         value={customOptions?.expireInactiveSessions}
                         onChange={value =>
                           setCustomOption('expireInactiveSessions', value)
+                        }
+                      />
+                    }
+                  />}
+                  {versionSupport.objectIdSize && <FieldSettings
+                    containerStyles={{ borderBottom: 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    error={getError(errors, 'customOptions.objectIdSize')}
+                    label={
+                      <LabelSettings
+                        text='ObjectId Size'
+                        description='Length of generated objectId values'
+                      />
+                    }
+                    input={
+                      <NumericInputSettings
+                        min={1}
+                        value={customOptions?.objectIdSize ?? ''}
+                        error={getError(errors, 'customOptions.objectIdSize')}
+                        onChange={value =>
+                          setCustomOption('objectIdSize', parseIntegerValue(value))
                         }
                       />
                     }
@@ -859,6 +994,11 @@ class CustomParseOptions extends DashboardView {
         title="Error loading parse options"
         description={this.state.loadingError}
       />
+    } else if (!this.state.hasOtherConfigsPermission) {
+      content = <EmptyGhostState
+        title="Permission required"
+        description="You have read-only access to Custom Parse Options. Ask an app owner to grant Write permission for Other Configs."
+      />
     } else {
       content = <div className={styles.mainContent}>
           <FlowView
@@ -878,6 +1018,7 @@ class CustomParseOptions extends DashboardView {
             }}
             onSubmit={({ fields }) => {
               const payload = { ...fields.customOptions };
+              delete payload.databaseURI;
               if (payload.maxUploadSize != null && payload.maxUploadSize !== '') {
                 payload.maxUploadSize = `${payload.maxUploadSize}mb`;
               }
