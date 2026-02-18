@@ -14,6 +14,7 @@ import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Icon from 'components/Icon/Icon.react';
 import Button from 'components/Button/Button.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import styles from './EnvironmentVariableSettings.scss';
@@ -36,20 +37,80 @@ export default class EnvironmentVariableSettings extends DashboardView {
       isContentTooLong: false,
       initialRowsSignature: '[]',
       isDirty: false,
+      modal: null,
     };
 
     this._nextRowId = 1;
+    this.unblock = null;
+    this.onBeforeUnloadEnvVars = null;
   }
 
-  onBeforeUnloadEnvVars = (e) => {
+  openUnsavedChangesModal = ({ variant, onConfirm }) => {
+    const isLeave = variant === 'leave';
+    const title = isLeave ? 'Leave this page?' : 'Reload this site?';
+    const confirmText = isLeave ? 'Leave' : 'Reload';
+
+    const warningModal = (
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
+        showCancel={false}
+        width={380}
+        icon="b4a-warn-fill-icon"
+        iconSize={44}
+        iconFill="#cccccc"
+        title={title}
+        subtitle="Changes you made may not be saved."
+        customFooter={
+          <div style={{ textAlign: 'center' }}>
+            <Button
+              color="white"
+              width="auto"
+              additionalStyles={{
+                border: '1px solid #ccc',
+                color: '#303338',
+                marginRight: 12,
+              }}
+              value="Cancel"
+              onClick={() => this.setState({ modal: null })}
+            />
+            <Button
+              primary={true}
+              color="blue"
+              width="auto"
+              value={confirmText}
+              onClick={() => {
+                this.setState({ modal: null });
+                if (typeof onConfirm === 'function') {
+                  onConfirm();
+                }
+              }}
+            />
+          </div>
+        }
+      />
+    );
+    this.setState({ modal: warningModal });
+  };
+
+  onReloadKeyDown = (e) => {
     if (!this.state.isDirty || this.state.saving) {
-      return undefined;
+      return;
     }
-    // Trigger browser native "changes you made may not be saved" dialog
+
+    const key = (e && e.key) ? String(e.key).toLowerCase() : '';
+    const isReloadShortcut =
+      key === 'f5' ||
+      ((e.ctrlKey || e.metaKey) && key === 'r');
+
+    if (!isReloadShortcut) {
+      return;
+    }
+
     e.preventDefault();
-    // eslint-disable-next-line no-param-reassign
-    e.returnValue = '';
-    return '';
+    this.openUnsavedChangesModal({
+      variant: 'reload',
+      onConfirm: () => window.location.reload(),
+    });
   };
 
   rowsSignature(rows) {
@@ -78,6 +139,35 @@ export default class EnvironmentVariableSettings extends DashboardView {
 
   componentDidMount() {
     this.loadData();
+
+    window.addEventListener('keydown', this.onReloadKeyDown);
+
+    // Block in-app navigation (e.g. Sidebar) when there are unsaved changes
+    if (this.props.navigator && typeof this.props.navigator.block === 'function') {
+      this.unblock = this.props.navigator.block(tx => {
+        if (this.state.isDirty && this.state.saving === false) {
+          const unblock = this.unblock && this.unblock.bind(this);
+          const autoUnblockingTx = {
+            ...tx,
+            retry() {
+              if (unblock) {
+                unblock();
+              }
+              tx.retry();
+            },
+          };
+          this.openUnsavedChangesModal({
+            variant: 'leave',
+            onConfirm: () => autoUnblockingTx.retry(),
+          });
+        } else {
+          if (this.unblock) {
+            this.unblock();
+          }
+          tx.retry();
+        }
+      });
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -85,6 +175,15 @@ export default class EnvironmentVariableSettings extends DashboardView {
     const isDirty = !!this.state.isDirty;
 
     if (!wasDirty && isDirty) {
+      if (!this.onBeforeUnloadEnvVars) {
+        this.onBeforeUnloadEnvVars = (e) => {
+          // Trigger browser native dialog on true reload/close
+          e.preventDefault();
+          // eslint-disable-next-line no-param-reassign
+          e.returnValue = '';
+          return '';
+        };
+      }
       window.addEventListener('beforeunload', this.onBeforeUnloadEnvVars);
     } else if (wasDirty && !isDirty) {
       window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
@@ -92,6 +191,10 @@ export default class EnvironmentVariableSettings extends DashboardView {
   }
 
   componentWillUnmount() {
+    if (this.unblock) {
+      this.unblock();
+    }
+    window.removeEventListener('keydown', this.onReloadKeyDown);
     window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
   }
 
@@ -418,6 +521,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
           />
         </Toolbar>
         <B4aNotification note={this.state.note} isErrorNote={this.state.isErrorNote} />
+        {this.state.modal}
       </div>
     );
   }
