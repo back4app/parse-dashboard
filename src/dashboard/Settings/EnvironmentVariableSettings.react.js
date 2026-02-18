@@ -41,6 +41,17 @@ export default class EnvironmentVariableSettings extends DashboardView {
     this._nextRowId = 1;
   }
 
+  onBeforeUnloadEnvVars = (e) => {
+    if (!this.state.isDirty || this.state.saving) {
+      return undefined;
+    }
+    // Trigger browser native "changes you made may not be saved" dialog
+    e.preventDefault();
+    // eslint-disable-next-line no-param-reassign
+    e.returnValue = '';
+    return '';
+  };
+
   rowsSignature(rows) {
     const normalized = (Array.isArray(rows) ? rows : [])
       .map(r => ({
@@ -67,6 +78,21 @@ export default class EnvironmentVariableSettings extends DashboardView {
 
   componentDidMount() {
     this.loadData();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const wasDirty = !!prevState?.isDirty;
+    const isDirty = !!this.state.isDirty;
+
+    if (!wasDirty && isDirty) {
+      window.addEventListener('beforeunload', this.onBeforeUnloadEnvVars);
+    } else if (wasDirty && !isDirty) {
+      window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
   }
 
   setNote(note, isErrorNote = false) {
