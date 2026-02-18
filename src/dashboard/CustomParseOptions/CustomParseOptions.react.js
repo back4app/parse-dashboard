@@ -1024,12 +1024,13 @@ class CustomParseOptions extends DashboardView {
               }
               return this.context.saveParseOptions(payload);
             }}
-            afterSave={({ fields }) => {
+            afterSave={({ fields, resetFields }) => {
               this.setState({
                 initialFields: {
                   customOptions: JSON.parse(JSON.stringify(fields.customOptions || {})),
                 },
               });
+              resetFields();
             }}
             footerContents={({ changes }) =>
               renderFlowFooterChanges(changes, initialFields, customParseOptionsFieldsOptions)
