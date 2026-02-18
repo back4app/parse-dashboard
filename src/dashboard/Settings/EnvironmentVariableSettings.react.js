@@ -45,11 +45,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
     this.onBeforeUnloadEnvVars = null;
   }
 
-  openUnsavedChangesModal = ({ variant, onConfirm }) => {
-    const isLeave = variant === 'leave';
-    const title = isLeave ? 'Leave this page?' : 'Reload this site?';
-    const confirmText = isLeave ? 'Leave' : 'Reload';
-
+  openUnsavedChangesModal = ({ onConfirm }) => {
     const warningModal = (
       <B4aModal
         type={B4aModal.Types.DEFAULT}
@@ -58,7 +54,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
         icon="b4a-warn-fill-icon"
         iconSize={44}
         iconFill="#cccccc"
-        title={title}
+        title="Leave this page?"
         subtitle="Changes you made may not be saved."
         customFooter={
           <div style={{ textAlign: 'center' }}>
@@ -77,7 +73,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
               primary={true}
               color="blue"
               width="auto"
-              value={confirmText}
+              value="Leave"
               onClick={() => {
                 this.setState({ modal: null });
                 if (typeof onConfirm === 'function') {
@@ -92,27 +88,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
     this.setState({ modal: warningModal });
   };
 
-  onReloadKeyDown = (e) => {
-    if (!this.state.isDirty || this.state.saving) {
-      return;
-    }
-
-    const key = (e && e.key) ? String(e.key).toLowerCase() : '';
-    const isReloadShortcut =
-      key === 'f5' ||
-      ((e.ctrlKey || e.metaKey) && key === 'r');
-
-    if (!isReloadShortcut) {
-      return;
-    }
-
-    e.preventDefault();
-    this.openUnsavedChangesModal({
-      variant: 'reload',
-      onConfirm: () => window.location.reload(),
-    });
-  };
-
   rowsSignature(rows) {
     const normalized = (Array.isArray(rows) ? rows : [])
       .map(r => ({
@@ -122,6 +97,17 @@ export default class EnvironmentVariableSettings extends DashboardView {
       .filter(({ name, value }) => name.length > 0 || value.length > 0)
       .sort((a, b) => a.name.localeCompare(b.name) || a.value.localeCompare(b.value));
     return JSON.stringify(normalized);
+  }
+
+  isValidEnvVarName(name) {
+    return /^[_a-zA-Z]\w*$/.test(name);
+  }
+
+  hasInvalidEnvVarNamesAfterEdit(rows) {
+    return Array.isArray(rows) && rows.some(r => {
+      const name = r?.name == null ? '' : String(r.name);
+      return !!r?.nameTouched && name.length > 0 && !this.isValidEnvVarName(name);
+    });
   }
 
   isRowContentTooLongAfterEdit(row) {
@@ -140,8 +126,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
   componentDidMount() {
     this.loadData();
 
-    window.addEventListener('keydown', this.onReloadKeyDown);
-
     // Block in-app navigation (e.g. Sidebar) when there are unsaved changes
     if (this.props.navigator && typeof this.props.navigator.block === 'function') {
       this.unblock = this.props.navigator.block(tx => {
@@ -157,7 +141,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
             },
           };
           this.openUnsavedChangesModal({
-            variant: 'leave',
             onConfirm: () => autoUnblockingTx.retry(),
           });
         } else {
@@ -194,7 +177,6 @@ export default class EnvironmentVariableSettings extends DashboardView {
     if (this.unblock) {
       this.unblock();
     }
-    window.removeEventListener('keydown', this.onReloadKeyDown);
     window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
   }
 
@@ -294,7 +276,9 @@ export default class EnvironmentVariableSettings extends DashboardView {
         if (Object.prototype.hasOwnProperty.call(patch, 'name')) {
           next.nameTouched = true;
           next.name = String(next.name || '').slice(0, 100);
-          if ((next.name || '').trim().length > 0) {
+          if (next.name.length > 0 && !this.isValidEnvVarName(next.name)) {
+            next.nameError = `Invalid variable name: ${next.name}`;
+          } else if ((next.name || '').trim().length > 0) {
             next.nameError = null;
           }
         }
@@ -322,6 +306,7 @@ export default class EnvironmentVariableSettings extends DashboardView {
   buildEnvVarsPayload() {
     const trimmed = this.state.rows.map(r => ({
       ...r,
+      rawName: r.name == null ? '' : String(r.name),
       name: (r.name || '').trim(),
       value: r.value == null ? '' : String(r.value),
     }));
@@ -332,6 +317,9 @@ export default class EnvironmentVariableSettings extends DashboardView {
     for (const row of meaningful) {
       if (!row.name.length) {
         return { error: 'Each variable must have a NAME.' };
+      }
+      if (!this.isValidEnvVarName(row.rawName || '')) {
+        return { error: `Invalid variable name: ${row.rawName || ''}` };
       }
     }
 
@@ -515,7 +503,13 @@ export default class EnvironmentVariableSettings extends DashboardView {
             primary={true}
             color="green"
             onClick={this.save}
-            disabled={this.state.isLoading || this.state.saving || this.state.isContentTooLong || !this.state.isDirty}
+            disabled={
+              this.state.isLoading ||
+              this.state.saving ||
+              this.state.isContentTooLong ||
+              !this.state.isDirty ||
+              this.hasInvalidEnvVarNamesAfterEdit(this.state.rows)
+            }
             width="auto"
             additionalStyles={{ marginLeft: '10px' }}
           />
