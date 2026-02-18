@@ -251,17 +251,19 @@ export default class EnvironmentVariableSettings extends DashboardView {
     let content = null;
     if (this.state.loadError) {
       content = (
-        <EmptyGhostState
-          title="Error loading environment variables"
-          description={this.state.loadError}
-        />
+        <div className={styles.errorStateWrapper}>
+          <EmptyGhostState
+            title="Error loading environment variables"
+            description={this.state.loadError}
+          />
+        </div>
       );
     } else {
       content = (
         <div className={styles.mainContent}>
           <div className={styles.heading}>Environment Variables</div>
           <div className={styles.subheading}>
-            Your app can use these variables at both build time and runtime.
+            Customize your environment variables using KEY=VALUE format. Put each variable in one line
           </div>
 
           <div className={styles.varsList}>
@@ -293,6 +295,11 @@ export default class EnvironmentVariableSettings extends DashboardView {
                         value={row.value}
                         placeholder="••••••••"
                         hidden={row.hidden}
+                        name={`env_var_value_${row.id}`}
+                        autoComplete="new-password"
+                        data-lpignore="true"
+                        data-1p-ignore="true"
+                        data-bwignore="true"
                         onChange={(value) => this.updateRow(row.id, { value })}
                         disabled={this.state.saving}
                       />
@@ -361,11 +368,11 @@ export default class EnvironmentVariableSettings extends DashboardView {
             type="button"
             className={browserStyles.addBtn}
             style={{
-              opacity: this.state.saving ? 0.5 : 1,
-              cursor: this.state.saving ? 'not-allowed' : 'pointer',
+              opacity: this.state.saving || this.context?.isOwner === false ? 0.5 : 1,
+              cursor: this.state.saving || this.context?.isOwner === false ? 'not-allowed' : 'pointer',
             }}
             onClick={() => {
-              if (this.state.saving) {
+              if (this.state.saving || this.context?.isOwner === false) {
                 return;
               }
               this.addRow();

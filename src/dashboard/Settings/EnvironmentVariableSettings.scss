@@ -19,6 +19,12 @@
   }
 }
 
+.errorStateWrapper {
+  margin-top: 200px;
+  display: flex;
+  justify-content: center;
+}
+
 .heading {
   @include InterFont;
   font-size: 1.125rem;
