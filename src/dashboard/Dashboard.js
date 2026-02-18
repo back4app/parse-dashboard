@@ -76,9 +76,9 @@ const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
 const LazyAppPlan = lazy(() => import('./AppPlan/AppPlan.react'));
 const LazyAppSecurityReport = lazy(() => import('./AppSecurityReport/AppSecurityReport.react'));
 const LazyDatabaseProfile = lazy(() => import('./DatabaseProfiler/DatabaseProfiler.react'));
-import 'backend-dashboard-pages/style.css';
-// const LazyDemoPage = lazy(() => import('@back4app-frontend/ui-library').then(module => ({ default: module.DemoPage })));
-import { DemoPage } from 'backend-dashboard-pages';
+
+import '@back4app/backend-components/style.css';
+import { DemoPage } from '@back4app/backend-components';
 
 async function fetchHubUser() {
   try {
