@@ -9,7 +9,11 @@ const settings = require('@back4app/back4app-settings');
 
 const currentVersionFeatures = require('../package.json').parseDashboardFeatures;
 const redirectURLsToAPI = [
-  '/apps/:id/collaborations/validate'
+  '/apps/:id/collaborations/validate',
+  '/parse-version',
+  '/parse-version/:id',
+  '/parse-version/:id/*',
+  '/parse-version/links/:id'
 ];
 
 let newFeaturesInLatestVersion = [];
@@ -225,6 +229,9 @@ module.exports = function(config, options) {
     redirectURLsToAPI.map(uri => {
       app.get(uri, (req, res) => {
         return res.redirect(settings.BACK4APP_API_PATH + req.path);
+      });
+      app.post(uri, (req, res) => {
+        return res.redirect(307, settings.BACK4APP_API_PATH + req.originalUrl);
       });
     });
 

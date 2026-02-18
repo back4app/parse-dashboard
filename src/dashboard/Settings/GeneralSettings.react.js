@@ -24,6 +24,7 @@ import { PurgeSystemLogModal } from 'dashboard/Settings/Modals/purgeSystemLogMod
 import { TransferAppModal } from 'dashboard/Settings/Modals/transferAppModal.react';
 import { CloneAppModal } from 'dashboard/Settings/Modals/cloneAppModal.react';
 import { DeleteAppModal } from 'dashboard/Settings/Modals/deleteAppModal.react';
+import { EditParseVersionModal } from 'dashboard/Settings/Modals/editParseVersionModal.react';
 import { generalFieldsOptions, compareCollaborators, verifyEditedCollaborators, getPromiseList, renderModal } from './Util';
 import GeneralSettingsValidataions from 'dashboard/Settings/GeneralSettingsValidataions';
 import { withRouter } from 'lib/withRouter';
@@ -48,6 +49,7 @@ export default class GeneralSettings extends DashboardView {
       showRestartAppModal: false,
       showPurgeSystemLogModal: false,
       showTransferAppModal: false,
+      showEditParseVersionModal: false,
     };
   }
 
@@ -130,7 +132,8 @@ export default class GeneralSettings extends DashboardView {
           renderModal(this.state.showPurgeSystemLogModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, PurgeSystemLogModal),
           renderModal(this.state.showTransferAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, TransferAppModal),
           renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal),
-          renderModal(this.state.showDeleteAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, DeleteAppModal)
+          renderModal(this.state.showDeleteAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, DeleteAppModal),
+          renderModal(this.state.showEditParseVersionModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }), currentParseVersion: initialFields.parseVersion }, EditParseVersionModal)
         ]}
         renderForm={({ fields, setField, setFieldJson, errors }) => {
           return <div className={styles.generalSettingsWrapper}>
@@ -180,7 +183,8 @@ export default class GeneralSettings extends DashboardView {
               isGDPR={this.context.custom && this.context.custom.isGDPR}
               permissions={fields.permissions}
               useLatestDashboardVersion={fields.useLatestDashboardVersion}
-              setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}/>
+              setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}
+              onEditParseVersion={() => this.setState({ showEditParseVersionModal: true })}/>
             <DangerzoneFields
               errors={errors}
               // mongoURL={fields.mongoURL}
