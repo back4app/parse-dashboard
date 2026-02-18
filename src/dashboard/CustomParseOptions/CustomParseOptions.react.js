@@ -30,13 +30,14 @@ import deepmerge from 'deepmerge';
 import renderFlowFooterChanges from 'lib/renderFlowFooterChanges';
 import CustomParseOptionsValidations from './CustomParseOptionsValidations';
 import getError from 'dashboard/Settings/Util/getError';
+import semver from 'semver';
 
 @withRouter
 class CustomParseOptions extends DashboardView {
   constructor() {
     super();
     this.section = 'App Settings';
-    this.subsection = 'Parse Options';
+    this.subsection = 'Advanced Options';
     this.state = {
       isLoading: true,
       initialFields: {
@@ -50,6 +51,35 @@ class CustomParseOptions extends DashboardView {
 
   componentWillMount() {
     this.loadData();
+  }
+
+  getVersionSupport() {
+    const parseVersion = (
+      this.context &&
+      this.context.settings &&
+      this.context.settings.fields &&
+      this.context.settings.fields.fields &&
+      this.context.settings.fields.fields.parseVersion
+    ) || (this.context && this.context.serverInfo && this.context.serverInfo.parseServerVersion) || '';
+
+    const parsed = semver.coerce(parseVersion);
+    const normalized = parsed ? parsed.version : null;
+    const atLeast = (version) => normalized ? semver.gte(normalized, version) : false;
+
+    // Support matrix based only on provided back4app parse-server Config.js versions:
+    // 7.5.2, 6.2.0, 5.2.3, 4.10.4, 3.10.0, 2.8.4.1
+    return {
+      serverSettings: false, // maxUploadSize/preserveFileName are not present in provided Config.js files
+      passwordPolicy: true,
+      accountLockout: true,
+      customPages: true,
+      sessionLength: true,
+      expireInactiveSessions: true,
+      enforcePrivateUsers: atLeast('5.2.3'),
+      allowClientClassCreation: atLeast('7.5.2'),
+      enableAnonymousUsers: false,
+      allowCustomObjectId: false,
+    };
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -78,20 +108,21 @@ class CustomParseOptions extends DashboardView {
       const otherConfigs = response.otherConfigs || {};
       const parseOptions = response.parseOptions || {};
 
-      // Prefer otherConfigs for passwordPolicy/accountLockout; fall back to parseOptions for existing apps
-      const passwordPolicy = otherConfigs.passwordPolicy || parseOptions.passwordPolicy;
-      const accountLockout = otherConfigs.accountLockout || parseOptions.accountLockout;
+      // parseOptions is the source of truth for all overlapping keys.
+      // Use deep merge so nested objects are merged too, with parseOptions taking precedence.
+      const mergedOptions = deepmerge(
+        JSON.parse(JSON.stringify(otherConfigs)),
+        JSON.parse(JSON.stringify(parseOptions))
+      );
 
-      // Parse maxUploadSize: strip 'mb' suffix for the UI (e.g. "20mb" -> 20)
-      const rawMaxUploadSize = otherConfigs.maxUploadSize;
+      // Parse maxUploadSize for UI: strip 'mb' suffix if present.
+      const rawMaxUploadSize = mergedOptions.maxUploadSize;
       const parsedMaxUploadSize = typeof rawMaxUploadSize === 'string'
         ? parseInt(rawMaxUploadSize, 10)
         : rawMaxUploadSize;
 
       const customOptions = {
-        ...JSON.parse(JSON.stringify(otherConfigs)),
-        ...(passwordPolicy ? { passwordPolicy: JSON.parse(JSON.stringify(passwordPolicy)) } : {}),
-        ...(accountLockout ? { accountLockout: JSON.parse(JSON.stringify(accountLockout)) } : {}),
+        ...mergedOptions,
         ...(parsedMaxUploadSize != null && !isNaN(parsedMaxUploadSize) ? { maxUploadSize: parsedMaxUploadSize } : {}),
       };
 
@@ -120,6 +151,7 @@ class CustomParseOptions extends DashboardView {
     const customOptions = fields.customOptions || {};
     const passwordPolicy = customOptions?.passwordPolicy || {};
     const accountLockout = customOptions?.accountLockout || {};
+    const versionSupport = this.getVersionSupport();
 
     const parseIntegerValue = (value) => {
       if (value === '' || value === null || value === undefined) {
@@ -174,7 +206,7 @@ class CustomParseOptions extends DashboardView {
 
           <div style={!this.state.canChangeCustomParseOptions ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
 
-          <Fieldset
+          {versionSupport.serverSettings && <Fieldset
             legend='Server Settings'
             description='Configure server-level settings for file uploads.'
           >
@@ -235,11 +267,11 @@ class CustomParseOptions extends DashboardView {
               }
               theme={Field.Theme.BLUE}
             />
-          </Fieldset>
+          </Fieldset>}
 
-          <hr className={styles.fieldHr} />
+          {versionSupport.serverSettings && <hr className={styles.fieldHr} />}
 
-          <Fieldset
+          {versionSupport.passwordPolicy && <Fieldset
             legend='Password Policy'
             description='Manage password policies for this app.'
           >
@@ -405,11 +437,11 @@ class CustomParseOptions extends DashboardView {
               }
               theme={Field.Theme.BLUE}
             />
-          </Fieldset>
+          </Fieldset>}
 
-          <hr className={styles.fieldHr} />
+          {versionSupport.passwordPolicy && <hr className={styles.fieldHr} />}
 
-          <Fieldset
+          {versionSupport.accountLockout && <Fieldset
             legend='Account Lockout'
             description='Manage account lockout policies for this app.'
           >
@@ -470,9 +502,9 @@ class CustomParseOptions extends DashboardView {
               }
               theme={Field.Theme.BLUE}
             />
-          </Fieldset>
+          </Fieldset>}
 
-          <hr className={styles.fieldHr} />
+          {versionSupport.accountLockout && <hr className={styles.fieldHr} />}
 
           <Fieldset
             legend='Security & Authentication'
@@ -488,7 +520,7 @@ class CustomParseOptions extends DashboardView {
               }
               input={
                 <div style={{ flex: 1 }}>
-                  <FieldSettings
+                  {versionSupport.enableAnonymousUsers && <FieldSettings
                     containerStyles={{ borderTop: 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
@@ -507,8 +539,8 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
-                  <FieldSettings
+                  />}
+                  {versionSupport.allowClientClassCreation && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
                     label={
@@ -526,8 +558,8 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
-                  <FieldSettings
+                  />}
+                  {versionSupport.allowCustomObjectId && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
                     label={
@@ -545,8 +577,8 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
-                  <FieldSettings
+                  />}
+                  {versionSupport.enforcePrivateUsers && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
                     label={
@@ -564,8 +596,8 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
-                  <FieldSettings
+                  />}
+                  {versionSupport.sessionLength && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
                     error={getError(errors, 'customOptions.sessionLength')}
@@ -585,8 +617,8 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
-                  <FieldSettings
+                  />}
+                  {versionSupport.expireInactiveSessions && <FieldSettings
                     containerStyles={{ borderBottom: 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
@@ -605,7 +637,7 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
+                  />}
                 </div>
               }
               theme={Field.Theme.BLUE}
@@ -614,7 +646,7 @@ class CustomParseOptions extends DashboardView {
 
           <hr className={styles.fieldHr} />
 
-          <Fieldset
+          {versionSupport.customPages && <Fieldset
             legend='Custom Pages'
             description='Set custom page URLs for user-facing flows.'
           >
@@ -802,7 +834,7 @@ class CustomParseOptions extends DashboardView {
               }
               theme={Field.Theme.BLUE}
             />
-          </Fieldset>
+          </Fieldset>}
           </div>
         </div>
       </div>

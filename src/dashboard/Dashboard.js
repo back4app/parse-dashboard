@@ -497,7 +497,7 @@ class Dashboard extends React.Component {
         <Route path="server-settings/" element={<ServerSettings />} />
         <Route path="server-settings/:targetPage" element={<ServerSettings />} />
         <Route path="domain-settings" element={<DomainSettings />} />
-        <Route path="parse-options" element={<CustomParseOptions />} />
+        <Route path="advanced-options" element={<CustomParseOptions />} />
 
         <Route path="index/:className" element={<IndexManager />} />
         <Route path="index" element={<IndexManager />} />

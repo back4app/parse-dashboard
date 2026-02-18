@@ -267,8 +267,8 @@ export default class DashboardView extends React.Component {
     });
 
     settingsSections.push({
-      name: 'Parse Options',
-      link: '/parse-options',
+      name: 'Advanced Options',
+      link: '/advanced-options',
     });
 
     const logsSubSections = [];

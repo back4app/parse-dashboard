@@ -417,42 +417,8 @@ export default class ParseApp {
       return Promise.resolve(this.settings.fields);
     }
     const path = '/apps/' + this.slug + '/dashboard_ajax/settings';
-    // let fields = await axios.get(path);
-    let fields = {
-      "fields": {
-          "owner_email": "prerna@back4app.com",
-          "owner_name": "prerna@back4app.com",
-          "collaborators": [],
-          "waiting_collaborators": [],
-          "urls": [],
-          "gcm_credentials": [],
-          "pricing_plan": {},
-          "dashboardAPI": "https://parseapi.back4app.com",
-          "databaseURL": "mongodb://admin:xaEw2FZQCLY2ekufbkNPlNt9@MongoS3601A.back4app.com:27017/4dc7f44651a346a09dae76165645b43f",
-          "parseVersion": "7.5.2",
-          "mongoVersion": "3.6",
-          "databaseVersion": "3.6",
-          "parseOptions": {},
-          "clientPush": false,
-          "clientClassCreation": true,
-          "permissions": {
-              "hideDatabaseURL": true,
-              "canChangeCustomParseOptions": false,
-              "canChangeEmailTemplate": false,
-              "maxCollaborators": 0,
-              "ignoreCollaboratorLimit": false,
-              "canUseCustomGraphQL": false,
-              "canChangeCustomDomain": false,
-              "canChangeSubdomain": false,
-              "isISOCompliance": false,
-              "isSOC2Compliance": false,
-              "isHIPAAAvailable": false
-          },
-          "collaboratorUsage": 0,
-          "maxCollaborators": 0
-      }
-    };
-    // fields = fields.data;
+    let fields = await axios.get(path);
+    fields = fields.data;
     for (const f in fields) {
       this.settings.fields[f] = fields[f];
       this.settings.lastFetched = new Date();
@@ -1904,7 +1870,7 @@ export default class ParseApp {
         await axios.post(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/otherConfigs`,
-          { otherConfigs: customOptions },
+          { parseOptions: customOptions },
           { withCredentials: true }
         )
       ).data;
