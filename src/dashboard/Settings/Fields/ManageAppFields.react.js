@@ -62,7 +62,7 @@ export const ManageAppFields = ({
                 description={
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
                     <span>{parseVersion}</span>
-                    {onEditParseVersion && (
+                    {onEditParseVersion && !isCollaborator && (
                       <button
                         type='button'
                         className={styles.changeActionBtn}
