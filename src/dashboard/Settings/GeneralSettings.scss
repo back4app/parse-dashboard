@@ -74,6 +74,23 @@
 	border: 0;
 }
 
+.changeActionBtn {
+	display: inline-block;
+	margin-left: 4px;
+	font-size: 12px;
+	color: $white;
+	cursor: pointer;
+	border: 1px solid #C1E2FF;
+	border-radius: 0.5rem;
+	padding: 2px 8px;
+	text-decoration: none;
+	background: transparent;
+
+	&:hover {
+		background: rgba($regal-blue, 0.4);
+	}
+}
+
 .editIconBtn {
 	display: inline-flex;
 	align-items: center;

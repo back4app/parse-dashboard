@@ -26,6 +26,7 @@ const buttonColors = {
 const B4aModal = ({
   type = B4aModal.Types.DEFAULT,
   icon,
+  iconNode,
   iconSize = 36,
   iconFill = '#fff',
   children,
@@ -93,7 +94,11 @@ const B4aModal = ({
       <div className={[styles.modal, styles[type]].join(' ')} style={{ width }}>
         {showCancel && <Icon onClick={onCancel} width={10} height={10} className={styles.closeIcon} name="close" fill="#10203A" />}
         <div className={styles.header}>
-          {icon ? (
+          {iconNode ? (
+            <div className={styles.icon}>
+              {iconNode}
+            </div>
+          ) : icon ? (
             <div className={styles.icon}>
               <Icon width={iconSize} height={iconSize} name={icon} fill={iconFill} />
             </div>
@@ -128,6 +133,7 @@ B4aModal.propTypes = {
     'Used to change the color of the modal and buttons. Use Modal.Types.DANGER, Modal.Types.INFO, or Modal.Types.VALID.'
   ),
   icon: PropTypes.string.describe('The Icon to display in the top right corner.'),
+  iconNode: PropTypes.node.describe('Optional custom icon node (e.g. <img />). When provided, it overrides `icon`.'),
   iconSize: PropTypes.number.describe('The size of the Icon in the top right corner.'),
   title: PropTypes.string.isRequired.describe('The title of the modal.'),
   subtitle: PropTypes.node.describe('The subtitle of the modal. Usually a string or <span>.'),

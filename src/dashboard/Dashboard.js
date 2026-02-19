@@ -53,6 +53,7 @@ import React, { useCallback, useEffect, useMemo, useState, Suspense, lazy } from
 import RestConsole from './Data/ApiConsole/RestConsole.react';
 // import SchemaOverview from './Data/Browser/SchemaOverview.react';
 import SecuritySettings from './Settings/SecuritySettings.react';
+import EnvironmentVariableSettings from './Settings/EnvironmentVariableSettings.react';
 import SettingsData from './Settings/SettingsData.react';
 import SlowQueries from './Analytics/SlowQueries/SlowQueries.react';
 import styles from 'dashboard/Apps/AppsIndex.scss';
@@ -388,6 +389,8 @@ class Dashboard extends React.Component {
         {/* <Route path='security' element={<Security />} /> */}
         <Route path='general' element={<GeneralSettings />} />
         <Route path='keys' element={<SecuritySettings />} />
+        <Route path='environment-variables' element={<EnvironmentVariableSettings />} />
+        {/* backwards compatibility */}
         {/* <Route path='users' element={<UsersSettings />} />
         <Route path='push' element={<PushSettings />} />
         <Route path='hosting' element={<HostingSettings />} /> */}

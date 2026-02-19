@@ -28,6 +28,7 @@ export const ManageAppFields = ({
   isGDPR,
   permissions,
   databaseVersion,
+  isCollaborator,
   useLatestDashboardVersion,
   setUseLatestDashboardVersion,
   backendBetaUser,
@@ -60,15 +61,15 @@ export const ManageAppFields = ({
               label={<LabelSettings
                 text='Parse Version'
                 description={
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                  <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '7px' }}>
                     <span>{parseVersion}</span>
-                    {onEditParseVersion && (
+                    {onEditParseVersion && !isCollaborator && (
                       <button
                         type='button'
-                        className={styles.editIconBtn}
+                        className={styles.changeActionBtn}
                         onClick={onEditParseVersion}
                       >
-                        <Icon name='edit-pencil-icon' width={14} height={14} fill='#C1E2FF' />
+                        Change
                       </button>
                     )}
                   </span>
