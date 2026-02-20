@@ -134,7 +134,7 @@ export default class SecuritySettings extends DashboardView {
           if (isStep1) {
             const nextValue = this.state.keyChangeValue || '';
             if (nextValue.length > 60) {
-              this.setState({ keyChangeValidationError: 'Key is too long' });
+              this.setState({ keyChangeValidationError: 'Maximum length: 60 characters.' });
               return;
             }
             this.setState({ keyChangeStep: 2 });
@@ -142,7 +142,7 @@ export default class SecuritySettings extends DashboardView {
           }
           const nextValue = this.state.keyChangeValue || '';
           if (nextValue.length > 60) {
-            this.setState({ keyChangeValidationError: 'Key is too long' });
+            this.setState({ keyChangeValidationError: 'Maximum length: 60 characters.' });
             return;
           }
           this.setState({ keyChangeSaving: true });
