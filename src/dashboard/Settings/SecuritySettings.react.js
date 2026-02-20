@@ -7,6 +7,7 @@
  */
 import AccountManager from 'lib/AccountManager';
 import DashboardView from 'dashboard/DashboardView.react';
+import Button from 'components/Button/Button.react';
 import Field from 'components/Field/Field.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import FlowView from 'components/FlowView/FlowView.react';
@@ -19,6 +20,7 @@ import Modal from 'components/Modal/Modal.react';
 import React from 'react';
 import styles from 'dashboard/Settings/Settings.scss';
 import generalStyles from 'dashboard/Settings/GeneralSettings.scss';
+import modalStyles from 'components/B4aModal/B4aModal.scss';
 import TextInput from 'components/TextInput/TextInput.react';
 import Toggle from 'components/Toggle/Toggle.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -37,6 +39,7 @@ export default class SecuritySettings extends DashboardView {
       passwordInput: '',
 
       showKeyChangeDialog: false,
+      showKeySaveConfirmDialog: false,
       keyChangeName: '',
       keyChangeTitle: '',
       keyChangeValue: '',
@@ -78,6 +81,11 @@ export default class SecuritySettings extends DashboardView {
   renderForm({ fields, setField }) {
     const currentApp = this.context;
 
+    const keyChangeEnabled =
+      (this.state.keyChangeValue || '').length > 0 &&
+      this.state.keyChangeName &&
+      this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName]);
+
     const keyChangeDialog = (
       <B4aFormModal
         title={this.state.keyChangeTitle || 'Change key'}
@@ -86,18 +94,35 @@ export default class SecuritySettings extends DashboardView {
         subtitle="This action will update the key for this app."
         width={700}
         open={this.state.showKeyChangeDialog}
-        submitText="Save Changes"
-        inProgressText={'Saving\u2026'}
-        enabled={
-          (this.state.keyChangeValue || '').length > 0 &&
-          this.state.keyChangeName &&
-          this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName])
-        }
-        onSubmit={() => currentApp.updateAppKeys({ [this.state.keyChangeName]: this.state.keyChangeValue })}
+        // We show a confirmation modal before actually saving.
+        enabled={true}
+        onSubmit={() => Promise.resolve()}
         onClose={this.closeKeyChangeDialog.bind(this)}
         clearFields={() => {
           this.setState({ keyChangeName: '', keyChangeTitle: '', keyChangeValue: '' });
         }}
+        showErrors={false}
+        customFooter={
+          <div style={{ textAlign: 'right' }} className={modalStyles.footer}>
+            <Button
+              color="white"
+              width="auto"
+              additionalStyles={{ border: '1px solid #ccc', color: '#303338' }}
+              value="Cancel"
+              onClick={() => {
+                this.closeKeyChangeDialog();
+                this.setState({ keyChangeName: '', keyChangeTitle: '', keyChangeValue: '' });
+              }}
+            />
+            <Button
+              primary={true}
+              value="Save Changes"
+              color="green"
+              disabled={!keyChangeEnabled}
+              onClick={() => this.setState({ showKeySaveConfirmDialog: true })}
+            />
+          </div>
+        }
       >
         <Field
           labelWidth={40}
@@ -138,6 +163,32 @@ export default class SecuritySettings extends DashboardView {
           </button>
         </div>
       </B4aFormModal>
+    );
+
+    const keySaveConfirmDialog = (
+      <B4aFormModal
+        title="Are you sure?"
+        subtitle="This action is irreversible."
+        width={540}
+        open={this.state.showKeySaveConfirmDialog}
+        submitText="Save Changes"
+        inProgressText={'Saving\u2026'}
+        enabled={keyChangeEnabled}
+        onSubmit={() =>
+          currentApp.updateAppKeys({ [this.state.keyChangeName]: this.state.keyChangeValue })
+        }
+        onSuccess={() => {
+          this.setState({
+            showKeySaveConfirmDialog: false,
+            showKeyChangeDialog: false,
+            keyChangeName: '',
+            keyChangeTitle: '',
+            keyChangeValue: '',
+          });
+        }}
+        onClose={() => this.setState({ showKeySaveConfirmDialog: false })}
+        clearFields={() => {}}
+      />
     );
 
     const resetDialog = (
@@ -381,6 +432,7 @@ export default class SecuritySettings extends DashboardView {
           </Fieldset>
         </div>
         {keyChangeDialog}
+        {keySaveConfirmDialog}
         {resetDialog}
         <Toolbar section="App Settings" subsection="Security & Keys" />
       </div>
