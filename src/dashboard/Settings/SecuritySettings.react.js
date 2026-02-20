@@ -280,7 +280,9 @@ export default class SecuritySettings extends DashboardView {
               }
               input={
                 <div className={styles.disabledKeyValue}>
-                  <B4aKeyField compact={true}>{currentApp.applicationId || 'N/A'}</B4aKeyField>
+                  <B4aKeyField compact={true} noWrap={true}>
+                    {currentApp.applicationId || 'N/A'}
+                  </B4aKeyField>
                 </div>
               }
               theme={Field.Theme.BLUE}
@@ -302,7 +304,7 @@ export default class SecuritySettings extends DashboardView {
                 keyName: 'clientKey',
                 title: 'Change Client key',
                 currentValue: currentApp.clientKey,
-                valueNode: <B4aKeyField compact={true}>{currentApp.clientKey || 'N/A'}</B4aKeyField>,
+                valueNode: <B4aKeyField compact={true} noWrap={true}>{currentApp.clientKey || 'N/A'}</B4aKeyField>,
               })}
               theme={Field.Theme.BLUE}
             />
@@ -318,7 +320,7 @@ export default class SecuritySettings extends DashboardView {
                 keyName: 'javascriptKey',
                 title: 'Change JavaScript key',
                 currentValue: currentApp.javascriptKey,
-                valueNode: <B4aKeyField compact={true}>{currentApp.javascriptKey || 'N/A'}</B4aKeyField>,
+                valueNode: <B4aKeyField compact={true} noWrap={true}>{currentApp.javascriptKey || 'N/A'}</B4aKeyField>,
               })}
               theme={Field.Theme.BLUE}
             />
@@ -339,7 +341,7 @@ export default class SecuritySettings extends DashboardView {
                 keyName: 'windowsKey',
                 title: 'Change .NET key',
                 currentValue: currentApp.windowsKey,
-                valueNode: <B4aKeyField compact={true}>{currentApp.windowsKey || 'N/A'}</B4aKeyField>,
+                valueNode: <B4aKeyField compact={true} noWrap={true}>{currentApp.windowsKey || 'N/A'}</B4aKeyField>,
               })}
               theme={Field.Theme.BLUE}
             />
@@ -357,7 +359,7 @@ export default class SecuritySettings extends DashboardView {
                   title: 'Change REST API key',
                   currentValue: currentApp.restKey,
                   valueNode: (
-                    <B4aKeyField compact={true}>{currentApp.restKey || 'N/A'}</B4aKeyField>
+                    <B4aKeyField compact={true} noWrap={true}>{currentApp.restKey || 'N/A'}</B4aKeyField>
                   ),
                 })
               }
@@ -377,7 +379,7 @@ export default class SecuritySettings extends DashboardView {
                   title: 'Change Webhook key',
                   currentValue: currentApp.webhookKey,
                   valueNode: (
-                    <B4aKeyField compact={true}>{currentApp.webhookKey || 'N/A'}</B4aKeyField>
+                    <B4aKeyField compact={true} noWrap={true}>{currentApp.webhookKey || 'N/A'}</B4aKeyField>
                   ),
                 })
               }
@@ -397,7 +399,7 @@ export default class SecuritySettings extends DashboardView {
                   title: 'Change File key',
                   currentValue: currentApp.fileKey,
                   valueNode: (
-                    <B4aKeyField compact={true}>{currentApp.fileKey || 'N/A'}</B4aKeyField>
+                    <B4aKeyField compact={true} noWrap={true}>{currentApp.fileKey || 'N/A'}</B4aKeyField>
                   ),
                 })
               }

@@ -23,6 +23,14 @@
    line-height: 40px;
  }
  
+ .noWrap {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   padding-left: 1rem;
+   box-sizing: border-box;
+ }
+
  .hiddenKey {
    @include InterFont;
    width: 100%;
