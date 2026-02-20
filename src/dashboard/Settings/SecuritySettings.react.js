@@ -7,12 +7,12 @@
  */
 import AccountManager from 'lib/AccountManager';
 import DashboardView from 'dashboard/DashboardView.react';
-import Button from 'components/Button/Button.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Field from 'components/Field/Field.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import FlowView from 'components/FlowView/FlowView.react';
 import FormModal from 'components/FormModal/FormModal.react';
-import B4aFormModal from 'components/FormModal/B4aFormModal.react';
+import FormNote from 'components/FormNote/FormNote.react';
 import B4aKeyField from 'components/KeyField/B4aKeyField.react';
 import Icon from 'components/Icon/Icon.react';
 import Label from 'components/Label/Label.react';
@@ -20,7 +20,6 @@ import Modal from 'components/Modal/Modal.react';
 import React from 'react';
 import styles from 'dashboard/Settings/Settings.scss';
 import generalStyles from 'dashboard/Settings/GeneralSettings.scss';
-import modalStyles from 'components/B4aModal/B4aModal.scss';
 import TextInput from 'components/TextInput/TextInput.react';
 import Toggle from 'components/Toggle/Toggle.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -39,17 +38,31 @@ export default class SecuritySettings extends DashboardView {
       passwordInput: '',
 
       showKeyChangeDialog: false,
-      showKeySaveConfirmDialog: false,
       keyChangeName: '',
       keyChangeTitle: '',
       keyChangeValue: '',
+      keyChangeStep: 1,
+      keyChangeConfirmAppName: '',
+      keyChangeSaveError: '',
+      keyChangeSaving: false,
     };
   }
 
-  closeKeyChangeDialog() {
+  resetKeyChangeState() {
     this.setState({
       showKeyChangeDialog: false,
+      keyChangeName: '',
+      keyChangeTitle: '',
+      keyChangeValue: '',
+      keyChangeStep: 1,
+      keyChangeConfirmAppName: '',
+      keyChangeSaveError: '',
+      keyChangeSaving: false,
     });
+  }
+
+  closeKeyChangeDialog() {
+    this.resetKeyChangeState();
   }
 
   openKeyChangeDialog({ keyName, title, value }) {
@@ -58,6 +71,10 @@ export default class SecuritySettings extends DashboardView {
       keyChangeName: keyName,
       keyChangeTitle: title,
       keyChangeValue: value ?? '',
+      keyChangeStep: 1,
+      keyChangeConfirmAppName: '',
+      keyChangeSaveError: '',
+      keyChangeSaving: false,
     });
   }
 
@@ -81,51 +98,68 @@ export default class SecuritySettings extends DashboardView {
   renderForm({ fields, setField }) {
     const currentApp = this.context;
 
+    const keyChangeTooLong = (this.state.keyChangeValue || '').length > 40;
     const keyChangeEnabled =
       (this.state.keyChangeValue || '').length > 0 &&
       this.state.keyChangeName &&
-      this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName]);
+      this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName]) &&
+      !keyChangeTooLong;
 
-    const keyChangeDialog = (
-      <B4aFormModal
+    const expectedAppName = (currentApp && (currentApp.name || currentApp.slug)) || '';
+    const confirmMatches =
+      expectedAppName.length === 0 ||
+      (this.state.keyChangeConfirmAppName || '') === expectedAppName;
+
+    const isStep1 = this.state.keyChangeStep === 1;
+
+    const showKeyChangeModal = this.state.showKeyChangeDialog || this.state.keyChangeSaving;
+    const keyChangeDialog = showKeyChangeModal ? (
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
         title={this.state.keyChangeTitle || 'Change key'}
         icon="keys-solid"
         iconSize={30}
         subtitle="This action will update the key for this app."
-        width={700}
-        open={this.state.showKeyChangeDialog}
-        // We show a confirmation modal before actually saving.
-        enabled={true}
-        onSubmit={() => Promise.resolve()}
-        onClose={this.closeKeyChangeDialog.bind(this)}
-        clearFields={() => {
-          this.setState({ keyChangeName: '', keyChangeTitle: '', keyChangeValue: '' });
-        }}
-        showErrors={false}
-        customFooter={
-          <div style={{ textAlign: 'right' }} className={modalStyles.footer}>
-            <Button
-              color="white"
-              width="auto"
-              additionalStyles={{ border: '1px solid #ccc', color: '#303338' }}
-              value="Cancel"
-              onClick={() => {
-                this.closeKeyChangeDialog();
-                this.setState({ keyChangeName: '', keyChangeTitle: '', keyChangeValue: '' });
-              }}
-            />
-            <Button
-              primary={true}
-              value="Save Changes"
-              color="green"
-              disabled={!keyChangeEnabled}
-              onClick={() => this.setState({ showKeySaveConfirmDialog: true })}
-            />
-          </div>
+        width={800}
+        confirmText={
+          this.state.keyChangeSaving
+            ? 'Saving\u2026'
+            : isStep1
+              ? 'Continue'
+              : 'Save Changes'
         }
+        onConfirm={() => {
+          this.setState({ keyChangeSaveError: '' });
+          if (isStep1) {
+            this.setState({ keyChangeStep: 2 });
+            return;
+          }
+          this.setState({ keyChangeSaving: true });
+          currentApp
+            .updateAppKeys({ [this.state.keyChangeName]: this.state.keyChangeValue })
+            .then(() => this.resetKeyChangeState())
+            .catch(({ message, error, notice, errors = [] }) => {
+              this.setState({
+                keyChangeSaveError: errors.join(' ') || message || error || notice || 'An error occurred',
+                keyChangeSaving: false,
+              });
+            });
+        }}
+        onCancel={() => {
+          if (this.state.keyChangeSaving) {
+            return;
+          }
+          this.resetKeyChangeState();
+        }}
+        disabled={
+          this.state.keyChangeSaving ||
+          (isStep1 ? !keyChangeEnabled : !(keyChangeEnabled && confirmMatches))
+        }
+        canCancel={!this.state.keyChangeSaving}
+        progress={this.state.keyChangeSaving}
       >
         <Field
-          labelWidth={40}
+          labelWidth={50}
           label={
             <Label
               text="Key value"
@@ -146,50 +180,58 @@ export default class SecuritySettings extends DashboardView {
             </div>
           }
         />
-        <div className={styles.keyChangeGenerateOutside}>
-          <button
-            type="button"
-            className={styles.keyChangeGenerateLink}
-            onClick={() => {
-              const confirm = window.confirm('If the client is using this key, it will stop working');
-              if (!confirm) {
-                return;
-              }
-              this.setState({ keyChangeValue: currentApp.generateKey(40) });
-            }}
-            title="Generate a new key"
-          >
-            Generate
-          </button>
-        </div>
-      </B4aFormModal>
-    );
+        <FormNote show={keyChangeTooLong} color="red">
+          Key is too long
+        </FormNote>
+        <FormNote show={(this.state.keyChangeSaveError || '').length > 0} color="red">
+          {this.state.keyChangeSaveError}
+        </FormNote>
+        {isStep1 ? (
+          <div className={styles.keyChangeGenerateOutside}>
+            <button
+              type="button"
+              className={styles.keyChangeGenerateLink}
+              onClick={() => {
+                this.setState({ keyChangeValue: currentApp.generateKey(40) });
+              }}
+              title="Generate a new key"
+            >
+              Generate
+            </button>
+          </div>
+        ) : null}
 
-    const keySaveConfirmDialog = (
-      <B4aFormModal
-        title="Are you sure?"
-        subtitle="This action is irreversible."
-        width={540}
-        open={this.state.showKeySaveConfirmDialog}
-        submitText="Save Changes"
-        inProgressText={'Saving\u2026'}
-        enabled={keyChangeEnabled}
-        onSubmit={() =>
-          currentApp.updateAppKeys({ [this.state.keyChangeName]: this.state.keyChangeValue })
-        }
-        onSuccess={() => {
-          this.setState({
-            showKeySaveConfirmDialog: false,
-            showKeyChangeDialog: false,
-            keyChangeName: '',
-            keyChangeTitle: '',
-            keyChangeValue: '',
-          });
-        }}
-        onClose={() => this.setState({ showKeySaveConfirmDialog: false })}
-        clearFields={() => {}}
-      />
-    );
+        {!isStep1 ? (
+          <Field
+            labelWidth={50}
+            label={
+              <Label
+                text="Confirmation"
+                description={
+                  <span>
+                    Type the app name &quot;{expectedAppName}&quot; to proceed. <br/>
+                    This action is irreversible. Your key will stop working.
+                  </span>
+                }
+              />
+            }
+            input={
+              <div className={styles.keyChangeContainer}>
+                <TextInput
+                  value={this.state.keyChangeConfirmAppName}
+                  onChange={keyChangeConfirmAppName => this.setState({ keyChangeConfirmAppName })}
+                  placeholder={expectedAppName}
+                  height={40}
+                  textAlign="left"
+                  dark={false}
+                  className={styles.keyChangeInput}
+                />
+              </div>
+            }
+          />
+        ) : null}
+      </B4aModal>
+    ) : null;
 
     const resetDialog = (
       <FormModal
@@ -434,7 +476,6 @@ export default class SecuritySettings extends DashboardView {
           </Fieldset>
         </div>
         {keyChangeDialog}
-        {keySaveConfirmDialog}
         {resetDialog}
         <Toolbar section="App Settings" subsection="Security & Keys" />
       </div>
