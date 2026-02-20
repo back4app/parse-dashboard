@@ -46,7 +46,8 @@ export default class B4aKeyField extends React.Component {
         </div>
       );
     } else {
-      content = <div className={styles.key}>{this.props.children}</div>
+      const className = this.props.compact ? `${styles.key} ${styles.keyCompact}` : styles.key;
+      content = <div className={className}>{this.props.children}</div>
     }
     return content;
   }
@@ -55,6 +56,7 @@ export default class B4aKeyField extends React.Component {
 B4aKeyField.propTypes = {
   children: PropTypes.node.describe('The contents of the field. Ideally, this is an app key.'),
   hidden: PropTypes.bool.describe('Determines whether the field is initially hidden'),
+  compact: PropTypes.bool.describe('Renders a compact (40px) key display.'),
   name: PropTypes.string.describe(
     'If the field is initially hidden, this name will be used in the button used to show it. If the value is NAME, the button will contain the text "Show NAME Key"'
   ),
@@ -64,5 +66,6 @@ B4aKeyField.propTypes = {
 };
 
 B4aKeyField.defaultProps = {
-  keyText: 'key'
+  keyText: 'key',
+  compact: false,
 };
