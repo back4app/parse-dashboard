@@ -367,7 +367,7 @@ export default class SecuritySettings extends DashboardView {
                   currentValue: currentApp.masterKey,
                   valueNode: (
                     currentApp.masterKey ? (
-                      <B4aKeyField name="Master" hidden={true} showKeyName={true}>
+                      <B4aKeyField name="Master" hidden={true} showKeyName={true} compactHidden={true}>
                         {currentApp.masterKey}
                       </B4aKeyField>
                     ) : (

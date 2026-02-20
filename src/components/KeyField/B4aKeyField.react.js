@@ -36,8 +36,11 @@ export default class B4aKeyField extends React.Component {
     }
     let content;
     if (this.props.showKeyName) {
+      const hiddenClassName = this.props.compactHidden
+        ? `${styles.hiddenKey} ${styles.hiddenKeyCompact}`
+        : styles.hiddenKey;
       return (
-        <div className={styles.hiddenKey}>
+        <div className={hiddenClassName}>
           <div className={styles.title}>{this.props.name} {this.props.keyText}</div>
           <div className={styles.showKey + ' ' + (this.state.hidden ? styles.hiddenText : '')}>
             <span>{this.state.hidden ? `Show ${this.props.keyText}` : this.props.children}</span>
@@ -57,6 +60,7 @@ B4aKeyField.propTypes = {
   children: PropTypes.node.describe('The contents of the field. Ideally, this is an app key.'),
   hidden: PropTypes.bool.describe('Determines whether the field is initially hidden'),
   compact: PropTypes.bool.describe('Renders a compact (40px) key display.'),
+  compactHidden: PropTypes.bool.describe('Renders a compact (auto height) hidden key display (showKeyName mode).'),
   name: PropTypes.string.describe(
     'If the field is initially hidden, this name will be used in the button used to show it. If the value is NAME, the button will contain the text "Show NAME Key"'
   ),
@@ -68,4 +72,5 @@ B4aKeyField.propTypes = {
 B4aKeyField.defaultProps = {
   keyText: 'key',
   compact: false,
+  compactHidden: false,
 };
