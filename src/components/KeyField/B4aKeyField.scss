@@ -31,6 +31,23 @@
    box-sizing: border-box;
  }
 
+.scrollWrap {
+  white-space: normal;
+  overflow-y: auto;
+  overflow-x: hidden;
+  // keep the same overall height, but allow multi-line text
+  line-height: 18px;
+  padding-left: 1rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-sizing: border-box;
+  word-break: break-all;
+}
+
+.scrollWrapNoBottomPadding {
+  padding-bottom: 0;
+}
+
  .hiddenKey {
    @include InterFont;
    width: 100%;
