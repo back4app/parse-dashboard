@@ -44,6 +44,7 @@ export default class SecuritySettings extends DashboardView {
       keyChangeStep: 1,
       keyChangeConfirmAppName: '',
       keyChangeSaveError: '',
+      keyChangeValidationError: '',
       keyChangeSaving: false,
     };
   }
@@ -57,6 +58,7 @@ export default class SecuritySettings extends DashboardView {
       keyChangeStep: 1,
       keyChangeConfirmAppName: '',
       keyChangeSaveError: '',
+      keyChangeValidationError: '',
       keyChangeSaving: false,
     });
   }
@@ -74,6 +76,7 @@ export default class SecuritySettings extends DashboardView {
       keyChangeStep: 1,
       keyChangeConfirmAppName: '',
       keyChangeSaveError: '',
+      keyChangeValidationError: '',
       keyChangeSaving: false,
     });
   }
@@ -98,12 +101,10 @@ export default class SecuritySettings extends DashboardView {
   renderForm({ fields, setField }) {
     const currentApp = this.context;
 
-    const keyChangeTooLong = (this.state.keyChangeValue || '').length > 40;
     const keyChangeEnabled =
       (this.state.keyChangeValue || '').length > 0 &&
       this.state.keyChangeName &&
-      this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName]) &&
-      !keyChangeTooLong;
+      this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName]);
 
     const expectedAppName = (currentApp && (currentApp.name || currentApp.slug)) || '';
     const confirmMatches =
@@ -120,7 +121,7 @@ export default class SecuritySettings extends DashboardView {
         icon="keys-solid"
         iconSize={30}
         subtitle="This action will update the key for this app."
-        width={800}
+        width={820}
         confirmText={
           this.state.keyChangeSaving
             ? 'Saving\u2026'
@@ -129,9 +130,19 @@ export default class SecuritySettings extends DashboardView {
               : 'Save Changes'
         }
         onConfirm={() => {
-          this.setState({ keyChangeSaveError: '' });
+          this.setState({ keyChangeSaveError: '', keyChangeValidationError: '' });
           if (isStep1) {
+            const nextValue = this.state.keyChangeValue || '';
+            if (nextValue.length > 60) {
+              this.setState({ keyChangeValidationError: 'Key is too long' });
+              return;
+            }
             this.setState({ keyChangeStep: 2 });
+            return;
+          }
+          const nextValue = this.state.keyChangeValue || '';
+          if (nextValue.length > 60) {
+            this.setState({ keyChangeValidationError: 'Key is too long' });
             return;
           }
           this.setState({ keyChangeSaving: true });
@@ -170,7 +181,9 @@ export default class SecuritySettings extends DashboardView {
             <div className={styles.keyChangeContainer}>
               <TextInput
                 value={this.state.keyChangeValue}
-                onChange={keyChangeValue => this.setState({ keyChangeValue })}
+                onChange={keyChangeValue =>
+                  this.setState({ keyChangeValue, keyChangeValidationError: '' })
+                }
                 placeholder="Key"
                 height={40}
                 textAlign="left"
@@ -180,8 +193,8 @@ export default class SecuritySettings extends DashboardView {
             </div>
           }
         />
-        <FormNote show={keyChangeTooLong} color="red">
-          Key is too long
+        <FormNote show={(this.state.keyChangeValidationError || '').length > 0} color="red">
+          {this.state.keyChangeValidationError}
         </FormNote>
         <FormNote show={(this.state.keyChangeSaveError || '').length > 0} color="red">
           {this.state.keyChangeSaveError}
@@ -192,7 +205,7 @@ export default class SecuritySettings extends DashboardView {
               type="button"
               className={styles.keyChangeGenerateLink}
               onClick={() => {
-                this.setState({ keyChangeValue: currentApp.generateKey(40) });
+                this.setState({ keyChangeValue: currentApp.generateKey(40), keyChangeValidationError: '' });
               }}
               title="Generate a new key"
             >
@@ -209,8 +222,8 @@ export default class SecuritySettings extends DashboardView {
                 text="Confirmation"
                 description={
                   <span>
-                    Type the app name &quot;{expectedAppName}&quot; to proceed. <br/>
-                    This action is irreversible. Your key will stop working.
+                    Please enter the name of the app ({expectedAppName}) <br/>
+                    This action is irreversible. <strong>Previous key will stop working.</strong>
                   </span>
                 }
               />
