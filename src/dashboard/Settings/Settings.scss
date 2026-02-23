@@ -66,11 +66,9 @@
   box-sizing: border-box;
 }
 
-.disabledKeyValue {
-  // mimic a "disabled" value on dark key rows
+.keyValueFullWidth {
   display: block;
   width: 100%;
-  color: rgba(255, 255, 255, 0.55);
 }
 
 @media only screen and (max-width: 1200px) {

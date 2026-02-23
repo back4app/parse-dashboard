@@ -49,6 +49,12 @@ export default class SecuritySettings extends DashboardView {
     };
   }
 
+  canChangeKeys() {
+    // Follow the same pattern used in other settings screens:
+    // collaborators have `isOwner === false`.
+    return this.context?.isOwner !== false;
+  }
+
   resetKeyChangeState() {
     this.setState({
       showKeyChangeDialog: false,
@@ -68,6 +74,9 @@ export default class SecuritySettings extends DashboardView {
   }
 
   openKeyChangeDialog({ keyName, title, value }) {
+    if (!this.canChangeKeys()) {
+      return;
+    }
     this.setState({
       showKeyChangeDialog: true,
       keyChangeName: keyName,
@@ -82,18 +91,21 @@ export default class SecuritySettings extends DashboardView {
   }
 
   renderKeyValueWithChange({ keyName, title, currentValue, valueNode }) {
+    const canChange = this.canChangeKeys();
     return (
       <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '100%' }}>
         {valueNode}
-        <div className={styles.keyChangeActionWrapper}>
-          <button
-            type="button"
-            className={generalStyles.changeActionBtn}
-            onClick={() => this.openKeyChangeDialog({ keyName, title, value: currentValue })}
-          >
-            Change
-          </button>
-        </div>
+        {canChange ? (
+          <div className={styles.keyChangeActionWrapper}>
+            <button
+              type="button"
+              className={generalStyles.changeActionBtn}
+              onClick={() => this.openKeyChangeDialog({ keyName, title, value: currentValue })}
+            >
+              Change
+            </button>
+          </div>
+        ) : null}
       </span>
     );
   }
@@ -334,7 +346,7 @@ export default class SecuritySettings extends DashboardView {
                 />
               }
               input={
-                <div className={styles.disabledKeyValue}>
+                <div className={styles.keyValueFullWidth}>
                   <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>
                     {currentApp.applicationId || 'N/A'}
                   </B4aKeyField>
