@@ -1016,6 +1016,19 @@ class CustomParseOptions extends DashboardView {
   }
 
   renderContent() {
+    const hasMeaningfulChanges = (value) => {
+      if (value === undefined) {
+        return false;
+      }
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      if (value && typeof value === 'object') {
+        return Object.keys(value).some(key => hasMeaningfulChanges(value[key]));
+      }
+      return true;
+    };
+
     const toolbar = this.renderToolbar();
     const loading = this.state.isLoading;
     const initialFields = this.state.initialFields || {
@@ -1046,6 +1059,7 @@ class CustomParseOptions extends DashboardView {
       content = <div className={styles.mainContent}>
           <FlowView
             initialFields={initialFields}
+            showFooter={changes => hasMeaningfulChanges(changes)}
             validate={({ changes }) => {
               const merged = deepmerge(
                 JSON.parse(JSON.stringify(initialFields)),
@@ -1114,7 +1128,8 @@ class CustomParseOptions extends DashboardView {
                   clientClassCreation: fields.clientClassCreation,
                 },
               });
-              resetFields();
+              // Let FlowView render success feedback before clearing form state.
+              setTimeout(() => resetFields(), 1200);
             }}
             footerContents={({ changes }) =>
               renderFlowFooterChanges(changes, initialFields, customParseOptionsFieldsOptions)
