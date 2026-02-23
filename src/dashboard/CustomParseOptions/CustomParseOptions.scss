@@ -56,7 +56,7 @@
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 140%;
-    color: #EB5178;
+    color: $error-red;
     margin-top: 1.5rem;
   }
 
@@ -72,7 +72,7 @@
 
 
 .error {
-  background: #EB5178;
+  background: $error-red;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 140%;

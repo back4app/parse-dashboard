@@ -42,6 +42,8 @@ class CustomParseOptions extends DashboardView {
       isLoading: true,
       initialFields: {
         customOptions: {},
+        clientPush: false,
+        clientClassCreation: true,
       },
       loadingError: null,
       canChangeCustomParseOptions: false,
@@ -70,7 +72,7 @@ class CustomParseOptions extends DashboardView {
     // Support matrix based only on provided back4app parse-server Config.js versions:
     // 7.5.2, 6.2.0, 5.2.3, 4.10.4, 3.10.0, 2.8.4.1
     return {
-      serverSettings: true,
+      preserveFileName: true,
       passwordPolicy: true,
       accountLockout: true,
       customPages: true,
@@ -78,7 +80,7 @@ class CustomParseOptions extends DashboardView {
       emailVerifyTokenValidityDuration: true,
       expireInactiveSessions: true,
       enforcePrivateUsers: atLeast('5.2.3'),
-      allowClientClassCreation: atLeast('7.5.2'),
+      // allowClientClassCreation: atLeast('7.5.2'),
       enableAnonymousUsers: true,
       enableSingleSchemaCache: true,
       allowCustomObjectId: true,
@@ -107,6 +109,16 @@ class CustomParseOptions extends DashboardView {
 
   async loadData() {
     try {
+      const customPagesKeys = [
+        'choosePassword',
+        'verifyEmailSuccess',
+        'parseFrameURL',
+        'passwordResetSuccess',
+        'invalidLink',
+        'invalidVerificationLink',
+        'linkSendSuccess',
+        'linkSendFail',
+      ];
       const response = await this.context.getParseOptions();
       const { permissions = {} } = response;
       const featuresPermission = response.featuresPermission || null;
@@ -132,11 +144,21 @@ class CustomParseOptions extends DashboardView {
         ...mergedOptions,
         ...(parsedMaxUploadSize != null && !isNaN(parsedMaxUploadSize) ? { maxUploadSize: parsedMaxUploadSize } : {}),
       };
+      const customPages = customOptions.customPages || {};
+      customPagesKeys.forEach(key => {
+        if ((customOptions[key] === undefined || customOptions[key] === null) && customPages[key] != null) {
+          customOptions[key] = customPages[key];
+        }
+      });
 
       this.setState({
         canChangeCustomParseOptions: permissions.canChangeCustomParseOptions !== false,
         hasOtherConfigsPermission,
-        initialFields: { customOptions },
+        initialFields: {
+          customOptions,
+          clientPush: response.clientPush ?? false,
+          clientClassCreation: response.clientClassCreation ?? true,
+        },
       });
     } catch (error) {
       this.setState({ loadingError: error });
@@ -147,16 +169,15 @@ class CustomParseOptions extends DashboardView {
 
   renderToolbar() {
     return (
-      <Toolbar section="App Settings" subsection="Parse Options">
-        {/* <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
-          <Icon name="b4a-refresh-icon" width={18} height={18} />
-        </a> */}
+      <Toolbar section="App Settings" subsection="Advanced Options">
       </Toolbar>
     );
   }
 
-  renderParseOptionsForm({ fields, setFieldJson, errors }) {
+  renderParseOptionsForm({ fields, setField, setFieldJson, errors }) {
     const customOptions = fields.customOptions || {};
+    const clientPush = fields.clientPush === true;
+    const clientClassCreation = fields.clientClassCreation;
     const passwordPolicy = customOptions?.passwordPolicy || {};
     const accountLockout = customOptions?.accountLockout || {};
     const versionSupport = this.getVersionSupport();
@@ -241,33 +262,11 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter Public ServerURL'
+                        placeholder='https://api.example.com/parse'
                         value={customOptions?.publicServerURL ?? ''}
                         error={getError(errors, 'customOptions.publicServerURL')}
                         onChange={({ target: { value } }) =>
                           setCustomOption('publicServerURL', value)
-                        }
-                      />
-                    }
-                  />
-                  <FieldSettings
-                    containerStyles={{ borderBottom: 'none' }}
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    error={getError(errors, 'customOptions.databaseURI')}
-                    label={
-                      <LabelSettings
-                        text='DatabaseURI'
-                        description='Database connection URI (MongoDB or PostgreSQL)'
-                      />
-                    }
-                    input={
-                      <TextInputSettings
-                        placeholder='Enter DatabaseURI'
-                        value={customOptions?.databaseURI ?? ''}
-                        error={getError(errors, 'customOptions.databaseURI')}
-                        onChange={({ target: { value } }) =>
-                          setCustomOption('databaseURI', value)
                         }
                       />
                     }
@@ -280,7 +279,7 @@ class CustomParseOptions extends DashboardView {
 
           <hr className={styles.fieldHr} />
 
-          {versionSupport.serverSettings && <Fieldset
+          <Fieldset
             legend='Server Settings'
             description='Configure server-level settings for file uploads.'
           >
@@ -294,7 +293,7 @@ class CustomParseOptions extends DashboardView {
               }
               input={
                 <div style={{ flex: 1 }}>
-                  <FieldSettings
+                  {/* <FieldSettings
                     containerStyles={{ borderTop: 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
@@ -316,9 +315,47 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
+                  /> */}
+                  <FieldSettings
+                    containerStyles={{ borderTop: 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    label={
+                      <LabelSettings
+                        text='Push Notification from Client'
+                        description='For security reasons, we recommend to disable this option.'
+                      />
+                    }
+                    input={
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 16px' }}
+                        value={clientPush}
+                        onChange={value =>
+                          setField('clientPush', value)
+                        }
+                      />
+                    }
                   />
                   <FieldSettings
-                    containerStyles={{ borderBottom: 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    label={
+                      <LabelSettings
+                        text='Client Class Creation'
+                        description='For security reasons, we recommend to disable this option.'
+                      />
+                    }
+                    input={
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 16px' }}
+                        value={clientClassCreation}
+                        onChange={value =>
+                          setField('clientClassCreation', value)
+                        }
+                      />
+                    }
+                  />
+                  {versionSupport.preserveFileName && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
                     label={
@@ -336,14 +373,93 @@ class CustomParseOptions extends DashboardView {
                         }
                       />
                     }
-                  />
+                  />}
+                  {/* {versionSupport.allowClientClassCreation && <FieldSettings
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    label={
+                      <LabelSettings
+                        text='Allow Client Class Creation'
+                        description='Allow clients to create new classes'
+                      />
+                    }
+                    input={
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 16px' }}
+                        value={customOptions?.allowClientClassCreation}
+                        onChange={value =>
+                          setCustomOption('allowClientClassCreation', value)
+                        }
+                      />
+                    }
+                  />} */}
+                  {versionSupport.enableSingleSchemaCache && <FieldSettings
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    label={
+                      <LabelSettings
+                        text='Enable Single Schema Cache'
+                        description='Use a single schema cache for all requests'
+                      />
+                    }
+                    input={
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 16px' }}
+                        value={customOptions?.enableSingleSchemaCache}
+                        onChange={value =>
+                          setCustomOption('enableSingleSchemaCache', value)
+                        }
+                      />
+                    }
+                  />}
+                  {versionSupport.allowCustomObjectId && <FieldSettings
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    label={
+                      <LabelSettings
+                        text='Allow Custom ObjectId'
+                        description='Allow custom objectId values on create'
+                      />
+                    }
+                    input={
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 16px' }}
+                        value={customOptions?.allowCustomObjectId}
+                        onChange={value =>
+                          setCustomOption('allowCustomObjectId', value)
+                        }
+                      />
+                    }
+                  />}
+                  {versionSupport.objectIdSize && <FieldSettings
+                    containerStyles={{ borderBottom: 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    error={getError(errors, 'customOptions.objectIdSize')}
+                    label={
+                      <LabelSettings
+                        text='ObjectId Size'
+                        description='Length of generated objectId values'
+                      />
+                    }
+                    input={
+                      <NumericInputSettings
+                        min={1}
+                        value={customOptions?.objectIdSize ?? ''}
+                        error={getError(errors, 'customOptions.objectIdSize')}
+                        onChange={value =>
+                          setCustomOption('objectIdSize', parseIntegerValue(value))
+                        }
+                      />
+                    }
+                  />}
                 </div>
               }
               theme={Field.Theme.BLUE}
             />
-          </Fieldset>}
+          </Fieldset>
 
-          {versionSupport.serverSettings && <hr className={styles.fieldHr} />}
+          <hr className={styles.fieldHr} />
 
           {versionSupport.passwordPolicy && <Fieldset
             legend='Password Policy'
@@ -417,6 +533,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
+                        placeholder='^(?=.*[A-Z])(?=.*[0-9]).{8,}$'
                         value={passwordPolicy?.validatorPattern}
                         error={getError(errors, 'customOptions.passwordPolicy.validatorPattern')}
                         onChange={({ target: { value } }) =>
@@ -437,6 +554,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
+                        placeholder='Password must include at least 8 characters, 1 uppercase letter, and 1 number.'
                         value={passwordPolicy?.validationError}
                         error={getError(errors, 'customOptions.passwordPolicy.validationError')}
                         onChange={({ target: { value } }) =>
@@ -614,44 +732,6 @@ class CustomParseOptions extends DashboardView {
                       />
                     }
                   />}
-                  {versionSupport.allowClientClassCreation && <FieldSettings
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    label={
-                      <LabelSettings
-                        text='Allow Client Class Creation'
-                        description='Allow clients to create new classes'
-                      />
-                    }
-                    input={
-                      <B4aToggle
-                        additionalStyles={{ margin: '6px 16px' }}
-                        value={customOptions?.allowClientClassCreation}
-                        onChange={value =>
-                          setCustomOption('allowClientClassCreation', value)
-                        }
-                      />
-                    }
-                  />}
-                  {versionSupport.allowCustomObjectId && <FieldSettings
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    label={
-                      <LabelSettings
-                        text='Allow Custom ObjectId'
-                        description='Allow custom objectId values on create'
-                      />
-                    }
-                    input={
-                      <B4aToggle
-                        additionalStyles={{ margin: '6px 16px' }}
-                        value={customOptions?.allowCustomObjectId}
-                        onChange={value =>
-                          setCustomOption('allowCustomObjectId', value)
-                        }
-                      />
-                    }
-                  />}
                   {versionSupport.enforcePrivateUsers && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
@@ -713,25 +793,6 @@ class CustomParseOptions extends DashboardView {
                       />
                     }
                   />}
-                  {versionSupport.enableSingleSchemaCache && <FieldSettings
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    label={
-                      <LabelSettings
-                        text='Enable Single Schema Cache'
-                        description='Use a single schema cache for all requests'
-                      />
-                    }
-                    input={
-                      <B4aToggle
-                        additionalStyles={{ margin: '6px 16px' }}
-                        value={customOptions?.enableSingleSchemaCache}
-                        onChange={value =>
-                          setCustomOption('enableSingleSchemaCache', value)
-                        }
-                      />
-                    }
-                  />}
                   {versionSupport.expireInactiveSessions && <FieldSettings
                     padding={'16px 0px'}
                     labelWidth={'50%'}
@@ -747,28 +808,6 @@ class CustomParseOptions extends DashboardView {
                         value={customOptions?.expireInactiveSessions}
                         onChange={value =>
                           setCustomOption('expireInactiveSessions', value)
-                        }
-                      />
-                    }
-                  />}
-                  {versionSupport.objectIdSize && <FieldSettings
-                    containerStyles={{ borderBottom: 'none' }}
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    error={getError(errors, 'customOptions.objectIdSize')}
-                    label={
-                      <LabelSettings
-                        text='ObjectId Size'
-                        description='Length of generated objectId values'
-                      />
-                    }
-                    input={
-                      <NumericInputSettings
-                        min={1}
-                        value={customOptions?.objectIdSize ?? ''}
-                        error={getError(errors, 'customOptions.objectIdSize')}
-                        onChange={value =>
-                          setCustomOption('objectIdSize', parseIntegerValue(value))
                         }
                       />
                     }
@@ -808,7 +847,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter choosePassword URL'
+                        placeholder='https://app.example.com/choose-password'
                         value={customOptions?.choosePassword ?? ''}
                         error={getError(errors, 'customOptions.choosePassword')}
                         onChange={({ target: { value } }) =>
@@ -829,7 +868,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter verifyEmailSuccess URL'
+                        placeholder='https://app.example.com/verify-email-success'
                         value={customOptions?.verifyEmailSuccess ?? ''}
                         error={getError(errors, 'customOptions.verifyEmailSuccess')}
                         onChange={({ target: { value } }) =>
@@ -850,7 +889,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter parseFrameURL URL'
+                        placeholder='https://app.example.com/parse-frame'
                         value={customOptions?.parseFrameURL ?? ''}
                         error={getError(errors, 'customOptions.parseFrameURL')}
                         onChange={({ target: { value } }) =>
@@ -871,7 +910,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter passwordResetSuccess URL'
+                        placeholder='https://app.example.com/password-reset-success'
                         value={customOptions?.passwordResetSuccess ?? ''}
                         error={getError(errors, 'customOptions.passwordResetSuccess')}
                         onChange={({ target: { value } }) =>
@@ -892,7 +931,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter invalidLink URL'
+                        placeholder='https://app.example.com/invalid-link'
                         value={customOptions?.invalidLink ?? ''}
                         error={getError(errors, 'customOptions.invalidLink')}
                         onChange={({ target: { value } }) =>
@@ -913,7 +952,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter invalidVerificationLink URL'
+                        placeholder='https://app.example.com/invalid-verification-link'
                         value={customOptions?.invalidVerificationLink ?? ''}
                         error={getError(errors, 'customOptions.invalidVerificationLink')}
                         onChange={({ target: { value } }) =>
@@ -934,7 +973,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter linkSendSuccess URL'
+                        placeholder='https://app.example.com/link-sent-success'
                         value={customOptions?.linkSendSuccess ?? ''}
                         error={getError(errors, 'customOptions.linkSendSuccess')}
                         onChange={({ target: { value } }) =>
@@ -956,7 +995,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Enter Link Send Fail '
+                        placeholder='https://app.example.com/link-sent-fail'
                         value={customOptions?.linkSendFail ?? ''}
                         error={getError(errors, 'customOptions.linkSendFail')}
                         onChange={({ target: { value } }) =>
@@ -981,9 +1020,13 @@ class CustomParseOptions extends DashboardView {
     const loading = this.state.isLoading;
     const initialFields = this.state.initialFields || {
       customOptions: {},
+      clientPush: false,
+      clientClassCreation: true,
     };
     const customParseOptionsFieldsOptions = {
       customOptions: { friendlyName: 'custom options', type: 'json' },
+      clientPush: { friendlyName: 'push notification from client' },
+      clientClassCreation: { friendlyName: 'client class creation' },
     };
 
     let content = null;
@@ -1016,18 +1059,59 @@ class CustomParseOptions extends DashboardView {
                   return Promise.reject({ errors });
                 });
             }}
-            onSubmit={({ fields }) => {
-              const payload = { ...fields.customOptions };
-              delete payload.databaseURI;
-              if (payload.maxUploadSize != null && payload.maxUploadSize !== '') {
-                payload.maxUploadSize = `${payload.maxUploadSize}mb`;
+            onSubmit={({ changes }) => {
+              const customPagesKeys = [
+                'choosePassword',
+                'verifyEmailSuccess',
+                'parseFrameURL',
+                'passwordResetSuccess',
+                'invalidLink',
+                'invalidVerificationLink',
+                'linkSendSuccess',
+                'linkSendFail',
+              ];
+              const payload = changes.customOptions
+                ? JSON.parse(JSON.stringify(changes.customOptions))
+                : undefined;
+
+              if (payload) {
+                delete payload.databaseURI;
+                if (payload.maxUploadSize != null && payload.maxUploadSize !== '') {
+                  payload.maxUploadSize = `${payload.maxUploadSize}mb`;
+                }
+
+                const customPages = { ...(payload.customPages || {}) };
+                customPagesKeys.forEach(key => {
+                  if (Object.prototype.hasOwnProperty.call(payload, key)) {
+                    if (payload[key] != null && payload[key] !== '') {
+                      customPages[key] = payload[key];
+                    } else {
+                      customPages[key] = payload[key];
+                    }
+                    delete payload[key];
+                  }
+                });
+                if (Object.keys(customPages).length > 0) {
+                  payload.customPages = customPages;
+                }
               }
-              return this.context.saveParseOptions(payload);
+
+              return this.context.saveParseOptionsAndSettings({
+                customOptions: payload,
+                clientPush: Object.prototype.hasOwnProperty.call(changes, 'clientPush')
+                  ? changes.clientPush
+                  : undefined,
+                clientClassCreation: Object.prototype.hasOwnProperty.call(changes, 'clientClassCreation')
+                  ? changes.clientClassCreation
+                  : undefined,
+              });
             }}
             afterSave={({ fields, resetFields }) => {
               this.setState({
                 initialFields: {
                   customOptions: JSON.parse(JSON.stringify(fields.customOptions || {})),
+                  clientPush: fields.clientPush,
+                  clientClassCreation: fields.clientClassCreation,
                 },
               });
               resetFields();
