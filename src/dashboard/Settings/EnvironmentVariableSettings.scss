@@ -1,0 +1,192 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+
+  .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    padding: 2.5rem;
+    position: relative;
+    overflow: auto;
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+}
+
+.errorStateWrapper {
+  padding-top: 200px;
+  display: flex;
+  justify-content: center;
+}
+
+.heading {
+  @include InterFont;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 140%;
+  margin-bottom: 0.5rem;
+}
+
+.subheading {
+  @include InterFont;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  color: $light-grey;
+}
+
+.varsList {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.varRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 44px;
+  column-gap: 1rem;
+  row-gap: 8px;
+  padding: 1rem;
+  border-radius: 10px;
+  background: $mid-blue;
+  border: 1px solid rgba(249, 249, 249, 0.06);
+  align-items: end; // aligns delete button with inputs (not labels)
+}
+
+.fieldBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.fieldLabel {
+  color: $light-grey;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.valueInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.inputShell {
+  border-radius: 10px;
+  background: $dark-blue;
+  border: 1px solid rgba(249, 249, 249, 0.08);
+}
+
+.valueShell {
+  position: relative;
+}
+
+.insideIconButton {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.insideIconButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.rowInput {
+  display: block;
+}
+
+.rowInput::placeholder {
+  color: #788C97; // match sidebar disabled items (.disabledLink)
+}
+
+.deleteButton {
+  @include buttonReset;
+  cursor: pointer;
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.valueCell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.valueText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.valueToggleButton {
+  @include buttonReset;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.valueToggleButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+// actions moved to Toolbar
+
+.emptyState {
+  margin: 2.5rem 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $light-grey;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.errorBox {
+  margin-top: 1rem;
+  background: rgba(232, 92, 62, 0.2);
+  border: 1px solid rgba(232, 92, 62, 0.35);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: $white;
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+}
+
+
+.rowInlineError {
+  @include InterFont;
+  grid-column: 1 / 3;
+  grid-row: 2;
+  color: #E85C3E; // match $error-red
+  font-size: 14px;
+  line-height: 140%;
+}

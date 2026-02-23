@@ -267,6 +267,11 @@ export default class DashboardView extends React.Component {
     });
 
     settingsSections.push({
+      name: 'Environment Variables',
+      link: '/settings/environment-variables',
+    });
+
+    settingsSections.push({
       name: 'Advanced Options',
       link: '/advanced-options',
     });

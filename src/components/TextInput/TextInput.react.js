@@ -51,6 +51,11 @@ class TextInput extends React.Component {
         <textarea
           ref={this.props.forwardedRef}
           id={this.props.id}
+          name={this.props.name}
+          autoComplete={this.props.autoComplete}
+          data-lpignore={this.props['data-lpignore']}
+          data-1p-ignore={this.props['data-1p-ignore']}
+          data-bwignore={this.props['data-bwignore']}
           disabled={!!this.props.disabled}
           className={classes.join(' ')}
           rows={this.props.rows && this.props.rows > 3 ? this.props.rows : null}
@@ -69,6 +74,11 @@ class TextInput extends React.Component {
       <input
         ref={this.props.forwardedRef}
         id={this.props.id}
+        name={this.props.name}
+        autoComplete={this.props.autoComplete}
+        data-lpignore={this.props['data-lpignore']}
+        data-1p-ignore={this.props['data-1p-ignore']}
+        data-bwignore={this.props['data-bwignore']}
         type={this.props.hidden ? 'password' : 'text'}
         disabled={!!this.props.disabled}
         className={classes.join(' ')}
@@ -97,6 +107,8 @@ TextInput.propTypes = {
   onBlur: PropTypes.func.describe('A function fired when the input is blurred.'),
   placeholder: PropTypes.string.describe('A placeholder string, for when the input is empty'),
   value: PropTypes.string.describe('The current value of the controlled input'),
+  name: PropTypes.string.describe('The input name attribute, used by browsers and password managers.'),
+  autoComplete: PropTypes.string.describe('The input autoComplete attribute.'),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).describe(
     'The height of the field. Can be a string containing any CSS unit, or a number of pixels. Default is 80px.'
   ),
