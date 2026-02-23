@@ -135,9 +135,19 @@ export default class FlowView extends React.Component {
   handleClickSaveButton() {
     const fields = this.currentFields();
     this.setState({ saveState: SaveButton.States.SAVING });
-    this.props.onSubmit({ changes: this.state.changes, fields, setField: this.setField, resetFields: this.resetFields }).then(() => {
+    this.props.onSubmit({
+      changes: this.state.changes,
+      fields,
+      setField: this.setField.bind(this),
+      resetFields: this.resetFields.bind(this),
+    }).then(() => {
       this.setState({ saveState: SaveButton.States.SUCCEEDED });
-      this.props.afterSave({ fields, setField: this.setField, setFieldJson: this.setFieldJson, resetFields: this.resetFields });
+      this.props.afterSave({
+        fields,
+        setField: this.setField.bind(this),
+        setFieldJson: this.setFieldJson.bind(this),
+        resetFields: this.resetFields.bind(this),
+      });
     }).catch(({ message, error, notice, errors = [] }) => {
       this.setState({
         saveState: SaveButton.States.FAILED,
