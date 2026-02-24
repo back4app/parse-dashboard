@@ -7,16 +7,19 @@
  */
 import AccountManager from 'lib/AccountManager';
 import DashboardView from 'dashboard/DashboardView.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import Field from 'components/Field/Field.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import FlowView from 'components/FlowView/FlowView.react';
-import FormButton from 'components/FormButton/FormButton.react';
 import FormModal from 'components/FormModal/FormModal.react';
+import FormNote from 'components/FormNote/FormNote.react';
 import B4aKeyField from 'components/KeyField/B4aKeyField.react';
+import Icon from 'components/Icon/Icon.react';
 import Label from 'components/Label/Label.react';
 import Modal from 'components/Modal/Modal.react';
 import React from 'react';
 import styles from 'dashboard/Settings/Settings.scss';
+import generalStyles from 'dashboard/Settings/GeneralSettings.scss';
 import TextInput from 'components/TextInput/TextInput.react';
 import Toggle from 'components/Toggle/Toggle.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
@@ -33,11 +36,228 @@ export default class SecuritySettings extends DashboardView {
       showResetDialog: false,
       resetError: false,
       passwordInput: '',
+
+      showKeyChangeDialog: false,
+      keyChangeName: '',
+      keyChangeTitle: '',
+      keyChangeValue: '',
+      keyChangeStep: 1,
+      keyChangeConfirmAppName: '',
+      keyChangeSaveError: '',
+      keyChangeValidationError: '',
+      keyChangeSaving: false,
     };
+  }
+
+  canChangeKeys() {
+    // Follow the same pattern used in other settings screens:
+    // collaborators have `isOwner === false`.
+    return this.context?.isOwner !== false;
+  }
+
+  resetKeyChangeState() {
+    this.setState({
+      showKeyChangeDialog: false,
+      keyChangeName: '',
+      keyChangeTitle: '',
+      keyChangeValue: '',
+      keyChangeStep: 1,
+      keyChangeConfirmAppName: '',
+      keyChangeSaveError: '',
+      keyChangeValidationError: '',
+      keyChangeSaving: false,
+    });
+  }
+
+  closeKeyChangeDialog() {
+    this.resetKeyChangeState();
+  }
+
+  openKeyChangeDialog({ keyName, title, value }) {
+    if (!this.canChangeKeys()) {
+      return;
+    }
+    this.setState({
+      showKeyChangeDialog: true,
+      keyChangeName: keyName,
+      keyChangeTitle: title,
+      keyChangeValue: value ?? '',
+      keyChangeStep: 1,
+      keyChangeConfirmAppName: '',
+      keyChangeSaveError: '',
+      keyChangeValidationError: '',
+      keyChangeSaving: false,
+    });
+  }
+
+  renderKeyValueWithChange({ keyName, title, currentValue, valueNode }) {
+    const canChange = this.canChangeKeys();
+    return (
+      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '100%' }}>
+        {valueNode}
+        {canChange ? (
+          <div className={styles.keyChangeActionWrapper}>
+            <button
+              type="button"
+              className={generalStyles.changeActionBtn}
+              onClick={() => this.openKeyChangeDialog({ keyName, title, value: currentValue })}
+            >
+              Change
+            </button>
+          </div>
+        ) : null}
+      </span>
+    );
   }
 
   renderForm({ fields, setField }) {
     const currentApp = this.context;
+
+    const keyChangeEnabled =
+      (this.state.keyChangeValue || '').length > 0 &&
+      this.state.keyChangeName &&
+      this.state.keyChangeValue !== (currentApp && currentApp[this.state.keyChangeName]);
+
+    const expectedAppName = (currentApp && (currentApp.name || currentApp.slug)) || '';
+    const confirmMatches =
+      expectedAppName.length === 0 ||
+      (this.state.keyChangeConfirmAppName || '') === expectedAppName;
+
+    const isStep1 = this.state.keyChangeStep === 1;
+
+    const showKeyChangeModal = this.state.showKeyChangeDialog || this.state.keyChangeSaving;
+    const keyChangeDialog = showKeyChangeModal ? (
+      <B4aModal
+        type={B4aModal.Types.DEFAULT}
+        title={this.state.keyChangeTitle || 'Change key'}
+        icon="keys-solid"
+        iconSize={30}
+        subtitle="This action will update the key for this app."
+        width={820}
+        confirmText={
+          this.state.keyChangeSaving
+            ? 'Saving\u2026'
+            : isStep1
+              ? 'Continue'
+              : 'Save Changes'
+        }
+        onConfirm={() => {
+          this.setState({ keyChangeSaveError: '', keyChangeValidationError: '' });
+          if (isStep1) {
+            const nextValue = this.state.keyChangeValue || '';
+            if (nextValue.length > 60) {
+              this.setState({ keyChangeValidationError: 'Maximum length: 60 characters.' });
+              return;
+            }
+            this.setState({ keyChangeStep: 2 });
+            return;
+          }
+          const nextValue = this.state.keyChangeValue || '';
+          if (nextValue.length > 60) {
+            this.setState({ keyChangeValidationError: 'Maximum length: 60 characters.' });
+            return;
+          }
+          this.setState({ keyChangeSaving: true });
+          currentApp
+            .updateAppKeys({ [this.state.keyChangeName]: this.state.keyChangeValue })
+            .then(() => this.resetKeyChangeState())
+            .catch(({ message, error, notice, errors = [] }) => {
+              this.setState({
+                keyChangeSaveError: errors.join(' ') || message || error || notice || 'An error occurred',
+                keyChangeSaving: false,
+              });
+            });
+        }}
+        onCancel={() => {
+          if (this.state.keyChangeSaving) {
+            return;
+          }
+          this.resetKeyChangeState();
+        }}
+        disabled={
+          this.state.keyChangeSaving ||
+          (isStep1 ? !keyChangeEnabled : !(keyChangeEnabled && confirmMatches))
+        }
+        canCancel={!this.state.keyChangeSaving}
+        progress={this.state.keyChangeSaving}
+      >
+        <Field
+          labelWidth={50}
+          label={
+            <Label
+              text="Key value"
+              description="Set a new value or generate one."
+            />
+          }
+          input={
+            <div className={styles.keyChangeContainer}>
+              <TextInput
+                value={this.state.keyChangeValue}
+                onChange={keyChangeValue =>
+                  this.setState({ keyChangeValue, keyChangeValidationError: '' })
+                }
+                placeholder="Key"
+                height={40}
+                textAlign="left"
+                dark={false}
+                className={styles.keyChangeInput}
+              />
+            </div>
+          }
+        />
+        <FormNote show={(this.state.keyChangeValidationError || '').length > 0} color="red">
+          {this.state.keyChangeValidationError}
+        </FormNote>
+        <FormNote show={(this.state.keyChangeSaveError || '').length > 0} color="red">
+          {this.state.keyChangeSaveError}
+        </FormNote>
+        {isStep1 ? (
+          <div className={styles.keyChangeGenerateOutside}>
+            <button
+              type="button"
+              className={styles.keyChangeGenerateLink}
+              onClick={() => {
+                this.setState({ keyChangeValue: currentApp.generateKey(40), keyChangeValidationError: '' });
+              }}
+              title="Generate a new key"
+            >
+              Generate
+            </button>
+          </div>
+        ) : null}
+
+        {!isStep1 ? (
+          <Field
+            labelWidth={50}
+            label={
+              <Label
+                text="Confirmation"
+                description={
+                  <span>
+                    Please enter the name of the app ({expectedAppName}) <br/>
+                    This action is irreversible. <strong>Previous key will stop working.</strong>
+                  </span>
+                }
+              />
+            }
+            input={
+              <div className={styles.keyChangeContainer}>
+                <TextInput
+                  value={this.state.keyChangeConfirmAppName}
+                  onChange={keyChangeConfirmAppName => this.setState({ keyChangeConfirmAppName })}
+                  placeholder={expectedAppName}
+                  height={40}
+                  textAlign="left"
+                  dark={false}
+                  className={styles.keyChangeInput}
+                />
+              </div>
+            }
+          />
+        ) : null}
+      </B4aModal>
+    ) : null;
+
     const resetDialog = (
       <FormModal
         title="Reset Master Key"
@@ -125,7 +345,13 @@ export default class SecuritySettings extends DashboardView {
                   }
                 />
               }
-              input={<B4aKeyField>{currentApp.applicationId}</B4aKeyField>}
+              input={
+                <div className={styles.keyValueFullWidth}>
+                  <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>
+                    {currentApp.applicationId || 'N/A'}
+                  </B4aKeyField>
+                </div>
+              }
               theme={Field.Theme.BLUE}
             />
             <Field
@@ -141,7 +367,12 @@ export default class SecuritySettings extends DashboardView {
                   }
                 />
               }
-              input={<B4aKeyField>{currentApp.clientKey}</B4aKeyField>}
+              input={this.renderKeyValueWithChange({
+                keyName: 'clientKey',
+                title: 'Change Client key',
+                currentValue: currentApp.clientKey,
+                valueNode: <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>{currentApp.clientKey || 'N/A'}</B4aKeyField>,
+              })}
               theme={Field.Theme.BLUE}
             />
             <Field
@@ -152,7 +383,12 @@ export default class SecuritySettings extends DashboardView {
                   dark={true}
                 />
               }
-              input={<B4aKeyField>{currentApp.javascriptKey}</B4aKeyField>}
+              input={this.renderKeyValueWithChange({
+                keyName: 'javascriptKey',
+                title: 'Change JavaScript key',
+                currentValue: currentApp.javascriptKey,
+                valueNode: <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>{currentApp.javascriptKey || 'N/A'}</B4aKeyField>,
+              })}
               theme={Field.Theme.BLUE}
             />
             <Field
@@ -168,7 +404,12 @@ export default class SecuritySettings extends DashboardView {
                   dark={true}
                 />
               }
-              input={<B4aKeyField>{currentApp.windowsKey}</B4aKeyField>}
+              input={this.renderKeyValueWithChange({
+                keyName: 'windowsKey',
+                title: 'Change .NET key',
+                currentValue: currentApp.windowsKey,
+                valueNode: <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>{currentApp.windowsKey || 'N/A'}</B4aKeyField>,
+              })}
               theme={Field.Theme.BLUE}
             />
             <Field
@@ -180,9 +421,14 @@ export default class SecuritySettings extends DashboardView {
                 />
               }
               input={
-                <B4aKeyField name="REST" hidden={true} showKeyName={true}>
-                  {currentApp.restKey}
-                </B4aKeyField>
+                this.renderKeyValueWithChange({
+                  keyName: 'restKey',
+                  title: 'Change REST API key',
+                  currentValue: currentApp.restKey,
+                  valueNode: (
+                    <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>{currentApp.restKey || 'N/A'}</B4aKeyField>
+                  ),
+                })
               }
               theme={Field.Theme.BLUE}
             />
@@ -195,9 +441,14 @@ export default class SecuritySettings extends DashboardView {
                 />
               }
               input={
-                <B4aKeyField name="Webhook" hidden={true} showKeyName={true}>
-                  {currentApp.webhookKey}
-                </B4aKeyField>
+                this.renderKeyValueWithChange({
+                  keyName: 'webhookKey',
+                  title: 'Change Webhook key',
+                  currentValue: currentApp.webhookKey,
+                  valueNode: (
+                    <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>{currentApp.webhookKey || 'N/A'}</B4aKeyField>
+                  ),
+                })
               }
               theme={Field.Theme.BLUE}
             />
@@ -210,9 +461,14 @@ export default class SecuritySettings extends DashboardView {
                 />
               }
               input={
-                <B4aKeyField name="File" hidden={true} showKeyName={true}>
-                  {currentApp.fileKey}
-                </B4aKeyField>
+                this.renderKeyValueWithChange({
+                  keyName: 'fileKey',
+                  title: 'Change File key',
+                  currentValue: currentApp.fileKey,
+                  valueNode: (
+                    <B4aKeyField compact={true} scrollWrap={true} scrollWrapNoBottomPadding={true}>{currentApp.fileKey || 'N/A'}</B4aKeyField>
+                  ),
+                })
               }
               theme={Field.Theme.BLUE}
             />
@@ -225,14 +481,27 @@ export default class SecuritySettings extends DashboardView {
                 />
               }
               input={
-                <B4aKeyField name="Master" hidden={true} showKeyName={true}>
-                  {currentApp.masterKey}
-                </B4aKeyField>
+                this.renderKeyValueWithChange({
+                  keyName: 'masterKey',
+                  title: 'Change Master key',
+                  currentValue: currentApp.masterKey,
+                  valueNode: (
+                    currentApp.masterKey ? (
+                      <B4aKeyField name="Master" hidden={true} showKeyName={true} compactHidden={true}>
+                        {currentApp.masterKey}
+                      </B4aKeyField>
+                    ) : (
+                      <B4aKeyField compact={true}>{'N/A'}</B4aKeyField>
+                    )
+                  ),
+                })
               }
               theme={Field.Theme.BLUE}
             />
           </Fieldset>
         </div>
+        {keyChangeDialog}
+        {resetDialog}
         <Toolbar section="App Settings" subsection="Security & Keys" />
       </div>
     );
