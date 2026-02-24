@@ -54,7 +54,6 @@ export const EditDatabaseURLModal = ({ context, setParentState, currentDatabaseU
 
         <div className={styles.modalBody}>
           <div className={styles.content}>
-            <label className={styles.label}>Database URL</label>
             <input
               type="text"
               className={styles.selectBtn}
@@ -77,7 +76,7 @@ export const EditDatabaseURLModal = ({ context, setParentState, currentDatabaseU
           )}
         </div>
 
-        <div className={modalStyles.footer} style={{ textAlign: 'right' }}>
+        <div className={modalStyles.footer} style={{ textAlign: 'right', marginTop: '16px' }}>
           <Button
             color="white"
             width="auto"

@@ -95,13 +95,15 @@ export const ManageAppFields = ({
                   {databaseURL}
                 </B4aKeyField>
                 {onEditDatabaseURL && !isCollaborator && (
-                  <button
-                    type='button'
-                    className={styles.changeActionBtn}
-                    onClick={onEditDatabaseURL}
-                  >
-                    Change
-                  </button>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type='button'
+                      className={styles.changeActionBtn}
+                      onClick={onEditDatabaseURL}
+                    >
+                      Change
+                    </button>
+                  </div>
                 )}
               </div>}
             <FieldSettings
