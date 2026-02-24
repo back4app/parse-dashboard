@@ -6,7 +6,18 @@ const integer = yup.number()
 
 const optionalUrl = yup.string()
   .trim()
-  .url('must be a valid URL.');
+  .transform((value) => (value === '' ? undefined : value))
+  .test('is-valid-url', 'must be a valid URL (e.g. https://example.com).', (value) => {
+    if (!value) {return true;}
+    try {
+      const url = new URL(value);
+      if (!/^https?:$/.test(url.protocol)) {return false;}
+      if (url.hostname.includes('_')) {return false;}
+      return url.hostname.includes('.');
+    } catch {
+      return false;
+    }
+  });
 
 export default yup.object({
   customOptions: yup.object({
