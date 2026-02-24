@@ -1106,16 +1106,18 @@ class CustomParseOptions extends DashboardView {
                 const customPages = { ...(payload.customPages || {}) };
                 customPagesKeys.forEach(key => {
                   if (Object.prototype.hasOwnProperty.call(payload, key)) {
-                    if (payload[key] != null && payload[key] !== '') {
-                      customPages[key] = payload[key];
-                    } else {
-                      customPages[key] = payload[key];
-                    }
+                    customPages[key] = payload[key] === '' ? undefined : payload[key];
                     delete payload[key];
                   }
                 });
                 if (Object.keys(customPages).length > 0) {
                   payload.customPages = customPages;
+                }
+
+                for (const key of Object.keys(payload)) {
+                  if (typeof payload[key] === 'string' && payload[key].trim() === '') {
+                    payload[key] = undefined;
+                  }
                 }
               }
 
