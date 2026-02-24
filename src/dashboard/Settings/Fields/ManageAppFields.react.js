@@ -33,6 +33,7 @@ export const ManageAppFields = ({
   setUseLatestDashboardVersion,
   backendBetaUser,
   onEditParseVersion,
+  onEditDatabaseURL,
 }) => {
 
   return (
@@ -93,6 +94,15 @@ export const ManageAppFields = ({
                 <B4aKeyField name="Show Database" hidden={true} showKeyName={true} keyText="URI">
                   {databaseURL}
                 </B4aKeyField>
+                {onEditDatabaseURL && !isCollaborator && (
+                  <button
+                    type='button'
+                    className={styles.changeActionBtn}
+                    onClick={onEditDatabaseURL}
+                  >
+                    Change
+                  </button>
+                )}
               </div>}
             <FieldSettings
               containerStyles={{ borderBottom: 'none', borderTop: 'none' }}
@@ -115,7 +125,7 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       />
-      <hr className={styles.fieldHr} />      
+      <hr className={styles.fieldHr} />
       {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
@@ -330,5 +340,6 @@ ManageAppFields.propTypes = {
   errors: PropTypes.array.describe('An array of errors'),
   isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
   permissions: PropTypes.object.describe('App permissions'),
-  onEditParseVersion: PropTypes.func.describe('Callback to open the edit parse version modal')
+  onEditParseVersion: PropTypes.func.describe('Callback to open the edit parse version modal'),
+  onEditDatabaseURL: PropTypes.func.describe('Callback to open the edit database URL modal')
 }

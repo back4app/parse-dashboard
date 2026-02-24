@@ -1016,19 +1016,6 @@ class CustomParseOptions extends DashboardView {
   }
 
   renderContent() {
-    const hasMeaningfulChanges = (value) => {
-      if (value === undefined) {
-        return false;
-      }
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-      if (value && typeof value === 'object') {
-        return Object.keys(value).some(key => hasMeaningfulChanges(value[key]));
-      }
-      return true;
-    };
-
     const toolbar = this.renderToolbar();
     const loading = this.state.isLoading;
     const initialFields = this.state.initialFields || {
@@ -1036,10 +1023,27 @@ class CustomParseOptions extends DashboardView {
       clientPush: false,
       clientClassCreation: true,
     };
+
+    const getActualChanges = (changes, initial) => {
+      const result = {};
+      for (const key of Object.keys(changes)) {
+        const val = changes[key];
+        const ref = initial ? initial[key] : undefined;
+        if (val && typeof val === 'object' && !Array.isArray(val)) {
+          const nested = getActualChanges(val, ref || {});
+          if (Object.keys(nested).length > 0) {
+            result[key] = nested;
+          }
+        } else if (val !== ref) {
+          result[key] = val;
+        }
+      }
+      return result;
+    };
     const customParseOptionsFieldsOptions = {
       customOptions: { friendlyName: 'custom options', type: 'json' },
-      clientPush: { friendlyName: 'push notification from client' },
-      clientClassCreation: { friendlyName: 'client class creation' },
+      clientPush: { friendlyName: 'push notification from client', showTo: true },
+      clientClassCreation: { friendlyName: 'client class creation', showTo: true },
     };
 
     let content = null;
@@ -1059,7 +1063,7 @@ class CustomParseOptions extends DashboardView {
       content = <div className={styles.mainContent}>
           <FlowView
             initialFields={initialFields}
-            showFooter={changes => hasMeaningfulChanges(changes)}
+            showFooter={changes => Object.keys(getActualChanges(changes, initialFields)).length > 0}
             validate={({ changes }) => {
               const merged = deepmerge(
                 JSON.parse(JSON.stringify(initialFields)),
@@ -1073,7 +1077,8 @@ class CustomParseOptions extends DashboardView {
                   return Promise.reject({ errors });
                 });
             }}
-            onSubmit={({ changes }) => {
+            onSubmit={({ changes: rawChanges }) => {
+              const changes = getActualChanges(rawChanges, initialFields);
               const customPagesKeys = [
                 'choosePassword',
                 'verifyEmailSuccess',
@@ -1131,9 +1136,17 @@ class CustomParseOptions extends DashboardView {
               // Let FlowView render success feedback before clearing form state.
               setTimeout(() => resetFields(), 1200);
             }}
-            footerContents={({ changes }) =>
-              renderFlowFooterChanges(changes, initialFields, customParseOptionsFieldsOptions)
-            }
+            footerContents={({ changes }) => {
+              console.log('changes', changes);
+              console.log('initialFields', initialFields);
+              const actual = getActualChanges(changes, initialFields);
+              for (const key of Object.keys(actual)) {
+                if (typeof actual[key] === 'boolean') {
+                  actual[key] = String(actual[key]);
+                }
+              }
+              return renderFlowFooterChanges(actual, initialFields, customParseOptionsFieldsOptions);
+            }}
             renderForm={this.renderParseOptionsForm.bind(this)}
           />
       </div>

@@ -25,6 +25,7 @@ import { TransferAppModal } from 'dashboard/Settings/Modals/transferAppModal.rea
 import { CloneAppModal } from 'dashboard/Settings/Modals/cloneAppModal.react';
 import { DeleteAppModal } from 'dashboard/Settings/Modals/deleteAppModal.react';
 import { EditParseVersionModal } from 'dashboard/Settings/Modals/editParseVersionModal.react';
+import { EditDatabaseURLModal } from 'dashboard/Settings/Modals/editDatabaseURLModal.react';
 import { generalFieldsOptions, compareCollaborators, verifyEditedCollaborators, getPromiseList, renderModal } from './Util';
 import GeneralSettingsValidataions from 'dashboard/Settings/GeneralSettingsValidataions';
 import { withRouter } from 'lib/withRouter';
@@ -50,6 +51,7 @@ export default class GeneralSettings extends DashboardView {
       showPurgeSystemLogModal: false,
       showTransferAppModal: false,
       showEditParseVersionModal: false,
+      showEditDatabaseURLModal: false,
     };
   }
 
@@ -133,7 +135,8 @@ export default class GeneralSettings extends DashboardView {
           renderModal(this.state.showTransferAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, TransferAppModal),
           renderModal(this.state.showCloneAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, CloneAppModal),
           renderModal(this.state.showDeleteAppModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }) }, DeleteAppModal),
-          renderModal(this.state.showEditParseVersionModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }), currentParseVersion: initialFields.parseVersion }, EditParseVersionModal)
+          renderModal(this.state.showEditParseVersionModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }), currentParseVersion: initialFields.parseVersion }, EditParseVersionModal),
+          renderModal(this.state.showEditDatabaseURLModal, { context: this.context, setParentState: (props) => this.setState({ ...this.state, ...props }), currentDatabaseURL: initialFields.databaseURL }, EditDatabaseURLModal)
         ]}
         renderForm={({ fields, setField, setFieldJson, errors }) => {
           return <div className={styles.generalSettingsWrapper}>
@@ -184,7 +187,8 @@ export default class GeneralSettings extends DashboardView {
               permissions={fields.permissions}
               useLatestDashboardVersion={fields.useLatestDashboardVersion}
               setUseLatestDashboardVersion={setField.bind(this, 'useLatestDashboardVersion')}
-              onEditParseVersion={() => this.setState({ showEditParseVersionModal: true })}/>
+              onEditParseVersion={() => this.setState({ showEditParseVersionModal: true })}
+              onEditDatabaseURL={() => this.setState({ showEditDatabaseURLModal: true })}/>
             <DangerzoneFields
               errors={errors}
               // mongoURL={fields.mongoURL}

@@ -1908,7 +1908,7 @@ export default class ParseApp {
     }
   }
 
-  async saveParseOptionsAndSettings({ customOptions, clientPush, clientClassCreation }) {
+  async saveParseOptionsAndSettings({ customOptions, clientPush, clientClassCreation, databaseURL }) {
     try {
       return (
         await axios.patch(
@@ -1918,6 +1918,7 @@ export default class ParseApp {
             parseOptions: customOptions,
             clientPush,
             clientClassCreation,
+            databaseURL,
           },
           { withCredentials: true }
         )
