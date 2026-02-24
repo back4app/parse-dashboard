@@ -114,9 +114,6 @@ export default class EnvironmentVariableSettings extends TableView {
     if (!this.isValidEnvVarName(key)) {
       return { error: `Invalid variable name: ${key}` };
     }
-    if (key.length >= 100 || value.length >= 100) {
-      return { error: 'Content is too long' };
-    }
 
     const keyTrim = key.trim();
     const valueTrim = value.trim();
@@ -411,7 +408,7 @@ export default class EnvironmentVariableSettings extends TableView {
               padding="0 1rem"
               dark={false}
               placeholder="MY_VARIABLE"
-              onChange={(value) => this.setState({ modalKey: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalKey: String(value ?? ''), modalTouched: true })}
               value={this.state.modalKey}
             />
           }
@@ -428,7 +425,7 @@ export default class EnvironmentVariableSettings extends TableView {
               data-lpignore="true"
               data-1p-ignore="true"
               data-bwignore="true"
-              onChange={(value) => this.setState({ modalValue: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalValue: String(value ?? ''), modalTouched: true })}
               value={this.state.modalValue}
             />
           }
@@ -458,7 +455,7 @@ export default class EnvironmentVariableSettings extends TableView {
               padding="0 1rem"
               dark={false}
               placeholder="MY_VARIABLE"
-              onChange={(value) => this.setState({ modalKey: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalKey: String(value ?? ''), modalTouched: true })}
               value={this.state.modalKey}
             />
           }
@@ -475,7 +472,7 @@ export default class EnvironmentVariableSettings extends TableView {
               data-lpignore="true"
               data-1p-ignore="true"
               data-bwignore="true"
-              onChange={(value) => this.setState({ modalValue: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalValue: String(value ?? ''), modalTouched: true })}
               value={this.state.modalValue}
             />
           }
