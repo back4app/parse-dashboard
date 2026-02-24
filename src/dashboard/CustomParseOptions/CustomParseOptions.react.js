@@ -48,6 +48,7 @@ class CustomParseOptions extends DashboardView {
       loadingError: null,
       canChangeCustomParseOptions: false,
       hasOtherConfigsPermission: true,
+      isOwner: false,
     };
     this.onRefresh = this.onRefresh.bind(this);
   }
@@ -154,10 +155,11 @@ class CustomParseOptions extends DashboardView {
       this.setState({
         canChangeCustomParseOptions: permissions.canChangeCustomParseOptions !== false,
         hasOtherConfigsPermission,
+        isOwner,
         initialFields: {
           customOptions,
           clientPush: response.clientPush ?? false,
-          clientClassCreation: response.clientClassCreation ?? true,
+          clientClassCreation: response.clientClassCreation !== 'undefined' ? response.clientClassCreation : true,
         },
       });
     } catch (error) {
@@ -201,11 +203,13 @@ class CustomParseOptions extends DashboardView {
     const setCustomOption = (key, value) =>
       setFieldJson('customOptions', { [key]: value });
 
+    const isOwner = this.state.isOwner;
+
     return (
       <div className={styles.formWrapper}>
         <div className={styles.domainSettingsContainer}>
-          <div className={styles.heading}>Custom Parse Server Options</div>
-          <div className={styles.subheading}>Change your custom parse-server configuration options below.</div>
+          <div className={styles.heading}>Parse Server Options</div>
+          <div className={styles.subheading}>Configure advanced settings of your Parse Server instance, including server behavior, authentication, and security rules.</div>
           <div className={styles.warning}>Warning: This is a <strong>DANGER ZONE</strong>. Your app can stop working if you do something wrong. If you are not sure, ask for support.</div>
 
           {!this.state.canChangeCustomParseOptions && (
@@ -233,7 +237,7 @@ class CustomParseOptions extends DashboardView {
             </Fieldset>
           )}
 
-          <div style={!this.state.canChangeCustomParseOptions ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
+          <div style={!isOwner || !this.state.canChangeCustomParseOptions ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
 
           <Fieldset
             legend='Core Configuration'
@@ -554,7 +558,7 @@ class CustomParseOptions extends DashboardView {
                     }
                     input={
                       <TextInputSettings
-                        placeholder='Password must include at least 8 characters, 1 uppercase letter, and 1 number.'
+                        placeholder='Password must include at least 8 characters, a uppercase letter, and a number.'
                         value={passwordPolicy?.validationError}
                         error={getError(errors, 'customOptions.passwordPolicy.validationError')}
                         onChange={({ target: { value } }) =>
@@ -1050,21 +1054,20 @@ class CustomParseOptions extends DashboardView {
     if (loading) {
       content = null;
     } else if (this.state.loadingError) {
-      content = <EmptyGhostState
+      content = <div style={{ marginTop: '3rem' }}><EmptyGhostState
         title="Error loading parse options"
         description={this.state.loadingError}
-      />
-    } else if (!this.state.hasOtherConfigsPermission) {
-      content = <EmptyGhostState
-        title="Permission required"
-        description="You have read-only access to Custom Parse Options. Ask an app owner to grant Write permission for Other Configs."
-      />
+      /></div>
     } else {
+      const isOwnerState = this.state.isOwner;
       content = <div className={styles.mainContent}>
           <FlowView
             initialFields={initialFields}
-            showFooter={changes => Object.keys(getActualChanges(changes, initialFields)).length > 0}
+            showFooter={changes => !isOwnerState || Object.keys(getActualChanges(changes, initialFields)).length > 0}
             validate={({ changes }) => {
+              if (!isOwnerState) {
+                return 'use default';
+              }
               const merged = deepmerge(
                 JSON.parse(JSON.stringify(initialFields)),
                 changes
@@ -1077,6 +1080,7 @@ class CustomParseOptions extends DashboardView {
                   return Promise.reject({ errors });
                 });
             }}
+            defaultFooterMessage={<span>You don&apos;t have permission to edit this feature.</span>}
             onSubmit={({ changes: rawChanges }) => {
               const changes = getActualChanges(rawChanges, initialFields);
               const customPagesKeys = [

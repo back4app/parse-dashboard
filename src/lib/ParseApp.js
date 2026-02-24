@@ -1924,7 +1924,12 @@ export default class ParseApp {
         )
       ).data;
     } catch (err) {
-      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+      const data = err.response && err.response.data;
+      if (data && Array.isArray(data.errors) && data.errors.length > 0) {
+        throw { error: data.errors.map(e => e.msg || e.message || e).join(', ') };
+      }
+      const message = (data && data.error) || err.message || 'Something went wrong!';
+      throw { error: message };
     }
   }
 }

@@ -29,7 +29,7 @@ export default yup.object({
       maxPasswordHistory: integer.min(0, 'must be 0 or greater.').max(20, 'must be 20 or less.'),
     }),
     accountLockout: yup.object({
-      duration: integer.positive('must be greater than 0.').max(100000, 'must be 100000 or less.'),
+      duration: integer.positive('must be greater than 0.').max(99999, 'must be 100000 or less.'),
       threshold: integer.min(1, 'must be at least 1.').max(999, 'must be 999 or less.'),
     }),
     maxUploadSize: integer.min(20, 'must be at least 20.').max(100, 'must be 100 or less.'),
