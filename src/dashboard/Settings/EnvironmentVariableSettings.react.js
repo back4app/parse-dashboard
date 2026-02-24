@@ -124,7 +124,18 @@ export default class EnvironmentVariableSettings extends TableView {
         isDirty: false,
       });
     } catch (e) {
-      this.setState({ loadError: e?.message || String(e) });
+      const errText =
+        (e && e.message) ||
+        (e && e.error && (typeof e.error === 'string' ? e.error : e.error.message)) ||
+        (e && e.response && e.response.data && (e.response.data.error?.message || e.response.data.error || e.response.data.message)) ||
+        (() => {
+          try {
+            return JSON.stringify(e);
+          } catch (_) {
+            return String(e);
+          }
+        })();
+      this.setState({ loadError: errText });
     } finally {
       this.setState({ loading: false });
     }
@@ -419,6 +430,12 @@ export default class EnvironmentVariableSettings extends TableView {
   renderToolbar() {
     const canWrite = this.hasWritePermission();
     const showBatchActions = canWrite && this.state.isDirty;
+    const isPermissionError = /forbidden|permission|unauthorized|not authorized|403/i.test(String(this.state.loadError || ''));
+
+    // Collaborator / permission denied: hide toolbar actions entirely
+    if (isPermissionError) {
+      return <Toolbar section="Settings" subsection="Environment Variables" />;
+    }
     return (
       <Toolbar section="Settings" subsection="Environment Variables">
         {showBatchActions ? (
@@ -559,11 +576,12 @@ export default class EnvironmentVariableSettings extends TableView {
 
   renderEmpty() {
     if (this.state.loadError) {
+      const isPermissionError = /forbidden|permission|unauthorized|not authorized|403/i.test(String(this.state.loadError || ''));
       return (
         <div className={styles.errorStateWrapper}>
           <EmptyGhostState
-            title="Error loading environment variables"
-            description={this.state.loadError}
+            title={isPermissionError ? 'Forbidden' : 'Environment Variables'}
+            description={isPermissionError ? "You don't have permission to edit this section." : this.state.loadError}
           />
         </div>
       );
