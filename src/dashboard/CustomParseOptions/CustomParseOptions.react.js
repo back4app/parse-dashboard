@@ -1137,8 +1137,6 @@ class CustomParseOptions extends DashboardView {
               setTimeout(() => resetFields(), 1200);
             }}
             footerContents={({ changes }) => {
-              console.log('changes', changes);
-              console.log('initialFields', initialFields);
               const actual = getActualChanges(changes, initialFields);
               for (const key of Object.keys(actual)) {
                 if (typeof actual[key] === 'boolean') {
