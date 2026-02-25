@@ -765,6 +765,54 @@ export default class ParseApp {
     });
   }
 
+  generateKey(length = 40) {
+    const all = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+
+    const pick = s => s[Math.floor(Math.random() * s.length)];
+
+    // Pick 3 distinct positions to guarantee at least 1 upper, 1 lower, 1 digit
+    const positions = new Set();
+    while (positions.size < 3) {
+      positions.add(Math.floor(Math.random() * Math.max(1, length)));
+    }
+    const [upperPos, lowerPos, digitPos] = Array.from(positions);
+
+    const chars = Array.from({ length }, () => pick(all));
+    if (length > 0) {
+      chars[upperPos] = pick(upper);
+      chars[lowerPos] = pick(lower);
+      chars[digitPos] = pick(digits);
+    }
+    return chars.join('');
+  }
+
+  updateAppKeys(keys) {
+    const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}`;
+    const payload = { ...keys };
+  
+    if (Object.prototype.hasOwnProperty.call(payload, 'windowsKey')) {
+      payload.dotnetKey = payload.windowsKey;
+      delete payload.windowsKey;
+    }
+  
+    const promise = axios.patch(path, payload, { withCredentials: true });
+  
+    promise.then(() => {
+      if (Object.prototype.hasOwnProperty.call(keys, 'clientKey')) this.clientKey = keys.clientKey;
+      if (Object.prototype.hasOwnProperty.call(keys, 'javascriptKey')) this.javascriptKey = keys.javascriptKey;
+      if (Object.prototype.hasOwnProperty.call(keys, 'restKey')) this.restKey = keys.restKey;
+      if (Object.prototype.hasOwnProperty.call(keys, 'webhookKey')) this.webhookKey = keys.webhookKey;
+      if (Object.prototype.hasOwnProperty.call(keys, 'fileKey')) this.fileKey = keys.fileKey;
+      if (Object.prototype.hasOwnProperty.call(keys, 'masterKey')) this.masterKey = keys.masterKey;
+      if (Object.prototype.hasOwnProperty.call(keys, 'windowsKey')) this.windowsKey = keys.windowsKey;
+    });
+  
+    return promise;
+  }
+
   clearCollection(className) {
     if (this.serverInfo.parseServerVersion == 'Parse.com') {
       const path = `/apps/${this.slug}/collections/${className}/clear`;

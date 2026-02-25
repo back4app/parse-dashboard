@@ -6,6 +6,7 @@
  * the root directory of this source tree.
  */
 
+@import 'stylesheets/globals.scss';
 @import 'stylesheets/back4app.scss';
 
 .settings_page {
@@ -15,9 +16,59 @@
 
 .generalSettingsWrapper {
   padding: 0;
-  max-width: 800px;
+  max-width: 870px;
   margin: 0 auto;
-  margin-top: 5rem;
+  margin-top: 3rem;
+}
+
+.keyChangeContainer {
+  width: 100%;
+}
+
+.keyChangeInput {
+  // Keep the default TextInput look (no extra contour) for this modal
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  padding: 0 10px !important;
+}
+
+.keyChangeGenerateOutside {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 10px 0 0;
+}
+
+.keyChangeGenerateLink {
+  @include InterFont;
+  font-size: 12px;
+  color: $blue;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.keyChangeActionWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  padding-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.keyValueFullWidth {
+  display: block;
+  width: 100%;
 }
 
 @media only screen and (max-width: 1200px) {

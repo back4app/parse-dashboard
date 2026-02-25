@@ -34,8 +34,12 @@ export default class EnvironmentVariableSettings extends TableView {
     this.state = {
       loading: true,
       loadError: null,
-      envVars: {},
+      initialEnvVars: {},
+      draftEnvVars: {},
+      initialSignature: '[]',
       rows: [],
+      isDirty: false,
+      saving: false,
 
       note: null,
       isErrorNote: false,
@@ -50,7 +54,12 @@ export default class EnvironmentVariableSettings extends TableView {
       modalTouched: false,
 
       deletingKey: '',
+
+      modal: null,
     };
+
+    this.unblock = null;
+    this.onBeforeUnloadEnvVars = null;
   }
 
   hasWritePermission() {
@@ -65,16 +74,40 @@ export default class EnvironmentVariableSettings extends TableView {
     return /^[_a-zA-Z]\w*$/.test(name);
   }
 
+  envVarsSignature(envVarsObj) {
+    const env = envVarsObj && typeof envVarsObj === 'object' ? envVarsObj : {};
+    const normalized = Object.keys(env)
+      .sort((a, b) => a.localeCompare(b))
+      .map(k => ({
+        key: String(k),
+        value: env[k] == null ? '' : String(env[k]),
+      }));
+    return JSON.stringify(normalized);
+  }
+
   buildRowsFromEnvVars(envVarsObj) {
     const env = envVarsObj && typeof envVarsObj === 'object' ? envVarsObj : {};
+    const hiddenByKey = new Map((this.state.rows || []).map(r => [r.key, !!r.hidden]));
     return Object.keys(env)
       .sort((a, b) => a.localeCompare(b))
       .map(key => ({
         key,
         value: env[key] == null ? '' : String(env[key]),
-        hidden: true,
+        hidden: hiddenByKey.has(key) ? hiddenByKey.get(key) : true,
       }));
   }
+
+  setDraftEnvVars = (nextDraft) => {
+    this.setState(prev => {
+      const signature = this.envVarsSignature(nextDraft);
+      const rows = this.buildRowsFromEnvVars(nextDraft);
+      return {
+        draftEnvVars: nextDraft,
+        rows,
+        isDirty: signature !== prev.initialSignature,
+      };
+    });
+  };
 
   async loadData() {
     try {
@@ -82,9 +115,27 @@ export default class EnvironmentVariableSettings extends TableView {
       const result = await this.context.getEnvVars();
       const envVars = (result && result.envVars) || {};
       const rows = this.buildRowsFromEnvVars(envVars);
-      this.setState({ envVars, rows });
+      const initialSignature = this.envVarsSignature(envVars);
+      this.setState({
+        initialEnvVars: envVars,
+        draftEnvVars: envVars,
+        initialSignature,
+        rows,
+        isDirty: false,
+      });
     } catch (e) {
-      this.setState({ loadError: e?.message || String(e) });
+      const errText =
+        (e && e.message) ||
+        (e && e.error && (typeof e.error === 'string' ? e.error : e.error.message)) ||
+        (e && e.response && e.response.data && (e.response.data.error?.message || e.response.data.error || e.response.data.message)) ||
+        (() => {
+          try {
+            return JSON.stringify(e);
+          } catch (_) {
+            return String(e);
+          }
+        })();
+      this.setState({ loadError: errText });
     } finally {
       this.setState({ loading: false });
     }
@@ -92,9 +143,131 @@ export default class EnvironmentVariableSettings extends TableView {
 
   componentDidMount() {
     this.loadData();
+
+    // Block in-app navigation (e.g. Sidebar) when there are unsaved changes
+    if (this.props.navigator && typeof this.props.navigator.block === 'function') {
+      this.unblock = this.props.navigator.block(tx => {
+        if (this.state.isDirty && this.state.saving === false) {
+          const unblock = this.unblock && this.unblock.bind(this);
+          const autoUnblockingTx = {
+            ...tx,
+            retry() {
+              if (unblock) {
+                unblock();
+              }
+              tx.retry();
+            },
+          };
+
+          const modal = (
+            <B4aModal
+              type={B4aModal.Types.DEFAULT}
+              showCancel={false}
+              width={380}
+              icon="b4a-warn-fill-icon"
+              iconSize={44}
+              iconFill="#cccccc"
+              title="Leave this page?"
+              subtitle="Changes you made may not be saved."
+              customFooter={
+                <div style={{ textAlign: 'center' }}>
+                  <Button
+                    color="white"
+                    width="auto"
+                    additionalStyles={{ border: '1px solid #ccc', color: '#303338', marginRight: 12 }}
+                    value="Cancel"
+                    onClick={() => this.setState({ modal: null })}
+                  />
+                  <Button
+                    primary={true}
+                    color="blue"
+                    width="auto"
+                    value="Leave"
+                    onClick={() => {
+                      this.setState({ modal: null });
+                      autoUnblockingTx.retry();
+                    }}
+                  />
+                </div>
+              }
+            />
+          );
+          this.setState({ modal });
+        } else {
+          if (this.unblock) {
+            this.unblock();
+          }
+          tx.retry();
+        }
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const wasDirty = !!prevState?.isDirty;
+    const isDirty = !!this.state.isDirty;
+
+    if (!wasDirty && isDirty) {
+      if (!this.onBeforeUnloadEnvVars) {
+        this.onBeforeUnloadEnvVars = (e) => {
+          e.preventDefault();
+          // eslint-disable-next-line no-param-reassign
+          e.returnValue = '';
+          return '';
+        };
+      }
+      window.addEventListener('beforeunload', this.onBeforeUnloadEnvVars);
+    } else if (wasDirty && !isDirty) {
+      window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.unblock) {
+      this.unblock();
+    }
+    window.removeEventListener('beforeunload', this.onBeforeUnloadEnvVars);
   }
 
   onRefresh = () => {
+    if (this.state.isDirty) {
+      const modal = (
+        <B4aModal
+          type={B4aModal.Types.DEFAULT}
+          showCancel={false}
+          width={380}
+          icon="b4a-warn-fill-icon"
+          iconSize={44}
+          iconFill="#cccccc"
+          title="Leave this page?"
+          subtitle="Changes you made may not be saved."
+          customFooter={
+            <div style={{ textAlign: 'center' }}>
+              <Button
+                color="white"
+                width="auto"
+                additionalStyles={{ border: '1px solid #ccc', color: '#303338', marginRight: 12 }}
+                value="Cancel"
+                onClick={() => this.setState({ modal: null })}
+              />
+              <Button
+                primary={true}
+                color="blue"
+                width="auto"
+                value="Leave"
+                onClick={() => {
+                  this.setState({ modal: null });
+                  this.cancelChanges();
+                  this.loadData();
+                }}
+              />
+            </div>
+          }
+        />
+      );
+      this.setState({ modal });
+      return;
+    }
     this.loadData();
   };
 
@@ -114,29 +287,52 @@ export default class EnvironmentVariableSettings extends TableView {
     if (!this.isValidEnvVarName(key)) {
       return { error: `Invalid variable name: ${key}` };
     }
-    if (key.length >= 100 || value.length >= 100) {
-      return { error: 'Content is too long' };
-    }
 
     const keyTrim = key.trim();
     const valueTrim = value.trim();
 
-    if (originalKey !== keyTrim && Object.prototype.hasOwnProperty.call(this.state.envVars || {}, keyTrim)) {
+    if (originalKey !== keyTrim && Object.prototype.hasOwnProperty.call(this.state.draftEnvVars || {}, keyTrim)) {
       return { error: `Duplicated variable name: ${keyTrim}` };
     }
 
     return { keyTrim, valueTrim, error: null };
   }
 
-  persistEnvVars = async (nextEnvVars) => {
+  cancelChanges = () => {
+    const rows = this.buildRowsFromEnvVars(this.state.initialEnvVars || {});
+    this.setState({
+      draftEnvVars: this.state.initialEnvVars || {},
+      rows,
+      isDirty: false,
+      note: null,
+      isErrorNote: false,
+      loadError: null,
+      modal: null,
+      showNewModal: false,
+      showEditModal: false,
+      showDeleteModal: false,
+      modalOriginalKey: '',
+      modalKey: '',
+      modalValue: '',
+      modalTouched: false,
+      deletingKey: '',
+    });
+  };
+
+  saveSettings = async () => {
+    if (this.state.saving || !this.state.isDirty) {
+      return;
+    }
     try {
-      await this.context.updateEnvVars(nextEnvVars);
-      this.setNote('Environment variables saved.', false);
+      this.setState({ saving: true, loadError: null });
+      await this.context.updateEnvVars(this.state.draftEnvVars || {});
+      this.setNote('Environment variables saved. Your app is being rebuilt.', false);
       await this.loadData();
     } catch (e) {
       const msg = e?.message || String(e);
       this.setNote(msg, true);
-      throw { message: msg };
+    } finally {
+      this.setState({ saving: false });
     }
   };
 
@@ -181,6 +377,9 @@ export default class EnvironmentVariableSettings extends TableView {
   }
 
   submitCreate = () => {
+    if (!this.hasWritePermission()) {
+      return Promise.reject({ message: "Forbidden - You don't have permission to edit this feature." });
+    }
     const { keyTrim, valueTrim, error } = this.validateKeyValue({
       keyRaw: this.state.modalKey,
       valueRaw: this.state.modalValue,
@@ -189,12 +388,16 @@ export default class EnvironmentVariableSettings extends TableView {
     if (error) {
       return Promise.reject({ message: error });
     }
-    const next = { ...(this.state.envVars || {}) };
+    const next = { ...(this.state.draftEnvVars || {}) };
     next[keyTrim] = valueTrim;
-    return this.persistEnvVars(next);
+    this.setDraftEnvVars(next);
+    return Promise.resolve();
   };
 
   submitEdit = () => {
+    if (!this.hasWritePermission()) {
+      return Promise.reject({ message: "Forbidden - You don't have permission to edit this feature." });
+    }
     const originalKey = this.state.modalOriginalKey || '';
     const { keyTrim, valueTrim, error } = this.validateKeyValue({
       keyRaw: this.state.modalKey,
@@ -204,59 +407,99 @@ export default class EnvironmentVariableSettings extends TableView {
     if (error) {
       return Promise.reject({ message: error });
     }
-    const next = { ...(this.state.envVars || {}) };
+    const next = { ...(this.state.draftEnvVars || {}) };
     if (originalKey && originalKey !== keyTrim) {
       delete next[originalKey];
     }
     next[keyTrim] = valueTrim;
-    return this.persistEnvVars(next);
+    this.setDraftEnvVars(next);
+    return Promise.resolve();
   };
 
   submitDelete = () => {
+    if (!this.hasWritePermission()) {
+      return Promise.reject({ message: "Forbidden - You don't have permission to edit this feature." });
+    }
     const key = this.state.deletingKey || '';
-    const next = { ...(this.state.envVars || {}) };
+    const next = { ...(this.state.draftEnvVars || {}) };
     delete next[key];
-    return this.persistEnvVars(next);
+    this.setDraftEnvVars(next);
+    return Promise.resolve();
   };
 
   renderToolbar() {
     const canWrite = this.hasWritePermission();
+    const showBatchActions = canWrite && this.state.isDirty;
+    const isPermissionError = /forbidden|permission|unauthorized|not authorized|403/i.test(String(this.state.loadError || ''));
+
+    // Collaborator / permission denied: hide toolbar actions entirely
+    if (isPermissionError) {
+      return <Toolbar section="Settings" subsection="Environment Variables" />;
+    }
     return (
       <Toolbar section="Settings" subsection="Environment Variables">
+        {showBatchActions ? (
+          <>
+            <Button
+              color="white"
+              width="auto"
+              dark={true}
+              additionalStyles={{ border: '1px solid rgba(249, 249, 249, .0588235294)', color: '#FFFFFF' }}
+              value="Cancel"
+              onClick={this.cancelChanges}
+              disabled={this.state.saving}
+            />
+            <Button
+              primary={true}
+              color="green"
+              width="auto"
+              additionalStyles={{ marginLeft: '10px', marginRight: '30px' }}
+              value={this.state.saving ? 'Saving…' : 'Save changes'}
+              onClick={this.saveSettings}
+              disabled={this.state.saving}
+            />
+          </>
+        ) : null}
+
         <a
           className={browserStyles.toolbarButton}
-          style={{ margin: 0, border: 'none' }}
+          style={{
+            margin: 0,
+            height: '30px',
+            border: '1px solid rgba(249, 249, 249, .0588235294)',
+            marginRight: '10px',
+          }}
           onClick={this.onRefresh}
           role="button"
+          title="Refresh"
         >
           <Icon name="b4a-refresh-icon" width={18} height={18} />
         </a>
 
-        <Button
-          primary={true}
-          color="green"
-          width="auto"
-          additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
-          value={
-            <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <Icon
-                width={16}
-                height={16}
-                name="b4a-add-outline-circle"
-                fill="#f9f9f9"
-                style={{ display: 'inline-block', marginRight: '0.5rem' }}
-              />
-              Add variable
-            </span>
-          }
+        <a
+          className={browserStyles.addBtn}
+          style={{
+            opacity: !canWrite ? 0.5 : 1,
+            cursor: !canWrite ? 'not-allowed' : 'pointer',
+            marginLeft: 0,
+            marginRight: 0,
+            height: '30px',
+            width: '30px',
+            padding: '4px',
+            border: '1px solid rgba(249, 249, 249, .0588235294)',
+          }}
           onClick={() => {
             if (!canWrite) {
               return;
             }
             this.openNewModal();
           }}
-          disabled={!canWrite}
-        />
+          role="button"
+          title="Add variable"
+          aria-label="Add variable"
+        >
+          <Icon name="add-outline" width={18} height={18} />
+        </a>
       </Toolbar>
     );
   }
@@ -333,11 +576,12 @@ export default class EnvironmentVariableSettings extends TableView {
 
   renderEmpty() {
     if (this.state.loadError) {
+      const isPermissionError = /forbidden|permission|unauthorized|not authorized|403/i.test(String(this.state.loadError || ''));
       return (
         <div className={styles.errorStateWrapper}>
           <EmptyGhostState
-            title="Error loading environment variables"
-            description={this.state.loadError}
+            title={isPermissionError ? 'Forbidden' : 'Environment Variables'}
+            description={isPermissionError ? "You don't have permission to edit this section." : this.state.loadError}
           />
         </div>
       );
@@ -411,7 +655,7 @@ export default class EnvironmentVariableSettings extends TableView {
               padding="0 1rem"
               dark={false}
               placeholder="MY_VARIABLE"
-              onChange={(value) => this.setState({ modalKey: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalKey: String(value ?? ''), modalTouched: true })}
               value={this.state.modalKey}
             />
           }
@@ -428,7 +672,7 @@ export default class EnvironmentVariableSettings extends TableView {
               data-lpignore="true"
               data-1p-ignore="true"
               data-bwignore="true"
-              onChange={(value) => this.setState({ modalValue: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalValue: String(value ?? ''), modalTouched: true })}
               value={this.state.modalValue}
             />
           }
@@ -458,7 +702,7 @@ export default class EnvironmentVariableSettings extends TableView {
               padding="0 1rem"
               dark={false}
               placeholder="MY_VARIABLE"
-              onChange={(value) => this.setState({ modalKey: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalKey: String(value ?? ''), modalTouched: true })}
               value={this.state.modalKey}
             />
           }
@@ -475,7 +719,7 @@ export default class EnvironmentVariableSettings extends TableView {
               data-lpignore="true"
               data-1p-ignore="true"
               data-bwignore="true"
-              onChange={(value) => this.setState({ modalValue: String(value || '').slice(0, 100), modalTouched: true })}
+              onChange={(value) => this.setState({ modalValue: String(value ?? ''), modalTouched: true })}
               value={this.state.modalValue}
             />
           }
@@ -510,6 +754,6 @@ export default class EnvironmentVariableSettings extends TableView {
       />
     );
 
-    return [newModal, editModal, deleteModal, notification];
+    return [newModal, editModal, deleteModal, notification, this.state.modal];
   }
 }
