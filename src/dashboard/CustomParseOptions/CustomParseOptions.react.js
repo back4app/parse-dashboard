@@ -1081,6 +1081,7 @@ class CustomParseOptions extends DashboardView {
                 });
             }}
             defaultFooterMessage={<span>You don&apos;t have permission to edit this feature.</span>}
+            hideButtonsOnDefaultMessage={true}
             onSubmit={({ changes: rawChanges }) => {
               const changes = getActualChanges(rawChanges, initialFields);
               const customPagesKeys = [

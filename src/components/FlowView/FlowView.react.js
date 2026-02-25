@@ -163,6 +163,7 @@ export default class FlowView extends React.Component {
       showFooter = () => true,
       footerContents,
       defaultFooterMessage,
+      hideButtonsOnDefaultMessage = false,
       renderModals = [],
       renderForm,
       validate = () => '',
@@ -197,6 +198,7 @@ export default class FlowView extends React.Component {
     let errorMessage = '';
     let footerMessage = null;
     let shouldShowFooter = showFooter(changes);
+    let showingDefaultMessage = false;
 
     if (saveState === SaveButton.States.FAILED) {
       errorMessage = saveError;
@@ -206,6 +208,7 @@ export default class FlowView extends React.Component {
     } else if (invalidFormMessage === 'use default') {
       footerMessage = defaultFooterMessage;
       shouldShowFooter = true;
+      showingDefaultMessage = !!defaultFooterMessage;
     } else if (hasFormValidationError) {
       errorMessage = invalidFormMessage;
       shouldShowFooter = true;
@@ -230,8 +233,8 @@ export default class FlowView extends React.Component {
 
     const footer = shouldShowFooter ? (
       <FlowFooter
-        primary={saveButton}
-        secondary={secondaryButton({ setField })}
+        primary={showingDefaultMessage && hideButtonsOnDefaultMessage ? null : saveButton}
+        secondary={showingDefaultMessage && hideButtonsOnDefaultMessage ? null : secondaryButton({ setField })}
         errorMessage={errorMessage}
       >
         {footerMessage}
@@ -284,6 +287,9 @@ FlowView.propTypes = {
   ),
   defaultFooterMessage: PropTypes.node.describe(
     'A message for the footer when the validate message is "use default"'
+  ),
+  hideButtonsOnDefaultMessage: PropTypes.bool.describe(
+    'When true, hides the save and cancel buttons while the default footer message is shown'
   ),
   renderModals: PropTypes.object.describe('An array of modals to render in the document')
 };
