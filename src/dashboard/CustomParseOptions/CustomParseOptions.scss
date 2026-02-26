@@ -222,3 +222,14 @@
     text-decoration: underline;
   }
 }
+
+.infoIcon {
+  cursor: help;
+  vertical-align: middle;
+}
+
+.infoHelp {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}

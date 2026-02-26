@@ -20,10 +20,12 @@ import Label from 'components/Label/Label.react';
 import Field from 'components/Field/Field.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import FieldSettings from 'components/FieldSettings/FieldSettings.react';
-import LabelSettings from 'components/LabelSettings/LabelSettings.react';
+import BaseLabelSettings from 'components/LabelSettings/LabelSettings.react';
 import NumericInputSettings from 'components/NumericInputSettings/NumericInputSettings.react';
 import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
 import Button from 'components/Button/Button.react';
+import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
+import Icon from 'components/Icon/Icon.react';
 import { Link } from 'react-router-dom';
 
 import deepmerge from 'deepmerge';
@@ -31,6 +33,67 @@ import renderFlowFooterChanges from 'lib/renderFlowFooterChanges';
 import CustomParseOptionsValidations from './CustomParseOptionsValidations';
 import getError from 'dashboard/Settings/Util/getError';
 import semver from 'semver';
+
+const LabelInfoTooltip = ({ description, children }) => {
+  const [visible, setVisible] = React.useState(false);
+  const [placement, setPlacement] = React.useState('top');
+
+  if (!description) {
+    return children;
+  }
+
+  const showTooltip = event => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setPlacement(rect.top < 140 ? 'bottom' : 'top');
+    setVisible(true);
+  };
+
+  return (
+    <span
+      onMouseEnter={showTooltip}
+      onMouseLeave={() => setVisible(false)}
+      onFocus={showTooltip}
+      onBlur={() => setVisible(false)}
+    >
+      <B4aTooltip
+        value={<div style={{ minWidth: '320px', maxWidth: '360px', whiteSpace: 'normal', textAlign: 'center' }}>{description}</div>}
+        visible={visible}
+        placement={placement}
+        theme='dark'
+        arrowAlign='right'
+        horizontalOffset={12}
+      >
+        {children}
+      </B4aTooltip>
+    </span>
+  );
+};
+
+const LabelSettings = ({ description, helpText, help, ...props }) => {
+  const tooltipText = helpText || description;
+
+  return (
+    <BaseLabelSettings
+      {...props}
+      description={description}
+      help={help || (
+        tooltipText ? (
+          <LabelInfoTooltip description={tooltipText}>
+            <span className={styles.infoHelp}>
+              <Icon
+                className={styles.infoIcon}
+                name='info-outline'
+                width={14}
+                height={14}
+                fill='#95B8DA'
+              />
+            </span>
+          </LabelInfoTooltip>
+        ) : null
+      )}
+    />
+  );
+};
 
 @withRouter
 class CustomParseOptions extends DashboardView {
@@ -262,6 +325,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Public ServerURL'
                         description='URL accessible by the Parse JavaScript SDK'
+                        helpText='Public URL of your Parse Server (include http:// or https://). Client SDKs use this endpoint for API calls and user flows like password reset and email verification.'
                       />
                     }
                     input={
@@ -328,6 +392,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Push Notification from Client'
                         description='For security reasons, we recommend to disable this option.'
+                        helpText='Allows clients to trigger push operations directly. Keep disabled in production to reduce abuse risk and keep push logic on trusted server-side code.'
                       />
                     }
                     input={
@@ -347,6 +412,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Client Class Creation'
                         description='For security reasons, we recommend to disable this option.'
+                        helpText='Maps to allowClientClassCreation. If enabled, clients can create classes dynamically. Parse Server default is false; keeping it off helps prevent unwanted schema changes.'
                       />
                     }
                     input={
@@ -364,8 +430,9 @@ class CustomParseOptions extends DashboardView {
                     labelWidth={'50%'}
                     label={
                       <LabelSettings
-                        text='preserveFileName'
+                        text='Preserve File Name'
                         description='Preserve file names when uploading files'
+                        helpText='When enabled, Parse Server preserves the original filename instead of always adding a generated hash suffix. Enable this only if your file naming strategy avoids collisions and does not expose sensitive naming patterns.'
                       />
                     }
                     input={
@@ -404,6 +471,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Enable Single Schema Cache'
                         description='Use a single schema cache for all requests'
+                        helpText='Uses one shared schema cache for requests to reduce repeated schema lookups. This can improve performance on stable schemas, but confirm behavior in your environment before enabling broadly.'
                       />
                     }
                     input={
@@ -423,6 +491,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Allow Custom ObjectId'
                         description='Allow custom objectId values on create'
+                        helpText='Maps to allowCustomObjectId. When enabled, create requests may provide their own objectId instead of using server-generated IDs. Use carefully to avoid collisions and preserve predictable data integrity.'
                       />
                     }
                     input={
@@ -444,6 +513,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='ObjectId Size'
                         description='Length of generated objectId values'
+                        helpText='Maps to objectIdSize. Defines how many characters Parse Server uses when generating objectIds. The documented default is 10 characters.'
                       />
                     }
                     input={
@@ -488,6 +558,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Reset Token Validity Duration'
                         description='Set the validity duration of the password reset token in seconds after which the token expires.'
+                        helpText='Part of passwordPolicy. Sets password reset token lifetime in seconds. After this period, the reset link becomes invalid and users must request a new one.'
                       />
                     }
                     input={
@@ -513,6 +584,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Reset Token Reuse If Valid'
                         description='If a password reset token should be reused in case another token is requested but there is a token that is still valid.'
+                        helpText='Part of passwordPolicy. If enabled, Parse Server reuses an existing valid reset token instead of creating a new one for repeated reset requests, reducing user confusion from multiple emails.'
                       />
                     }
                     input={
@@ -533,6 +605,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Password Validator Pattern'
                         description='Set the regular expression validation pattern a password must match to be accepted.'
+                        helpText='Part of passwordPolicy. Regular expression that passwords must match to be accepted. Use this to enforce complexity rules such as minimum length, uppercase letters, or numeric characters.'
                       />
                     }
                     input={
@@ -554,6 +627,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Validation Error Message'
                         description='Set the error message to be sent for failed password validation'
+                        helpText='Part of passwordPolicy. Custom message returned when a password fails the validator pattern. Keep this clear so users understand how to fix their password input.'
                       />
                     }
                     input={
@@ -574,6 +648,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Do Not Allow Username'
                         description='Set to true to disallow the username as part of the password.'
+                        helpText='Part of passwordPolicy. Prevents users from including their username in their password, reducing easily guessable credential combinations.'
                       />
                     }
                     input={
@@ -594,6 +669,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Max Password Age'
                         description='Set the number of days after which a password expires.'
+                        helpText='Part of passwordPolicy. Maximum password lifetime in days. After expiration, users must set a new password according to your policy.'
                       />
                     }
                     input={
@@ -616,6 +692,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Max Password History'
                         description='Set the number of previous password that will not be allowed to be set as new password.'
+                        helpText='Part of passwordPolicy. Number of previous passwords that users cannot reuse. Higher values strengthen password rotation by preventing repeated historical passwords.'
                       />
                     }
                     input={
@@ -659,6 +736,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Duration'
                         description='Set the duration in minutes that a locked-out account remains locked out before automatically becoming unlocked.'
+                        helpText='Part of accountLockout. Lockout duration in minutes after a user exceeds failed login attempts. During this window, authentication attempts remain blocked.'
                       />
                     }
                     input={
@@ -681,6 +759,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Threshold'
                         description='Set the number of failed sign-in attempts that will cause a user account to be locked.'
+                        helpText='Part of accountLockout. Number of failed sign-in attempts allowed before the account is locked. Lower values improve brute-force resistance but may increase accidental lockouts.'
                       />
                     }
                     input={
@@ -724,6 +803,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Enable Anonymous Users'
                         description='Enable anonymous users to sign up without credentials'
+                        helpText='Maps to enableAnonymousUsers. Allows users to be created without username/password credentials. Parse Server defaults this to true.'
                       />
                     }
                     input={
@@ -743,6 +823,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Enforce Private Users'
                         description='Make new users private by default'
+                        helpText='Maps to enforcePrivateUsers. When enabled, newly created users do not get public read/write access by default, improving baseline privacy for user objects.'
                       />
                     }
                     input={
@@ -763,6 +844,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Session Length'
                         description='Session token expiration (in seconds, default: 1 year)'
+                        helpText='Maps to sessionLength. Session lifetime in seconds. Parse Server defaults to one year if not customized.'
                       />
                     }
                     input={
@@ -784,6 +866,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Email Verify Token Validity Duration'
                         description='Email verification token expiration (in seconds)'
+                        helpText='Maps to emailVerifyTokenValidityDuration. Sets email verification token lifetime in seconds. If not set, the token may not expire. Requires verifyUserEmails to be enabled.'
                       />
                     }
                     input={
@@ -804,6 +887,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Expire Inactive Sessions'
                         description='Expire inactive sessions automatically'
+                        helpText='Maps to expireInactiveSessions. When enabled, inactive sessions expire automatically. If disabled, new sessions may be created without expiration.'
                       />
                     }
                     input={
@@ -847,6 +931,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Choose Password '
                         description='Custom page URL for choose password'
+                        helpText='Custom page URL used for the password choice/reset flow. This belongs to Parse custom pages configuration and should point to a publicly reachable frontend route.'
                       />
                     }
                     input={
@@ -868,6 +953,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Verify Email Success '
                         description='Custom page URL for email verification success'
+                        helpText='Custom page URL users are redirected to after successful email verification. Use a trusted public route that confirms verification and guides next steps.'
                       />
                     }
                     input={
@@ -889,6 +975,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Parse Frame '
                         description='Custom page URL for iFrame embeds'
+                        helpText='Custom page URL used for Parse-hosted iframe related flows. Ensure the route is secure, publicly reachable, and consistent with your application domain policy.'
                       />
                     }
                     input={
@@ -910,6 +997,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Password Reset Success '
                         description='Custom page URL for password reset success'
+                        helpText='Custom page URL users see after successfully resetting their password. Usually this page confirms success and offers a sign-in action.'
                       />
                     }
                     input={
@@ -931,6 +1019,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Invalid Link '
                         description='Custom page URL for invalid links'
+                        helpText='Custom page URL shown when a reset or verification link is invalid or expired. Provide recovery actions such as requesting a new email.'
                       />
                     }
                     input={
@@ -952,6 +1041,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Invalid Verification Link '
                         description='Custom page URL for invalid verification links'
+                        helpText='Custom page URL shown when an email verification link is invalid or expired. Use this page to explain the issue and offer resend verification.'
                       />
                     }
                     input={
@@ -973,6 +1063,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Link Send Success '
                         description='Custom page URL for link sent success'
+                        helpText='Custom page URL shown after a link email is successfully sent. Useful for confirmation messaging and user guidance.'
                       />
                     }
                     input={
@@ -995,6 +1086,7 @@ class CustomParseOptions extends DashboardView {
                       <LabelSettings
                         text='Link Send Fail '
                         description='Custom page URL for link sent failure'
+                        helpText='Custom page URL shown when sending a verification or reset link fails. Use it to communicate retry options and support paths.'
                       />
                     }
                     input={

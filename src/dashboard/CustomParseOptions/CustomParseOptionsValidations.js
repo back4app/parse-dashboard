@@ -19,11 +19,37 @@ const optionalUrl = yup.string()
     }
   });
 
+const isValidRegexPattern = (value) => {
+  if (!value) {return true;}
+  const pattern = value.trim();
+  if (!pattern) {return true;}
+
+  try {
+    // Support /pattern/flags syntax.
+    const slashRegexMatch = pattern.match(/^\/([\s\S]*)\/([a-z]*)$/i);
+    if (slashRegexMatch) {
+      const [, source, flags] = slashRegexMatch;
+      new RegExp(source, flags);
+      return true;
+    }
+
+    // Also support plain pattern syntax without delimiters.
+    new RegExp(pattern);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export default yup.object({
   customOptions: yup.object({
     passwordPolicy: yup.object({
       resetTokenValidityDuration: integer.positive('must be greater than 0.'),
-      validatorPattern: yup.string().trim().max(1000, 'must be 1000 characters or less.').min(3, 'must be at least 3 characters.'),
+      validatorPattern: yup.string()
+        .trim()
+        .max(1000, 'must be 1000 characters or less.')
+        .min(3, 'must be at least 3 characters.')
+        .test('valid-regex-pattern', 'must be a valid regular expression.', isValidRegexPattern),
       validationError: yup.string().trim().max(1000, 'must be 1000 characters or less.').min(1, 'must be at least 1 character.'),
       maxPasswordAge: integer.min(0, 'must be 0 or greater.'),
       maxPasswordHistory: integer.min(0, 'must be 0 or greater.').max(20, 'must be 20 or less.'),
