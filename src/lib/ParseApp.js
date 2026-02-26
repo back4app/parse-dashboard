@@ -1932,7 +1932,7 @@ export default class ParseApp {
       return (
         await axios.get(
           // eslint-disable-next-line no-undef
-          `${b4aSettings.BACK4APP_API_PATH}/parse-app/settings/${this.slug}`,
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/getAdvancedSettings/${this.slug}`,
           { withCredentials: true }
         )
       ).data;
