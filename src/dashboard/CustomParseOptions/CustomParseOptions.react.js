@@ -210,7 +210,7 @@ class CustomParseOptions extends DashboardView {
         <div className={styles.domainSettingsContainer}>
           <div className={styles.heading}>Parse Server Options</div>
           <div className={styles.subheading}>Configure advanced settings of your Parse Server instance, including server behavior, authentication, and security rules.</div>
-          <div className={styles.warning}>Warning: This is a <strong>DANGER ZONE</strong>. Your app can stop working if you do something wrong. If you are not sure, ask for support.</div>
+          <div className={styles.warning}><strong>Warning:</strong> Changes apply immediately and may affect your app’s availability or client connections.</div>
 
           {!this.state.canChangeCustomParseOptions && (
             <Fieldset>
