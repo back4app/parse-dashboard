@@ -237,7 +237,7 @@ class CustomParseOptions extends DashboardView {
             </Fieldset>
           )}
 
-          <div style={!isOwner || !this.state.canChangeCustomParseOptions ? { pointerEvents: 'none', opacity: 0.95 } : {}}>
+          <div style={!isOwner || !this.state.canChangeCustomParseOptions ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
 
           <Fieldset
             legend='Core Configuration'
