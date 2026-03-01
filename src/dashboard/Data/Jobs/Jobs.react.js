@@ -101,6 +101,7 @@ class Jobs extends TableView {
     };
     this.filterWrapRef = React.createRef();
     this.loadMoreSentinelRef = React.createRef();
+    this._loadMoreInProgress = false; // guard: only one "load next 100" at a time
     this.JOB_STATUS_PAGE_SIZE = 100;
   }
 
@@ -164,13 +165,14 @@ class Jobs extends TableView {
   }
 
   componentDidMount() {
+    // Só chama getJobStatus (próximos 100) quando o usuário rolar até o fim da lista
     this.jobStatusScrollObserver = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && this.props.params.section === 'status') {
           this.loadMoreJobStatus();
         }
       },
-      { rootMargin: '200px', threshold: 0 }
+      { rootMargin: '0px', threshold: 0 }
     );
     this._attachJobStatusScrollObserver();
   }
@@ -198,15 +200,21 @@ class Jobs extends TableView {
   }
 
   loadMoreJobStatus() {
-    if (this.props.params.section !== 'status' || this.state.jobStatusLoadingMore || !this.state.jobStatusHasMore) {
+    // Only fetch next 100 when user scrolls to bottom; one request at a time
+    if (this.props.params.section !== 'status' || !this.state.jobStatusHasMore) {
+      return;
+    }
+    if (this._loadMoreInProgress || this.state.jobStatusLoadingMore) {
       return;
     }
     const current = this.state.jobStatus || [];
     if (current.length === 0) {
       return;
     }
+    this._loadMoreInProgress = true;
     this.setState({ jobStatusLoadingMore: true });
-    this.context.getJobStatus(current.length, this.JOB_STATUS_PAGE_SIZE)
+    const skip = current.length;
+    this.context.getJobStatus(skip, this.JOB_STATUS_PAGE_SIZE)
       .then(nextPage => {
         this.setState(prev => ({
           jobStatus: [...(prev.jobStatus || []), ...nextPage],
@@ -214,7 +222,10 @@ class Jobs extends TableView {
           jobStatusLoadingMore: false,
         }));
       })
-      .catch(() => this.setState({ jobStatusLoadingMore: false }));
+      .catch(() => this.setState({ jobStatusLoadingMore: false }))
+      .finally(() => {
+        this._loadMoreInProgress = false;
+      });
   }
 
   renderSidebar() {
