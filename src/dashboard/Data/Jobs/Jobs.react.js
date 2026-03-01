@@ -95,8 +95,13 @@ class Jobs extends TableView {
       draftFilterStatus: undefined,
       draftFilterJobName: undefined,
       filterOpen: false,
+      // Job Status pagination (infinite scroll)
+      jobStatusHasMore: true,
+      jobStatusLoadingMore: false,
     };
     this.filterWrapRef = React.createRef();
+    this.loadMoreSentinelRef = React.createRef();
+    this.JOB_STATUS_PAGE_SIZE = 100;
   }
 
   componentWillMount() {
@@ -151,11 +156,65 @@ class Jobs extends TableView {
       else {this.setState({ loading: false });}
       this.renderEmpty()
     });
-    this.context.getJobStatus().then(status => {
-      this.setState({ jobStatus: status });
+    this.context.getJobStatus(0, this.JOB_STATUS_PAGE_SIZE).then(status => {
+      this.setState({ jobStatus: status, jobStatusHasMore: status.length === this.JOB_STATUS_PAGE_SIZE });
     }).catch(() => {
-      this.setState({ jobStatus: [] });
+      this.setState({ jobStatus: [], jobStatusHasMore: false });
     });
+  }
+
+  componentDidMount() {
+    this.jobStatusScrollObserver = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && this.props.params.section === 'status') {
+          this.loadMoreJobStatus();
+        }
+      },
+      { rootMargin: '200px', threshold: 0 }
+    );
+    this._attachJobStatusScrollObserver();
+  }
+
+  componentDidUpdate() {
+    if (this.props.params.section !== 'status' && this._observerAttached) {
+      this.jobStatusScrollObserver.disconnect();
+      this._observerAttached = false;
+    } else {
+      this._attachJobStatusScrollObserver();
+    }
+  }
+
+  _attachJobStatusScrollObserver() {
+    if (this.props.params.section === 'status' && this.loadMoreSentinelRef.current && !this._observerAttached) {
+      this._observerAttached = true;
+      this.jobStatusScrollObserver.observe(this.loadMoreSentinelRef.current);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.jobStatusScrollObserver) {
+      this.jobStatusScrollObserver.disconnect();
+    }
+  }
+
+  loadMoreJobStatus() {
+    if (this.props.params.section !== 'status' || this.state.jobStatusLoadingMore || !this.state.jobStatusHasMore) {
+      return;
+    }
+    const current = this.state.jobStatus || [];
+    if (current.length === 0) {
+      return;
+    }
+    this.setState({ jobStatusLoadingMore: true });
+    this.context.getJobStatus(current.length, this.JOB_STATUS_PAGE_SIZE)
+      .then(nextPage => {
+        this.setState(prev => ({
+          jobStatus: [...(prev.jobStatus || []), ...nextPage],
+          jobStatusHasMore: nextPage.length === this.JOB_STATUS_PAGE_SIZE,
+          jobStatusLoadingMore: false,
+        }));
+      })
+      .catch(() => this.setState({ jobStatusLoadingMore: false }));
   }
 
   renderSidebar() {
@@ -274,7 +333,22 @@ class Jobs extends TableView {
     if (this.props.params.section === 'scheduled') {
       return <JobScheduleReminder />;
     }
-
+    if (this.props.params.section === 'status') {
+      return (
+        <>
+          <div
+            ref={this.loadMoreSentinelRef}
+            style={{ height: 1, minHeight: 1, visibility: 'hidden' }}
+            aria-hidden="true"
+          />
+          {this.state.jobStatusLoadingMore ? (
+            <div style={{ padding: '12px', textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
+              Loading more…
+            </div>
+          ) : null}
+        </>
+      );
+    }
     return null;
   }
 
