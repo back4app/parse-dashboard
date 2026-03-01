@@ -370,8 +370,8 @@ class Jobs extends TableView {
   getJobNameOptions() {
     const jobStatus = this.state.jobStatus || [];
     const names = [...new Set(jobStatus.map(job => job.jobName).filter(Boolean))].sort();
-    // ChromeDropdown disables when options.length <= 1; add "Job name" so there are always ≥2 options
-    return [{ key: '', value: 'Job name' }, ...names.map(n => ({ key: n, value: n }))];
+    // First option = "all"; use sentinel so label "Job name" shows by default (same as Status)
+    return [{ key: '__all__', value: 'Job name' }, ...names.map(n => ({ key: n, value: n }))];
   }
 
   onRefresh() {
@@ -390,7 +390,8 @@ class Jobs extends TableView {
   }
 
   renderJobStatusFilter() {
-    const JOB_STATUS_OPTIONS = ['succeeded', 'failed', 'running'];
+    // First option = "all" so dropdown shows default label and can clear independently
+    const JOB_STATUS_OPTIONS = ['Status', 'succeeded', 'failed', 'running'];
     const { filterStatus, filterJobName, filterOpen } = this.state;
     const active = filterStatus || filterJobName;
     let popover = null;
@@ -398,7 +399,9 @@ class Jobs extends TableView {
     if (filterOpen && this.filterWrapRef.current) {
       const position = Position.inDocument(this.filterWrapRef.current);
       const popoverStyle = [filterStyles.popover];
-      if (active) popoverStyle.push(filterStyles.active);
+      if (active) {
+        popoverStyle.push(filterStyles.active);
+      }
       popover = (
         <Popover fixed={false} position={position}>
           <div className={popoverStyle.join(' ')}>
@@ -409,16 +412,16 @@ class Jobs extends TableView {
               <div className={filterStyles.row}>
                 <ChromeDropdown
                   color={active ? '' : 'purple'}
-                  value={filterStatus || 'Status'}
-                  options={JOB_STATUS_OPTIONS}
-                  onChange={status => this.setState({ filterStatus: status })}
+                  value={filterJobName ?? '__all__'}
+                  options={this.getJobNameOptions()}
+                  onChange={jobName => this.setState({ filterJobName: jobName === '__all__' ? undefined : jobName })}
+                  width={200}
                 />
                 <ChromeDropdown
                   color={active ? '' : 'purple'}
-                  value={filterJobName ?? ''}
-                  options={this.getJobNameOptions()}
-                  onChange={jobName => this.setState({ filterJobName: jobName || undefined })}
-                  width={200}
+                  value={filterStatus || 'Status'}
+                  options={JOB_STATUS_OPTIONS}
+                  onChange={status => this.setState({ filterStatus: status === 'Status' ? undefined : status })}
                 />
               </div>
               <div className={filterStyles.footer}>
@@ -437,7 +440,9 @@ class Jobs extends TableView {
     }
 
     const buttonStyle = [filterStyles.entry];
-    if (active) buttonStyle.push(filterStyles.active);
+    if (active) {
+      buttonStyle.push(filterStyles.active);
+    }
     return (
       <div className={filterStyles.wrap} ref={this.filterWrapRef}>
         <div className={buttonStyle.join(' ')} onClick={() => this.setState({ filterOpen: true })}>
@@ -456,10 +461,10 @@ class Jobs extends TableView {
           subsection={`Jobs > ${subsections[this.props.params.section]}`}
           details={ReleaseInfo({ release: this.props.release })}
         >
+          {this.props.params.section === 'status' ? this.renderJobStatusFilter() : null}
           <a className={browserStyles.toolbarButton} style={{ color: 'white', border: 'none', margin: 0, padding: 0 }} onClick={this.onRefresh.bind(this)}>
             <Icon name="b4a-refresh-icon" width={18} height={18} />
           </a>
-          {this.props.params.section === 'status' ? this.renderJobStatusFilter() : null}
           {this.props.availableJobs && this.props.availableJobs.length > 0 ? (
             <Button color="white" value="Schedule a job" onClick={this.navigateToNew.bind(this)} />
           ) : null}
