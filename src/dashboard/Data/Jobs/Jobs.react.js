@@ -95,13 +95,11 @@ class Jobs extends TableView {
       draftFilterStatus: undefined,
       draftFilterJobName: undefined,
       filterOpen: false,
-      // Job Status pagination (infinite scroll)
+      // Job Status pagination (botão "Carregar mais")
       jobStatusHasMore: true,
       jobStatusLoadingMore: false,
     };
     this.filterWrapRef = React.createRef();
-    this.loadMoreSentinelRef = React.createRef();
-    this._loadMoreInProgress = false; // guard: only one "load next 100" at a time
     this.JOB_STATUS_PAGE_SIZE = 100;
   }
 
@@ -164,54 +162,14 @@ class Jobs extends TableView {
     });
   }
 
-  componentDidMount() {
-    // Só chama getJobStatus (próximos 100) quando o usuário rolar até o fim da lista
-    this.jobStatusScrollObserver = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && this.props.params.section === 'status') {
-          this.loadMoreJobStatus();
-        }
-      },
-      { rootMargin: '0px', threshold: 0 }
-    );
-    this._attachJobStatusScrollObserver();
-  }
-
-  componentDidUpdate() {
-    if (this.props.params.section !== 'status' && this._observerAttached) {
-      this.jobStatusScrollObserver.disconnect();
-      this._observerAttached = false;
-    } else {
-      this._attachJobStatusScrollObserver();
-    }
-  }
-
-  _attachJobStatusScrollObserver() {
-    if (this.props.params.section === 'status' && this.loadMoreSentinelRef.current && !this._observerAttached) {
-      this._observerAttached = true;
-      this.jobStatusScrollObserver.observe(this.loadMoreSentinelRef.current);
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.jobStatusScrollObserver) {
-      this.jobStatusScrollObserver.disconnect();
-    }
-  }
-
   loadMoreJobStatus() {
-    // Only fetch next 100 when user scrolls to bottom; one request at a time
-    if (this.props.params.section !== 'status' || !this.state.jobStatusHasMore) {
-      return;
-    }
-    if (this._loadMoreInProgress || this.state.jobStatusLoadingMore) {
+    if (this.props.params.section !== 'status' || !this.state.jobStatusHasMore || this.state.jobStatusLoadingMore) {
       return;
     }
     const current = this.state.jobStatus || [];
     if (current.length === 0) {
       return;
     }
-    this._loadMoreInProgress = true;
     this.setState({ jobStatusLoadingMore: true });
     const skip = current.length;
     this.context.getJobStatus(skip, this.JOB_STATUS_PAGE_SIZE)
@@ -222,10 +180,7 @@ class Jobs extends TableView {
           jobStatusLoadingMore: false,
         }));
       })
-      .catch(() => this.setState({ jobStatusLoadingMore: false }))
-      .finally(() => {
-        this._loadMoreInProgress = false;
-      });
+      .catch(() => this.setState({ jobStatusLoadingMore: false }));
   }
 
   renderSidebar() {
@@ -344,20 +299,19 @@ class Jobs extends TableView {
     if (this.props.params.section === 'scheduled') {
       return <JobScheduleReminder />;
     }
-    if (this.props.params.section === 'status') {
+    if (this.props.params.section === 'status' && this.state.jobStatus && this.state.jobStatus.length > 0) {
+      const { jobStatusHasMore, jobStatusLoadingMore } = this.state;
       return (
-        <>
-          <div
-            ref={this.loadMoreSentinelRef}
-            style={{ height: 1, minHeight: 1, visibility: 'hidden' }}
-            aria-hidden="true"
-          />
-          {this.state.jobStatusLoadingMore ? (
-            <div style={{ padding: '12px', textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
-              Loading more…
-            </div>
+        <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(249,249,249,0.06)' }}>
+          {jobStatusLoadingMore ? (
+            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Loading more…</span>
+          ) : jobStatusHasMore ? (
+            <Button
+              value="Load more"
+              onClick={this.loadMoreJobStatus.bind(this)}
+            />
           ) : null}
-        </>
+        </div>
       );
     }
     return null;
