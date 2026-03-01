@@ -89,9 +89,11 @@ class Jobs extends TableView {
       // Properties used to control data access
       hasPermission: true,
       errorMessage: '',
-      // Job Status section filters (client-side)
+      // Job Status section filters (client-side): applied = used in table; draft = selection in popover
       filterStatus: undefined,
       filterJobName: undefined,
+      draftFilterStatus: undefined,
+      draftFilterJobName: undefined,
       filterOpen: false,
     };
     this.filterWrapRef = React.createRef();
@@ -384,22 +386,36 @@ class Jobs extends TableView {
   }
 
   clearJobStatusFilter() {
-    this.setState(
-      { filterOpen: false, filterStatus: undefined, filterJobName: undefined }
-    );
+    this.setState({
+      filterOpen: false,
+      filterStatus: undefined,
+      filterJobName: undefined,
+      draftFilterStatus: undefined,
+      draftFilterJobName: undefined,
+    });
+  }
+
+  runJobStatusFilter() {
+    this.setState({
+      filterStatus: this.state.draftFilterStatus,
+      filterJobName: this.state.draftFilterJobName,
+      filterOpen: false,
+    });
   }
 
   renderJobStatusFilter() {
     // First option = "all" so dropdown shows default label and can clear independently
     const JOB_STATUS_OPTIONS = ['Status', 'succeeded', 'failed', 'running'];
-    const { filterStatus, filterJobName, filterOpen } = this.state;
-    const active = filterStatus || filterJobName;
+    const { filterStatus, filterJobName, draftFilterStatus, draftFilterJobName, filterOpen } = this.state;
+    const appliedActive = filterStatus || filterJobName;
+    const draftActive = draftFilterStatus || draftFilterJobName;
+    const mutated = draftFilterStatus !== filterStatus || draftFilterJobName !== filterJobName;
     let popover = null;
 
     if (filterOpen && this.filterWrapRef.current) {
       const position = Position.inDocument(this.filterWrapRef.current);
       const popoverStyle = [filterStyles.popover];
-      if (active) {
+      if (draftActive) {
         popoverStyle.push(filterStyles.active);
       }
       popover = (
@@ -411,26 +427,33 @@ class Jobs extends TableView {
             <div className={filterStyles.body}>
               <div className={filterStyles.row}>
                 <ChromeDropdown
-                  color={active ? '' : 'purple'}
-                  value={filterJobName ?? 'Job name'}
+                  color={draftActive ? '' : 'purple'}
+                  value={draftFilterJobName ?? 'Job name'}
                   options={this.getJobNameOptions()}
-                  onChange={jobName => this.setState({ filterJobName: jobName === 'Job name' ? undefined : jobName })}
+                  onChange={jobName => this.setState({ draftFilterJobName: jobName === 'Job name' ? undefined : jobName })}
                   width={200}
                 />
                 <ChromeDropdown
-                  color={active ? '' : 'purple'}
-                  value={filterStatus || 'Status'}
+                  color={draftActive ? '' : 'purple'}
+                  value={draftFilterStatus || 'Status'}
                   options={JOB_STATUS_OPTIONS}
-                  onChange={status => this.setState({ filterStatus: status === 'Status' ? undefined : status })}
+                  onChange={status => this.setState({ draftFilterStatus: status === 'Status' ? undefined : status })}
                 />
               </div>
               <div className={filterStyles.footer}>
                 <Button
                   color="white"
                   value="Clear all"
-                  disabled={!active}
+                  disabled={!draftActive}
                   dark={true}
                   onClick={this.clearJobStatusFilter.bind(this)}
+                />
+                <Button
+                  color="green"
+                  primary={true}
+                  value="Run query"
+                  disabled={!mutated}
+                  onClick={this.runJobStatusFilter.bind(this)}
                 />
               </div>
             </div>
@@ -440,12 +463,19 @@ class Jobs extends TableView {
     }
 
     const buttonStyle = [filterStyles.entry];
-    if (active) {
+    if (appliedActive) {
       buttonStyle.push(filterStyles.active);
     }
     return (
       <div className={filterStyles.wrap} ref={this.filterWrapRef}>
-        <div className={buttonStyle.join(' ')} onClick={() => this.setState({ filterOpen: true })}>
+        <div
+          className={buttonStyle.join(' ')}
+          onClick={() => this.setState({
+            filterOpen: true,
+            draftFilterStatus: this.state.filterStatus,
+            draftFilterJobName: this.state.filterJobName,
+          })}
+        >
           <Icon name="b4a-browser-filter-icon" width={18} height={18} />
         </div>
         {popover}
