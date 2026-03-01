@@ -370,8 +370,8 @@ class Jobs extends TableView {
   getJobNameOptions() {
     const jobStatus = this.state.jobStatus || [];
     const names = [...new Set(jobStatus.map(job => job.jobName).filter(Boolean))].sort();
-    // First option = "all"; use sentinel so label "Job name" shows by default (same as Status)
-    return [{ key: '__all__', value: 'Job name' }, ...names.map(n => ({ key: n, value: n }))];
+    // First option = "all"; key same as value so label shows "Job name" without keyValueMap
+    return [{ key: 'Job name', value: 'Job name' }, ...names.map(n => ({ key: n, value: n }))];
   }
 
   onRefresh() {
@@ -412,9 +412,9 @@ class Jobs extends TableView {
               <div className={filterStyles.row}>
                 <ChromeDropdown
                   color={active ? '' : 'purple'}
-                  value={filterJobName ?? '__all__'}
+                  value={filterJobName ?? 'Job name'}
                   options={this.getJobNameOptions()}
-                  onChange={jobName => this.setState({ filterJobName: jobName === '__all__' ? undefined : jobName })}
+                  onChange={jobName => this.setState({ filterJobName: jobName === 'Job name' ? undefined : jobName })}
                   width={200}
                 />
                 <ChromeDropdown
