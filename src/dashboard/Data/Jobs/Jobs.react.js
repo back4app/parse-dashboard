@@ -369,8 +369,9 @@ class Jobs extends TableView {
 
   getJobNameOptions() {
     const jobStatus = this.state.jobStatus || [];
-    const names = [...new Set(jobStatus.map(job => job.jobName).filter(Boolean))];
-    return names.sort();
+    const names = [...new Set(jobStatus.map(job => job.jobName).filter(Boolean))].sort();
+    // ChromeDropdown disables when options.length <= 1; add "Job name" so there are always ≥2 options
+    return [{ key: '', value: 'Job name' }, ...names.map(n => ({ key: n, value: n }))];
   }
 
   onRefresh() {
@@ -414,9 +415,9 @@ class Jobs extends TableView {
                 />
                 <ChromeDropdown
                   color={active ? '' : 'purple'}
-                  value={filterJobName || 'Job name'}
+                  value={filterJobName ?? ''}
                   options={this.getJobNameOptions()}
-                  onChange={jobName => this.setState({ filterJobName: jobName })}
+                  onChange={jobName => this.setState({ filterJobName: jobName || undefined })}
                   width={200}
                 />
               </div>
