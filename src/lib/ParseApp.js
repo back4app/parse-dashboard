@@ -1057,17 +1057,21 @@ export default class ParseApp {
     return this.apiRequest('GET', path, {}, { useMasterKey: true });
   }
 
-  getJobStatus() {
+  getJobStatus(skip = 0, limit = 100) {
     const query = new Parse.Query('_JobStatus');
     query.descending('createdAt');
+    query.skip(skip);
+    query.limit(limit);
     return query.find({ useMasterKey: true }).then(status => {
       status = status.map(jobStatus => {
         return jobStatus.toJSON();
       });
-      this.jobStatus = {
-        status: status || null,
-        lastFetched: new Date(),
-      };
+      if (skip === 0) {
+        this.jobStatus = {
+          status: status || null,
+          lastFetched: new Date(),
+        };
+      }
       return status;
     });
   }

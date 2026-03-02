@@ -10,9 +10,12 @@ import Button from 'components/Button/Button.react';
 import * as DateUtils from 'lib/DateUtils';
 import CategoryList from 'components/CategoryList/CategoryList.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import ChromeDropdown from 'components/ChromeDropdown/ChromeDropdown.react';
 import Icon from 'components/Icon/Icon.react';
 import JobScheduleReminder from 'dashboard/Data/Jobs/JobScheduleReminder.react';
 import Modal from 'components/Modal/Modal.react';
+import Popover from 'components/Popover/Popover.react';
+import Position from 'lib/Position';
 import React from 'react';
 import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
 import RunNowButton from 'dashboard/Data/Jobs/RunNowButton.react';
@@ -20,6 +23,7 @@ import SidebarAction from 'components/Sidebar/SidebarAction';
 import B4aStatusIndicator from 'components/StatusIndicator/B4aStatusIndicator.react';
 import styles from 'dashboard/Data/Jobs/Jobs.scss';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
+import filterStyles from 'components/SlowQueriesFilter/SlowQueriesFilter.scss';
 import tableStyles from 'dashboard/TableView.scss';
 import subscribeTo from 'lib/subscribeTo';
 import TableHeader from 'components/Table/TableHeader.react';
@@ -84,8 +88,19 @@ class Jobs extends TableView {
       loading: true,
       // Properties used to control data access
       hasPermission: true,
-      errorMessage: ''
+      errorMessage: '',
+      // Job Status section filters (client-side): applied = used in table; draft = selection in popover
+      filterStatus: undefined,
+      filterJobName: undefined,
+      draftFilterStatus: undefined,
+      draftFilterJobName: undefined,
+      filterOpen: false,
+      // Job Status pagination (botão "Carregar mais")
+      jobStatusHasMore: true,
+      jobStatusLoadingMore: false,
     };
+    this.filterWrapRef = React.createRef();
+    this.JOB_STATUS_PAGE_SIZE = 100;
   }
 
   componentWillMount() {
@@ -140,11 +155,32 @@ class Jobs extends TableView {
       else {this.setState({ loading: false });}
       this.renderEmpty()
     });
-    this.context.getJobStatus().then(status => {
-      this.setState({ jobStatus: status });
+    this.context.getJobStatus(0, this.JOB_STATUS_PAGE_SIZE).then(status => {
+      this.setState({ jobStatus: status, jobStatusHasMore: status.length === this.JOB_STATUS_PAGE_SIZE });
     }).catch(() => {
-      this.setState({ jobStatus: [] });
+      this.setState({ jobStatus: [], jobStatusHasMore: false });
     });
+  }
+
+  loadMoreJobStatus() {
+    if (this.props.params.section !== 'status' || !this.state.jobStatusHasMore || this.state.jobStatusLoadingMore) {
+      return;
+    }
+    const current = this.state.jobStatus || [];
+    if (current.length === 0) {
+      return;
+    }
+    this.setState({ jobStatusLoadingMore: true });
+    const skip = current.length;
+    this.context.getJobStatus(skip, this.JOB_STATUS_PAGE_SIZE)
+      .then(nextPage => {
+        this.setState(prev => ({
+          jobStatus: [...(prev.jobStatus || []), ...nextPage],
+          jobStatusHasMore: nextPage.length === this.JOB_STATUS_PAGE_SIZE,
+          jobStatusLoadingMore: false,
+        }));
+      })
+      .catch(() => this.setState({ jobStatusLoadingMore: false }));
   }
 
   renderSidebar() {
@@ -263,7 +299,21 @@ class Jobs extends TableView {
     if (this.props.params.section === 'scheduled') {
       return <JobScheduleReminder />;
     }
-
+    if (this.props.params.section === 'status' && this.state.jobStatus && this.state.jobStatus.length > 0) {
+      const { jobStatusHasMore, jobStatusLoadingMore } = this.state;
+      return (
+        <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(249,249,249,0.06)' }}>
+          {jobStatusLoadingMore ? (
+            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Loading more…</span>
+          ) : jobStatusHasMore ? (
+            <Button
+              value="Load more"
+              onClick={this.loadMoreJobStatus.bind(this)}
+            />
+          ) : null}
+        </div>
+      );
+    }
     return null;
   }
 
@@ -345,10 +395,24 @@ class Jobs extends TableView {
         // data = jobs.toArray();
         // }
       }
-    } else {
-      return this.state.jobStatus;
+    } else if (this.props.params.section === 'status') {
+      let statusList = this.state.jobStatus || [];
+      if (this.state.filterStatus) {
+        statusList = statusList.filter(job => job.status === this.state.filterStatus);
+      }
+      if (this.state.filterJobName) {
+        statusList = statusList.filter(job => job.jobName === this.state.filterJobName);
+      }
+      return statusList;
     }
     return data;
+  }
+
+  getJobNameOptions() {
+    const jobStatus = this.state.jobStatus || [];
+    const names = [...new Set(jobStatus.map(job => job.jobName).filter(Boolean))].sort();
+    // First option = "all"; key same as value so label shows "Job name" without keyValueMap
+    return [{ key: 'Job name', value: 'Job name' }, ...names.map(n => ({ key: n, value: n }))];
   }
 
   onRefresh() {
@@ -360,6 +424,104 @@ class Jobs extends TableView {
     this.loadData();
   }
 
+  clearJobStatusFilter() {
+    this.setState({
+      filterOpen: false,
+      filterStatus: undefined,
+      filterJobName: undefined,
+      draftFilterStatus: undefined,
+      draftFilterJobName: undefined,
+    });
+  }
+
+  runJobStatusFilter() {
+    this.setState({
+      filterStatus: this.state.draftFilterStatus,
+      filterJobName: this.state.draftFilterJobName,
+      filterOpen: false,
+    });
+  }
+
+  renderJobStatusFilter() {
+    // First option = "all" so dropdown shows default label and can clear independently
+    const JOB_STATUS_OPTIONS = ['Status', 'succeeded', 'failed', 'running'];
+    const { filterStatus, filterJobName, draftFilterStatus, draftFilterJobName, filterOpen } = this.state;
+    const appliedActive = filterStatus || filterJobName;
+    const draftActive = draftFilterStatus || draftFilterJobName;
+    const mutated = draftFilterStatus !== filterStatus || draftFilterJobName !== filterJobName;
+    let popover = null;
+
+    if (filterOpen && this.filterWrapRef.current) {
+      const position = Position.inDocument(this.filterWrapRef.current);
+      const popoverStyle = [filterStyles.popover];
+      if (draftActive) {
+        popoverStyle.push(filterStyles.active);
+      }
+      popover = (
+        <Popover fixed={false} position={position}>
+          <div className={popoverStyle.join(' ')}>
+            <div className={filterStyles.title} onClick={() => this.setState({ filterOpen: false })}>
+              <Icon name="b4a-browser-filter-icon" width={18} height={18} />
+            </div>
+            <div className={filterStyles.body}>
+              <div className={filterStyles.row}>
+                <ChromeDropdown
+                  color={draftActive ? '' : 'purple'}
+                  value={draftFilterJobName ?? 'Job name'}
+                  options={this.getJobNameOptions()}
+                  onChange={jobName => this.setState({ draftFilterJobName: jobName === 'Job name' ? undefined : jobName })}
+                  width={200}
+                />
+                <ChromeDropdown
+                  color={draftActive ? '' : 'purple'}
+                  value={draftFilterStatus || 'Status'}
+                  options={JOB_STATUS_OPTIONS}
+                  onChange={status => this.setState({ draftFilterStatus: status === 'Status' ? undefined : status })}
+                />
+              </div>
+              <div className={filterStyles.footer}>
+                <Button
+                  color="white"
+                  value="Clear all"
+                  disabled={!draftActive}
+                  dark={true}
+                  onClick={this.clearJobStatusFilter.bind(this)}
+                />
+                <Button
+                  color="green"
+                  primary={true}
+                  value="Run query"
+                  disabled={!mutated}
+                  onClick={this.runJobStatusFilter.bind(this)}
+                />
+              </div>
+            </div>
+          </div>
+        </Popover>
+      );
+    }
+
+    const buttonStyle = [filterStyles.entry];
+    if (appliedActive) {
+      buttonStyle.push(filterStyles.active);
+    }
+    return (
+      <div className={filterStyles.wrap} ref={this.filterWrapRef}>
+        <div
+          className={buttonStyle.join(' ')}
+          onClick={() => this.setState({
+            filterOpen: true,
+            draftFilterStatus: this.state.filterStatus,
+            draftFilterJobName: this.state.filterJobName,
+          })}
+        >
+          <Icon name="b4a-browser-filter-icon" width={18} height={18} />
+        </div>
+        {popover}
+      </div>
+    );
+  }
+
   renderToolbar() {
     if (subsections[this.props.params.section]) {
       return (
@@ -368,6 +530,7 @@ class Jobs extends TableView {
           subsection={`Jobs > ${subsections[this.props.params.section]}`}
           details={ReleaseInfo({ release: this.props.release })}
         >
+          {this.props.params.section === 'status' ? this.renderJobStatusFilter() : null}
           <a className={browserStyles.toolbarButton} style={{ color: 'white', border: 'none', margin: 0, padding: 0 }} onClick={this.onRefresh.bind(this)}>
             <Icon name="b4a-refresh-icon" width={18} height={18} />
           </a>
