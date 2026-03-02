@@ -1,21 +1,21 @@
 import React from 'react';
 import Field from 'components/Field/Field.react';
-import VisibilityField from 'components/VisibilityField/VisibilityField.react';
+// import VisibilityField from 'components/VisibilityField/VisibilityField.react';
 import FieldSettings from 'components/FieldSettings/FieldSettings.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
-import FormButton from 'components/FormButton/FormButton.react';
+// import FormButton from 'components/FormButton/FormButton.react';
 import B4aKeyField from 'components/KeyField/B4aKeyField.react';
 import Label from 'components/Label/Label.react';
 import LabelSettings from 'components/LabelSettings/LabelSettings.react';
-import NumericInputSettings from 'components/NumericInputSettings/NumericInputSettings.react';
-import B4aToggle from 'components/Toggle/B4aToggle.react';
-import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
+// import NumericInputSettings from 'components/NumericInputSettings/NumericInputSettings.react';
+// import B4aToggle from 'components/Toggle/B4aToggle.react';
+// import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
 import {
   DEFAULT_SETTINGS_LABEL_WIDTH
 } from 'dashboard/Settings/Fields/Constants';
 import Icon from 'components/Icon/Icon.react';
 import PropTypes from 'lib/PropTypes';
-import getError from 'dashboard/Settings/Util/getError';
+// import getError from 'dashboard/Settings/Util/getError';
 import styles from 'dashboard/Settings/GeneralSettings.scss';
 
 export const ManageAppFields = ({
@@ -33,6 +33,7 @@ export const ManageAppFields = ({
   setUseLatestDashboardVersion,
   backendBetaUser,
   onEditParseVersion,
+  onEditDatabaseURL,
 }) => {
 
   return (
@@ -93,6 +94,17 @@ export const ManageAppFields = ({
                 <B4aKeyField name="Show Database" hidden={true} showKeyName={true} keyText="URI">
                   {databaseURL}
                 </B4aKeyField>
+                {onEditDatabaseURL && !isCollaborator && (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '16px' }}>
+                    <button
+                      type='button'
+                      className={styles.changeActionBtn}
+                      onClick={onEditDatabaseURL}
+                    >
+                      Change
+                    </button>
+                  </div>
+                )}
               </div>}
             <FieldSettings
               containerStyles={{ borderBottom: 'none', borderTop: 'none' }}
@@ -115,7 +127,7 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       />
-      <hr className={styles.fieldHr} />      
+      <hr className={styles.fieldHr} />
       {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         label={<Label
@@ -131,8 +143,8 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       /> */}
-      <hr className={styles.fieldHr} />
-      <Field
+      {/* <hr className={styles.fieldHr} /> */}
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO replace with password policy
         label={<Label text='Password policy' description={'Manage password policies for this app'} dark={true} />}
@@ -265,8 +277,8 @@ export const ManageAppFields = ({
         }
         theme={Field.Theme.BLUE}
       />
-      <hr className={styles.fieldHr} />
-      <Field
+      <hr className={styles.fieldHr} /> */}
+      {/* <Field
         labelWidth={DEFAULT_SETTINGS_LABEL_WIDTH}
         // TODO Account lockout
         label={<Label text='Account lockout' description='Manage account lockout policies' dark={true} />}
@@ -312,7 +324,7 @@ export const ManageAppFields = ({
           </div>
         }
         theme={Field.Theme.BLUE}
-      />
+      /> */}
     </Fieldset>
   );
 }
@@ -330,5 +342,6 @@ ManageAppFields.propTypes = {
   errors: PropTypes.array.describe('An array of errors'),
   isGDPR: PropTypes.bool.isRequired.describe('GDPR app identifier'),
   permissions: PropTypes.object.describe('App permissions'),
-  onEditParseVersion: PropTypes.func.describe('Callback to open the edit parse version modal')
+  onEditParseVersion: PropTypes.func.describe('Callback to open the edit parse version modal'),
+  onEditDatabaseURL: PropTypes.func.describe('Callback to open the edit database URL modal')
 }

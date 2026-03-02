@@ -1930,4 +1930,58 @@ export default class ParseApp {
       throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
     }
   }
+
+  async getParseOptions() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/getAdvancedSettings/${this.slug}`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async saveParseOptions(customOptions) {
+    try {
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/otherConfigs`,
+          { parseOptions: customOptions },
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async saveParseOptionsAndSettings({ customOptions, clientPush, clientClassCreation, databaseURL }) {
+    try {
+      return (
+        await axios.patch(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/`,
+          {
+            parseOptions: customOptions,
+            clientPush,
+            clientClassCreation,
+            databaseURL,
+          },
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      const data = err.response && err.response.data;
+      if (data && Array.isArray(data.errors) && data.errors.length > 0) {
+        throw { error: data.errors.map(e => e.msg || e.message || e).join(', ') };
+      }
+      const message = (data && data.error) || err.message || 'Something went wrong!';
+      throw { error: message };
+    }
+  }
 }

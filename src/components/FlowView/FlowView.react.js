@@ -79,7 +79,8 @@ export default class FlowView extends React.Component {
         });
       }
       Promise.resolve(this.props.validate({ changes: newChanges }))
-        .catch(({ errors }) => {
+        .catch(err => {
+          const { errors = [] } = err || {};
           this.setState({
             saveError: 'Validation failed',
             errors
@@ -107,13 +108,14 @@ export default class FlowView extends React.Component {
       if(key === 'collaborators'){
         this.handleClickSaveButton();
       }
-      this.props.validate({ changes: newChanges })
-        .catch(({ errors }) => {
+      Promise.resolve(this.props.validate({ changes: newChanges }))
+        .catch(err => {
+          const { errors = [] } = err || {};
           this.setState({
             saveError: 'Validation failed',
             errors
           });
-        })
+        });
 
     }
   }
@@ -133,9 +135,19 @@ export default class FlowView extends React.Component {
   handleClickSaveButton() {
     const fields = this.currentFields();
     this.setState({ saveState: SaveButton.States.SAVING });
-    this.props.onSubmit({ changes: this.state.changes, fields, setField: this.setField, resetFields: this.resetFields }).then(() => {
+    this.props.onSubmit({
+      changes: this.state.changes,
+      fields,
+      setField: this.setField.bind(this),
+      resetFields: this.resetFields.bind(this),
+    }).then(() => {
       this.setState({ saveState: SaveButton.States.SUCCEEDED });
-      this.props.afterSave({ fields, setField: this.setField, setFieldJson: this.setFieldJson, resetFields: this.resetFields });
+      this.props.afterSave({
+        fields,
+        setField: this.setField.bind(this),
+        setFieldJson: this.setFieldJson.bind(this),
+        resetFields: this.resetFields.bind(this),
+      });
     }).catch(({ message, error, notice, errors = [] }) => {
       this.setState({
         saveState: SaveButton.States.FAILED,
@@ -151,6 +163,7 @@ export default class FlowView extends React.Component {
       showFooter = () => true,
       footerContents,
       defaultFooterMessage,
+      hideButtonsOnDefaultMessage = false,
       renderModals = [],
       renderForm,
       validate = () => '',
@@ -172,13 +185,20 @@ export default class FlowView extends React.Component {
     const form = renderForm({ fields, changes, setField, resetFields, setFieldJson, errors: this.state.errors });
     const flowModals = <div>{renderModals.map((modal, key) => <div key={key}>{modal}</div>)}</div>
 
-    const invalidFormMessage = validate({ changes, fields });
+    let invalidFormMessage = validate({ changes, fields });
+    if (invalidFormMessage && typeof invalidFormMessage.then === 'function') {
+      // Validation side effects (field-level errors) are handled in setField/setFieldJson.
+      // During render, avoid unhandled async validation rejections.
+      invalidFormMessage.catch(() => {});
+      invalidFormMessage = '';
+    }
     const hasFormValidationError =
       React.isValidElement(invalidFormMessage) ||
       (invalidFormMessage && invalidFormMessage.length > 0);
     let errorMessage = '';
     let footerMessage = null;
     let shouldShowFooter = showFooter(changes);
+    let showingDefaultMessage = false;
 
     if (saveState === SaveButton.States.FAILED) {
       errorMessage = saveError;
@@ -188,6 +208,7 @@ export default class FlowView extends React.Component {
     } else if (invalidFormMessage === 'use default') {
       footerMessage = defaultFooterMessage;
       shouldShowFooter = true;
+      showingDefaultMessage = !!defaultFooterMessage;
     } else if (hasFormValidationError) {
       errorMessage = invalidFormMessage;
       shouldShowFooter = true;
@@ -212,8 +233,8 @@ export default class FlowView extends React.Component {
 
     const footer = shouldShowFooter ? (
       <FlowFooter
-        primary={saveButton}
-        secondary={secondaryButton({ setField })}
+        primary={showingDefaultMessage && hideButtonsOnDefaultMessage ? null : saveButton}
+        secondary={showingDefaultMessage && hideButtonsOnDefaultMessage ? null : secondaryButton({ setField })}
         errorMessage={errorMessage}
       >
         {footerMessage}
@@ -266,6 +287,9 @@ FlowView.propTypes = {
   ),
   defaultFooterMessage: PropTypes.node.describe(
     'A message for the footer when the validate message is "use default"'
+  ),
+  hideButtonsOnDefaultMessage: PropTypes.bool.describe(
+    'When true, hides the save and cancel buttons while the default footer message is shown'
   ),
   renderModals: PropTypes.object.describe('An array of modals to render in the document')
 };

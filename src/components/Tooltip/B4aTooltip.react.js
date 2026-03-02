@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'lib/PropTypes';
 import styles from 'components/Tooltip/B4aTooltip.scss';
 
-const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme = 'dark' }) => {
+const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme = 'dark', arrowAlign = 'center', horizontalOffset = 0 }) => {
   const tooltipRef = useRef(null);
   const [tooltipStyle, setTooltipStyle] = useState({});
   const [arrowStyle, setArrowStyle] = useState({});
@@ -23,9 +23,30 @@ const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme
       const rect = parentElement.getBoundingClientRect();
       const tooltipRect = tooltipElement.getBoundingClientRect();
 
+      const getHorizontalPosition = () => {
+        if (arrowAlign === 'right') {
+          return {
+            left: rect.right,
+            transform: 'translate(-100%, 0)',
+          };
+        }
+        if (arrowAlign === 'left') {
+          return {
+            left: rect.left,
+            transform: 'translate(0, 0)',
+          };
+        }
+        return {
+          left: rect.left + (rect.width / 2),
+          transform: 'translate(-50%, 0)',
+        };
+      };
+
       // Calculate position based on placement
       let top = rect.top;
-      let left = rect.left + (rect.width / 2);
+      const horizontalPosition = getHorizontalPosition();
+      let left = horizontalPosition.left;
+      let transform = horizontalPosition.transform;
 
       const OFFSET = 4; // Distance between tooltip and parent element
 
@@ -39,38 +60,59 @@ const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme
         case 'left':
           top = rect.top + (rect.height / 2);
           left = rect.left - OFFSET - tooltipRect.width;
+          transform = 'translate(0, -50%)';
           break;
         case 'right':
           top = rect.top + (rect.height / 2);
           left = rect.right + OFFSET;
+          transform = 'translate(0, -50%)';
           break;
       }
+
+      const effectiveLeft = left + horizontalOffset;
 
       setTooltipStyle({
         position: 'fixed',
         top: `${top}px`,
-        left: `${left}px`,
-        transform: placement === 'top' ? 'translate(-50%, 0)' :
-          placement === 'bottom' ? 'translate(-50%, 0)' :
-            placement === 'left' ? 'translate(0, -50%)' :
-              'translate(0, -50%)'
+        left: `${effectiveLeft}px`,
+        transform
       });
 
       // Calculate arrow position
       const arrowPosition = {
         position: 'absolute'
       };
+      const getTooltipLeftEdge = () => {
+        if (transform === 'translate(-100%, 0)') {
+          return effectiveLeft - tooltipRect.width;
+        }
+        if (transform === 'translate(-50%, 0)') {
+          return effectiveLeft - (tooltipRect.width / 2);
+        }
+        return effectiveLeft;
+      };
+      const getArrowLeftFromTriggerCenter = () => {
+        const triggerCenterX = rect.left + (rect.width / 2);
+        const tooltipLeftEdge = getTooltipLeftEdge();
+        const rawLeft = triggerCenterX - tooltipLeftEdge;
+        const minLeft = 12;
+        const maxLeft = Math.max(minLeft, tooltipRect.width - 12);
+        return Math.min(maxLeft, Math.max(minLeft, rawLeft));
+      };
+      const applyHorizontalArrowAlignment = (position, rotation) => {
+        position.left = `${getArrowLeftFromTriggerCenter()}px`;
+        position.right = 'auto';
+        position.transform = `translate(-50%, 0) rotate(${rotation}deg)`;
+      };
 
       switch (placement) {
         case 'top':
           arrowPosition.bottom = '-4px';
-          arrowPosition.left = '50%';
-          arrowPosition.transform = 'translate(-50%, 0) rotate(45deg)';
+          applyHorizontalArrowAlignment(arrowPosition, 45);
           break;
         case 'bottom':
           arrowPosition.top = '-4px';
-          arrowPosition.left = '50%';
-          arrowPosition.transform = 'translate(-50%, 0) rotate(225deg)';
+          applyHorizontalArrowAlignment(arrowPosition, 225);
           break;
         case 'left':
           arrowPosition.right = '-4px';
@@ -103,7 +145,7 @@ const B4aTooltip = ({ value, children, placement = 'top', visible = false, theme
       window.removeEventListener('resize', handleUpdate);
       window.removeEventListener('scroll', handleUpdate);
     };
-  }, [visible, placement]);
+  }, [visible, placement, arrowAlign, horizontalOffset]);
 
   return (
     <div className={styles.tooltipWrapper}>
@@ -132,7 +174,9 @@ B4aTooltip.propTypes = {
   children: PropTypes.node.isRequired,
   placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right']),
   visible: PropTypes.bool,
-  theme: PropTypes.oneOf(['light', 'dark'])
+  theme: PropTypes.oneOf(['light', 'dark']),
+  arrowAlign: PropTypes.oneOf(['left', 'center', 'right']),
+  horizontalOffset: PropTypes.number
 };
 
 export default B4aTooltip;
