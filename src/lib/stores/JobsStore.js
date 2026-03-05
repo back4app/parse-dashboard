@@ -42,7 +42,7 @@ function JobsStore(state, action) {
                 job.startAt
               ),
               repeatMinutes: job.schedule && job.schedule.intervalRun,
-              timeOfDay: (job.schedule && job.schedule.timeOfDay) || null,
+              timeOfDay: (job.schedule && (job.schedule.dailyRun || job.schedule.timeOfDay)) || null,
               params: job.parameter ? JSON.stringify(job.parameter) : null,
             }));
             return Map({ lastFetch: new Date(), section: action.section, jobs: List(jobs) });
