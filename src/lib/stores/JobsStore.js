@@ -41,7 +41,7 @@ function JobsStore(state, action) {
                 job.startAfter ||
                 job.startAt
               ),
-              repeatMinutes: job.schedule && job.schedule.intervalRun,
+              repeatMinutes: job.schedule && (job.schedule.intervalRun || (job.schedule.dailyRun ? 1440 : null)),
               timeOfDay: (job.schedule && (job.schedule.dailyRun || job.schedule.timeOfDay)) || null,
               params: job.parameter ? JSON.stringify(job.parameter) : null,
             }));
