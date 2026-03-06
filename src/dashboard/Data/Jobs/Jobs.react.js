@@ -109,9 +109,27 @@ class Jobs extends TableView {
       // Job Status pagination (botão "Carregar mais")
       jobStatusHasMore: true,
       jobStatusLoadingMore: false,
+      // Job limit enforcement
+      jobLimitReached: false,
+      maxJobAmount: undefined,
     };
     this.filterWrapRef = React.createRef();
     this.JOB_STATUS_PAGE_SIZE = 100;
+  }
+
+  handleScheduleClick() {
+    const { maxJobAmount } = this.state;
+    if (maxJobAmount === undefined) {
+      // Plan data not yet loaded — proceed and let the backend enforce the limit
+      this.setState({ toCreate: true });
+      return;
+    }
+    const currentCount = (this.tableData() || []).length;
+    if (currentCount >= maxJobAmount) {
+      this.setState({ jobLimitReached: true });
+    } else {
+      this.setState({ toCreate: true });
+    }
   }
 
   componentWillMount() {
@@ -169,8 +187,21 @@ class Jobs extends TableView {
       loading: true,
       errorMessage: '',
       hasPermission: true,
+      jobLimitReached: false,
+      ...(this.isScheduledSection(currentSection) ? { maxJobAmount: undefined } : {}),
       ...(currentSection === 'status' ? { jobStatus: undefined } : {}),
     });
+
+    if (this.isScheduledSection(currentSection)) {
+      this.context.getAppPlanData()
+        .then(planData => {
+          this.setState({ maxJobAmount: (planData && planData.maxJobAmount) || null });
+        })
+        .catch(() => {
+          this.setState({ maxJobAmount: null });
+        });
+    }
+
     this.props.jobs.dispatch(ActionTypes.FETCH, { section: currentSection }).finally(() => {
       const err = this.props.jobs.data && this.props.jobs.data.get('err')
       // Verify error message, used to control collaborators permissions
@@ -424,7 +455,29 @@ class Jobs extends TableView {
   }
 
   renderExtras() {
-    const { toDelete, deleteInProgress, deleteError, toEdit, toCreate } = this.state;
+    const { toDelete, deleteInProgress, deleteError, toEdit, toCreate, jobLimitReached } = this.state;
+
+    if (jobLimitReached) {
+      return (
+        <B4aModal
+          type={B4aModal.Types.INFO}
+          title="Job limit reached"
+          subtitle="You've reached the maximum number of scheduled jobs allowed on your current plan."
+          confirmText="Upgrade plan"
+          cancelText="Cancel"
+          buttonsInCenter={false}
+          onCancel={() => this.setState({ jobLimitReached: false })}
+          onConfirm={() => {
+            this.props.navigate(generatePath(this.context, 'plan-usage'));
+          }}
+        >
+          <div style={{ padding: '0 1rem 0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '14px', lineHeight: '1.5' }}>
+            Upgrade your plan to schedule additional background jobs.
+          </div>
+        </B4aModal>
+      );
+    }
+
     if (toCreate) {
       return (
         <EditScheduledJobModal
@@ -654,7 +707,11 @@ class Jobs extends TableView {
             <Icon name="b4a-refresh-icon" width={18} height={18} />
           </a>
           {this.isScheduledSection() ? (
-            <button type="button" className={styles.scheduleJobButton} onClick={() => this.setState({ toCreate: true })}>
+            <button
+              type="button"
+              className={styles.scheduleJobButton}
+              onClick={this.handleScheduleClick.bind(this)}
+            >
               <Icon name="b4a-add-outline-circle" width={15} height={15} fill="#27AE60" />
               Schedule a job
             </button>
