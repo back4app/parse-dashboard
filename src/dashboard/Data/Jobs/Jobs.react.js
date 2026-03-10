@@ -279,58 +279,22 @@ class Jobs extends TableView {
         </tr>
       );
     } else if (this.isScheduledSection()) {
+      const openEdit = () => this.setState({ toEdit: data });
+      const openDelete = () => this.setState({ toDelete: data, deleteError: null });
       return (
         <tr key={data.objectId}>
-          <td style={{ width: '20%' }}>{data.description}</td>
-          <td style={{ width: '20%' }}>{data.jobName}</td>
-          <td style={{ width: '20%' }}>{scheduleString(data)}</td>
-          <td className={styles.buttonCell}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <td style={{ width: '25%', cursor: 'pointer' }} onClick={openEdit}>{data.description}</td>
+          <td style={{ width: '25%', cursor: 'pointer' }} onClick={openEdit}>{data.jobName}</td>
+          <td style={{ width: '25%', cursor: 'pointer' }} onClick={openEdit}>{scheduleString(data)}</td>
+          <td className={styles.buttonCell} style={{ width: '15%', cursor: 'pointer' }} onClick={openEdit}>
+            <span onClick={e => e.stopPropagation()}>
               <RunNowButton job={data} width={'100px'} />
-              <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
-              <button
-                title="Edit"
-                onClick={() => this.setState({ toEdit: data })}
-                style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  padding: '6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '32px',
-                  height: '32px',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
-              >
-                <Icon name="edit-pencil-icon" width={15} height={15} fill="#8ab4d4" />
-              </button>
-              <button
-                title="Delete"
-                onClick={() => this.setState({ toDelete: data, deleteError: null })}
-                style={{
-                  background: 'rgba(255,76,76,0.08)',
-                  border: '1px solid rgba(255,76,76,0.25)',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  padding: '6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '32px',
-                  height: '32px',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,76,76,0.18)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,76,76,0.08)'}
-              >
-                <Icon name="b4a-trash-icon" width={15} height={15} fill="#ff6b6b" />
-              </button>
-            </div>
+            </span>
+          </td>
+          <td style={{ textAlign: 'center' }}>
+            <a style={{ cursor: 'pointer' }} onClick={openDelete}>
+              <Icon name="b4a-delete-icon" width={16} height={16} fill="#E85C3E" />
+            </a>
           </td>
         </tr>
       );
@@ -367,16 +331,16 @@ class Jobs extends TableView {
       ];
     } else if (this.isScheduledSection()) {
       return [
-        <TableHeader key="name" width={20}>
+        <TableHeader key="name" width={25}>
           Name
         </TableHeader>,
-        <TableHeader key="func" width={20}>
+        <TableHeader key="func" width={25}>
           Function
         </TableHeader>,
-        <TableHeader key="schedule" width={20}>
+        <TableHeader key="schedule" width={25}>
           Schedule (UTC)
         </TableHeader>,
-        <TableHeader key="actions" width={40}>
+        <TableHeader key="actions" width={25}>
           Actions
         </TableHeader>,
       ];
@@ -707,19 +671,27 @@ class Jobs extends TableView {
             <Icon name="b4a-refresh-icon" width={18} height={18} />
           </a>
           {this.isScheduledSection() ? (
-            <button
-              type="button"
-              className={styles.scheduleJobButton}
+            <Button
+              primary={true}
+              value={
+                <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />Schedule a job</span>
+              }
+              color="green"
+              width="auto"
+              additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
               onClick={this.handleScheduleClick.bind(this)}
-            >
-              <Icon name="b4a-add-outline-circle" width={15} height={15} fill="#27AE60" />
-              Schedule a job
-            </button>
+            />
           ) : (this.props.availableJobs && this.props.availableJobs.length > 0 ? (
-            <button type="button" className={styles.scheduleJobButton} onClick={this.navigateToNew.bind(this)}>
-              <Icon name="b4a-add-outline-circle" width={15} height={15} fill="#27AE60" />
-              Schedule a job
-            </button>
+            <Button
+              primary={true}
+              value={
+                <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />Schedule a job</span>
+              }
+              color="green"
+              width="auto"
+              additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
+              onClick={this.navigateToNew.bind(this)}
+            />
           ) : null)}
         </Toolbar>
       );

@@ -203,7 +203,7 @@ const EditScheduledJobModal = ({ job, context, onCancel, onSuccess }) => {
       subtitle={isCreate ? 'Configure a new scheduled job' : 'Update the job configuration below'}
       confirmText={saving ? (isCreate ? 'Scheduling...' : 'Saving...') : (isCreate ? 'Schedule' : 'Save')}
       cancelText="Cancel"
-      disableConfirm={saving || loadingJobs}
+      disableConfirm={saving || loadingJobs || name.trim().length < 3}
       disableCancel={saving}
       buttonsInCenter={false}
       width={700}
@@ -362,10 +362,10 @@ const EditScheduledJobModal = ({ job, context, onCancel, onSuccess }) => {
           />
         )}
 
-        {error && (
-          <FormNote show={true} color="red">{error}</FormNote>
-        )}
       </div>
+      {error && (
+        <FormNote show={true} color="red">{error}</FormNote>
+      )}
     </B4aModal>
   );
 };
