@@ -272,6 +272,11 @@ export default class DashboardView extends React.Component {
     });
 
     settingsSections.push({
+      name: 'Authentication',
+      link: '/settings/social-auth',
+    });
+
+    settingsSections.push({
       name: 'Advanced Options',
       link: '/advanced-options',
     });

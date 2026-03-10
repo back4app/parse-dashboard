@@ -1,0 +1,129 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+// Form wrapper - match CustomParseOptions content width (wider than default to fix
+// narrower rendering when under /settings route)
+.socialAuthFormWrapper {
+  padding: 0;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 5rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .socialAuthFormWrapper {
+    padding: 0 2rem;
+  }
+}
+
+// Facebook: input + add button
+.fbInputRow {
+  display: flex;
+  align-items: center;
+  width: 90%;
+  margin: 10px auto 0;
+}
+
+.fbInput {
+  @include InterFont;
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid $light-blue;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+  background: transparent;
+  font-size: 16px;
+  outline: 0;
+  text-align: start;
+
+  &:focus {
+    @include placeholder {
+      opacity: 0;
+    }
+  }
+}
+
+.fbAddBtn {
+  @include InterFont;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 1px solid $light-blue;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+  background: rgba(249, 249, 249, 0.06);
+  color: $white;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fbAddBtn:hover {
+  background: rgba(249, 249, 249, 0.12);
+}
+
+.fieldError {
+  @include InterFont;
+  color: $error-red;
+  font-size: 0.8125rem;
+  padding: 0.25rem 1rem;
+}
+
+// Facebook appId list
+.fbAppIdList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-right: 14px;
+}
+
+.fbAppIdRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  gap: 8px;
+  border-bottom: 1px solid rgba(249, 249, 249, 0.04);
+}
+
+.fbAppIdRow:last-child {
+  border-bottom: none;
+}
+
+.fbAppIdText {
+  @include InterFont;
+  font-size: 0.875rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fbRemoveBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fbRemoveBtn:hover {
+  background: rgba(232, 92, 62, 0.15);
+}
