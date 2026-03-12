@@ -18,3 +18,31 @@
     margin-right: 10px;
   }
 }
+
+.scheduleJobButton {
+  margin-left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 32px;
+  box-sizing: border-box;
+  background: rgba(39, 174, 96, 0.06);
+  border: 1px solid rgba(39, 174, 96, 0.6);
+  border-radius: 6px;
+  color: #27AE60;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(39, 174, 96, 0.14);
+    border-color: #27AE60;
+  }
+
+  &:active {
+    background: rgba(39, 174, 96, 0.22);
+  }
+}

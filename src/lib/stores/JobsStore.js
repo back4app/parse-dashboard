@@ -20,28 +20,59 @@ function JobsStore(state, action) {
   let path = '';
   switch (action.type) {
     case ActionTypes.FETCH:
-      if (state && new Date() - state.get('lastFetch') < 60000) {
+      const isScheduledJobsSection = action.section === 'scheduled-jobs';
+      if (
+        state &&
+        state.get('section') === action.section &&
+        !isScheduledJobsSection &&
+        new Date() - state.get('lastFetch') < 60000
+      ) {
         return Promise.resolve(state);
       }
+      if (isScheduledJobsSection) {
+        return action.app.getScheduledJobs().then(
+          results => {
+            const jobs = (results.jobs || []).map(job => ({
+              objectId: job.id || job._id,
+              description: job.name || job.description || job.jobName || job.cloudCodeFunction || '-',
+              jobName: job.cloudCodeFunction || job.jobName || '-',
+              startAfter: (
+                (job.schedule && (job.schedule.start || job.schedule.startAfter || job.schedule.startAt)) ||
+                job.startAfter ||
+                job.startAt
+              ),
+              repeatMinutes: job.schedule && (job.schedule.intervalRun || (job.schedule.dailyRun ? 1440 : null)),
+              timeOfDay: (job.schedule && (job.schedule.dailyRun || job.schedule.timeOfDay)) || null,
+              params: job.parameter ? JSON.stringify(job.parameter) : null,
+            }));
+            return Map({ lastFetch: new Date(), section: action.section, jobs: List(jobs) });
+          },
+          err => Map({ lastFetch: new Date(), section: action.section, jobs: [], err })
+        );
+      }
       return Parse._request('GET', 'serverInfo', {}).then(serverInfo => {
-        let serverVersionPrefix = serverInfo.parseServerVersion.substring(0,3)
+        const serverVersionPrefix = serverInfo.parseServerVersion.substring(0,3)
         if (serverVersionPrefix === '2.2' || serverVersionPrefix === '2.3') {
           path = 'cloud_code/jobs?per_page=50'
           return Parse._request('GET', path, {}, { useMasterKey: true}).then((results) => {
-            return Map({ lastFetch: new Date(), jobs: List(results) });
+            return Map({ lastFetch: new Date(), section: action.section, jobs: List(results) });
           })
           // In error case return a map with a empty array and the error message
           // used to control collaborators permissions
-          .catch(err => Map({ lastFetch: new Date(), jobs: [], err }));
+            .catch(err => Map({ lastFetch: new Date(), section: action.section, jobs: [], err }));
         }
         else {
           path = 'cloud_code/jobs/data?per_page=50';
           return Parse._request('GET', path, {}, { useMasterKey: true}).then((results) => {
-            return Map({ lastFetch: new Date(), jobs: List(results.jobs.map(job => ({ 'jobName': job })))});
+            return Map({
+              lastFetch: new Date(),
+              section: action.section,
+              jobs: List(results.jobs.map(job => ({ 'jobName': job })))
+            });
           })
           // In error case return a map with a empty array and the error message
           // used to control collaborators permissions
-          .catch(err => Map({ lastFetch: new Date(), jobs: [], err }));
+            .catch(err => Map({ lastFetch: new Date(), section: action.section, jobs: [], err }));
         }
 
       })
