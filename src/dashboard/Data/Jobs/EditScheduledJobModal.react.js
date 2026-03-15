@@ -124,7 +124,10 @@ const EditScheduledJobModal = ({ job, context, onCancel, onSuccess }) => {
       if (repeatType === 'Every day') {
         dailyRun = `${hour}:${repeatMinute}`;
       } else {
-        intervalRun = intervalCount * (intervalUnit === 'hour' ? 60 : 1);
+        const totalMinutes = intervalCount * (intervalUnit === 'hour' ? 60 : 1);
+        const intervalHours = Math.floor(totalMinutes / 60);
+        const intervalMins = totalMinutes % 60;
+        intervalRun = `${String(intervalHours).padStart(2, '0')}:${String(intervalMins).padStart(2, '0')}`;
         dailyRun = `${hour}:${repeatMinute}`;
       }
     }
