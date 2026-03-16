@@ -471,9 +471,9 @@ export default class ParseApp {
     return AJAX.post(path, { parseVersion: parseVersion })
   }
 
-  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false) {
+  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false, cloneFiles = false) {
     const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
-    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs })
+    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs, cloneFiles })
   }
 
   async deleteApp(appId) {
