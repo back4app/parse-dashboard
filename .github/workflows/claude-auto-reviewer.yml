@@ -1,0 +1,53 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+          show_full_output: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review the pull request that triggered this workflow.
+
+            The PR branch is already checked out in the current working directory.
+
+            Review for:
+            - bugs
+            - regressions
+            - security issues
+            - missing tests
+            - maintainability risks
+
+            Important instructions:
+            - Do not ask which PR to review.
+            - Do not ask for user input.
+            - Do not use gh pr list.
+            - Use the provided PR number.
+            - Prefer posting a single top-level PR review comment.
+            - Avoid writing temp files.
+            - Avoid shell redirection, heredocs, or multi-command shell invocations.
+            - If no actionable issues are found, post a short PR comment saying that no actionable issues were found.
+
+          claude_args: |
+            --allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*),mcp__github_inline_comment__create_inline_comment"
