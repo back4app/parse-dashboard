@@ -471,9 +471,9 @@ export default class ParseApp {
     return AJAX.post(path, { parseVersion: parseVersion })
   }
 
-  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false) {
+  async cloneApp(appId, parseVersion, cloneType, cloneCloudCode = false, cloneConfigs = false, cloneFiles = false) {
     const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/clone`;
-    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs })
+    return AJAX.post(path, { appId, parseVersion, cloneType, cloneCloudCode, cloneConfigs, cloneFiles })
   }
 
   async deleteApp(appId) {
@@ -1055,6 +1055,26 @@ export default class ParseApp {
   getAvailableJobs() {
     const path = 'cloud_code/jobs/data';
     return this.apiRequest('GET', path, {}, { useMasterKey: true });
+  }
+
+  getScheduledJobs() {
+    // eslint-disable-next-line no-undef
+    return axios.get(`${b4aSettings.BACK4APP_API_PATH}/jobs/${this.slug}`, { withCredentials: true }).then(({ data }) => data);
+  }
+
+  deleteScheduledJob(jobId) {
+    // eslint-disable-next-line no-undef
+    return axios.delete(`${b4aSettings.BACK4APP_API_PATH}/jobs/delete/${jobId}/`, { withCredentials: true }).then(({ data }) => data);
+  }
+
+  updateScheduledJob(jobId, payload) {
+    // eslint-disable-next-line no-undef
+    return axios.post(`${b4aSettings.BACK4APP_API_PATH}/jobs/job/${jobId}/`, payload, { withCredentials: true }).then(({ data }) => data);
+  }
+
+  createScheduledJob(payload) {
+    // eslint-disable-next-line no-undef
+    return axios.post(`${b4aSettings.BACK4APP_API_PATH}/jobs/${this.slug}/`, payload, { withCredentials: true }).then(({ data }) => data);
   }
 
   getJobStatus(skip = 0, limit = 100) {

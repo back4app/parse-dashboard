@@ -12,8 +12,9 @@ import CategoryList from 'components/CategoryList/CategoryList.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import ChromeDropdown from 'components/ChromeDropdown/ChromeDropdown.react';
 import Icon from 'components/Icon/Icon.react';
-import JobScheduleReminder from 'dashboard/Data/Jobs/JobScheduleReminder.react';
-import Modal from 'components/Modal/Modal.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
+import EditScheduledJobModal from 'dashboard/Data/Jobs/EditScheduledJobModal.react';
+import FormNote from 'components/FormNote/FormNote.react';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import React from 'react';
@@ -34,7 +35,8 @@ import { withRouter } from 'lib/withRouter';
 
 const subsections = {
   all: 'All Jobs',
-  // scheduled: 'Scheduled Jobs',
+  scheduled: 'Scheduled Jobs',
+  'scheduled-jobs': 'Scheduled Jobs',
   status: 'Job Status',
 };
 
@@ -44,7 +46,22 @@ const statusColors = {
   running: 'blue',
 };
 
+const MONTH_ABBREVS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatScheduleDate(date) {
+  const month = MONTH_ABBREVS[date.getUTCMonth()];
+  const day = date.getUTCDate();
+  const hours = (date.getUTCHours() < 10 ? '0' : '') + date.getUTCHours();
+  const minutes = (date.getUTCMinutes() < 10 ? '0' : '') + date.getUTCMinutes();
+  return `${month} ${day} at ${hours}:${minutes}`;
+}
+
 function scheduleString(data) {
+  const runAt = new Date(data.startAfter);
+  if (Number.isNaN(runAt.getTime())) {
+    return <div style={{ fontSize: 12, whiteSpace: 'normal', lineHeight: '16px' }}>-</div>;
+  }
+
   let schedule = '';
   if (data.repeatMinutes) {
     if (data.repeatMinutes === 1440) {
@@ -54,22 +71,12 @@ function scheduleString(data) {
     } else {
       schedule += 'Each day, every ' + data.repeatMinutes + ' minutes, ';
     }
-    schedule += 'after ' + data.timeOfDay.substr(0, 5) + ', ';
+    if (data.timeOfDay) {
+      schedule += 'after ' + data.timeOfDay.substr(0, 5) + ', ';
+    }
     schedule += 'starting ';
-  } else {
-    schedule = 'On ';
   }
-  const runAt = new Date(data.startAfter);
-  schedule +=
-    runAt.getUTCMonth() + '/' + runAt.getUTCDate() + '/' + String(runAt.getUTCFullYear()).substr(2);
-  schedule +=
-    ' at ' +
-    (runAt.getUTCHours() < 10 ? '0' : '') +
-    runAt.getUTCHours() +
-    ':' +
-    (runAt.getUTCMinutes() < 10 ? '0' : '') +
-    runAt.getUTCMinutes() +
-    '.';
+  schedule += formatScheduleDate(runAt);
   return <div style={{ fontSize: 12, whiteSpace: 'normal', lineHeight: '16px' }}>{schedule}</div>;
 }
 
@@ -84,6 +91,10 @@ class Jobs extends TableView {
 
     this.state = {
       toDelete: null,
+      deleteInProgress: false,
+      deleteError: null,
+      toEdit: null,
+      toCreate: false,
       jobStatus: undefined,
       loading: true,
       // Properties used to control data access
@@ -98,9 +109,27 @@ class Jobs extends TableView {
       // Job Status pagination (botão "Carregar mais")
       jobStatusHasMore: true,
       jobStatusLoadingMore: false,
+      // Job limit enforcement
+      jobLimitReached: false,
+      maxJobAmount: undefined,
     };
     this.filterWrapRef = React.createRef();
     this.JOB_STATUS_PAGE_SIZE = 100;
+  }
+
+  handleScheduleClick() {
+    const { maxJobAmount } = this.state;
+    if (maxJobAmount === undefined) {
+      // Plan data not yet loaded — proceed and let the backend enforce the limit
+      this.setState({ toCreate: true });
+      return;
+    }
+    const currentCount = (this.tableData() || []).length;
+    if (currentCount >= maxJobAmount) {
+      this.setState({ jobLimitReached: true });
+    } else {
+      this.setState({ toCreate: true });
+    }
   }
 
   componentWillMount() {
@@ -111,19 +140,28 @@ class Jobs extends TableView {
     if (nextProps.availableJobs) {
       if (nextProps.availableJobs.length > 0) {
         this.action = new SidebarAction(<span><Icon width={16} height={16} name="b4a-add-outline-circle" />Schedule job</span>, this.navigateToNew.bind(this));
-        return;
       }
+    } else {
+      this.action = null;
     }
-    // check if the changes are in currentApp serverInfo status
-    // if not return without making any request
+
+    const sectionChanged = nextProps.params.section !== this.props.params.section;
+    const appChanged = nextProps.params.appId !== this.props.params.appId;
+    let appStatusChanged = false;
+
     if (this.props.apps !== nextProps.apps) {
-      const updatedCurrentApp = nextProps.apps.find(ap => ap.slug === this.props.params.appId);
+      const updatedCurrentApp = nextProps.apps.find(ap => ap.slug === nextProps.params.appId);
       const prevCurrentApp = this.props.apps.find(ap => ap.slug === this.props.params.appId);
-      const shouldUpdate = updatedCurrentApp.serverInfo.status !== prevCurrentApp.serverInfo.status;
-      if (!shouldUpdate) {return;}
+      const updatedStatus = updatedCurrentApp && updatedCurrentApp.serverInfo && updatedCurrentApp.serverInfo.status;
+      const prevStatus = prevCurrentApp && prevCurrentApp.serverInfo && prevCurrentApp.serverInfo.status;
+      appStatusChanged = updatedStatus !== prevStatus;
     }
-    this.action = null;
-    this.loadData();
+
+    if (!sectionChanged && !appChanged && !appStatusChanged) {
+      return;
+    }
+
+    this.loadData(nextProps.params.section);
   }
 
   navigateToNew() {
@@ -134,8 +172,37 @@ class Jobs extends TableView {
     this.props.navigate(generatePath(this.context, `jobs/edit/${jobId}`));
   }
 
-  loadData() {
-    this.props.jobs.dispatch(ActionTypes.FETCH).finally(() => {
+  getCurrentSection() {
+    return this.props.params.section || 'all';
+  }
+
+  isScheduledSection(section) {
+    const s = section || this.getCurrentSection();
+    return s === 'scheduled' || s === 'scheduled-jobs';
+  }
+
+  loadData(section) {
+    const currentSection = section || this.getCurrentSection();
+    this.setState({
+      loading: true,
+      errorMessage: '',
+      hasPermission: true,
+      jobLimitReached: false,
+      ...(this.isScheduledSection(currentSection) ? { maxJobAmount: undefined } : {}),
+      ...(currentSection === 'status' ? { jobStatus: undefined } : {}),
+    });
+
+    if (this.isScheduledSection(currentSection)) {
+      this.context.getAppPlanData()
+        .then(planData => {
+          this.setState({ maxJobAmount: (planData && planData.maxJobAmount) || null });
+        })
+        .catch(() => {
+          this.setState({ maxJobAmount: null });
+        });
+    }
+
+    this.props.jobs.dispatch(ActionTypes.FETCH, { section: currentSection }).finally(() => {
       const err = this.props.jobs.data && this.props.jobs.data.get('err')
       // Verify error message, used to control collaborators permissions
       if (err && err.code === 403)
@@ -153,13 +220,14 @@ class Jobs extends TableView {
       }
       // If is a unexpected error just finish loading state
       else {this.setState({ loading: false });}
-      this.renderEmpty()
     });
-    this.context.getJobStatus(0, this.JOB_STATUS_PAGE_SIZE).then(status => {
-      this.setState({ jobStatus: status, jobStatusHasMore: status.length === this.JOB_STATUS_PAGE_SIZE });
-    }).catch(() => {
-      this.setState({ jobStatus: [], jobStatusHasMore: false });
-    });
+    if (currentSection === 'status') {
+      this.context.getJobStatus(0, this.JOB_STATUS_PAGE_SIZE).then(status => {
+        this.setState({ jobStatus: status, jobStatusHasMore: status.length === this.JOB_STATUS_PAGE_SIZE });
+      }).catch(() => {
+        this.setState({ jobStatus: [], jobStatusHasMore: false });
+      });
+    }
   }
 
   loadMoreJobStatus() {
@@ -191,7 +259,7 @@ class Jobs extends TableView {
         linkPrefix={'jobs/'}
         categories={[
           { name: 'All Jobs', id: 'all' },
-          // { name: 'Scheduled Jobs', id: 'scheduled' },
+          { name: 'Scheduled Jobs', id: 'scheduled-jobs' },
           { name: 'Job Status', id: 'status' },
         ]}
       />
@@ -210,21 +278,23 @@ class Jobs extends TableView {
           </td>
         </tr>
       );
-    } else if (this.props.params.section === 'scheduled') {
+    } else if (this.isScheduledSection()) {
+      const openEdit = () => this.setState({ toEdit: data });
+      const openDelete = () => this.setState({ toDelete: data, deleteError: null });
       return (
         <tr key={data.objectId}>
-          <td style={{ width: '20%' }}>{data.description}</td>
-          <td style={{ width: '20%' }}>{data.jobName}</td>
-          <td style={{ width: '20%' }}>{scheduleString(data)}</td>
-          <td className={styles.buttonCell}>
-            <RunNowButton job={data} width={'100px'} />
-            <Button width={'80px'} value="Edit" onClick={() => this.navigateToJob(data.objectId)} />
-            <Button
-              width={'80px'}
-              color="red"
-              value="Delete"
-              onClick={() => this.setState({ toDelete: data.objectId })}
-            />
+          <td style={{ width: '25%', cursor: 'pointer' }} onClick={openEdit}>{data.description}</td>
+          <td style={{ width: '25%', cursor: 'pointer' }} onClick={openEdit}>{data.jobName}</td>
+          <td style={{ width: '25%', cursor: 'pointer' }} onClick={openEdit}>{scheduleString(data)}</td>
+          <td className={styles.buttonCell} style={{ width: '15%', cursor: 'pointer' }} onClick={openEdit}>
+            <span onClick={e => e.stopPropagation()}>
+              <RunNowButton job={data} width={'100px'} />
+            </span>
+          </td>
+          <td style={{ textAlign: 'center' }}>
+            <a style={{ cursor: 'pointer' }} onClick={openDelete}>
+              <Icon name="b4a-delete-icon" width={16} height={16} fill="#E85C3E" />
+            </a>
           </td>
         </tr>
       );
@@ -259,18 +329,18 @@ class Jobs extends TableView {
           Actions
         </TableHeader>,
       ];
-    } else if (this.props.params.section === 'scheduled') {
+    } else if (this.isScheduledSection()) {
       return [
-        <TableHeader key="name" width={20}>
+        <TableHeader key="name" width={25}>
           Name
         </TableHeader>,
-        <TableHeader key="func" width={20}>
+        <TableHeader key="func" width={25}>
           Function
         </TableHeader>,
-        <TableHeader key="schedule" width={20}>
+        <TableHeader key="schedule" width={25}>
           Schedule (UTC)
         </TableHeader>,
-        <TableHeader key="actions" width={40}>
+        <TableHeader key="actions" width={25}>
           Actions
         </TableHeader>,
       ];
@@ -296,9 +366,6 @@ class Jobs extends TableView {
   }
 
   renderFooter() {
-    if (this.props.params.section === 'scheduled') {
-      return <JobScheduleReminder />;
-    }
     if (this.props.params.section === 'status' && this.state.jobStatus && this.state.jobStatus.length > 0) {
       const { jobStatusHasMore, jobStatusLoadingMore } = this.state;
       return (
@@ -334,17 +401,11 @@ class Jobs extends TableView {
           description="Define Jobs on parse-server with Parse.Cloud.job()"
         />
       );
-    } else if (this.props.params.section === 'scheduled') {
+    } else if (this.isScheduledSection()) {
       return (
         <EmptyGhostState
           title="Cloud Jobs"
-          description={
-            <div>
-              <p>{'On this page you can create JobSchedule objects.'}</p>
-              <br />
-              <JobScheduleReminder />
-            </div>
-          }
+          description="There are no scheduled jobs to show at this time."
         />
       );
     } else {
@@ -358,33 +419,108 @@ class Jobs extends TableView {
   }
 
   renderExtras() {
-    if (this.state.toDelete) {
+    const { toDelete, deleteInProgress, deleteError, toEdit, toCreate, jobLimitReached } = this.state;
+
+    if (jobLimitReached) {
       return (
-        <Modal
-          type={Modal.Types.DANGER}
-          title="Delete job schedule?"
-          subtitle="Careful, this action cannot be undone"
-          confirmText="Delete"
+        <B4aModal
+          type={B4aModal.Types.INFO}
+          title="Job limit reached"
+          subtitle="You've reached the maximum number of scheduled jobs allowed on your current plan."
+          confirmText="Upgrade plan"
           cancelText="Cancel"
-          onCancel={() => this.setState({ toDelete: null })}
+          buttonsInCenter={false}
+          onCancel={() => this.setState({ jobLimitReached: false })}
           onConfirm={() => {
-            this.setState({ toDelete: null });
-            this.props.jobs.dispatch(ActionTypes.DELETE, {
-              jobId: this.state.toDelete,
-            });
+            this.props.navigate(generatePath(this.context, 'plan-usage'));
+          }}
+        >
+          <div style={{ padding: '0 1rem 0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '14px', lineHeight: '1.5' }}>
+            Upgrade your plan to schedule additional background jobs.
+          </div>
+        </B4aModal>
+      );
+    }
+
+    if (toCreate) {
+      return (
+        <EditScheduledJobModal
+          job={null}
+          context={this.context}
+          onCancel={() => this.setState({ toCreate: false })}
+          onSuccess={() => {
+            this.setState({ toCreate: false });
+            this.loadData();
           }}
         />
       );
     }
+    if (toEdit) {
+      return (
+        <EditScheduledJobModal
+          job={toEdit}
+          context={this.context}
+          onCancel={() => this.setState({ toEdit: null })}
+          onSuccess={() => {
+            this.setState({ toEdit: null });
+            this.loadData();
+          }}
+        />
+      );
+    }
+    if (!toDelete) {
+      return null;
+    }
+    return (
+      <B4aModal
+        type={B4aModal.Types.DANGER}
+        title="Delete scheduled job?"
+        subtitle="This action cannot be undone!"
+        confirmText={deleteInProgress ? 'Please wait...' : 'Delete'}
+        cancelText="Cancel"
+        disableConfirm={deleteInProgress}
+        disableCancel={deleteInProgress}
+        buttonsInCenter={false}
+        onCancel={() => this.setState({ toDelete: null, deleteError: null })}
+        onConfirm={() => {
+          this.setState({ deleteInProgress: true, deleteError: null });
+          this.context.deleteScheduledJob(toDelete.objectId)
+            .then(() => {
+              this.setState({ toDelete: null, deleteInProgress: false, deleteError: null });
+              this.loadData();
+            })
+            .catch(err => {
+              this.setState({
+                deleteInProgress: false,
+                deleteError: (err && err.error) || 'Failed to delete job. Please try again.',
+              });
+            });
+        }}
+      >
+        {deleteError ? (
+          <FormNote show={true} color="red">{deleteError}</FormNote>
+        ) : null}
+      </B4aModal>
+    );
   }
 
   tableData() {
     // Return a empty array if user don't have permission to read scheduled jobs
     if (!this.state.hasPermission) {return []}
+    const currentSection = this.getCurrentSection();
+    const jobsState = this.props.jobs.data;
+    if (jobsState) {
+      const fetchedSection = jobsState.get('section');
+      // While loading data for the new section, return undefined so TableView shows
+      // the loader instead of the empty state.
+      if (fetchedSection && fetchedSection !== currentSection) {
+        return undefined;
+      }
+    }
     let data = undefined;
-    if (this.props.params.section === 'scheduled' || this.props.params.section === 'all') {
-      if (this.props.jobs.data) {
-        const jobs = this.props.jobs.data.get('jobs');
+    if (this.isScheduledSection() || currentSection === 'all') {
+      if (jobsState) {
+        const jobs = jobsState.get('jobs');
         if (jobs) {
           if (Array.isArray(jobs)) {
             data = jobs;
@@ -534,9 +670,29 @@ class Jobs extends TableView {
           <a className={browserStyles.toolbarButton} style={{ color: 'white', border: 'none', margin: 0, padding: 0 }} onClick={this.onRefresh.bind(this)}>
             <Icon name="b4a-refresh-icon" width={18} height={18} />
           </a>
-          {this.props.availableJobs && this.props.availableJobs.length > 0 ? (
-            <Button color="white" value="Schedule a job" onClick={this.navigateToNew.bind(this)} />
-          ) : null}
+          {this.isScheduledSection() ? (
+            <Button
+              primary={true}
+              value={
+                <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />Schedule a job</span>
+              }
+              color="green"
+              width="auto"
+              additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
+              onClick={this.handleScheduleClick.bind(this)}
+            />
+          ) : (this.props.availableJobs && this.props.availableJobs.length > 0 ? (
+            <Button
+              primary={true}
+              value={
+                <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />Schedule a job</span>
+              }
+              color="green"
+              width="auto"
+              additionalStyles={{ marginLeft: '1rem', padding: '0 0.5rem', fontSize: '12px', position: 'relative' }}
+              onClick={this.navigateToNew.bind(this)}
+            />
+          ) : null)}
         </Toolbar>
       );
     }

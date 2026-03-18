@@ -18,6 +18,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
   const [ canSubmit, setCanSubmit ] = useState(false);
   const [ cloneCloudCode, setCloneCloudCode ] = useState(false);
   const [ cloneConfigs, setCloneConfigs ] = useState(false);
+  const [ cloneFiles, setCloneFiles ] = useState(false);
 
   const [ parseVersions, setParseVersions ] = useState([]);
   const [ cloneParseVersion, setCloneParseVersion ] = useState();
@@ -69,7 +70,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
       setNote('Cloning app...');
       setNoteColor('blue');
 
-      await context.cloneApp(newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneConfigs);
+      await context.cloneApp(newApp.appId, cloneParseVersion?.version, cloneType, cloneCloudCode, cloneConfigs, cloneFiles);
 
       setNote('App cloned successfully! Redirecting in 1 second');
       setNoteColor('green');
@@ -153,6 +154,7 @@ export const CloneAppModal = ({ context, setParentState }) => {
             <div style={{ padding: '1rem', width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
               <span style={{ fontSize: '14px', color: '#10203A' }}><input onChange={(e) => setCloneCloudCode(e.target.checked)} name="cloneCloudCode" type={'checkbox'} style={{ fontSize: '14px', accentColor: '#10203A' }} /> &nbsp; {'Clone Cloud Code'} </span>
               <span style={{ fontSize: '14px', color: '#10203A' }}><input onChange={(e) => setCloneConfigs(e.target.checked)} name="cloneConfigs" type={'checkbox'} style={{ fontSize: '14px', accentColor: '#10203A' }} /> &nbsp; {'Clone Configurations'} </span>
+              <span style={{ fontSize: '14px', color: '#10203A' }}><input onChange={(e) => setCloneFiles(e.target.checked)} name="cloneFiles" type={'checkbox'} style={{ fontSize: '14px', accentColor: '#10203A' }} /> &nbsp; {'Clone Files'} </span>
             </div>
           </div>
         }
