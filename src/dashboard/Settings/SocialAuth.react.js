@@ -16,15 +16,16 @@ import FieldSettings from 'components/FieldSettings/FieldSettings.react';
 import BaseLabelSettings from 'components/LabelSettings/LabelSettings.react';
 import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
 import Icon from 'components/Icon/Icon.react';
+import B4aToggle from 'components/Toggle/B4aToggle.react';
 
 function arraysEqual(a, b) {
-  if (!Array.isArray(a) || !Array.isArray(b)) return false;
-  if (a.length !== b.length) return false;
+  if (!Array.isArray(a) || !Array.isArray(b)) {return false;}
+  if (a.length !== b.length) {return false;}
   return a.every((v, i) => v === b[i]);
 }
 
 function renderOauthFooterChanges(changes, initialFields) {
-  if (!changes || !changes.oauth) return null;
+  if (!changes || !changes.oauth) {return null;}
 
   const current = changes.oauth;
   const initial = (initialFields && initialFields.oauth) || {};
@@ -32,6 +33,9 @@ function renderOauthFooterChanges(changes, initialFields) {
 
   const curApple = current.apple || {};
   const initApple = initial.apple || {};
+  if ((curApple.enabled ?? false) !== (initApple.enabled ?? false)) {
+    descriptions.push(curApple.enabled ? 'enabled Apple Login' : 'disabled Apple Login');
+  }
   if ((curApple.client_id || '') !== (initApple.client_id || '')) {
     descriptions.push(
       initApple.client_id
@@ -40,8 +44,13 @@ function renderOauthFooterChanges(changes, initialFields) {
     );
   }
 
-  const curFbIds = (current.facebook && current.facebook.appIds) || [];
-  const initFbIds = (initial.facebook && initial.facebook.appIds) || [];
+  const curFb = current.facebook || {};
+  const initFb = initial.facebook || {};
+  if ((curFb.enabled ?? false) !== (initFb.enabled ?? false)) {
+    descriptions.push(curFb.enabled ? 'enabled Facebook Login' : 'disabled Facebook Login');
+  }
+  const curFbIds = (curFb.appIds) || [];
+  const initFbIds = (initFb.appIds) || [];
   if (!arraysEqual(curFbIds, initFbIds)) {
     const added = curFbIds.filter(id => !initFbIds.includes(id));
     const removed = initFbIds.filter(id => !curFbIds.includes(id));
@@ -56,9 +65,12 @@ function renderOauthFooterChanges(changes, initialFields) {
 
   const curTw = current.twitter || {};
   const initTw = initial.twitter || {};
+  if ((curTw.enabled ?? false) !== (initTw.enabled ?? false)) {
+    descriptions.push(curTw.enabled ? 'enabled Twitter Login' : 'disabled Twitter Login');
+  }
   const twChanges = [];
-  if ((curTw.consumer_key || '') !== (initTw.consumer_key || '')) twChanges.push('Consumer Key');
-  if ((curTw.consumer_secret || '') !== (initTw.consumer_secret || '')) twChanges.push('Consumer Secret');
+  if ((curTw.consumer_key || '') !== (initTw.consumer_key || '')) {twChanges.push('Consumer Key');}
+  if ((curTw.consumer_secret || '') !== (initTw.consumer_secret || '')) {twChanges.push('Consumer Secret');}
   if (twChanges.length) {
     const verb = twChanges.some(k => initTw[k === 'Consumer Key' ? 'consumer_key' : 'consumer_secret'])
       ? 'changed' : 'added';
@@ -67,16 +79,19 @@ function renderOauthFooterChanges(changes, initialFields) {
 
   const curVk = current.vkontakte || {};
   const initVk = initial.vkontakte || {};
+  if ((curVk.enabled ?? false) !== (initVk.enabled ?? false)) {
+    descriptions.push(curVk.enabled ? 'enabled VKontakte Login' : 'disabled VKontakte Login');
+  }
   const vkChanges = [];
-  if ((curVk.appIds || '') !== (initVk.appIds || '')) vkChanges.push('Application Id');
-  if ((curVk.appSecret || '') !== (initVk.appSecret || '')) vkChanges.push('Application Secret');
+  if ((curVk.appIds || '') !== (initVk.appIds || '')) {vkChanges.push('Application Id');}
+  if ((curVk.appSecret || '') !== (initVk.appSecret || '')) {vkChanges.push('Application Secret');}
   if (vkChanges.length) {
     const verb = vkChanges.some(k => initVk[k === 'Application Id' ? 'appIds' : 'appSecret'])
       ? 'changed' : 'added';
     descriptions.push(`${verb} VKontakte Login ${vkChanges.join(' and ')}`);
   }
 
-  if (descriptions.length === 0) return null;
+  if (descriptions.length === 0) {return null;}
 
   const last = descriptions.length > 1 ? descriptions.pop() : null;
   const text = last
@@ -103,7 +118,7 @@ class SocialAuth extends DashboardView {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.loadData();
   }
 
@@ -111,6 +126,18 @@ class SocialAuth extends DashboardView {
     try {
       const result = await this.context.getOauth();
       const oauth = (result && result.oauth) || {};
+      if (oauth.apple) {
+        oauth.apple.enabled = !!oauth.apple.client_id;
+      }
+      if (oauth.facebook) {
+        oauth.facebook.enabled = Array.isArray(oauth.facebook.appIds) && oauth.facebook.appIds.length > 0;
+      }
+      if (oauth.twitter) {
+        oauth.twitter.enabled = !!(oauth.twitter.consumer_key || oauth.twitter.consumer_secret);
+      }
+      if (oauth.vkontakte) {
+        oauth.vkontakte.enabled = !!(oauth.vkontakte.appIds || oauth.vkontakte.appSecret);
+      }
       this.setState({
         initialFields: { oauth: JSON.parse(JSON.stringify(oauth)) },
       });
@@ -162,10 +189,14 @@ class SocialAuth extends DashboardView {
     };
 
     const apple = oauth.apple || {};
+    const appleEnabled = apple.enabled ?? false;
     const facebook = oauth.facebook || {};
+    const facebookEnabled = facebook.enabled ?? false;
     const facebookAppIds = facebook.appIds || [];
     const twitter = oauth.twitter || {};
+    const twitterEnabled = twitter.enabled ?? false;
     const vkontakte = oauth.vkontakte || {};
+    const vkontakteEnabled = vkontakte.enabled ?? false;
 
     return (
       <div className={fbStyles.socialAuthFormWrapper}>
@@ -188,20 +219,36 @@ class SocialAuth extends DashboardView {
               input={
                 <div style={{ flex: 1 }}>
                   <FieldSettings
-                    containerStyles={{ borderTop: 'none', borderBottom: 'none' }}
+                    containerStyles={{ borderTop: 'none', borderBottom: appleEnabled ? undefined : 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
-                    label={<BaseLabelSettings text='Bundle ID' description='Apple client_id (Bundle Identifier)' />}
+                    // label={<BaseLabelSettings text='Enabled' description='Enable Apple Sign-In authentication' />}
                     input={
-                      <TextInputSettings
-                        placeholder='Bundle ID'
-                        value={apple.client_id ?? ''}
-                        onChange={({ target: { value } }) =>
-                          setProviderField('apple', 'client_id', value)
-                        }
+                      <B4aToggle
+                        type={B4aToggle.Types.YES_NO}
+                        value={appleEnabled}
+                        onChange={(val) => setProviderField('apple', 'enabled', val)}
+                        additionalStyles={{ margin: '0', marginRight: '16px' }}
                       />
                     }
                   />
+                  {appleEnabled && (
+                    <FieldSettings
+                      containerStyles={{ borderBottom: 'none' }}
+                      padding={'16px 0px'}
+                      labelWidth={'50%'}
+                      label={<BaseLabelSettings text='Bundle ID' description='Apple client_id (Bundle Identifier)' />}
+                      input={
+                        <TextInputSettings
+                          placeholder='Bundle ID'
+                          value={apple.client_id ?? ''}
+                          onChange={({ target: { value } }) =>
+                            setProviderField('apple', 'client_id', value)
+                          }
+                        />
+                      }
+                    />
+                  )}
                 </div>
               }
               theme={Field.Theme.BLUE}
@@ -225,65 +272,82 @@ class SocialAuth extends DashboardView {
               input={
                 <div style={{ flex: 1 }}>
                   <FieldSettings
-                    containerStyles={{ borderTop: 'none' }}
+                    containerStyles={{ borderTop: 'none', borderBottom: facebookEnabled ? undefined : 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
-                    label={<BaseLabelSettings text='Facebook appId' description='Add Facebook App IDs for OAuth' />}
+                    // label={<BaseLabelSettings text='Enabled' description='Enable Facebook authentication' />}
                     input={
-                      <div className={fbStyles.fbInputRow}>
-                        <input
-                          className={fbStyles.fbInput}
-                          type='text'
-                          placeholder='Enter to add'
-                          value={this.state.fbAppIdInput}
-                          onChange={({ target: { value } }) =>
-                            this.setState({ fbAppIdInput: value, fbAppIdError: null })
-                          }
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              this.handleFbAddAppId(oauth, setField);
-                            }
-                          }}
-                        />
-                        <button
-                          className={fbStyles.fbAddBtn}
-                          onClick={() => this.handleFbAddAppId(oauth, setField)}
-                        >+</button>
-                      </div>
+                      <B4aToggle
+                        type={B4aToggle.Types.YES_NO}
+                        value={facebookEnabled}
+                        onChange={(val) => setProviderField('facebook', 'enabled', val)}
+                        additionalStyles={{ margin: '0', marginRight: '16px' }}
+                      />
                     }
                   />
-                  {this.state.fbAppIdError && (
-                    <div className={fbStyles.fieldError}>{this.state.fbAppIdError}</div>
-                  )}
-                  {facebookAppIds.length > 0 && (
-                    <FieldSettings
-                      containerStyles={{ borderBottom: 'none' }}
-                      padding={'16px 0px'}
-                      labelWidth={'50%'}
-                      label={<BaseLabelSettings text="Facebook appId's added" />}
-                      input={
-                        <div className={fbStyles.fbAppIdList}>
-                          {facebookAppIds.map(appId => (
-                            <div key={appId} className={fbStyles.fbAppIdRow}>
-                              <span className={fbStyles.fbAppIdText}>{appId}</span>
-                              <button
-                                className={fbStyles.fbRemoveBtn}
-                                onClick={() => {
-                                  const next = JSON.parse(JSON.stringify(oauth));
-                                  next.facebook = next.facebook || {};
-                                  next.facebook.appIds = (next.facebook.appIds || []).filter(id => id !== appId);
-                                  setField('oauth', next);
-                                }}
-                                title="Remove"
-                              >
-                                <Icon name="b4a-delete-icon" fill="#E85C3E" width={16} height={16} />
-                              </button>
+                  {facebookEnabled && (
+                    <>
+                      <FieldSettings
+                        padding={'16px 0px'}
+                        labelWidth={'50%'}
+                        label={<BaseLabelSettings text='Facebook appId' description='Add Facebook App IDs for OAuth' />}
+                        input={
+                          <div className={fbStyles.fbInputRow}>
+                            <input
+                              className={fbStyles.fbInput}
+                              type='text'
+                              placeholder='Enter to add'
+                              value={this.state.fbAppIdInput}
+                              onChange={({ target: { value } }) =>
+                                this.setState({ fbAppIdInput: value, fbAppIdError: null })
+                              }
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  this.handleFbAddAppId(oauth, setField);
+                                }
+                              }}
+                            />
+                            <button
+                              className={fbStyles.fbAddBtn}
+                              onClick={() => this.handleFbAddAppId(oauth, setField)}
+                            >+</button>
+                          </div>
+                        }
+                      />
+                      {this.state.fbAppIdError && (
+                        <div className={fbStyles.fieldError}>{this.state.fbAppIdError}</div>
+                      )}
+                      {facebookAppIds.length > 0 && (
+                        <FieldSettings
+                          containerStyles={{ borderBottom: 'none' }}
+                          padding={'16px 0px'}
+                          labelWidth={'50%'}
+                          label={<BaseLabelSettings text="Facebook appId's added" />}
+                          input={
+                            <div className={fbStyles.fbAppIdList}>
+                              {facebookAppIds.map(appId => (
+                                <div key={appId} className={fbStyles.fbAppIdRow}>
+                                  <span className={fbStyles.fbAppIdText}>{appId}</span>
+                                  <button
+                                    className={fbStyles.fbRemoveBtn}
+                                    onClick={() => {
+                                      const next = JSON.parse(JSON.stringify(oauth));
+                                      next.facebook = next.facebook || {};
+                                      next.facebook.appIds = (next.facebook.appIds || []).filter(id => id !== appId);
+                                      setField('oauth', next);
+                                    }}
+                                    title="Remove"
+                                  >
+                                    <Icon name="b4a-delete-icon" fill="#E85C3E" width={16} height={16} />
+                                  </button>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      }
-                    />
+                          }
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               }
@@ -308,35 +372,52 @@ class SocialAuth extends DashboardView {
               input={
                 <div style={{ flex: 1 }}>
                   <FieldSettings
-                    containerStyles={{ borderTop: 'none' }}
+                    containerStyles={{ borderTop: 'none', borderBottom: twitterEnabled ? undefined : 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
-                    label={<BaseLabelSettings text='Consumer Key' description='Twitter OAuth consumer key' />}
+                    // label={<BaseLabelSettings text='Enabled' description='Enable Twitter authentication' />}
                     input={
-                      <TextInputSettings
-                        placeholder='consumerKey'
-                        value={twitter.consumer_key ?? ''}
-                        onChange={({ target: { value } }) =>
-                          setProviderField('twitter', 'consumer_key', value)
-                        }
+                      <B4aToggle
+                        type={B4aToggle.Types.YES_NO}
+                        value={twitterEnabled}
+                        onChange={(val) => setProviderField('twitter', 'enabled', val)}
+                        additionalStyles={{ margin: '0', marginRight: '16px' }}
                       />
                     }
                   />
-                  <FieldSettings
-                    containerStyles={{ borderBottom: 'none' }}
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    label={<BaseLabelSettings text='Consumer Secret' description='Twitter OAuth consumer secret' />}
-                    input={
-                      <TextInputSettings
-                        placeholder='consumerSecret'
-                        value={twitter.consumer_secret ?? ''}
-                        onChange={({ target: { value } }) =>
-                          setProviderField('twitter', 'consumer_secret', value)
+                  {twitterEnabled && (
+                    <>
+                      <FieldSettings
+                        padding={'16px 0px'}
+                        labelWidth={'50%'}
+                        label={<BaseLabelSettings text='Consumer Key' description='Twitter OAuth consumer key' />}
+                        input={
+                          <TextInputSettings
+                            placeholder='consumerKey'
+                            value={twitter.consumer_key ?? ''}
+                            onChange={({ target: { value } }) =>
+                              setProviderField('twitter', 'consumer_key', value)
+                            }
+                          />
                         }
                       />
-                    }
-                  />
+                      <FieldSettings
+                        containerStyles={{ borderBottom: 'none' }}
+                        padding={'16px 0px'}
+                        labelWidth={'50%'}
+                        label={<BaseLabelSettings text='Consumer Secret' description='Twitter OAuth consumer secret' />}
+                        input={
+                          <TextInputSettings
+                            placeholder='consumerSecret'
+                            value={twitter.consumer_secret ?? ''}
+                            onChange={({ target: { value } }) =>
+                              setProviderField('twitter', 'consumer_secret', value)
+                            }
+                          />
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               }
               theme={Field.Theme.BLUE}
@@ -360,35 +441,52 @@ class SocialAuth extends DashboardView {
               input={
                 <div style={{ flex: 1 }}>
                   <FieldSettings
-                    containerStyles={{ borderTop: 'none' }}
+                    containerStyles={{ borderTop: 'none', borderBottom: vkontakteEnabled ? undefined : 'none' }}
                     padding={'16px 0px'}
                     labelWidth={'50%'}
-                    label={<BaseLabelSettings text='Application Id' description='VKontakte application ID' />}
+                    // label={<BaseLabelSettings text='Enabled' description='Enable VKontakte authentication' />}
                     input={
-                      <TextInputSettings
-                        placeholder='appId'
-                        value={vkontakte.appIds ?? ''}
-                        onChange={({ target: { value } }) =>
-                          setProviderField('vkontakte', 'appIds', value)
-                        }
+                      <B4aToggle
+                        type={B4aToggle.Types.YES_NO}
+                        value={vkontakteEnabled}
+                        onChange={(val) => setProviderField('vkontakte', 'enabled', val)}
+                        additionalStyles={{ margin: '0', marginRight: '16px' }}
                       />
                     }
                   />
-                  <FieldSettings
-                    containerStyles={{ borderBottom: 'none' }}
-                    padding={'16px 0px'}
-                    labelWidth={'50%'}
-                    label={<BaseLabelSettings text='Application Secret' description='VKontakte application secret' />}
-                    input={
-                      <TextInputSettings
-                        placeholder='AppSecret'
-                        value={vkontakte.appSecret ?? ''}
-                        onChange={({ target: { value } }) =>
-                          setProviderField('vkontakte', 'appSecret', value)
+                  {vkontakteEnabled && (
+                    <>
+                      <FieldSettings
+                        padding={'16px 0px'}
+                        labelWidth={'50%'}
+                        label={<BaseLabelSettings text='Application Id' description='VKontakte application ID' />}
+                        input={
+                          <TextInputSettings
+                            placeholder='appId'
+                            value={vkontakte.appIds ?? ''}
+                            onChange={({ target: { value } }) =>
+                              setProviderField('vkontakte', 'appIds', value)
+                            }
+                          />
                         }
                       />
-                    }
-                  />
+                      <FieldSettings
+                        containerStyles={{ borderBottom: 'none' }}
+                        padding={'16px 0px'}
+                        labelWidth={'50%'}
+                        label={<BaseLabelSettings text='Application Secret' description='VKontakte application secret' />}
+                        input={
+                          <TextInputSettings
+                            placeholder='AppSecret'
+                            value={vkontakte.appSecret ?? ''}
+                            onChange={({ target: { value } }) =>
+                              setProviderField('vkontakte', 'appSecret', value)
+                            }
+                          />
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               }
               theme={Field.Theme.BLUE}
@@ -426,18 +524,61 @@ class SocialAuth extends DashboardView {
             footerContents={({ changes }) =>
               renderOauthFooterChanges(changes, initialFields)
             }
-            onSubmit={({ fields }) =>
-              this.context.updateOauth(fields.oauth)
-            }
-            afterSave={({ fields, resetFields }) => {
-              this.setState({
-                initialFields: {
-                  oauth: JSON.parse(JSON.stringify(fields.oauth || {})),
-                },
-              });
+            onSubmit={({ fields }) => {
+              const oauth = fields.oauth || {};
+              const payload = {};
+              const validationErrors = [];
+
+              for (const [provider, config] of Object.entries(oauth)) {
+                if (!config || config.enabled === false) {
+                  continue;
+                }
+                const rest = Object.assign({}, config);
+                delete rest.enabled;
+
+                switch (provider) {
+                  case 'apple':
+                    if (!rest.client_id || !rest.client_id.trim()) {
+                      validationErrors.push('Apple Login requires a Bundle ID');
+                    }
+                    break;
+                  case 'facebook':
+                    if (!Array.isArray(rest.appIds) || rest.appIds.length === 0) {
+                      validationErrors.push('Facebook Login requires at least one App ID');
+                    }
+                    break;
+                  case 'twitter':
+                    if (!rest.consumer_key || !rest.consumer_key.trim()) {
+                      validationErrors.push('Twitter Login requires a Consumer Key');
+                    }
+                    if (!rest.consumer_secret || !rest.consumer_secret.trim()) {
+                      validationErrors.push('Twitter Login requires a Consumer Secret');
+                    }
+                    break;
+                  case 'vkontakte':
+                    if (!rest.appIds || !String(rest.appIds).trim()) {
+                      validationErrors.push('VKontakte Login requires an Application Id');
+                    }
+                    if (!rest.appSecret || !rest.appSecret.trim()) {
+                      validationErrors.push('VKontakte Login requires an Application Secret');
+                    }
+                    break;
+                }
+
+                payload[provider] = rest;
+              }
+
+              if (validationErrors.length > 0) {
+                return Promise.reject({ error: validationErrors[0] });
+              }
+
+              return this.context.updateOauth(payload);
+            }}
+            afterSave={({ resetFields }) => {
+              this.loadData();
               setTimeout(() => resetFields(), 1200);
             }}
-            validate={() => ''}
+            validate={() => null}
             renderForm={this.renderOauthForm.bind(this)}
           />
         </div>
