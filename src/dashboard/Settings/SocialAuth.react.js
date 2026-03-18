@@ -24,6 +24,19 @@ function arraysEqual(a, b) {
   return a.every((v, i) => v === b[i]);
 }
 
+function buildOauthPayload(oauth) {
+  const payload = {};
+  for (const [provider, config] of Object.entries(oauth || {})) {
+    if (!config || config.enabled === false) {
+      continue;
+    }
+    const rest = Object.assign({}, config);
+    delete rest.enabled;
+    payload[provider] = rest;
+  }
+  return payload;
+}
+
 function renderOauthFooterChanges(changes, initialFields) {
   if (!changes || !changes.oauth) {return null;}
 
@@ -524,48 +537,48 @@ class SocialAuth extends DashboardView {
             footerContents={({ changes }) =>
               renderOauthFooterChanges(changes, initialFields)
             }
+            showFooter={(changes) => {
+              if (!changes || !changes.oauth) {
+                return false;
+              }
+              const currentPayload = buildOauthPayload(changes.oauth);
+              const initialPayload = buildOauthPayload(initialFields.oauth);
+              return JSON.stringify(currentPayload) !== JSON.stringify(initialPayload);
+            }}
             onSubmit={({ fields }) => {
               const oauth = fields.oauth || {};
-              const payload = {};
+              const payload = buildOauthPayload(oauth);
               const validationErrors = [];
 
-              for (const [provider, config] of Object.entries(oauth)) {
-                if (!config || config.enabled === false) {
-                  continue;
-                }
-                const rest = Object.assign({}, config);
-                delete rest.enabled;
-
+              for (const [provider, config] of Object.entries(payload)) {
                 switch (provider) {
                   case 'apple':
-                    if (!rest.client_id || !rest.client_id.trim()) {
+                    if (!config.client_id || !config.client_id.trim()) {
                       validationErrors.push('Apple Login requires a Bundle ID');
                     }
                     break;
                   case 'facebook':
-                    if (!Array.isArray(rest.appIds) || rest.appIds.length === 0) {
+                    if (!Array.isArray(config.appIds) || config.appIds.length === 0) {
                       validationErrors.push('Facebook Login requires at least one App ID');
                     }
                     break;
                   case 'twitter':
-                    if (!rest.consumer_key || !rest.consumer_key.trim()) {
+                    if (!config.consumer_key || !config.consumer_key.trim()) {
                       validationErrors.push('Twitter Login requires a Consumer Key');
                     }
-                    if (!rest.consumer_secret || !rest.consumer_secret.trim()) {
+                    if (!config.consumer_secret || !config.consumer_secret.trim()) {
                       validationErrors.push('Twitter Login requires a Consumer Secret');
                     }
                     break;
                   case 'vkontakte':
-                    if (!rest.appIds || !String(rest.appIds).trim()) {
+                    if (!config.appIds || !String(config.appIds).trim()) {
                       validationErrors.push('VKontakte Login requires an Application Id');
                     }
-                    if (!rest.appSecret || !rest.appSecret.trim()) {
+                    if (!config.appSecret || !config.appSecret.trim()) {
                       validationErrors.push('VKontakte Login requires an Application Secret');
                     }
                     break;
                 }
-
-                payload[provider] = rest;
               }
 
               if (validationErrors.length > 0) {
