@@ -189,8 +189,8 @@ class SocialAuth extends DashboardView {
     this.setState({ fbAppIdInput: '', fbAppIdError: null });
   }
 
-  renderOauthForm({ fields, setField }) {
-    const oauth = fields.oauth || {};
+  renderOauthForm({ fields, changes, setField }) {
+    const oauth = changes.oauth || fields.oauth || {};
 
     const setProviderField = (provider, key, value) => {
       const next = JSON.parse(JSON.stringify(oauth));
@@ -545,8 +545,8 @@ class SocialAuth extends DashboardView {
               const initialPayload = buildOauthPayload(initialFields.oauth);
               return JSON.stringify(currentPayload) !== JSON.stringify(initialPayload);
             }}
-            onSubmit={({ fields }) => {
-              const oauth = fields.oauth || {};
+            onSubmit={({ fields, changes }) => {
+              const oauth = changes.oauth || fields.oauth || {};
               const payload = buildOauthPayload(oauth);
               const validationErrors = [];
 
