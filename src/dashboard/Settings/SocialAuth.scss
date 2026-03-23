@@ -85,6 +85,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding-left: 16px;
   padding-right: 14px;
 }
 

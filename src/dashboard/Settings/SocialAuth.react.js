@@ -283,7 +283,7 @@ class SocialAuth extends DashboardView {
                 />
               }
               input={
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <FieldSettings
                     containerStyles={{ borderTop: 'none', borderBottom: facebookEnabled ? undefined : 'none' }}
                     padding={'16px 0px'}
