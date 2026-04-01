@@ -37,8 +37,8 @@ function normalizeValue(val) {
   if (val === '' || val === undefined || val === null) {
     return null;
   }
-  if (Array.isArray(val) && val.length === 0) {
-    return null;
+  if (Array.isArray(val)) {
+    return val;
   }
   return val;
 }
