@@ -101,7 +101,7 @@ function renderOauthFooterChanges(changes, initialFields) {
   const curTw = current.twitter || {};
   const initTw = initial.twitter || {};
   if ((curTw.enabled ?? false) !== (initTw.enabled ?? false)) {
-    descriptions.push(curTw.enabled ? 'enabled Twitter Login' : 'disabled Twitter Login');
+    descriptions.push(curTw.enabled ? 'enabled X Login' : 'disabled X Login');
   }
   const twChanges = [];
   if ((curTw.consumer_key || '') !== (initTw.consumer_key || '')) {twChanges.push('Consumer Key');}
@@ -109,7 +109,7 @@ function renderOauthFooterChanges(changes, initialFields) {
   if (twChanges.length) {
     const verb = twChanges.some(k => initTw[k === 'Consumer Key' ? 'consumer_key' : 'consumer_secret'])
       ? 'changed' : 'added';
-    descriptions.push(`${verb} Twitter Login ${twChanges.join(' and ')}`);
+    descriptions.push(`${verb} X Login ${twChanges.join(' and ')}`);
   }
 
   const curVk = current.vkontakte || {};
@@ -503,14 +503,14 @@ class SocialAuth extends DashboardView {
           <hr className={layoutStyles.fieldHr} />
 
           <Fieldset
-            legend='Twitter Login'
-            description='Configure Twitter OAuth credentials.'
+            legend='X Login'
+            description='Configure X OAuth credentials.'
           >
             <Field
               label={
                 <Label
-                  text='Twitter Login'
-                  description='Configure Twitter authentication'
+                  text='X Login'
+                  description='Configure X authentication'
                   dark={true}
                 />
               }
@@ -535,7 +535,7 @@ class SocialAuth extends DashboardView {
                       <FieldSettings
                         padding={'16px 0px'}
                         labelWidth={'50%'}
-                        label={<BaseLabelSettings text='Consumer Key' description='Twitter OAuth consumer key' />}
+                        label={<BaseLabelSettings text='Consumer Key' description='X OAuth consumer key' />}
                         input={
                           <TextInputSettings
                             placeholder='consumerKey'
@@ -550,7 +550,7 @@ class SocialAuth extends DashboardView {
                         containerStyles={{ borderBottom: 'none' }}
                         padding={'16px 0px'}
                         labelWidth={'50%'}
-                        label={<BaseLabelSettings text='Consumer Secret' description='Twitter OAuth consumer secret' />}
+                        label={<BaseLabelSettings text='Consumer Secret' description='X OAuth consumer secret' />}
                         input={
                           <TextInputSettings
                             placeholder='consumerSecret'
