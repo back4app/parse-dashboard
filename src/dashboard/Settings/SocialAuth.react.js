@@ -17,11 +17,30 @@ import BaseLabelSettings from 'components/LabelSettings/LabelSettings.react';
 import TextInputSettings from 'components/TextInputSettings/TextInputSettings.react';
 import Icon from 'components/Icon/Icon.react';
 import B4aToggle from 'components/Toggle/B4aToggle.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
+import Button from 'components/Button/Button.react';
 
 function arraysEqual(a, b) {
   if (!Array.isArray(a) || !Array.isArray(b)) {return false;}
   if (a.length !== b.length) {return false;}
   return a.every((v, i) => v === b[i]);
+}
+
+const PROVIDER_FIELDS = {
+  apple: ['client_id'],
+  facebook: ['appIds'],
+  twitter: ['consumer_key', 'consumer_secret'],
+  vkontakte: ['appIds', 'appSecret'],
+};
+
+function normalizeValue(val) {
+  if (val === '' || val === undefined || val === null) {
+    return null;
+  }
+  if (Array.isArray(val) && val.length === 0) {
+    return null;
+  }
+  return val;
 }
 
 function buildOauthPayload(oauth) {
@@ -30,8 +49,11 @@ function buildOauthPayload(oauth) {
     if (!config || config.enabled === false) {
       continue;
     }
-    const rest = Object.assign({}, config);
-    delete rest.enabled;
+    const fields = PROVIDER_FIELDS[provider] || [];
+    const rest = {};
+    for (const field of fields) {
+      rest[field] = normalizeValue(config[field]);
+    }
     payload[provider] = rest;
   }
   return payload;
@@ -128,11 +150,110 @@ class SocialAuth extends DashboardView {
       initialFields: { oauth: {} },
       fbAppIdInput: '',
       fbAppIdError: null,
+      isDirty: false,
+      modal: null,
     };
+
+    this.unblock = null;
+    this.onBeforeUnloadSocialAuth = null;
+    this._lastComputedDirty = false;
+    this._dirtyTimeout = null;
+  }
+
+  computeIsDirty(changes) {
+    if (!changes || !changes.oauth) {
+      return false;
+    }
+    const currentPayload = buildOauthPayload(changes.oauth);
+    const initialPayload = buildOauthPayload(this.state.initialFields.oauth);
+    return JSON.stringify(currentPayload) !== JSON.stringify(initialPayload);
   }
 
   componentDidMount() {
     this.loadData();
+
+    if (this.props.navigator && typeof this.props.navigator.block === 'function') {
+      this.unblock = this.props.navigator.block(tx => {
+        if (this.state.isDirty) {
+          const unblock = this.unblock && this.unblock.bind(this);
+          const autoUnblockingTx = {
+            ...tx,
+            retry() {
+              if (unblock) {
+                unblock();
+              }
+              tx.retry();
+            },
+          };
+
+          const modal = (
+            <B4aModal
+              type={B4aModal.Types.DEFAULT}
+              showCancel={false}
+              width={380}
+              icon="b4a-warn-fill-icon"
+              iconSize={44}
+              iconFill="#cccccc"
+              title="Leave this page?"
+              subtitle="Changes you made may not be saved."
+              customFooter={
+                <div style={{ textAlign: 'center' }}>
+                  <Button
+                    color="white"
+                    width="auto"
+                    additionalStyles={{ border: '1px solid #ccc', color: '#303338', marginRight: 12 }}
+                    value="Cancel"
+                    onClick={() => this.setState({ modal: null })}
+                  />
+                  <Button
+                    primary={true}
+                    color="blue"
+                    width="auto"
+                    value="Leave"
+                    onClick={() => {
+                      this.setState({ modal: null });
+                      autoUnblockingTx.retry();
+                    }}
+                  />
+                </div>
+              }
+            />
+          );
+          this.setState({ modal });
+        } else {
+          if (this.unblock) {
+            this.unblock();
+          }
+          tx.retry();
+        }
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const wasDirty = !!prevState?.isDirty;
+    const isDirty = !!this.state.isDirty;
+
+    if (!wasDirty && isDirty) {
+      if (!this.onBeforeUnloadSocialAuth) {
+        this.onBeforeUnloadSocialAuth = (e) => {
+          e.preventDefault();
+          e.returnValue = '';
+          return '';
+        };
+      }
+      window.addEventListener('beforeunload', this.onBeforeUnloadSocialAuth);
+    } else if (wasDirty && !isDirty) {
+      window.removeEventListener('beforeunload', this.onBeforeUnloadSocialAuth);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.unblock) {
+      this.unblock();
+    }
+    clearTimeout(this._dirtyTimeout);
+    window.removeEventListener('beforeunload', this.onBeforeUnloadSocialAuth);
   }
 
   async loadData() {
@@ -191,6 +312,17 @@ class SocialAuth extends DashboardView {
 
   renderOauthForm({ fields, changes, setField }) {
     const oauth = changes.oauth || fields.oauth || {};
+
+    const isDirty = this.computeIsDirty(changes);
+    if (isDirty !== this._lastComputedDirty) {
+      this._lastComputedDirty = isDirty;
+      clearTimeout(this._dirtyTimeout);
+      this._dirtyTimeout = setTimeout(() => {
+        if (this.state.isDirty !== isDirty) {
+          this.setState({ isDirty });
+        }
+      }, 0);
+    }
 
     const setProviderField = (provider, key, value) => {
       const next = JSON.parse(JSON.stringify(oauth));
@@ -548,47 +680,12 @@ class SocialAuth extends DashboardView {
             onSubmit={({ fields, changes }) => {
               const oauth = changes.oauth || fields.oauth || {};
               const payload = buildOauthPayload(oauth);
-              const validationErrors = [];
-
-              for (const [provider, config] of Object.entries(payload)) {
-                switch (provider) {
-                  case 'apple':
-                    if (!config.client_id || !config.client_id.trim()) {
-                      validationErrors.push('Apple Login requires a Bundle ID');
-                    }
-                    break;
-                  case 'facebook':
-                    if (!Array.isArray(config.appIds) || config.appIds.length === 0) {
-                      validationErrors.push('Facebook Login requires at least one App ID');
-                    }
-                    break;
-                  case 'twitter':
-                    if (!config.consumer_key || !config.consumer_key.trim()) {
-                      validationErrors.push('Twitter Login requires a Consumer Key');
-                    }
-                    if (!config.consumer_secret || !config.consumer_secret.trim()) {
-                      validationErrors.push('Twitter Login requires a Consumer Secret');
-                    }
-                    break;
-                  case 'vkontakte':
-                    if (!config.appIds || !String(config.appIds).trim()) {
-                      validationErrors.push('VKontakte Login requires an Application Id');
-                    }
-                    if (!config.appSecret || !config.appSecret.trim()) {
-                      validationErrors.push('VKontakte Login requires an Application Secret');
-                    }
-                    break;
-                }
-              }
-
-              if (validationErrors.length > 0) {
-                return Promise.reject({ error: validationErrors[0] });
-              }
-
               return this.context.updateOauth(payload);
             }}
             afterSave={({ resetFields }) => {
               this.loadData();
+              this._lastComputedDirty = false;
+              this.setState({ isDirty: false });
               setTimeout(() => resetFields(), 1200);
             }}
             validate={() => null}
@@ -606,6 +703,7 @@ class SocialAuth extends DashboardView {
           </div>
         </B4aLoaderContainer>
         {toolbar}
+        {this.state.modal}
       </div>
     );
   }
