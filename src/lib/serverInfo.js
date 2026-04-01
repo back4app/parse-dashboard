@@ -24,6 +24,8 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'Environment Variable',
   'Environment Variables',
   'environment-variables',
+  'social-auth',
+  'Social Auth',
 ];
 
 export const canAccess = (serverInfo, route) => {
