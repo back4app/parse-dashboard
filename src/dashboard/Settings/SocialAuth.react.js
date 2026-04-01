@@ -261,16 +261,16 @@ class SocialAuth extends DashboardView {
       const result = await this.context.getOauth();
       const oauth = (result && result.oauth) || {};
       if (oauth.apple) {
-        oauth.apple.enabled = !!oauth.apple.client_id;
+        oauth.apple.enabled = true;
       }
       if (oauth.facebook) {
-        oauth.facebook.enabled = Array.isArray(oauth.facebook.appIds) && oauth.facebook.appIds.length > 0;
+        oauth.facebook.enabled = true;
       }
       if (oauth.twitter) {
-        oauth.twitter.enabled = !!(oauth.twitter.consumer_key || oauth.twitter.consumer_secret);
+        oauth.twitter.enabled = true;
       }
       if (oauth.vkontakte) {
-        oauth.vkontakte.enabled = !!(oauth.vkontakte.appIds || oauth.vkontakte.appSecret);
+        oauth.vkontakte.enabled = true;
       }
       this.setState({
         initialFields: { oauth: JSON.parse(JSON.stringify(oauth)) },
