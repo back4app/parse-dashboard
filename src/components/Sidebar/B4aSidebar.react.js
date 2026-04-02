@@ -19,6 +19,7 @@ import AppsMenu from 'components/Sidebar/AppsMenu.react';
 import AppName from 'components/Sidebar/AppName.react';
 import { CurrentApp } from 'context/currentApp';
 import { canAccess } from 'lib/serverInfo';
+import { Link } from 'react-router-dom';
 // let isSidebarFixed = !isMobile();
 let isSidebarCollapsed = undefined;
 
@@ -118,9 +119,42 @@ const B4aSidebar = ({
     }
     return (
       <div className={styles.submenu}>
-        {subsections.map(({name, link, badge}) => {
+        {subsections.map(({ name, link, badge, children: groupChildren }) => {
+          if (groupChildren) {
+            const isGroupActive = subsection === name || groupChildren.some(c => c.name === subsection);
+            const groupLink = link.startsWith('/') ? prefix + link : link;
+            return (
+              <div key={name} className={styles.subgroup}>
+                <Link
+                  className={`${styles.subgroupHeader} ${isGroupActive ? styles.subgroupHeaderActive : ''}`}
+                  to={{ pathname: groupLink }}
+                >
+                  {name}
+                </Link>
+                <div className={styles.subgroupChildren}>
+                  {groupChildren.map(child => {
+                    const childActive = subsection === child.name;
+                    const childLink = child.link.startsWith('/') ? prefix + child.link : child.link;
+                    return (
+                      <SidebarSubItem
+                        key={child.name}
+                        name={child.name}
+                        link={childLink}
+                        action={action || null}
+                        actionHandler={childActive ? actionHandler : null}
+                        active={childActive}
+                        badge={child.badge}
+                      >
+                        {childActive ? children : null}
+                      </SidebarSubItem>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }
+
           const active = subsection === name;
-          // If link points to another component, adds the prefix
           link = link.startsWith('/') ? prefix + link : link;
           return (
             <SidebarSubItem

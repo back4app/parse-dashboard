@@ -1654,6 +1654,35 @@ export default class ParseApp {
     }
   }
 
+  async getEmailSettings() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/email`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async updateEmailSettings(emailSettings, preventLoginWithUnverifiedEmail) {
+    try {
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/email`,
+          { emailSettings, preventLoginWithUnverifiedEmail },
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
   async fetchAvgResponseTime(limit = 60) {
     try {
       return (

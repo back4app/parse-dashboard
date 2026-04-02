@@ -228,7 +228,7 @@ const getPushTime = (pushTime, updatedAt) => {
 class PushIndex extends DashboardView {
   constructor() {
     super();
-    this.section = 'Push Notifications';
+    this.section = 'Notification';
     this.subsection = 'Past Pushes';
     this.action = new SidebarAction('Send a push', this.navigateToNew.bind(this));
     this.state = {
