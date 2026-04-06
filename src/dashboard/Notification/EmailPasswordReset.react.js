@@ -290,50 +290,54 @@ class EmailPasswordReset extends DashboardView {
               theme={Field.Theme.BLUE}
             />
           )}
-          <Field
-            label={
-              <EmailLabelSettings
-                text="Email Subject"
-                description="Subject line for the password reset email."
-                helpText="Subject shown in the user’s inbox. You can use *|appname|* and other supported placeholders."
-              />
-            }
-            input={
-              <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
-                <TextInputSettings
-                  placeholder="Password Reset Request for *|appname|*"
-                  value={fields.passwordResetEmailSubject ?? ''}
-                  onChange={valueOrEvent => trackSetField('passwordResetEmailSubject', getInputValue(valueOrEvent))}
-                  disabled={!canEditFields}
+          <div style={!canEditFields ? { opacity: 0.7 } : undefined}>
+            <Field
+              label={
+                <EmailLabelSettings
+                  text="Email Subject"
+                  description="Subject line for the password reset email."
+                  helpText="Subject shown in the user's inbox. You can use *|appname|* and other supported placeholders."
                 />
-              </div>
-            }
-            textAlign="right"
-            theme={Field.Theme.BLUE}
-          />
-          <Field
-            label={
-              <EmailLabelSettings
-                text="Email Body"
-                description="Body of the password reset email."
-                helpText="Email body must include the *|link|* placeholder so users can open the reset link."
-              />
-            }
-            input={
-              <div className={styles.emailTextField}>
-                <TextInputSettings
-                  multiline={true}
-                  rows={8}
-                  placeholder="Enter password reset email body"
-                  value={fields.passwordResetEmailBody ?? ''}
-                  onChange={valueOrEvent => trackSetField('passwordResetEmailBody', getInputValue(valueOrEvent))}
-                  disabled={!canEditFields}
+              }
+              input={
+                <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
+                  <TextInputSettings
+                    placeholder="Password Reset Request for *|appname|*"
+                    value={fields.passwordResetEmailSubject ?? ''}
+                    onChange={valueOrEvent => trackSetField('passwordResetEmailSubject', getInputValue(valueOrEvent))}
+                    disabled={!canEditFields}
+                  />
+                </div>
+              }
+              textAlign="right"
+              theme={Field.Theme.BLUE}
+            />
+          </div>
+          <div style={!canEditFields ? { opacity: 0.7 } : undefined}>
+            <Field
+              label={
+                <EmailLabelSettings
+                  text="Email Body"
+                  description="Body of the password reset email."
+                  helpText="Email body must include the *|link|* placeholder so users can open the reset link."
                 />
-              </div>
-            }
-            textAlign="right"
-            theme={Field.Theme.BLUE}
-          />
+              }
+              input={
+                <div className={styles.emailTextField}>
+                  <TextInputSettings
+                    multiline={true}
+                    rows={8}
+                    placeholder="Enter password reset email body"
+                    value={fields.passwordResetEmailBody ?? ''}
+                    onChange={valueOrEvent => trackSetField('passwordResetEmailBody', getInputValue(valueOrEvent))}
+                    disabled={!canEditFields}
+                  />
+                </div>
+              }
+              textAlign="right"
+              theme={Field.Theme.BLUE}
+            />
+          </div>
         </Fieldset>
       </div>
     );
