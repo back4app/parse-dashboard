@@ -158,6 +158,8 @@ const preloadMap = {
   playground: () => import('./Data/Playground/Playground.react'),
   appSecurityReport: () => import('./AppSecurityReport/AppSecurityReport.react'),
   appPlan: () => import('./AppPlan/AppPlan.react'),
+  emailVerification: () => import('./Notification/EmailVerification.react'),
+  emailPasswordReset: () => import('./Notification/EmailPasswordReset.react'),
 };
 
 // Preload all routes with proper error handling and logging
