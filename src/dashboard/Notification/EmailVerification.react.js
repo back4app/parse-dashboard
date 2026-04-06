@@ -16,6 +16,7 @@ import joinWithFinal from 'lib/joinWithFinal';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
 import { Link } from 'react-router-dom';
+import validateEmailFormat from 'lib/validateEmailFormat';
 
 const DEFAULT_VERIFICATION_BODY =
   'Hi,\n\n' +
@@ -250,6 +251,10 @@ class EmailVerification extends DashboardView {
   renderForm({ fields, setField }) {
     const { canChangeEmailTemplate, isUserVerified, hasPermission } = this.state;
     const canEditBasicFields = isUserVerified && hasPermission;
+    const replyToTrimmed = (fields.replyTo || '').trim();
+    const replyToInvalid =
+      canEditBasicFields &&
+      (!replyToTrimmed || !validateEmailFormat(replyToTrimmed));
     const canEditTemplateFields = canEditBasicFields && canChangeEmailTemplate;
     const showTemplateUpgradeCta = isUserVerified && hasPermission && !canEditTemplateFields;
 
@@ -349,6 +354,7 @@ class EmailVerification extends DashboardView {
                     value={fields.replyTo ?? ''}
                     onChange={valueOrEvent => trackSetField('replyTo', getInputValue(valueOrEvent))}
                     disabled={!canEditBasicFields}
+                    error={replyToInvalid}
                   />
                 </div>
               }
@@ -486,6 +492,15 @@ class EmailVerification extends DashboardView {
       );
     } else if (!isLoading) {
       const validateForm = ({ fields }) => {
+        if (hasPermission && isUserVerified) {
+          const replyTo = (fields.replyTo || '').trim();
+          if (!replyTo) {
+            return 'Reply to address is required.';
+          }
+          if (!validateEmailFormat(replyTo)) {
+            return 'Please enter a valid reply-to email address.';
+          }
+        }
         const verificationEmailBody = fields.verificationEmailBody || '';
         if (verificationEmailBody && !verificationEmailBody.includes('*|link|*')) {
           return 'Verification email body must include *|link|* placeholder.';
