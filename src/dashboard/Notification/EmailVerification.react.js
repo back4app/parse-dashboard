@@ -251,11 +251,11 @@ class EmailVerification extends DashboardView {
   renderForm({ fields, setField }) {
     const { canChangeEmailTemplate, isUserVerified, hasPermission } = this.state;
     const canEditBasicFields = isUserVerified && hasPermission;
+    const canEditTemplateFields = canEditBasicFields && canChangeEmailTemplate;
     const replyToTrimmed = (fields.replyTo || '').trim();
     const replyToInvalid =
-      canEditBasicFields &&
+      canEditTemplateFields &&
       (!replyToTrimmed || !validateEmailFormat(replyToTrimmed));
-    const canEditTemplateFields = canEditBasicFields && canChangeEmailTemplate;
     const showTemplateUpgradeCta = isUserVerified && hasPermission && !canEditTemplateFields;
 
     const trackSetField = (key, value) => {
@@ -284,178 +284,199 @@ class EmailVerification extends DashboardView {
           </div>
         )}
 
-        <Fieldset
-          legend="Verification Settings"
-          description="Enable and configure user email verification."
-        >
-          <div style={!canEditBasicFields ? { opacity: 0.6 } : undefined}>
-            <Field
-              label={
-                <EmailLabelSettings
-                  text="Enable Verification"
-                  description="Send verification emails to new users."
-                  helpText="When enabled, Parse sends a verification email so users can confirm their address before using the app."
-                />
-              }
-              input={
-                <div className={styles.emailSwitchField}>
-                  <B4aToggle
-                    additionalStyles={{ margin: '6px 0px' }}
-                    value={fields.verificationEmailEnaled}
-                    onChange={value =>
-                      canEditBasicFields && trackSetField('verificationEmailEnaled', value)
-                    }
-                    disabled={!canEditBasicFields}
-                  />
-                </div>
-              }
-              textAlign="right"
-              theme={Field.Theme.BLUE}
-            />
-          </div>
-          <div>
-            <Field
-              label={
-                <EmailLabelSettings
-                  text="Prevent login with unverified email"
-                  description="Block login until email is verified."
-                  helpText="Requires users to verify their email before they can log in. Only applies when verification emails are enabled."
-                />
-              }
-              input={
-                <div className={styles.emailSwitchField}>
-                  <B4aToggle
-                    additionalStyles={{ margin: '6px 0px' }}
-                    value={fields.verificationEmailEnaled ? fields.preventLoginWithUnverifiedEmail : false}
-                    onChange={value =>
-                      canEditBasicFields && trackSetField('preventLoginWithUnverifiedEmail', value)
-                    }
-                    disabled={!canEditBasicFields || !fields.verificationEmailEnaled}
-                  />
-                </div>
-              }
-              textAlign="right"
-              theme={Field.Theme.BLUE}
-            />
-          </div>
-          <div style={!canEditBasicFields ? { opacity: 0.6 } : undefined}>
-            <Field
-              label={
-                <EmailLabelSettings
-                  text="Reply to Address"
-                  description="Reply-to for verification emails."
-                  helpText="Address used when recipients reply to verification messages. Must be a valid sender your mail provider allows."
-                />
-              }
-              input={
-                <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
-                  <TextInputSettings
-                    placeholder="no-reply@b4a.app"
-                    value={fields.replyTo ?? ''}
-                    onChange={valueOrEvent => trackSetField('replyTo', getInputValue(valueOrEvent))}
-                    disabled={!canEditBasicFields}
-                    error={replyToInvalid}
-                  />
-                </div>
-              }
-              textAlign="right"
-              theme={Field.Theme.BLUE}
-            />
-          </div>
-          <div style={!canEditBasicFields ? { opacity: 0.6 } : undefined}>
-            <Field
-              label={
-                <EmailLabelSettings
-                  text="Display Name"
-                  description="Sender name in verification emails."
-                  helpText="The name shown as the sender of verification emails (for example your app name)."
-                />
-              }
-              input={
-                <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
-                  <TextInputSettings
-                    placeholder="Enter display name"
-                    value={fields.displayName ?? ''}
-                    onChange={valueOrEvent => trackSetField('displayName', getInputValue(valueOrEvent))}
-                    disabled={!canEditBasicFields}
-                  />
-                </div>
-              }
-              textAlign="right"
-              theme={Field.Theme.BLUE}
-            />
-          </div>
-          {showTemplateUpgradeCta && (
-            <Field
-              label={
-                <Label
-                  text="Upgrade your plan"
-                  dark={true}
-                  description="Please upgrade your plan to customize email templates."
-                />
-              }
-              input={
-                <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-                  <Link to={`/apps/${this.context.slug}/plan-usage`}>
-                    <Button
-                      value="Upgrade Plan"
-                      primary={true}
+        <div className={styles.formWrapper}>
+          <div className={styles.emailSettingsContainer}>
+            <div style={!canEditBasicFields ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
+              <Fieldset
+                legend="Email Verification Settings"
+                description="Turn verification emails on and optionally block login until the user verifies."
+              >
+                <Field
+                  label={
+                    <EmailLabelSettings
+                      text="Enable Verification"
+                      description="Send verification emails to new users."
+                      helpText="When enabled, Parse sends a verification email so users can confirm their address before using the app."
                     />
-                  </Link>
-                </div>
-              }
-              theme={Field.Theme.BLUE}
-            />
-          )}
-          <div style={!canEditTemplateFields ? { opacity: 0.7 } : undefined}>
-            <Field
-              label={
-                <EmailLabelSettings
-                  text="Verification Email Subject"
-                  description="Subject line for the verification email."
-                  helpText="Subject users see in their inbox. You can use placeholders such as *|appname|* where supported."
+                  }
+                  input={
+                    <div className={styles.emailSwitchField}>
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 0px' }}
+                        value={fields.verificationEmailEnaled}
+                        onChange={value =>
+                          canEditBasicFields && trackSetField('verificationEmailEnaled', value)
+                        }
+                        disabled={!canEditBasicFields}
+                      />
+                    </div>
+                  }
+                  textAlign="right"
+                  theme={Field.Theme.BLUE}
                 />
-              }
-              input={
-                <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
-                  <TextInputSettings
-                    placeholder="Please verify your e-mail for *|appname|*"
-                    value={fields.verificationEmailSubject ?? ''}
-                    onChange={valueOrEvent => trackSetField('verificationEmailSubject', getInputValue(valueOrEvent))}
-                    disabled={!canEditTemplateFields}
-                  />
-                </div>
-              }
-              textAlign="right"
-              theme={Field.Theme.BLUE}
-            />
-          </div>
-          <div style={!canEditTemplateFields ? { opacity: 0.7 } : undefined}>
-            <Field
-              label={
-                <EmailLabelSettings
-                  text="Verification Email Body"
-                  description="Body of the verification email."
-                  helpText="Email body shown to users. Must include the *|link|* placeholder so users can complete verification."
+                <Field
+                  label={
+                    <EmailLabelSettings
+                      text="Prevent login with unverified email"
+                      description="Block login until email is verified."
+                      helpText="Requires users to verify their email before they can log in. Only applies when verification emails are enabled."
+                    />
+                  }
+                  input={
+                    <div className={styles.emailSwitchField}>
+                      <B4aToggle
+                        additionalStyles={{ margin: '6px 0px' }}
+                        value={fields.verificationEmailEnaled ? fields.preventLoginWithUnverifiedEmail : false}
+                        onChange={value =>
+                          canEditBasicFields && trackSetField('preventLoginWithUnverifiedEmail', value)
+                        }
+                        disabled={!canEditBasicFields || !fields.verificationEmailEnaled}
+                      />
+                    </div>
+                  }
+                  textAlign="right"
+                  theme={Field.Theme.BLUE}
                 />
-              }
-              input={
-                <div className={styles.emailTextField}>
-                  <TextInputSettings
-                    multiline={true}
-                    rows={8}
-                    placeholder="Enter verification email body"
-                    value={fields.verificationEmailBody ?? ''}
-                    onChange={valueOrEvent => trackSetField('verificationEmailBody', getInputValue(valueOrEvent))}
-                    disabled={!canEditTemplateFields}
-                  />
-                </div>
-              }
-              textAlign="right"
-              theme={Field.Theme.BLUE}
-            />
+              </Fieldset>
+            </div>
+
+            <hr className={styles.fieldHr} />
+
+            <div className={styles.heading}>Email templates and sender</div>
+            <div className={styles.subheading}>
+              Customize reply-to, display name, and verification email content. Requires a plan that includes
+              customizable email templates.
+            </div>
+
+            {showTemplateUpgradeCta && (
+              <Fieldset>
+                <Field
+                  label={
+                    <Label
+                      text="Upgrade your plan"
+                      dark={true}
+                      description="Please upgrade your plan to customize email templates and sender details."
+                    />
+                  }
+                  input={
+                    <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
+                      <Link to={`/apps/${this.context.slug}/plan-usage`}>
+                        <Button
+                          value="Upgrade Plan"
+                          primary={true}
+                        />
+                      </Link>
+                    </div>
+                  }
+                  theme={Field.Theme.BLUE}
+                />
+              </Fieldset>
+            )}
+
+            <div style={!canEditTemplateFields ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
+              <Fieldset
+                legend="Templates and sender"
+                description="Reply-to, display name, and verification email subject and body."
+              >
+                <Field
+                  label={
+                    <EmailLabelSettings
+                      text="Reply to Address"
+                      description="Reply-to for verification emails."
+                      helpText="Address used when recipients reply to verification messages. Must be a valid sender your mail provider allows."
+                    />
+                  }
+                  input={
+                    <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
+                      <TextInputSettings
+                        placeholder="no-reply@b4a.app"
+                        value={fields.replyTo ?? ''}
+                        onChange={valueOrEvent =>
+                          canEditTemplateFields && trackSetField('replyTo', getInputValue(valueOrEvent))
+                        }
+                        disabled={!canEditTemplateFields}
+                        error={replyToInvalid}
+                      />
+                    </div>
+                  }
+                  textAlign="right"
+                  theme={Field.Theme.BLUE}
+                />
+                <Field
+                  label={
+                    <EmailLabelSettings
+                      text="Display Name"
+                      description="Sender name in verification emails."
+                      helpText="The name shown as the sender of verification emails (for example your app name)."
+                    />
+                  }
+                  input={
+                    <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
+                      <TextInputSettings
+                        placeholder="Enter display name"
+                        value={fields.displayName ?? ''}
+                        onChange={valueOrEvent =>
+                          canEditTemplateFields && trackSetField('displayName', getInputValue(valueOrEvent))
+                        }
+                        disabled={!canEditTemplateFields}
+                      />
+                    </div>
+                  }
+                  textAlign="right"
+                  theme={Field.Theme.BLUE}
+                />
+                <Field
+                  label={
+                    <EmailLabelSettings
+                      text="Verification Email Subject"
+                      description="Subject line for the verification email."
+                      helpText="Subject users see in their inbox. You can use placeholders such as *|appname|* where supported."
+                    />
+                  }
+                  input={
+                    <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
+                      <TextInputSettings
+                        placeholder="Please verify your e-mail for *|appname|*"
+                        value={fields.verificationEmailSubject ?? ''}
+                        onChange={valueOrEvent =>
+                          canEditTemplateFields && trackSetField('verificationEmailSubject', getInputValue(valueOrEvent))
+                        }
+                        disabled={!canEditTemplateFields}
+                      />
+                    </div>
+                  }
+                  textAlign="right"
+                  theme={Field.Theme.BLUE}
+                />
+                <Field
+                  label={
+                    <EmailLabelSettings
+                      text="Verification Email Body"
+                      description="Body of the verification email."
+                      helpText="Email body shown to users. Must include the *|link|* placeholder so users can complete verification."
+                    />
+                  }
+                  input={
+                    <div className={styles.emailTextField}>
+                      <TextInputSettings
+                        multiline={true}
+                        rows={8}
+                        placeholder="Enter verification email body"
+                        value={fields.verificationEmailBody ?? ''}
+                        onChange={valueOrEvent =>
+                          canEditTemplateFields && trackSetField('verificationEmailBody', getInputValue(valueOrEvent))
+                        }
+                        disabled={!canEditTemplateFields}
+                      />
+                    </div>
+                  }
+                  textAlign="right"
+                  theme={Field.Theme.BLUE}
+                />
+              </Fieldset>
+            </div>
           </div>
-        </Fieldset>
+        </div>
       </div>
     );
   }
@@ -464,7 +485,7 @@ class EmailVerification extends DashboardView {
     const toolbar = (
       <Toolbar section="Notification" subsection="Email Verification" />
     );
-    const { isLoading, initialFields, errorMessage, hasPermission, isUserVerified } = this.state;
+    const { isLoading, initialFields, errorMessage, hasPermission, isUserVerified, canChangeEmailTemplate } = this.state;
 
     const fieldsOptions = {
       verificationEmailEnaled: { friendlyName: 'enable verification emails', showTo: true },
@@ -492,7 +513,9 @@ class EmailVerification extends DashboardView {
       );
     } else if (!isLoading) {
       const validateForm = ({ fields }) => {
-        if (hasPermission && isUserVerified) {
+        const canEditTemplateFields =
+          hasPermission && isUserVerified && canChangeEmailTemplate;
+        if (canEditTemplateFields) {
           const replyTo = (fields.replyTo || '').trim();
           if (!replyTo) {
             return 'Reply to address is required.';
@@ -500,10 +523,10 @@ class EmailVerification extends DashboardView {
           if (!validateEmailFormat(replyTo)) {
             return 'Please enter a valid reply-to email address.';
           }
-        }
-        const verificationEmailBody = fields.verificationEmailBody || '';
-        if (verificationEmailBody && !verificationEmailBody.includes('*|link|*')) {
-          return 'Verification email body must include *|link|* placeholder.';
+          const verificationEmailBody = fields.verificationEmailBody || '';
+          if (verificationEmailBody && !verificationEmailBody.includes('*|link|*')) {
+            return 'Verification email body must include *|link|* placeholder.';
+          }
         }
         return '';
       };

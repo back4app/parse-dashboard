@@ -30,6 +30,36 @@
   }
 }
 
+// Layout pattern aligned with CustomParseOptions (formWrapper / domainSettingsContainer)
+.formWrapper {
+  padding: 0;
+  width: 100%;
+}
+
+.emailSettingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+    margin-bottom: 1rem;
+  }
+
+  .fieldHr {
+    margin: 1.25rem 0;
+    border: 0;
+  }
+}
+
 // Label info icon (same pattern as Custom Parse Options / Custom Pages section)
 .infoIcon {
   cursor: help;
