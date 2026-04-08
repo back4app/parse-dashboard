@@ -79,6 +79,8 @@ const LazyCloudCode = lazy(() => import('./Data/CloudCode/B4ACloudCode.react'));
 const LazyAppPlan = lazy(() => import('./AppPlan/AppPlan.react'));
 const LazyAppSecurityReport = lazy(() => import('./AppSecurityReport/AppSecurityReport.react'));
 const LazyDatabaseProfile = lazy(() => import('./DatabaseProfiler/DatabaseProfiler.react'));
+const LazyEmailVerification = lazy(() => import('./Notification/EmailVerification.react'));
+const LazyEmailPasswordReset = lazy(() => import('./Notification/EmailPasswordReset.react'));
 
 async function fetchHubUser() {
   try {
@@ -156,6 +158,8 @@ const preloadMap = {
   playground: () => import('./Data/Playground/Playground.react'),
   appSecurityReport: () => import('./AppSecurityReport/AppSecurityReport.react'),
   appPlan: () => import('./AppPlan/AppPlan.react'),
+  emailVerification: () => import('./Notification/EmailVerification.react'),
+  emailPasswordReset: () => import('./Notification/EmailPasswordReset.react'),
 };
 
 // Preload all routes with proper error handling and logging
@@ -486,6 +490,11 @@ class Dashboard extends React.Component {
         <Route path="api_console">{ApiConsoleRoute}</Route>
 
         {/* <Route path="migration" element={<Migration />} /> */}
+
+        <Route path="notification" element={<Navigate replace to="email/verification" />} />
+        <Route path="notification/email" element={<Navigate replace to="verification" />} />
+        <Route path="notification/email/verification" element={<LazyComponentWrapper><LazyEmailVerification /></LazyComponentWrapper>} />
+        <Route path="notification/email/password-reset" element={<LazyComponentWrapper><LazyEmailPasswordReset /></LazyComponentWrapper>} />
 
         <Route path="push" element={<Navigate replace to="new" />} />
         <Route path="push/activity" element={<Navigate replace to="all" />} />

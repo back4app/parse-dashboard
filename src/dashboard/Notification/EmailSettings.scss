@@ -1,0 +1,122 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    position: relative;
+    overflow: auto;
+  }
+}
+
+// Same width constraints as General Settings (.generalSettingsWrapper in Settings.scss)
+.emailSettingsWrapper {
+  width: 100%;
+  padding: 0;
+  max-width: 870px;
+  margin: 0 auto;
+  margin-top: 3rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .emailSettingsWrapper {
+    padding: 0 2rem;
+  }
+}
+
+// Layout pattern aligned with CustomParseOptions (formWrapper / domainSettingsContainer)
+.formWrapper {
+  padding: 0;
+  width: 100%;
+}
+
+.emailSettingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+    margin-bottom: 1rem;
+  }
+
+  .fieldHr {
+    margin: 1.25rem 0;
+    border: 0;
+  }
+}
+
+// Label info icon (same pattern as Custom Parse Options / Custom Pages section)
+.infoIcon {
+  cursor: help;
+  vertical-align: middle;
+}
+
+.infoHelp {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.labelTextLeft,
+.labelDescriptionLeft {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+// TextInputSettings: 16px padding except right (0) so scrollbar sits on the bordered edge
+.emailTextField {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 16px;
+  padding-right: 0;
+
+  > div {
+    display: flex !important;
+    justify-content: stretch !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  textarea,
+  input {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box;
+  }
+}
+
+.emailTextFieldRight {
+  input {
+    text-align: right !important;
+  }
+}
+
+.emailSwitchField {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 10px 16px;
+  box-sizing: border-box;
+}

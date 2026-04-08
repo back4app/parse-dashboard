@@ -156,7 +156,7 @@ class PushNew extends DashboardView {
   constructor() {
     super();
     this.xhrs = [];
-    this.section = 'Push Notifications';
+    this.section = 'Notification';
     this.subsection = 'Send New Push';
     this.state = {
       pushAudiencesFetched: false,

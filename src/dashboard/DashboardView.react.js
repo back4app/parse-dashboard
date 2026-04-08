@@ -334,26 +334,31 @@ export default class DashboardView extends React.Component {
       subsections: apiSubSections
     });
 
-    const pushSubSections = [];
-
-    pushSubSections.push({
-      name: 'Send New Push',
-      link: '/push/new',
-    });
-    pushSubSections.push({
-      name: 'Past Pushes',
-      link: '/push/activity',
-    });
-    pushSubSections.push({
-      name: 'Audiences',
-      link: '/push/audiences',
-    });
+    const notificationSubSections = [
+      {
+        name: 'Email',
+        link: '/notification/email',
+        children: [
+          { name: 'Verification', link: '/notification/email/verification' },
+          { name: 'Password Reset', link: '/notification/email/password-reset' },
+        ],
+      },
+      {
+        name: 'Pushes',
+        link: '/push/new',
+        children: [
+          { name: 'Send New Push', link: '/push/new' },
+          { name: 'Past Pushes', link: '/push/activity' },
+          { name: 'Audiences', link: '/push/audiences' },
+        ],
+      },
+    ];
 
     appSidebarSections.push({
-      name: 'Push Notifications',
+      name: 'Notification',
       icon: 'b4a-push-notification-icon',
-      link: '/push',
-      subsections: pushSubSections
+      link: '/notification',
+      subsections: notificationSubSections,
     });
 
     appSidebarSections.push({
