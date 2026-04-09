@@ -221,7 +221,10 @@ class BrowserCell extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.value !== prevProps.value || this.props.isEditing !== prevProps.isEditing) {
+    const valueChanged = typeof this.props.value === 'object' && typeof prevProps.value === 'object'
+      ? JSON.stringify(this.props.value) !== JSON.stringify(prevProps.value)
+      : this.props.value !== prevProps.value;
+    if (valueChanged || this.props.isEditing !== prevProps.isEditing) {
       this.renderCellContent();
       this.props.value?._previousSave
         ?.then(() => this.renderCellContent())

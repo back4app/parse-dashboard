@@ -93,11 +93,12 @@ export default class BrowserRow extends Component {
               attr = new Parse.Relation(obj, name);
               attr.targetClassName = columns[name].targetClass;
             } else if (type === 'Array' || type === 'Object') {
-              // This is needed to avoid unwanted conversions of objects to Parse.Objects.
-              // "Parse._encoding" is responsible to convert Parse data into raw data.
-              // Since array and object are generic types, we want to render them the way
-              // they were stored in the database.
-              attr = encode(obj.get(name), undefined, true);
+              const raw = obj.get(name);
+              if (raw !== undefined && raw !== null) {
+                attr = encode(raw, undefined, true);
+              } else {
+                attr = raw;
+              }
             }
           }
           let hidden = false;
