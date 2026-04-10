@@ -423,14 +423,14 @@ class ServerURLLiveQuery extends DashboardView {
                     input={
                       <div className={styles.classesList}>
                         {this.state.schema.map((cls) => (
-                          <label key={cls._id} className={styles.classItem}>
+                          <div key={cls._id} className={styles.classItem}>
                             <input
                               type="checkbox"
                               checked={!!fields.schemasChoose[cls._id]}
                               onChange={() => toggleClass(cls._id)}
                             />
                             <span>{cls._id}</span>
-                          </label>
+                          </div>
                         ))}
                       </div>
                     }
