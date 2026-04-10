@@ -532,7 +532,7 @@ class ServerURLLiveQuery extends DashboardView {
                   schemasChoose = {};
                 }
 
-                const hasExistingLiveQuery = Object.keys(this.state.activatedLiveQuery).length > 0;
+                const hasExistingLiveQuery = this.state.activatedLiveQuery.statusLiveQuery !== undefined;
                 if (fields.statusLiveQuery || hasExistingLiveQuery) {
                   return this.context.setLiveQuery({
                     statusLiveQuery: fields.statusLiveQuery,
@@ -544,10 +544,22 @@ class ServerURLLiveQuery extends DashboardView {
                 throw { message };
               });
             }}
-            afterSave={({ resetFields }) => {
+            afterSave={({ fields, resetFields }) => {
               setTimeout(() => {
+                const savedSubdomain = fields.subdomainName
+                  ? fields.subdomainName.toLowerCase() + '.' + fields.currentDomain
+                  : this.state.currentSubdomain;
+
+                this.setState({
+                  isLoading: true,
+                  currentSubdomain: fields.activated ? savedSubdomain : this.state.currentSubdomain,
+                  isActivated: fields.activated && !!savedSubdomain,
+                  activatedLiveQuery: fields.statusLiveQuery
+                    ? { ...this.state.activatedLiveQuery, statusLiveQuery: fields.statusLiveQuery, schemasChoose: fields.schemasChoose }
+                    : this.state.activatedLiveQuery,
+                  initialFields: { ...fields },
+                });
                 resetFields();
-                this.setState({ isLoading: true });
                 this.loadData();
               }, 1200);
             }}
