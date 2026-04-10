@@ -1406,6 +1406,26 @@ export default class ParseApp {
     })
   }
 
+  async getWebHostForLiveQuery() {
+    try {
+      // eslint-disable-next-line no-undef
+      const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/webhostapp`;
+      return (await axios.get(path, { withCredentials: true })).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async enableHostForLiveQuery(hostSettings) {
+    try {
+      // eslint-disable-next-line no-undef
+      const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/webhostapp`;
+      return (await axios.post(path, { hostSettings }, { withCredentials: true })).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
   createTextIndexes() {
     return axios.post(`/parse-app/${this.slug}/index`, { index: { '$**': 'text' } }).catch(err => {
       throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
