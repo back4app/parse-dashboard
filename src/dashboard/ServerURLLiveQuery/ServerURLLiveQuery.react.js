@@ -545,23 +545,19 @@ class ServerURLLiveQuery extends DashboardView {
               });
             }}
             afterSave={({ fields, resetFields }) => {
-              setTimeout(() => {
-                const savedSubdomain = fields.subdomainName
-                  ? fields.subdomainName.toLowerCase() + '.' + fields.currentDomain
-                  : this.state.currentSubdomain;
+              const savedSubdomain = fields.subdomainName
+                ? fields.subdomainName.toLowerCase() + '.' + fields.currentDomain
+                : this.state.currentSubdomain;
 
-                this.setState({
-                  isLoading: true,
-                  currentSubdomain: fields.activated ? savedSubdomain : this.state.currentSubdomain,
-                  isActivated: fields.activated && !!savedSubdomain,
-                  activatedLiveQuery: fields.statusLiveQuery
-                    ? { ...this.state.activatedLiveQuery, statusLiveQuery: fields.statusLiveQuery, schemasChoose: fields.schemasChoose }
-                    : this.state.activatedLiveQuery,
-                  initialFields: { ...fields },
-                });
-                resetFields();
-                this.loadData();
-              }, 1200);
+              this.setState({
+                currentSubdomain: fields.activated ? savedSubdomain : this.state.currentSubdomain,
+                isActivated: fields.activated && !!savedSubdomain,
+                activatedLiveQuery: fields.statusLiveQuery
+                  ? { ...this.state.activatedLiveQuery, statusLiveQuery: fields.statusLiveQuery, schemasChoose: fields.schemasChoose }
+                  : this.state.activatedLiveQuery,
+                initialFields: { ...fields },
+              });
+              resetFields();
             }}
             footerContents={({ changes }) => {
               const visibleChanges = this.filterVisibleChanges(changes);
