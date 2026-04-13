@@ -88,14 +88,19 @@ export default class DataBrowser extends React.Component {
       );
       this.setState({ order });
     }
-    if (this.props.columns) {
-      this.setState({ numberOfColumns: Object.keys(this.props.columns).length })
+    const newNumberOfColumns = this.props.columns
+      ? Object.keys(this.props.columns).length
+      : 0;
+    if (newNumberOfColumns !== this.state.numberOfColumns) {
+      this.setState({ numberOfColumns: newNumberOfColumns });
     }
-    this.setState({
-      selectedCells: { list: new Set(), rowStart: -1, rowEnd: -1, colStart: -1, colEnd: -1 },
-      firstSelectedCell: null,
-      selectedData: [],
-    });
+    if (props.data !== this.props.data || props.className !== this.props.className) {
+      this.setState({
+        selectedCells: { list: new Set(), rowStart: -1, rowEnd: -1, colStart: -1, colEnd: -1 },
+        firstSelectedCell: null,
+        selectedData: [],
+      });
+    }
   }
 
   async componentDidMount() {
