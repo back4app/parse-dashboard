@@ -267,6 +267,11 @@ export default class DashboardView extends React.Component {
     });
 
     settingsSections.push({
+      name: 'Server URL & Live Query',
+      link: '/server-url-live-query',
+    });
+
+    settingsSections.push({
       name: 'Environment Variables',
       link: '/settings/environment-variables',
     });

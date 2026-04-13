@@ -1,0 +1,94 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .ghostMessage {
+    padding-top: 3rem;
+  }
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    position: relative;
+    overflow: auto;
+  }
+}
+
+.formWrapper {
+  width: 100%;
+  padding: 0;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 5rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .formWrapper {
+    padding: 0 2rem;
+  }
+}
+
+.settingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+  }
+
+  .fieldHr {
+    margin: 4px 0;
+    border: 0;
+  }
+}
+
+.note {
+  color: $light-grey;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 140%;
+  margin-top: 0.5rem;
+}
+
+.classesList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.25rem 1rem;
+
+  & > .classItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 14px;
+    max-width: 100%;
+
+    input[type='checkbox'] {
+      accent-color: $cta-green;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    span {
+      user-select: none;
+      color: $white;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

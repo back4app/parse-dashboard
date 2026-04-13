@@ -71,6 +71,7 @@ import Deployments from './Deployments/Deployments.react';
 import DeploymentDetails from './Deployments/DeploymentDetails.react';
 import { useAppPageTracking } from './instrument';
 import DomainSettings from './DomainSettings/DomainSettings.react';
+import ServerURLLiveQuery from './ServerURLLiveQuery/ServerURLLiveQuery.react';
 import CustomParseOptions from './CustomParseOptions/CustomParseOptions.react';
 
 const LazyGraphQLConsole = lazy(() => import('./Data/ApiConsole/GraphQLConsole.react'));
@@ -81,6 +82,7 @@ const LazyAppSecurityReport = lazy(() => import('./AppSecurityReport/AppSecurity
 const LazyDatabaseProfile = lazy(() => import('./DatabaseProfiler/DatabaseProfiler.react'));
 const LazyEmailVerification = lazy(() => import('./Notification/EmailVerification.react'));
 const LazyEmailPasswordReset = lazy(() => import('./Notification/EmailPasswordReset.react'));
+
 
 async function fetchHubUser() {
   try {
@@ -511,6 +513,7 @@ class Dashboard extends React.Component {
         <Route path="server-settings/" element={<ServerSettings />} />
         <Route path="server-settings/:targetPage" element={<ServerSettings />} />
         <Route path="domain-settings" element={<DomainSettings />} />
+        <Route path="server-url-live-query" element={<ServerURLLiveQuery />} />
         <Route path="advanced-options" element={<CustomParseOptions />} />
 
         <Route path="index/:className" element={<IndexManager />} />
