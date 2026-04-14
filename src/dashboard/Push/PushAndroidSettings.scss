@@ -67,6 +67,12 @@
   }
 }
 
+.configValueRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .configValue {
   @include InterFont;
   font-size: 0.875rem;
@@ -77,6 +83,30 @@
   text-align: right;
   word-break: break-all;
   color: $white;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 .fileInputWrapper {
@@ -136,4 +166,29 @@
   font-size: 0.8rem;
   color: $error-red;
   padding: 6px 16px 10px;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 100px;
+    padding-top: 6px;
+    padding-bottom: 10px;
+    opacity: 1;
+  }
+}
+
+.deleteError {
+  background: $error-red;
+  font-size: 0.8rem;
+  text-align: center;
+  color: $white;
+  padding: 6px 16px 10px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out forwards;
 }
