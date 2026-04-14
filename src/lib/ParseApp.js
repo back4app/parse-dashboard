@@ -2113,4 +2113,18 @@ export default class ParseApp {
       throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
     }
   }
+
+  async deletePushAndroidConfig() {
+    try {
+      return (
+        await axios.delete(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/android`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
 }
