@@ -28,6 +28,9 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'Social Auth',
   'Notification',
   'notification',
+  'push',
+  'server-url-live-query',
+  'Server URL & Live Query',
 ];
 
 export const canAccess = (serverInfo, route) => {
