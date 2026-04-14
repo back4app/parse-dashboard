@@ -199,10 +199,9 @@ class PushAndroidSettings extends DashboardView {
 
             {noConfig && (
               <>
-                <EmptyGhostState
-                  title="No Configuration Found"
-                  description="No push settings configuration found for your application."
-                />
+                <div className={styles.noConfigMessage}>
+                  No push notification configuration found for this application.
+                </div>
                 <hr className={styles.fieldHr} />
               </>
             )}
@@ -324,12 +323,9 @@ class PushAndroidSettings extends DashboardView {
               });
             }}
             afterSave={({ resetFields }) => {
+              resetFields();
               this.setState({ selectedFile: null, fileError: null });
-              setTimeout(() => {
-                resetFields();
-                this.setState({ isLoading: true });
-                this.loadConfig();
-              }, 1200);
+              this.loadConfig();
             }}
             footerContents={() => {
               if (!selectedFile) {

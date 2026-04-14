@@ -56,6 +56,15 @@
     margin: 1.25rem 0;
     border: 0;
   }
+
+  .noConfigMessage {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+    padding: 0.75rem 0;
+  }
 }
 
 .configValue {
