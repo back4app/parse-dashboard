@@ -163,6 +163,7 @@ const preloadMap = {
   appPlan: () => import('./AppPlan/AppPlan.react'),
   emailVerification: () => import('./Notification/EmailVerification.react'),
   emailPasswordReset: () => import('./Notification/EmailPasswordReset.react'),
+  pushAndroidSettings: () => import('./Push/PushAndroidSettings.react'),
 };
 
 // Preload all routes with proper error handling and logging
