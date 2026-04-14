@@ -82,6 +82,7 @@ const LazyAppSecurityReport = lazy(() => import('./AppSecurityReport/AppSecurity
 const LazyDatabaseProfile = lazy(() => import('./DatabaseProfiler/DatabaseProfiler.react'));
 const LazyEmailVerification = lazy(() => import('./Notification/EmailVerification.react'));
 const LazyEmailPasswordReset = lazy(() => import('./Notification/EmailPasswordReset.react'));
+const LazyPushAndroidSettings = lazy(() => import('./Push/PushAndroidSettings.react'));
 
 
 async function fetchHubUser() {
@@ -162,6 +163,7 @@ const preloadMap = {
   appPlan: () => import('./AppPlan/AppPlan.react'),
   emailVerification: () => import('./Notification/EmailVerification.react'),
   emailPasswordReset: () => import('./Notification/EmailPasswordReset.react'),
+  pushAndroidSettings: () => import('./Push/PushAndroidSettings.react'),
 };
 
 // Preload all routes with proper error handling and logging
@@ -504,6 +506,7 @@ class Dashboard extends React.Component {
         <Route path="push/activity/:category" element={<PushIndex />} />
         <Route path="push/audiences" element={<PushAudiencesIndex />} />
         <Route path="push/new" element={<PushNew />} />
+        <Route path="push/android-settings" element={<LazyComponentWrapper><LazyPushAndroidSettings /></LazyComponentWrapper>} />
         <Route path="push/:pushId" element={<PushDetails />} />
 
         <Route path="connect" element={<B4aConnectPage />} />

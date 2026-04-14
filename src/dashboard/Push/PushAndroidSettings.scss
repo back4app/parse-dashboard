@@ -1,0 +1,194 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    position: relative;
+    overflow: auto;
+  }
+}
+
+.settingsWrapper {
+  width: 100%;
+  padding: 0;
+  max-width: 870px;
+  margin: 0 auto;
+  margin-top: 3rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .settingsWrapper {
+    padding: 0 2rem;
+  }
+}
+
+.formWrapper {
+  padding: 0;
+  width: 100%;
+}
+
+.settingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+    margin-bottom: 1rem;
+  }
+
+  .fieldHr {
+    margin: 1.25rem 0;
+    border: 0;
+  }
+
+  .noConfigMessage {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+    padding: 0.75rem 0;
+  }
+}
+
+.configValueRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.configValue {
+  @include InterFont;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: right;
+  word-break: break-all;
+  color: $white;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.fileInputWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0 1rem;
+  width: 100%;
+  overflow: hidden;
+
+  span {
+    color: #f2f2f2;
+    font-size: 1rem;
+  }
+
+  svg {
+    fill: #f2f2f2 !important;
+  }
+
+  > div {
+    height: auto;
+    min-height: 0;
+    text-align: left;
+    overflow: hidden;
+    padding: 0;
+    white-space: normal;
+    width: 100%;
+
+    > div {
+      float: none !important;
+      margin: 0;
+      height: 24px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    > span,
+    > a {
+      display: none;
+    }
+  }
+}
+
+.selectedFileName {
+  @include InterFont;
+  max-width: 100%;
+  font-size: 0.8rem;
+  color: #f2f2f2;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileError {
+  @include InterFont;
+  font-size: 0.8rem;
+  color: $error-red;
+  padding: 6px 16px 10px;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 100px;
+    padding-top: 6px;
+    padding-bottom: 10px;
+    opacity: 1;
+  }
+}
+
+.deleteError {
+  background: $error-red;
+  font-size: 0.8rem;
+  text-align: center;
+  color: $white;
+  padding: 6px 16px 10px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out forwards;
+}
