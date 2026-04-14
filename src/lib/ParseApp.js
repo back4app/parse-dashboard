@@ -2082,4 +2082,35 @@ export default class ParseApp {
       throw { error: message };
     }
   }
+
+  async getPushAndroidConfig() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/android`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async updatePushAndroidConfig(file) {
+    try {
+      const formData = new FormData();
+      formData.append('firebaseServiceAccount', file);
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/android`,
+          formData,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
 }
