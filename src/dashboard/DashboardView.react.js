@@ -83,7 +83,11 @@ export default class DashboardView extends React.Component {
   }
 
   render() {
-    const isLocked = !canAccess(this.context.serverInfo, window.location.pathname.split('/')[3]);
+    const pathSegments = window.location.pathname.split('/');
+    const topRoute = pathSegments[3];
+    const fullSubRoute = pathSegments.slice(3, 5).join('/');
+    const isLocked = !canAccess(this.context.serverInfo, topRoute)
+      && !canAccess(this.context.serverInfo, fullSubRoute);
     if (isLocked) {
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
