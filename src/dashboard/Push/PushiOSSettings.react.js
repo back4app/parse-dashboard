@@ -9,6 +9,7 @@ import Icon from 'components/Icon/Icon.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import P8AuthKeyModal from './P8AuthKeyModal.react';
 import P12CertificateModal from './P12CertificateModal.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import styles from './PushiOSSettings.scss';
 
 const getErrorMessage = (err, fallback) => {
@@ -130,12 +131,14 @@ class PushiOSSettings extends DashboardView {
 
   handleSaveP8 = async (file, keyId, teamId, bundleId, deviceType, production) => {
     await this.context.uploadP8AuthKey(file, keyId, teamId, bundleId, deviceType, production);
+    amplitudeLogEvent('Configured iOS Push');
     this.setState({ isLoading: true });
     this.loadConfig();
   };
 
   handleSaveP12 = async (file, deviceType, production) => {
     await this.context.uploadP12Certificate(file, deviceType, production);
+    amplitudeLogEvent('Configured iOS Push');
     this.setState({ isLoading: true });
     this.loadConfig();
   };

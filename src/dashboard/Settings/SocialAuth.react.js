@@ -8,6 +8,7 @@ import FlowView from 'components/FlowView/FlowView.react';
 import layoutStyles from '../CustomParseOptions/CustomParseOptions.scss';
 import fbStyles from './SocialAuth.scss';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 
 import Label from 'components/Label/Label.react';
 import Field from 'components/Field/Field.react';
@@ -682,7 +683,17 @@ class SocialAuth extends DashboardView {
               const payload = buildOauthPayload(oauth);
               return this.context.updateOauth(payload);
             }}
-            afterSave={({ resetFields }) => {
+            afterSave={({ fields, resetFields }) => {
+              const prevOauth = this.state.initialFields.oauth || {};
+              const currOauth = fields.oauth || {};
+              const prevPayload = buildOauthPayload(prevOauth);
+              const currPayload = buildOauthPayload(currOauth);
+              if (currPayload.facebook && JSON.stringify(currPayload.facebook) !== JSON.stringify(prevPayload.facebook)) {
+                amplitudeLogEvent('facebook login configured');
+              }
+              if (currPayload.twitter && JSON.stringify(currPayload.twitter) !== JSON.stringify(prevPayload.twitter)) {
+                amplitudeLogEvent('twitter login configured');
+              }
               this.loadData();
               this._lastComputedDirty = false;
               this.setState({ isDirty: false });

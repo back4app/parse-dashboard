@@ -12,6 +12,7 @@ import FileInput from 'components/FileInput/FileInput.react';
 import Icon from 'components/Icon/Icon.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import styles from './PushAndroidSettings.scss';
 
 const getLoadErrorMessage = (err, fallbackMessage) => {
@@ -398,6 +399,7 @@ class PushAndroidSettings extends DashboardView {
               });
             }}
             afterSave={({ resetFields }) => {
+              amplitudeLogEvent('Configured Android Push');
               resetFields();
               this.setState({ selectedFile: null, fileError: null });
               this.loadConfig();
