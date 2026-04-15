@@ -296,6 +296,7 @@ class PushiOSSettings extends DashboardView {
         onConfirm={this.handleDeleteConfirm.bind(this)}
         progress={this.state.isDeleting}
         disabled={this.state.isDeleting}
+        canCancel={!this.state.isDeleting}
       />
     );
   }

@@ -69,6 +69,7 @@ const P12CertificateModal = ({ deviceTypes, onSave, onClose }) => {
       onCancel={onClose}
       disabled={saving}
       progress={saving}
+      canCancel={!saving}
     >
       <Field
         label={<Label text="APNs Certificate File" description="Upload your .p12 certificate file" />}

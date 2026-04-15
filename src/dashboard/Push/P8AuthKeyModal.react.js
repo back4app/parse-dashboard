@@ -98,6 +98,7 @@ const P8AuthKeyModal = ({ deviceTypes, hasP12Certificates, onSave, onClose }) =>
       onCancel={onClose}
       disabled={saving}
       progress={saving}
+      canCancel={!saving}
     >
       <Field
         label={<Label text="APNs auth key" description="Upload your .p8 auth key file" />}
