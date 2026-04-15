@@ -110,7 +110,7 @@ const P8AuthKeyModal = ({ deviceTypes, onSave, onClose }) => {
             dark={false}
             placeholder="Insert your Key ID"
             value={keyId}
-            onChange={value => { setKeyId(value); setErrors(prev => ({ ...prev, keyId: undefined })); }}
+            onChange={value => { if (value.length <= 10) { setKeyId(value); setErrors(prev => ({ ...prev, keyId: undefined })); } }}
           />
         }
       />
@@ -122,7 +122,7 @@ const P8AuthKeyModal = ({ deviceTypes, onSave, onClose }) => {
             dark={false}
             placeholder="Insert your Team ID"
             value={teamId}
-            onChange={value => { setTeamId(value); setErrors(prev => ({ ...prev, teamId: undefined })); }}
+            onChange={value => { if (value.length <= 10) { setTeamId(value); setErrors(prev => ({ ...prev, teamId: undefined })); } }}
           />
         }
       />
