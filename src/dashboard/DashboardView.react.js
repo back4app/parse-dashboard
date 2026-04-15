@@ -356,6 +356,7 @@ export default class DashboardView extends React.Component {
           { name: 'Past Pushes', link: '/push/activity' },
           { name: 'Audiences', link: '/push/audiences' },
           { name: 'Android', link: '/push/android-settings' },
+          { name: 'iOS', link: '/push/ios-settings' },
         ],
       },
     ];
