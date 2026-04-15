@@ -46,6 +46,8 @@ const P12CertificateModal = ({ deviceTypes, onSave, onClose }) => {
     setServerError(null);
     try {
       await onSave(file, deviceType, production);
+      setSaving(false);
+      onClose();
     } catch (err) {
       const msg = typeof err === 'string' ? err
         : (err && err.error) || (err && err.message) || 'Failed to save certificate.';

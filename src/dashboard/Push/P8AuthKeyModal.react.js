@@ -66,6 +66,8 @@ const P8AuthKeyModal = ({ deviceTypes, onSave, onClose }) => {
     setServerError(null);
     try {
       await onSave(file, keyId.trim(), teamId.trim(), bundleId.trim(), deviceType, production);
+      setSaving(false);
+      onClose();
     } catch (err) {
       const msg = typeof err === 'string' ? err
         : (err && err.error) || (err && err.message) || 'Failed to save authentication key.';

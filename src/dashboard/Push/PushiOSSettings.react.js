@@ -115,7 +115,7 @@ class PushiOSSettings extends DashboardView {
         p12Certificates,
         deviceTypes: [...new Set([...(data.deviceTypes || []), 'tvos'])],
         disableP12: !!data.disableP12,
-        incompatiblePS: !!data.isCompatiblePS,
+        incompatiblePS: !data.isCompatiblePS,
         hasPermission,
       });
     } catch (err) {
@@ -130,13 +130,13 @@ class PushiOSSettings extends DashboardView {
 
   handleSaveP8 = async (file, keyId, teamId, bundleId, deviceType, production) => {
     await this.context.uploadP8AuthKey(file, keyId, teamId, bundleId, deviceType, production);
-    this.setState({ showP8Modal: false, isLoading: true });
+    this.setState({ isLoading: true });
     this.loadConfig();
   };
 
   handleSaveP12 = async (file, deviceType, production) => {
     await this.context.uploadP12Certificate(file, deviceType, production);
-    this.setState({ showP12Modal: false, isLoading: true });
+    this.setState({ isLoading: true });
     this.loadConfig();
   };
 
@@ -376,6 +376,7 @@ class PushiOSSettings extends DashboardView {
                         primary={true}
                         color="green"
                         width="auto"
+                        disabled={!hasPermission}
                         onClick={() => this.setState({ showP8Modal: true })}
                         value={
                           <span className={styles.addButtonLabel}>
@@ -398,7 +399,7 @@ class PushiOSSettings extends DashboardView {
                       primary={true}
                       color="green"
                       width="auto"
-                      disabled={disableP12}
+                      disabled={disableP12 || !hasPermission}
                       onClick={() => this.setState({ showP12Modal: true })}
                       value={
                         <span className={styles.addButtonLabel}>
