@@ -42,7 +42,7 @@ function validate(fields) {
   return errors;
 }
 
-const P8AuthKeyModal = ({ deviceTypes, onSave, onClose }) => {
+const P8AuthKeyModal = ({ deviceTypes, hasP12Certificates, onSave, onClose }) => {
   const [file, setFile] = useState(null);
   const [keyId, setKeyId] = useState('');
   const [teamId, setTeamId] = useState('');
@@ -62,6 +62,15 @@ const P8AuthKeyModal = ({ deviceTypes, onSave, onClose }) => {
       return;
     }
 
+    if (hasP12Certificates) {
+      const confirmed = window.confirm(
+        'Are you sure? By saving your authentication keys, your p12 certificates will be removed.'
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+
     setSaving(true);
     setServerError(null);
     try {
@@ -74,7 +83,7 @@ const P8AuthKeyModal = ({ deviceTypes, onSave, onClose }) => {
       setServerError(msg);
       setSaving(false);
     }
-  }, [file, keyId, teamId, bundleId, deviceType, production, onSave]);
+  }, [file, keyId, teamId, bundleId, deviceType, production, hasP12Certificates, onSave]);
 
   const firstError = Object.values(errors).find(Boolean);
 

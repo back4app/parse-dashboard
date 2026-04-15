@@ -115,7 +115,7 @@ class PushiOSSettings extends DashboardView {
         p12Certificates,
         deviceTypes: [...new Set([...(data.deviceTypes || []), 'tvos'])],
         disableP12: !!data.disableP12,
-        incompatiblePS: !data.isCompatiblePS,
+        incompatiblePS: !!data.isCompatiblePS,
         hasPermission,
       });
     } catch (err) {
@@ -432,6 +432,7 @@ class PushiOSSettings extends DashboardView {
         {this.state.showP8Modal && (
           <P8AuthKeyModal
             deviceTypes={deviceTypes}
+            hasP12Certificates={this.state.p12Certificates.length > 0}
             onSave={this.handleSaveP8}
             onClose={this.handleCloseP8Modal}
           />
