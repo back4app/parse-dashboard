@@ -113,7 +113,7 @@ class PushiOSSettings extends DashboardView {
         loadingError: null,
         p8Certificates,
         p12Certificates,
-        deviceTypes: data.deviceTypes || [],
+        deviceTypes: [...new Set([...(data.deviceTypes || []), 'tvos'])],
         disableP12: !!data.disableP12,
         incompatiblePS: !!data.isCompatiblePS,
         hasPermission,
@@ -349,7 +349,7 @@ class PushiOSSettings extends DashboardView {
               </div>
 
               <div className={styles.warningBanner}>
-                We recommend authentication keys as they are the most current method for push notifications.
+                We recommend using APNs Authentication Keys (.p8) as they are the most current and reliable method for sending push notifications.
               </div>
 
               <div className={hasPermission ? undefined : styles.noPermission}>
