@@ -2189,7 +2189,7 @@ export default class ParseApp {
         await axios.delete(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/authkey`,
-          { data: { certificateId, dataType }, withCredentials: true }
+          { data: JSON.stringify({ certificateId, dataType }), headers: { 'Content-Type': 'text/plain' }, withCredentials: true }
         )
       ).data;
     } catch (err) {
@@ -2203,7 +2203,7 @@ export default class ParseApp {
         await axios.delete(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/ios`,
-          { data: { certificateId, dataType }, withCredentials: true }
+          { data: JSON.stringify({ certificateId, dataType }), headers: { 'Content-Type': 'text/plain' }, withCredentials: true }
         )
       ).data;
     } catch (err) {
