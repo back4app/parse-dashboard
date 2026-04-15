@@ -343,13 +343,13 @@ class PushiOSSettings extends DashboardView {
         <div className={styles.mainContent}>
           <div className={styles.settingsWrapper}>
             <div className={styles.settingsContainer}>
-              <div className={styles.heading}>iOS Push Settings</div>
+              <div className={styles.heading}>Apple Push Settings</div>
               <div className={styles.subheading}>
-                Manage Apple Push Notification certificates for your iOS and macOS applications.
+                Manage Apple Push Notification certificates.
               </div>
 
               <div className={styles.warningBanner}>
-                We recommend using APNs Authentication Keys (.p8) as they are the most current and reliable method for sending push notifications.
+                We recommend using <strong>APNs Authentication Keys (.p8) </strong>as they are the most current and reliable method for sending push notifications.
               </div>
 
               <div className={hasPermission ? undefined : styles.noPermission}>
