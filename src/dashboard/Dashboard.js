@@ -172,7 +172,7 @@ const preloadMap = {
 const preloadRoute = async (routeName, preloadFn) => {
   try {
     await preloadFn();
-    console.log(`Successfully preloaded route: ${routeName}`);
+    // console.log(`Successfully preloaded route: ${routeName}`);
   } catch (err) {
     console.error(`Error preloading route ${routeName}:`, err);
   }
