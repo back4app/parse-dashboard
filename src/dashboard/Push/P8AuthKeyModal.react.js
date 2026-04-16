@@ -86,6 +86,11 @@ const P8AuthKeyModal = ({ deviceTypes, hasP12Certificates, onSave, onClose }) =>
   }, [file, keyId, teamId, bundleId, deviceType, production, hasP12Certificates, onSave]);
 
   const firstError = Object.values(errors).find(Boolean);
+  const isFormValid = file && file.name.endsWith('.p8')
+    && keyId.trim().length === 10
+    && teamId.trim().length === 10
+    && bundleId.trim().length > 0
+    && !!deviceType;
 
   return (
     <B4aModal
@@ -96,7 +101,7 @@ const P8AuthKeyModal = ({ deviceTypes, hasP12Certificates, onSave, onClose }) =>
       cancelText="Cancel"
       onConfirm={handleSubmit}
       onCancel={onClose}
-      disabled={saving}
+      disabled={saving || !isFormValid}
       progress={saving}
       canCancel={!saving}
     >
@@ -115,53 +120,43 @@ const P8AuthKeyModal = ({ deviceTypes, hasP12Certificates, onSave, onClose }) =>
       <Field
         label={<Label text="Key ID" description="Case sensitive, exactly 10 characters" />}
         input={
-          <div>
-            <TextInput
-              padding="0 1rem"
-              dark={false}
-              placeholder="Insert your Key ID"
-              value={keyId}
-              onChange={value => {
-                if (value.length <= 10) {
-                  setKeyId(value);
-                  if (value.trim().length === 10) {
-                    setErrors(prev => ({ ...prev, keyId: undefined }));
-                  } else if (value.trim().length > 0) {
-                    setErrors(prev => ({ ...prev, keyId: 'Key ID must be exactly 10 characters.' }));
-                  } else {
-                    setErrors(prev => ({ ...prev, keyId: undefined }));
-                  }
+          <TextInput
+            padding="0 1rem"
+            dark={false}
+            placeholder="Insert your Key ID"
+            value={keyId}
+            onChange={value => {
+              if (value.length <= 10) {
+                setKeyId(value);
+                if (value.trim().length === 10 || value.trim().length === 0) {
+                  setErrors(prev => ({ ...prev, keyId: undefined }));
+                } else {
+                  setErrors(prev => ({ ...prev, keyId: 'Key ID must be exactly 10 characters.' }));
                 }
-              }}
-            />
-            {errors.keyId && <small style={{ display: 'block', padding: '5px 0', fontWeight: 500, color: '#E85C3E' }}>*{errors.keyId}</small>}
-          </div>
+              }
+            }}
+          />
         }
       />
       <Field
         label={<Label text="Team ID" description="Case sensitive, exactly 10 characters" />}
         input={
-          <div>
-            <TextInput
-              padding="0 1rem"
-              dark={false}
-              placeholder="Insert your Team ID"
-              value={teamId}
-              onChange={value => {
-                if (value.length <= 10) {
-                  setTeamId(value);
-                  if (value.trim().length === 10) {
-                    setErrors(prev => ({ ...prev, teamId: undefined }));
-                  } else if (value.trim().length > 0) {
-                    setErrors(prev => ({ ...prev, teamId: 'Team ID must be exactly 10 characters.' }));
-                  } else {
-                    setErrors(prev => ({ ...prev, teamId: undefined }));
-                  }
+          <TextInput
+            padding="0 1rem"
+            dark={false}
+            placeholder="Insert your Team ID"
+            value={teamId}
+            onChange={value => {
+              if (value.length <= 10) {
+                setTeamId(value);
+                if (value.trim().length === 10 || value.trim().length === 0) {
+                  setErrors(prev => ({ ...prev, teamId: undefined }));
+                } else {
+                  setErrors(prev => ({ ...prev, teamId: 'Team ID must be exactly 10 characters.' }));
                 }
-              }}
-            />
-            {errors.teamId && <small style={{ display: 'block', padding: '5px 0', fontWeight: 500, color: '#E85C3E' }}>*{errors.teamId}</small>}
-          </div>
+              }
+            }}
+          />
         }
       />
       <Field
