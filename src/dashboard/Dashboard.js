@@ -180,7 +180,7 @@ const preloadRoute = async (routeName, preloadFn) => {
 
 // Preload all routes in parallel
 const preloadAllRoutes = () => {
-  console.log('Preloading routes...');
+  // console.log('Preloading routes...');
   return Promise.all(
     Object.entries(preloadMap).map(([routeName, preloadFn]) =>
       preloadRoute(routeName, preloadFn)
