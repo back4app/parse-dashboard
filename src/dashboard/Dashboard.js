@@ -219,7 +219,7 @@ class Dashboard extends React.Component {
   componentDidMount() {
     // Start preloading routes immediately but don't block on it
     preloadAllRoutes().finally(() => {
-      console.log('Route preloading complete');
+      // console.log('Route preloading complete');
     });
 
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
