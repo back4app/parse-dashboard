@@ -83,7 +83,11 @@ export default class DashboardView extends React.Component {
   }
 
   render() {
-    const isLocked = !canAccess(this.context.serverInfo, window.location.pathname.split('/')[3]);
+    const pathSegments = window.location.pathname.split('/');
+    const topRoute = pathSegments[3];
+    const fullSubRoute = pathSegments.slice(3, 5).join('/');
+    const isLocked = !canAccess(this.context.serverInfo, topRoute)
+      && !canAccess(this.context.serverInfo, fullSubRoute);
     if (isLocked) {
       return (
         <div className={baseStyles.pageCenter} style={{ flexDirection: 'column' }}>
@@ -349,19 +353,19 @@ export default class DashboardView extends React.Component {
         ],
       },
       {
-        name: 'Pushes',
+        name: 'Push',
         link: '/push/new',
         children: [
           { name: 'Send New Push', link: '/push/new' },
-          { name: 'Past Pushes', link: '/push/activity' },
+          { name: 'History', link: '/push/activity' },
           { name: 'Audiences', link: '/push/audiences' },
-          { name: 'Android', link: '/push/android-settings' },
+          { name: 'Setup', link: '/push/android-settings' },
         ],
       },
     ];
 
     appSidebarSections.push({
-      name: 'Notification',
+      name: 'Notifications',
       icon: 'b4a-push-notification-icon',
       link: '/notification',
       subsections: notificationSubSections,

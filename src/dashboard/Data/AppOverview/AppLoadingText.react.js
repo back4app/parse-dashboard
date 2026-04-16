@@ -32,7 +32,7 @@ const AppLoadingText = ({ appName, appId, pollSchemas }) => {
     document.documentElement.style.setProperty('--text-interval', `${TEXT_INTERVAL}ms`);
     document.documentElement.style.setProperty('--fill-duration', `${TEXT_INTERVAL / 2}ms`);
     return () => {
-      console.log('deleting cookie');
+      // console.log('deleting cookie');
       try {
         document.cookie = `newApp-${appId}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=back4app.com`;
       } catch (error) {

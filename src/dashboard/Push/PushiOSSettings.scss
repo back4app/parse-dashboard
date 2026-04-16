@@ -1,0 +1,260 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.content {
+  @include SoraFont;
+  position: relative;
+  min-height: calc(#{$content-max-height} - #{$toolbar-height});
+  margin-top: $toolbar-height;
+  background: $dark;
+  color: $white;
+  & .mainContent {
+    height: calc(#{$content-max-height} - #{$toolbar-height});
+    position: relative;
+    overflow: auto;
+  }
+}
+
+.settingsWrapper {
+  width: 100%;
+  padding: 0;
+  max-width: 870px;
+  margin: 0 auto;
+  margin-top: 3rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .settingsWrapper {
+    padding: 0 2rem;
+  }
+}
+
+.settingsContainer {
+  .heading {
+    @include InterFont;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin-bottom: 0.5rem;
+  }
+
+  .subheading {
+    @include InterFont;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 140%;
+    color: $light-grey;
+    margin-bottom: 0.5rem;
+  }
+
+}
+
+.warningBanner {
+  @include InterFont;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  color: $light-grey;
+  margin-bottom: 3rem;
+}
+
+.section {
+  padding: 1.25rem 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h4 {
+    @include InterFont;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 140%;
+    margin: 0;
+  }
+}
+
+.sectionDivider {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0.5rem 0;
+}
+
+.certTable {
+  width: 100%;
+  border-collapse: collapse;
+  @include InterFont;
+  font-size: 0.8125rem;
+
+  th {
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $light-grey;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: $white;
+    word-break: break-all;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.emptyMessage {
+  @include InterFont;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+  color: $light-grey;
+  padding: 0.75rem 0;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 100px;
+    padding-top: 6px;
+    padding-bottom: 10px;
+    opacity: 1;
+  }
+}
+
+.deleteError {
+  background: $error-red;
+  font-size: 0.8rem;
+  text-align: center;
+  color: $white;
+  padding: 6px 16px 10px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out forwards;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+}
+
+.noPermission {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.fileInputField {
+  padding: 0 1rem;
+  width: 100%;
+
+  > div {
+    height: auto;
+    text-align: left;
+    white-space: normal;
+    overflow: visible;
+
+    > div {
+      float: none !important;
+      margin-top: 0;
+      margin-right: 0;
+    }
+
+    > span,
+    > a {
+      display: block;
+      float: none !important;
+      margin-top: 4px;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+  }
+}
+
+.radiobuttonWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 1rem;
+  gap: 1.25rem;
+  box-sizing: border-box;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.toolbarButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    fill: $white;
+  }
+}
+
+.tooltipWrapper {
+  display: inline-block;
+  cursor: help;
+}
+
+.addButtonLabel {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}

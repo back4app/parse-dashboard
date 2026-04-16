@@ -83,6 +83,7 @@ const LazyDatabaseProfile = lazy(() => import('./DatabaseProfiler/DatabaseProfil
 const LazyEmailVerification = lazy(() => import('./Notification/EmailVerification.react'));
 const LazyEmailPasswordReset = lazy(() => import('./Notification/EmailPasswordReset.react'));
 const LazyPushAndroidSettings = lazy(() => import('./Push/PushAndroidSettings.react'));
+const LazyPushiOSSettings = lazy(() => import('./Push/PushiOSSettings.react'));
 
 
 async function fetchHubUser() {
@@ -164,13 +165,14 @@ const preloadMap = {
   emailVerification: () => import('./Notification/EmailVerification.react'),
   emailPasswordReset: () => import('./Notification/EmailPasswordReset.react'),
   pushAndroidSettings: () => import('./Push/PushAndroidSettings.react'),
+  pushiOSSettings: () => import('./Push/PushiOSSettings.react'),
 };
 
 // Preload all routes with proper error handling and logging
 const preloadRoute = async (routeName, preloadFn) => {
   try {
     await preloadFn();
-    console.log(`Successfully preloaded route: ${routeName}`);
+    // console.log(`Successfully preloaded route: ${routeName}`);
   } catch (err) {
     console.error(`Error preloading route ${routeName}:`, err);
   }
@@ -178,7 +180,7 @@ const preloadRoute = async (routeName, preloadFn) => {
 
 // Preload all routes in parallel
 const preloadAllRoutes = () => {
-  console.log('Preloading routes...');
+  // console.log('Preloading routes...');
   return Promise.all(
     Object.entries(preloadMap).map(([routeName, preloadFn]) =>
       preloadRoute(routeName, preloadFn)
@@ -217,7 +219,7 @@ class Dashboard extends React.Component {
   componentDidMount() {
     // Start preloading routes immediately but don't block on it
     preloadAllRoutes().finally(() => {
-      console.log('Route preloading complete');
+      // console.log('Route preloading complete');
     });
 
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
@@ -507,6 +509,7 @@ class Dashboard extends React.Component {
         <Route path="push/audiences" element={<PushAudiencesIndex />} />
         <Route path="push/new" element={<PushNew />} />
         <Route path="push/android-settings" element={<LazyComponentWrapper><LazyPushAndroidSettings /></LazyComponentWrapper>} />
+        <Route path="push/ios-settings" element={<LazyComponentWrapper><LazyPushiOSSettings /></LazyComponentWrapper>} />
         <Route path="push/:pushId" element={<PushDetails />} />
 
         <Route path="connect" element={<B4aConnectPage />} />

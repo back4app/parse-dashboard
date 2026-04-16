@@ -231,7 +231,7 @@ const DROPDOWN_KEY_GROUP_B = 'Group B';
 class PushDetails extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
+    this.section = 'Notifications';
     this.subsection = '';
     this.state = {
       pushDetails: {},

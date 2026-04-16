@@ -17,6 +17,7 @@ import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
 import { Link } from 'react-router-dom';
 import validateEmailFormat from 'lib/validateEmailFormat';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 
 const DEFAULT_VERIFICATION_BODY =
   'Hi,\n\n' +
@@ -99,7 +100,7 @@ const renderChangedValuesFooter = (changes, fieldOptions) => {
 class EmailVerification extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
+    this.section = 'Notifications';
     this.subsection = 'Verification';
     this.state = {
       isLoading: true,
@@ -483,7 +484,7 @@ class EmailVerification extends DashboardView {
 
   renderContent() {
     const toolbar = (
-      <Toolbar section="Notification" subsection="Email Verification" />
+      <Toolbar section="Notifications" subsection="Email Verification" />
     );
     const { isLoading, initialFields, errorMessage, hasPermission, isUserVerified, canChangeEmailTemplate } = this.state;
 
@@ -553,6 +554,7 @@ class EmailVerification extends DashboardView {
               return this.context.updateEmailSettings(emailSettings, preventLoginWithUnverifiedEmail);
             }}
             afterSave={({ fields, resetFields }) => {
+              amplitudeLogEvent('Verification email configured');
               this.setState({
                 initialFields: { ...fields },
                 isDirty: false,

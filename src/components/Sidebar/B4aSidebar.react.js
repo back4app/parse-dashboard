@@ -123,18 +123,31 @@ const B4aSidebar = ({
           if (groupChildren) {
             const isGroupActive = subsection === name || groupChildren.some(c => c.name === subsection);
             const groupLink = link.startsWith('/') ? prefix + link : link;
+            const groupRoute = link.replace(/^\//, '');
+            const groupDisabled = !canAccess(currentApp.serverInfo, groupRoute);
             return (
               <div key={name} className={styles.subgroup}>
-                <Link
-                  className={`${styles.subgroupHeader} ${isGroupActive ? styles.subgroupHeaderActive : ''}`}
-                  to={{ pathname: groupLink }}
-                >
-                  {name}
-                </Link>
+                {groupDisabled ? (
+                  <span
+                    className={`${styles.subgroupHeader}`}
+                    style={{ pointerEvents: 'none', color: '#C1E2FF', opacity: 0.4 }}
+                  >
+                    {name}
+                  </span>
+                ) : (
+                  <Link
+                    className={`${styles.subgroupHeader} ${isGroupActive ? styles.subgroupHeaderActive : ''}`}
+                    to={{ pathname: groupLink }}
+                  >
+                    {name}
+                  </Link>
+                )}
                 <div className={styles.subgroupChildren}>
                   {groupChildren.map(child => {
                     const childActive = subsection === child.name;
                     const childLink = child.link.startsWith('/') ? prefix + child.link : child.link;
+                    const childRoute = child.link.replace(/^\//, '');
+                    const childDisabled = !canAccess(currentApp.serverInfo, childRoute);
                     return (
                       <SidebarSubItem
                         key={child.name}
@@ -144,6 +157,7 @@ const B4aSidebar = ({
                         actionHandler={childActive ? actionHandler : null}
                         active={childActive}
                         badge={child.badge}
+                        disabled={childDisabled}
                       >
                         {childActive ? children : null}
                       </SidebarSubItem>

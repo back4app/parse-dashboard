@@ -2127,4 +2127,87 @@ export default class ParseApp {
       throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
     }
   }
+
+  async getPushIOSConfig() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/list`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async uploadP8AuthKey(file, keyId, teamId, bundleId, deviceType, production) {
+    try {
+      const formData = new FormData();
+      formData.append('certificate', file);
+      formData.append('keyId', keyId);
+      formData.append('teamId', teamId);
+      formData.append('bundleId', bundleId);
+      formData.append('deviceType', deviceType);
+      formData.append('production', production);
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/auth`,
+          formData,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async uploadP12Certificate(file, deviceType, production) {
+    try {
+      const formData = new FormData();
+      formData.append('certificate', file);
+      formData.append('deviceType', deviceType);
+      formData.append('production', production);
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/cert`,
+          formData,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async deleteP8AuthKey(certificateId, dataType) {
+    try {
+      return (
+        await axios.delete(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/authkey`,
+          { data: JSON.stringify({ certificateId, dataType }), headers: { 'Content-Type': 'text/plain' }, withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
+
+  async deleteP12Certificate(certificateId, dataType) {
+    try {
+      return (
+        await axios.delete(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/push/ios`,
+          { data: JSON.stringify({ certificateId, dataType }), headers: { 'Content-Type': 'text/plain' }, withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err;
+    }
+  }
 }

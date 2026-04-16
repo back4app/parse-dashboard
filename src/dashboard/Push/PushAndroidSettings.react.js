@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter } from 'lib/withRouter';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import DashboardView from 'dashboard/DashboardView.react';
+import CategoryList from 'components/CategoryList/CategoryList.react';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import FlowView from 'components/FlowView/FlowView.react';
 import Field from 'components/Field/Field.react';
@@ -12,6 +13,7 @@ import FileInput from 'components/FileInput/FileInput.react';
 import Icon from 'components/Icon/Icon.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import styles from './PushAndroidSettings.scss';
 
 const getLoadErrorMessage = (err, fallbackMessage) => {
@@ -32,8 +34,8 @@ const getLoadErrorMessage = (err, fallbackMessage) => {
 class PushAndroidSettings extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
-    this.subsection = 'Android';
+    this.section = 'Notifications';
+    this.subsection = 'Setup';
     this.state = {
       isLoading: true,
       loadingError: null,
@@ -329,8 +331,23 @@ class PushAndroidSettings extends DashboardView {
     );
   }
 
+  renderSidebar() {
+    const { pathname } = this.props.location;
+    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+    return (
+      <CategoryList
+        current={current}
+        linkPrefix={'push/'}
+        categories={[
+          { name: 'Android', id: 'android-settings' },
+          { name: 'Apple', id: 'ios-settings' },
+        ]}
+      />
+    );
+  }
+
   renderContent() {
-    const toolbar = <Toolbar section="Notification" subsection="Android Push" />;
+    const toolbar = <Toolbar section="Notifications" subsection="Android Push" />;
     const { isLoading, loadingError, hasPermission, selectedFile } = this.state;
 
     let content = null;
@@ -398,6 +415,7 @@ class PushAndroidSettings extends DashboardView {
               });
             }}
             afterSave={({ resetFields }) => {
+              amplitudeLogEvent('Configured Android Push');
               resetFields();
               this.setState({ selectedFile: null, fileError: null });
               this.loadConfig();

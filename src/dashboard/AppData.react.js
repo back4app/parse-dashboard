@@ -31,8 +31,10 @@ function AppData() {
     }
 
     current.setParseKeys();
-    const curPathName = window.location.pathname.split('/')[3];
-    if (current.serverInfo.error && !canAccess(current.serverInfo, curPathName)) {
+    const pathSegments = window.location.pathname.split('/');
+    const curPathName = pathSegments[3];
+    const fullSubRoute = pathSegments.slice(3, 5).join('/');
+    if (current.serverInfo.error && !canAccess(current.serverInfo, curPathName) && !canAccess(current.serverInfo, fullSubRoute)) {
       navigate(`/apps/${current.slug}/overview`, { replace: true });
       return <div />;
       // return (
