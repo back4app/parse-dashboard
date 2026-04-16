@@ -91,7 +91,7 @@ const renderChangedValuesFooter = (changes, fieldOptions) => {
 class EmailPasswordReset extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
+    this.section = 'Notifications';
     this.subsection = 'Password Reset';
     this.state = {
       isLoading: true,
@@ -345,7 +345,7 @@ class EmailPasswordReset extends DashboardView {
 
   renderContent() {
     const toolbar = (
-      <Toolbar section="Notification" subsection="Reset Password Email" />
+      <Toolbar section="Notifications" subsection="Reset Password Email" />
     );
     const { isLoading, initialFields, errorMessage, hasPermission, isUserVerified } = this.state;
 

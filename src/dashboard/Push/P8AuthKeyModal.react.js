@@ -115,25 +115,53 @@ const P8AuthKeyModal = ({ deviceTypes, hasP12Certificates, onSave, onClose }) =>
       <Field
         label={<Label text="Key ID" description="Case sensitive, exactly 10 characters" />}
         input={
-          <TextInput
-            padding="0 1rem"
-            dark={false}
-            placeholder="Insert your Key ID"
-            value={keyId}
-            onChange={value => { if (value.length <= 10) { setKeyId(value); setErrors(prev => ({ ...prev, keyId: undefined })); } }}
-          />
+          <div>
+            <TextInput
+              padding="0 1rem"
+              dark={false}
+              placeholder="Insert your Key ID"
+              value={keyId}
+              onChange={value => {
+                if (value.length <= 10) {
+                  setKeyId(value);
+                  if (value.trim().length === 10) {
+                    setErrors(prev => ({ ...prev, keyId: undefined }));
+                  } else if (value.trim().length > 0) {
+                    setErrors(prev => ({ ...prev, keyId: 'Key ID must be exactly 10 characters.' }));
+                  } else {
+                    setErrors(prev => ({ ...prev, keyId: undefined }));
+                  }
+                }
+              }}
+            />
+            {errors.keyId && <small style={{ display: 'block', padding: '5px 0', fontWeight: 500, color: '#E85C3E' }}>*{errors.keyId}</small>}
+          </div>
         }
       />
       <Field
         label={<Label text="Team ID" description="Case sensitive, exactly 10 characters" />}
         input={
-          <TextInput
-            padding="0 1rem"
-            dark={false}
-            placeholder="Insert your Team ID"
-            value={teamId}
-            onChange={value => { if (value.length <= 10) { setTeamId(value); setErrors(prev => ({ ...prev, teamId: undefined })); } }}
-          />
+          <div>
+            <TextInput
+              padding="0 1rem"
+              dark={false}
+              placeholder="Insert your Team ID"
+              value={teamId}
+              onChange={value => {
+                if (value.length <= 10) {
+                  setTeamId(value);
+                  if (value.trim().length === 10) {
+                    setErrors(prev => ({ ...prev, teamId: undefined }));
+                  } else if (value.trim().length > 0) {
+                    setErrors(prev => ({ ...prev, teamId: 'Team ID must be exactly 10 characters.' }));
+                  } else {
+                    setErrors(prev => ({ ...prev, teamId: undefined }));
+                  }
+                }
+              }}
+            />
+            {errors.teamId && <small style={{ display: 'block', padding: '5px 0', fontWeight: 500, color: '#E85C3E' }}>*{errors.teamId}</small>}
+          </div>
         }
       />
       <Field

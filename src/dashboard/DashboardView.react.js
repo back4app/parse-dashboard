@@ -353,20 +353,19 @@ export default class DashboardView extends React.Component {
         ],
       },
       {
-        name: 'Pushes',
+        name: 'Push',
         link: '/push/new',
         children: [
           { name: 'Send New Push', link: '/push/new' },
-          { name: 'Past Pushes', link: '/push/activity' },
+          { name: 'History', link: '/push/activity' },
           { name: 'Audiences', link: '/push/audiences' },
-          { name: 'Android', link: '/push/android-settings' },
-          { name: 'iOS', link: '/push/ios-settings' },
+          { name: 'Setup', link: '/push/android-settings' },
         ],
       },
     ];
 
     appSidebarSections.push({
-      name: 'Notification',
+      name: 'Notifications',
       icon: 'b4a-push-notification-icon',
       link: '/notification',
       subsections: notificationSubSections,

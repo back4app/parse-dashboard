@@ -100,7 +100,7 @@ const renderChangedValuesFooter = (changes, fieldOptions) => {
 class EmailVerification extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
+    this.section = 'Notifications';
     this.subsection = 'Verification';
     this.state = {
       isLoading: true,
@@ -484,7 +484,7 @@ class EmailVerification extends DashboardView {
 
   renderContent() {
     const toolbar = (
-      <Toolbar section="Notification" subsection="Email Verification" />
+      <Toolbar section="Notifications" subsection="Email Verification" />
     );
     const { isLoading, initialFields, errorMessage, hasPermission, isUserVerified, canChangeEmailTemplate } = this.state;
 

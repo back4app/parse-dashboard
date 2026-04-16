@@ -38,7 +38,7 @@ const XHR_KEY = 'PushAudiencesIndex';
 class PushAudiencesIndex extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
+    this.section = 'Notifications';
     this.subsection = 'Audiences';
     this.state = {
       availableDevices: [],

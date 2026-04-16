@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter } from 'lib/withRouter';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import DashboardView from 'dashboard/DashboardView.react';
+import CategoryList from 'components/CategoryList/CategoryList.react';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
@@ -9,6 +10,7 @@ import Icon from 'components/Icon/Icon.react';
 import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import P8AuthKeyModal from './P8AuthKeyModal.react';
 import P12CertificateModal from './P12CertificateModal.react';
+import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import styles from './PushiOSSettings.scss';
 
@@ -45,8 +47,8 @@ const formatDate = (isoString) => {
 class PushiOSSettings extends DashboardView {
   constructor() {
     super();
-    this.section = 'Notification';
-    this.subsection = 'iOS';
+    this.section = 'Notifications';
+    this.subsection = 'Setup';
     this.state = {
       isLoading: true,
       loadingError: null,
@@ -62,6 +64,8 @@ class PushiOSSettings extends DashboardView {
       deleteTarget: null,
       isDeleting: false,
       deleteError: null,
+      showP8Tooltip: false,
+      showP12Tooltip: false,
     };
   }
 
@@ -301,9 +305,24 @@ class PushiOSSettings extends DashboardView {
     );
   }
 
+  renderSidebar() {
+    const { pathname } = this.props.location;
+    const current = pathname.substr(pathname.lastIndexOf('/') + 1, pathname.length - 1);
+    return (
+      <CategoryList
+        current={current}
+        linkPrefix={'push/'}
+        categories={[
+          { name: 'Android', id: 'android-settings' },
+          { name: 'Apple', id: 'ios-settings' },
+        ]}
+      />
+    );
+  }
+
   renderContent() {
     const toolbar = (
-      <Toolbar section="Notification" subsection="iOS Push">
+      <Toolbar section="Notifications" subsection="Apple Push">
         <a
           className={styles.toolbarButton}
           onClick={() => {
@@ -349,7 +368,7 @@ class PushiOSSettings extends DashboardView {
             <div className={styles.settingsContainer}>
               <div className={styles.heading}>Apple Push Settings</div>
               <div className={styles.subheading}>
-                Manage Apple Push Notification certificates.
+                Manage Apple Push Notification settings.
               </div>
 
               <div className={styles.warningBanner}>
@@ -361,20 +380,30 @@ class PushiOSSettings extends DashboardView {
                   <div className={styles.sectionHeader}>
                     <h4>APNs Authentication Key</h4>
                     {incompatiblePS ? (
-                      <span className={styles.tooltipWrapper} title="Available only for Parse Server 2.6.5+">
-                        <Button
-                          primary={true}
-                          color="green"
-                          width="auto"
-                          disabled={true}
-                          value={
-                            <span className={styles.addButtonLabel}>
-                              <Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />
-                              New
-                            </span>
-                          }
-                        />
-                      </span>
+                      <B4aTooltip
+                        value="Available only for Parse Server 2.6.5+"
+                        visible={this.state.showP8Tooltip}
+                        placement="bottom"
+                      >
+                        <span
+                          className={styles.tooltipWrapper}
+                          onMouseEnter={() => this.setState({ showP8Tooltip: true })}
+                          onMouseLeave={() => this.setState({ showP8Tooltip: false })}
+                        >
+                          <Button
+                            primary={true}
+                            color="green"
+                            width="auto"
+                            disabled={true}
+                            value={
+                              <span className={styles.addButtonLabel}>
+                                <Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />
+                                New
+                              </span>
+                            }
+                          />
+                        </span>
+                      </B4aTooltip>
                     ) : (
                       <Button
                         primary={true}
@@ -399,19 +428,46 @@ class PushiOSSettings extends DashboardView {
                 <div className={styles.section}>
                   <div className={styles.sectionHeader}>
                     <h4>APNs Certificates</h4>
-                    <Button
-                      primary={true}
-                      color="green"
-                      width="auto"
-                      disabled={disableP12 || !hasPermission}
-                      onClick={() => this.setState({ showP12Modal: true })}
-                      value={
-                        <span className={styles.addButtonLabel}>
-                          <Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />
-                          New
+                    {disableP12 ? (
+                      <B4aTooltip
+                        value="Certificates are disabled when using Authentication Keys"
+                        visible={this.state.showP12Tooltip}
+                        placement="bottom"
+                      >
+                        <span
+                          className={styles.tooltipWrapper}
+                          onMouseEnter={() => this.setState({ showP12Tooltip: true })}
+                          onMouseLeave={() => this.setState({ showP12Tooltip: false })}
+                        >
+                          <Button
+                            primary={true}
+                            color="green"
+                            width="auto"
+                            disabled={true}
+                            value={
+                              <span className={styles.addButtonLabel}>
+                                <Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />
+                                New
+                              </span>
+                            }
+                          />
                         </span>
-                      }
-                    />
+                      </B4aTooltip>
+                    ) : (
+                      <Button
+                        primary={true}
+                        color="green"
+                        width="auto"
+                        disabled={!hasPermission}
+                        onClick={() => this.setState({ showP12Modal: true })}
+                        value={
+                          <span className={styles.addButtonLabel}>
+                            <Icon width={16} height={16} name="b4a-add-outline-circle" fill="#f9f9f9" />
+                            New
+                          </span>
+                        }
+                      />
+                    )}
                   </div>
                   {this.renderP12Table()}
                 </div>

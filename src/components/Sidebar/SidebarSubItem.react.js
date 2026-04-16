@@ -16,7 +16,18 @@ const sendEvent = () => {
     back4AppNavigation.atApiReferenceIntroEvent();
 };
 
-let SidebarSubItem = ({ active, name, action, link, children, badge }) => {
+let SidebarSubItem = ({ active, name, action, link, children, badge, disabled }) => {
+  if (disabled) {
+    return (
+      <div style={{ pointerEvents: 'none' }}>
+        <span className={styles.subitem} style={{ color: '#C1E2FF', opacity: 0.4 }}>
+          {name}
+          {badge ? <B4aBadge {...badge} /> : null}
+        </span>
+      </div>
+    );
+  }
+
   if (active) {
     return (
       <div>

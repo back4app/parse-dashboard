@@ -135,6 +135,8 @@ const B4aSidebar = ({
                   {groupChildren.map(child => {
                     const childActive = subsection === child.name;
                     const childLink = child.link.startsWith('/') ? prefix + child.link : child.link;
+                    const childRoute = child.link.replace(/^\//, '');
+                    const childDisabled = !canAccess(currentApp.serverInfo, childRoute);
                     return (
                       <SidebarSubItem
                         key={child.name}
@@ -144,6 +146,7 @@ const B4aSidebar = ({
                         actionHandler={childActive ? actionHandler : null}
                         active={childActive}
                         badge={child.badge}
+                        disabled={childDisabled}
                       >
                         {childActive ? children : null}
                       </SidebarSubItem>
