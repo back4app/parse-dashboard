@@ -16,6 +16,9 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [note, setNote] = useState('');
   const [noteColor, setNoteColor] = useState('red');
+  const [migrationLinks, setMigrationLinks] = useState([]);
+
+  const isGDPR = !!(context && context.custom && context.custom.isGDPR);
 
   const parseDependencies = (deps) => {
     if (!deps) {
@@ -66,7 +69,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   useEffect(() => {
     setProcessing(true);
-    context.supportedParseServerVersionsForApp()
+    const versionsPromise = context.supportedParseServerVersionsForApp()
       .then((data) => {
         const versions = Array.isArray(data) ? data : (data.results || []);
         setParseVersions(versions);
@@ -77,12 +80,27 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         setNote(e.error || 'Failed to load versions');
         console.log('e', e);
         setNoteColor('red');
+      });
+
+    // Migration links are best-effort: if they fail we still show the version picker.
+    const linksPromise = context.parseServerMigrationLinks()
+      .then((data) => {
+        const links = Array.isArray(data) ? data : (data?.results || []);
+        setMigrationLinks(links);
       })
-      .finally(() => setProcessing(false));
+      .catch(() => {
+        setMigrationLinks([]);
+      });
+
+    Promise.all([versionsPromise, linksPromise]).finally(() => setProcessing(false));
   }, []);
 
   const npmModules = parseDependencies(selectedVersion?.dependencies ?? selectedVersion?.npmModules);
   const hasSelectedVersion = !!selectedVersion?.version;
+
+  const visibleMigrations = isGDPR
+    ? []
+    : (migrationLinks || []).filter((m) => m && m.link && m.version !== selectedVersion?.version);
 
   const close = () => setParentState({ showEditParseVersionModal: false });
 
@@ -126,6 +144,32 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         </div>
 
         <div className={styles.modalBody}>
+          {visibleMigrations.length > 0 && (
+            <div className={styles.migrationCard}>
+              {visibleMigrations.map((m) => (
+                <div key={m.id || m._id || m.version} className={styles.migrationItem}>
+                  <div className={styles.migrationHead}>
+                    <span className={styles.migrationTitle}>
+                      Upgrade to the latest Parse Server
+                    </span>
+                    <a
+                      className={styles.migrationLink}
+                      href={`${m.link}?appId=${context.applicationId}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      aria-label='Schedule migration'
+                      title='Schedule migration'
+                    >
+                      <Icon name='b4a-up-arrow' width={16} height={16} fill='#27AE60' />
+                    </a>
+                  </div>
+                  {m.description && (
+                    <p className={styles.migrationDescription}>{m.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
           <div className={styles.content}>
 
 
