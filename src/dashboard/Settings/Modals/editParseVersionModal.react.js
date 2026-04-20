@@ -160,7 +160,19 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
                       aria-label='Schedule migration'
                       title='Schedule migration'
                     >
-                      <Icon name='b4a-up-arrow' width={16} height={16} fill='#27AE60' />
+                      <svg
+                        width='18'
+                        height='18'
+                        viewBox='0 0 24 24'
+                        fill='#27AE60'
+                        aria-hidden='true'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          clipRule='evenodd'
+                          d='M8 1.5a1 1 0 0 1 1 1V4h6V2.5a1 1 0 1 1 2 0V4h1.5A2.5 2.5 0 0 1 21 6.5V9H3V6.5A2.5 2.5 0 0 1 5.5 4H7V2.5a1 1 0 0 1 1-1ZM3 10.5h18v8A2.5 2.5 0 0 1 18.5 21h-13A2.5 2.5 0 0 1 3 18.5v-8ZM7.25 12.5h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 1 .5-.5Zm-8 4h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5V17a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5V17a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5V17a.5.5 0 0 1 .5-.5Z'
+                        />
+                      </svg>
                     </a>
                   </div>
                   {m.description && (

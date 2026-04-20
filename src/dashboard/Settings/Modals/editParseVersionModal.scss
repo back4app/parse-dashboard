@@ -265,9 +265,6 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  transition: background 0.15s ease;
-  transform: rotate(45deg);
-  background: rgba($cta-green, 0.1);
 
   &:hover {
     cursor: pointer;
