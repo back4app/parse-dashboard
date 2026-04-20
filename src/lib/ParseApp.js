@@ -451,6 +451,11 @@ export default class ParseApp {
     return AJAX.get(path);
   }
 
+  parseServerMigrationLinks() {
+    const path = `/parse-version/links/${this.slug}`;
+    return AJAX.get(path);
+  }
+
   changeParseServerVersion(parseVersion) {
     const path = `/parse-version/${this.slug}/`;
     return AJAX.post(path, { parseVersion });

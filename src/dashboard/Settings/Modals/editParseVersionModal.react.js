@@ -16,6 +16,9 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [note, setNote] = useState('');
   const [noteColor, setNoteColor] = useState('red');
+  const [migrationLinks, setMigrationLinks] = useState([]);
+
+  const isGDPR = !!(context && context.custom && context.custom.isGDPR);
 
   const parseDependencies = (deps) => {
     if (!deps) {
@@ -66,7 +69,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   useEffect(() => {
     setProcessing(true);
-    context.supportedParseServerVersionsForApp()
+    const versionsPromise = context.supportedParseServerVersionsForApp()
       .then((data) => {
         const versions = Array.isArray(data) ? data : (data.results || []);
         setParseVersions(versions);
@@ -77,12 +80,27 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         setNote(e.error || 'Failed to load versions');
         console.log('e', e);
         setNoteColor('red');
+      });
+
+    // Migration links are best-effort: if they fail we still show the version picker.
+    const linksPromise = context.parseServerMigrationLinks()
+      .then((data) => {
+        const links = Array.isArray(data) ? data : (data?.results || []);
+        setMigrationLinks(links);
       })
-      .finally(() => setProcessing(false));
+      .catch(() => {
+        setMigrationLinks([]);
+      });
+
+    Promise.all([versionsPromise, linksPromise]).finally(() => setProcessing(false));
   }, []);
 
   const npmModules = parseDependencies(selectedVersion?.dependencies ?? selectedVersion?.npmModules);
   const hasSelectedVersion = !!selectedVersion?.version;
+
+  const visibleMigrations = isGDPR
+    ? []
+    : (migrationLinks || []).filter((m) => m && m.link && m.version !== selectedVersion?.version);
 
   const close = () => setParentState({ showEditParseVersionModal: false });
 
@@ -126,6 +144,44 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         </div>
 
         <div className={styles.modalBody}>
+          {visibleMigrations.length > 0 && (
+            <div className={styles.migrationCard}>
+              {visibleMigrations.map((m) => (
+                <div key={m.id || m._id || m.version} className={styles.migrationItem}>
+                  <div className={styles.migrationHead}>
+                    <span className={styles.migrationTitle}>
+                      Upgrade to the latest Parse Server
+                    </span>
+                    <a
+                      className={styles.migrationLink}
+                      href={`${m.link}?appId=${context.applicationId}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      aria-label='Schedule migration'
+                      title='Schedule migration'
+                    >
+                      <svg
+                        width='18'
+                        height='18'
+                        viewBox='0 0 24 24'
+                        fill='#27AE60'
+                        aria-hidden='true'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          clipRule='evenodd'
+                          d='M8 1.5a1 1 0 0 1 1 1V4h6V2.5a1 1 0 1 1 2 0V4h1.5A2.5 2.5 0 0 1 21 6.5V9H3V6.5A2.5 2.5 0 0 1 5.5 4H7V2.5a1 1 0 0 1 1-1ZM3 10.5h18v8A2.5 2.5 0 0 1 18.5 21h-13A2.5 2.5 0 0 1 3 18.5v-8ZM7.25 12.5h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 1 .5-.5Zm-8 4h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5V17a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5V17a.5.5 0 0 1 .5-.5Zm4 0h1.5a.5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 1-.5-.5V17a.5.5 0 0 1 .5-.5Z'
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                  {m.description && (
+                    <p className={styles.migrationDescription}>{m.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
           <div className={styles.content}>
 
 
