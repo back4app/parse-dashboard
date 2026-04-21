@@ -48,8 +48,8 @@ const CUSTOM_PAGES_KEYS = [
 ];
 
 // Whitelist of `customOptions` keys that the form actually manages. Used by
-// the "Reset to current form state" action to drop any stray keys the user
-// typed into the JSON editor.
+// the "Reset to saved values" action to drop any stray keys the user typed
+// into the JSON editor.
 const KNOWN_CUSTOM_OPTIONS_KEYS = [
   'publicServerURL',
   'maxUploadSize',
@@ -308,9 +308,6 @@ class CustomParseOptions extends DashboardView {
       payloadJson: '',
       isSavingPayload: false,
       payloadSaveError: '',
-      // Snapshot of fields taken when the JSON modal opens so "Reset" can
-      // undo any keys the user added in the JSON editor (not just reformat).
-      payloadFieldsSnapshot: null,
     };
     this.onRefresh = this.onRefresh.bind(this);
   }
@@ -473,7 +470,7 @@ class CustomParseOptions extends DashboardView {
         <div className={styles.domainSettingsContainer}>
           <div className={styles.heading}>Parse Server Options</div>
           <div className={styles.subheading}>
-            Configure advanced settings of your Parse Server instance, including server behavior, authentication, and security rules. 
+            Configure advanced settings of your Parse Server instance, including server behavior, authentication, and security rules.
             Check available option in {' '}
             <a
               target="_blank"
@@ -1334,21 +1331,17 @@ class CustomParseOptions extends DashboardView {
                   <Button
                     value='Edit as JSON'
                     primary={true}
+                    disabled={!isOwner || !this.state.canChangeCustomParseOptions}
                     onClick={() => {
+                      if (!isOwner || !this.state.canChangeCustomParseOptions) {
+                        return;
+                      }
                       const flatPayload = buildFlatEditorPayload(fields);
-                      const snapshot = {
-                        customOptions: fields.customOptions
-                          ? JSON.parse(JSON.stringify(fields.customOptions))
-                          : {},
-                        clientPush: fields.clientPush,
-                        clientClassCreation: fields.clientClassCreation,
-                      };
                       this.setState({
                         showPayloadModal: true,
                         copyStatus: '',
                         payloadSaveError: '',
                         payloadJson: stringifyAlpha(flatPayload),
-                        payloadFieldsSnapshot: snapshot,
                       });
                     }}
                   />
@@ -1385,38 +1378,32 @@ class CustomParseOptions extends DashboardView {
         showPayloadModal: false,
         copyStatus: '',
         payloadSaveError: '',
-        payloadFieldsSnapshot: null,
       });
     };
 
     const resetPayload = () => {
-      // Reset to the snapshot captured when the modal opened so we drop any
-      // extra keys the user added inside the editor (not just reformat them).
-      // Also filter `customOptions` down to keys the form actually manages,
-      // so the JSON editor only shows form-field properties after reset.
-      const snapshot = this.state.payloadFieldsSnapshot || {
-        customOptions: fields.customOptions || {},
-        clientPush: fields.clientPush,
-        clientClassCreation: fields.clientClassCreation,
-      };
-      const filteredCustomOptions = filterToKnownCustomOptions(snapshot.customOptions);
+      // Revert to the original values from the most recent API response
+      // (stored in `initialFields`). This drops every form-level and
+      // JSON-editor change the user has made in this session. We still
+      // filter `customOptions` to keys the form actually manages so the
+      // editor only shows form-field properties after reset.
+      const apiInitialFields = this.state.initialFields || {};
+      const filteredCustomOptions = filterToKnownCustomOptions(apiInitialFields.customOptions);
       const flatPayload = buildFlatEditorPayload({
         customOptions: filteredCustomOptions,
-        clientPush: snapshot.clientPush,
-        clientClassCreation: snapshot.clientClassCreation,
+        clientPush: apiInitialFields.clientPush,
+        clientClassCreation: apiInitialFields.clientClassCreation,
       });
       this.setState({
         payloadJson: stringifyAlpha(flatPayload),
         copyStatus: '',
         payloadSaveError: '',
       });
-      // Also drop form-field changes the JSON editor pushed in since open.
-      setField(
-        'customOptions',
-        JSON.parse(JSON.stringify(filteredCustomOptions))
-      );
-      setField('clientPush', snapshot.clientPush);
-      setField('clientClassCreation', snapshot.clientClassCreation);
+      // Clear FlowView's tracked changes so `fields` = `initialFields` again
+      // (the form fields revert alongside the JSON).
+      if (typeof resetFields === 'function') {
+        resetFields();
+      }
     };
 
     const applyJsonToFields = (value) => {
@@ -1498,7 +1485,6 @@ class CustomParseOptions extends DashboardView {
           showPayloadModal: false,
           copyStatus: '',
           payloadJson: '',
-          payloadFieldsSnapshot: null,
           initialFields: {
             customOptions: reverseTransformCustomOptions(unflat.customOptions),
             clientPush: Object.prototype.hasOwnProperty.call(parsed, 'clientPush')
@@ -1608,7 +1594,7 @@ class CustomParseOptions extends DashboardView {
                   padding: 0,
                 }}
               >
-                Reset to current form state
+                Reset to saved values
               </button>
             </div>
           </div>
