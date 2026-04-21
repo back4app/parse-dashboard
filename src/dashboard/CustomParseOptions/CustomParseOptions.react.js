@@ -47,6 +47,59 @@ const CUSTOM_PAGES_KEYS = [
   'linkSendFail',
 ];
 
+// Whitelist of `customOptions` keys that the form actually manages. Used by
+// the "Reset to current form state" action to drop any stray keys the user
+// typed into the JSON editor.
+const KNOWN_CUSTOM_OPTIONS_KEYS = [
+  'publicServerURL',
+  'maxUploadSize',
+  'preserveFileName',
+  'enableSingleSchemaCache',
+  'allowCustomObjectId',
+  'objectIdSize',
+  'passwordPolicy',
+  'accountLockout',
+  'enableAnonymousUsers',
+  'enforcePrivateUsers',
+  'sessionLength',
+  'emailVerifyTokenValidityDuration',
+  'expireInactiveSessions',
+  ...CUSTOM_PAGES_KEYS,
+];
+
+const filterToKnownCustomOptions = (rawCustomOptions) => {
+  const filtered = {};
+  if (!rawCustomOptions || typeof rawCustomOptions !== 'object') {
+    return filtered;
+  }
+  for (const key of KNOWN_CUSTOM_OPTIONS_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(rawCustomOptions, key)) {
+      filtered[key] = rawCustomOptions[key];
+    }
+  }
+  return filtered;
+};
+
+// Recursively sort object keys so the JSON editor shows properties in a
+// deterministic, alphabetical order whenever we rebuild the text ourselves
+// (modal open, reset, etc.). User-driven edits bypass this, preserving caret
+// position while they're typing.
+const sortKeysDeep = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(sortKeysDeep);
+  }
+  if (value && typeof value === 'object') {
+    const sorted = {};
+    for (const key of Object.keys(value).sort()) {
+      sorted[key] = sortKeysDeep(value[key]);
+    }
+    return sorted;
+  }
+  return value;
+};
+
+const stringifyAlpha = (value) => JSON.stringify(sortKeysDeep(value), null, 2);
+
 const getActualChanges = (changes, initial) => {
   const result = {};
   for (const key of Object.keys(changes)) {
@@ -111,12 +164,14 @@ const TOP_LEVEL_PAYLOAD_KEYS = ['clientPush', 'clientClassCreation'];
 // Builds the flat shape shown in the JSON editor: all customOptions keys are
 // merged into the root next to clientPush/clientClassCreation so the user
 // doesn't need to know which keys belong under `customOptions`.
+// The `?? default` guards ensure these two always render (JSON.stringify
+// drops properties whose value is `undefined`).
 const buildFlatEditorPayload = (fields) => {
   const transformed = transformCustomOptionsForPayload(fields.customOptions) || {};
   return {
     ...transformed,
-    clientPush: fields.clientPush,
-    clientClassCreation: fields.clientClassCreation,
+    clientPush: fields.clientPush ?? false,
+    clientClassCreation: fields.clientClassCreation ?? true,
   };
 };
 
@@ -253,6 +308,9 @@ class CustomParseOptions extends DashboardView {
       payloadJson: '',
       isSavingPayload: false,
       payloadSaveError: '',
+      // Snapshot of fields taken when the JSON modal opens so "Reset" can
+      // undo any keys the user added in the JSON editor (not just reformat).
+      payloadFieldsSnapshot: null,
     };
     this.onRefresh = this.onRefresh.bind(this);
   }
@@ -414,7 +472,18 @@ class CustomParseOptions extends DashboardView {
       <div className={styles.formWrapper}>
         <div className={styles.domainSettingsContainer}>
           <div className={styles.heading}>Parse Server Options</div>
-          <div className={styles.subheading}>Configure advanced settings of your Parse Server instance, including server behavior, authentication, and security rules.</div>
+          <div className={styles.subheading}>
+            Configure advanced settings of your Parse Server instance, including server behavior, authentication, and security rules. 
+            Check available option in {' '}
+            <a
+              target="_blank"
+              href="https://www.back4app.com/docs/platform/custom-parse-options"
+              rel='noopener noreferrer'
+              className={styles.docsLink}
+            >
+              Documentation
+            </a>.
+            </div>
           <div className={styles.warning}><strong>Warning:</strong> Changes apply immediately and may affect your app’s availability or client connections.</div>
 
           {!this.state.canChangeCustomParseOptions && (
@@ -1267,11 +1336,19 @@ class CustomParseOptions extends DashboardView {
                     primary={true}
                     onClick={() => {
                       const flatPayload = buildFlatEditorPayload(fields);
+                      const snapshot = {
+                        customOptions: fields.customOptions
+                          ? JSON.parse(JSON.stringify(fields.customOptions))
+                          : {},
+                        clientPush: fields.clientPush,
+                        clientClassCreation: fields.clientClassCreation,
+                      };
                       this.setState({
                         showPayloadModal: true,
                         copyStatus: '',
                         payloadSaveError: '',
-                        payloadJson: JSON.stringify(flatPayload, null, 2),
+                        payloadJson: stringifyAlpha(flatPayload),
+                        payloadFieldsSnapshot: snapshot,
                       });
                     }}
                   />
@@ -1308,16 +1385,38 @@ class CustomParseOptions extends DashboardView {
         showPayloadModal: false,
         copyStatus: '',
         payloadSaveError: '',
+        payloadFieldsSnapshot: null,
       });
     };
 
     const resetPayload = () => {
-      const flatPayload = buildFlatEditorPayload(fields);
+      // Reset to the snapshot captured when the modal opened so we drop any
+      // extra keys the user added inside the editor (not just reformat them).
+      // Also filter `customOptions` down to keys the form actually manages,
+      // so the JSON editor only shows form-field properties after reset.
+      const snapshot = this.state.payloadFieldsSnapshot || {
+        customOptions: fields.customOptions || {},
+        clientPush: fields.clientPush,
+        clientClassCreation: fields.clientClassCreation,
+      };
+      const filteredCustomOptions = filterToKnownCustomOptions(snapshot.customOptions);
+      const flatPayload = buildFlatEditorPayload({
+        customOptions: filteredCustomOptions,
+        clientPush: snapshot.clientPush,
+        clientClassCreation: snapshot.clientClassCreation,
+      });
       this.setState({
-        payloadJson: JSON.stringify(flatPayload, null, 2),
+        payloadJson: stringifyAlpha(flatPayload),
         copyStatus: '',
         payloadSaveError: '',
       });
+      // Also drop form-field changes the JSON editor pushed in since open.
+      setField(
+        'customOptions',
+        JSON.parse(JSON.stringify(filteredCustomOptions))
+      );
+      setField('clientPush', snapshot.clientPush);
+      setField('clientClassCreation', snapshot.clientClassCreation);
     };
 
     const applyJsonToFields = (value) => {
@@ -1399,6 +1498,7 @@ class CustomParseOptions extends DashboardView {
           showPayloadModal: false,
           copyStatus: '',
           payloadJson: '',
+          payloadFieldsSnapshot: null,
           initialFields: {
             customOptions: reverseTransformCustomOptions(unflat.customOptions),
             clientPush: Object.prototype.hasOwnProperty.call(parsed, 'clientPush')
