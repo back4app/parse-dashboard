@@ -385,7 +385,7 @@ class CustomParseOptions extends DashboardView {
         initialFields: {
           customOptions,
           clientPush: response.clientPush ?? false,
-          clientClassCreation: response.clientClassCreation !== 'undefined' ? response.clientClassCreation : true,
+          clientClassCreation: response.clientClassCreation ?? true,
         },
       });
     } catch (error) {
@@ -1288,7 +1288,7 @@ class CustomParseOptions extends DashboardView {
             <Field
               label={
                 <Label
-                  text='Edit as JSON'
+                  text='Advanced Options'
                   description='Add custom parse options here.'
                   dark={true}
                 />
@@ -1415,6 +1415,11 @@ class CustomParseOptions extends DashboardView {
         }, 1500);
       } catch (e) {
         this.setState({ copyStatus: 'Failed to copy' });
+        setTimeout(() => {
+          if (this.state.showPayloadModal && this.state.copyStatus === 'Failed to copy') {
+            this.setState({ copyStatus: '' });
+          }
+        }, 1500);
       }
     };
 
