@@ -47,39 +47,6 @@ const CUSTOM_PAGES_KEYS = [
   'linkSendFail',
 ];
 
-// Whitelist of `customOptions` keys that the form actually manages. Used by
-// the "Reset to saved values" action to drop any stray keys the user typed
-// into the JSON editor.
-const KNOWN_CUSTOM_OPTIONS_KEYS = [
-  'publicServerURL',
-  'maxUploadSize',
-  'preserveFileName',
-  'enableSingleSchemaCache',
-  'allowCustomObjectId',
-  'objectIdSize',
-  'passwordPolicy',
-  'accountLockout',
-  'enableAnonymousUsers',
-  'enforcePrivateUsers',
-  'sessionLength',
-  'emailVerifyTokenValidityDuration',
-  'expireInactiveSessions',
-  ...CUSTOM_PAGES_KEYS,
-];
-
-const filterToKnownCustomOptions = (rawCustomOptions) => {
-  const filtered = {};
-  if (!rawCustomOptions || typeof rawCustomOptions !== 'object') {
-    return filtered;
-  }
-  for (const key of KNOWN_CUSTOM_OPTIONS_KEYS) {
-    if (Object.prototype.hasOwnProperty.call(rawCustomOptions, key)) {
-      filtered[key] = rawCustomOptions[key];
-    }
-  }
-  return filtered;
-};
-
 // Recursively sort object keys so the JSON editor shows properties in a
 // deterministic, alphabetical order whenever we rebuild the text ourselves
 // (modal open, reset, etc.). User-driven edits bypass this, preserving caret
@@ -1384,16 +1351,11 @@ class CustomParseOptions extends DashboardView {
     const resetPayload = () => {
       // Revert to the original values from the most recent API response
       // (stored in `initialFields`). This drops every form-level and
-      // JSON-editor change the user has made in this session. We still
-      // filter `customOptions` to keys the form actually manages so the
-      // editor only shows form-field properties after reset.
+      // JSON-editor change the user has made in this session and surfaces
+      // every saved key — including any the form doesn't render — so the
+      // editor matches the GET /parseOptions response.
       const apiInitialFields = this.state.initialFields || {};
-      const filteredCustomOptions = filterToKnownCustomOptions(apiInitialFields.customOptions);
-      const flatPayload = buildFlatEditorPayload({
-        customOptions: filteredCustomOptions,
-        clientPush: apiInitialFields.clientPush,
-        clientClassCreation: apiInitialFields.clientClassCreation,
-      });
+      const flatPayload = buildFlatEditorPayload(apiInitialFields);
       this.setState({
         payloadJson: stringifyAlpha(flatPayload),
         copyStatus: '',
