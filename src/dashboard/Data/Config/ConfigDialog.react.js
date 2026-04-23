@@ -120,6 +120,9 @@ export default class ConfigDialog extends React.Component {
       case 'Number':
         return !isNaN(parseFloat(this.state.value));
       case 'Date':
+        if (this.state.value === null || this.state.value === undefined || this.state.value === '') {
+          return false;
+        }
         return !isNaN(new Date(this.state.value));
       case 'Object':
         try {
