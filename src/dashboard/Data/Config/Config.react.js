@@ -235,10 +235,14 @@ class Config extends TableView {
         params.forEach((value, param) => {
           const masterKeyOnly = masterKeyOnlyParams.get(param) || false;
           const type = typeof value;
-          if (type === 'object' && value.__type == 'File') {
-            value = Parse.File.fromJSON(value);
-          } else if (type === 'object' && value.__type == 'GeoPoint') {
-            value = new Parse.GeoPoint(value);
+          if (type === 'object' && value !== null) {
+            if (value.__type == 'File') {
+              value = Parse.File.fromJSON(value);
+            } else if (value.__type == 'GeoPoint') {
+              value = new Parse.GeoPoint(value);
+            } else if (value.__type == 'Date') {
+              value = new Date(value.iso)
+            }
           }
           data.push({
             param: param,
