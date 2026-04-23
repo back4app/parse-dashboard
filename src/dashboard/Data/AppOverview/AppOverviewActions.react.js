@@ -71,8 +71,8 @@ const AppOverviewActions = ({ appUrlName, context }) => {
         {isDropdownOpen && (
           <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
             <div className={styles.dropdownItem}>
-              <Link to={`/apps/${appUrlName}/server-settings`}>
-                Server Settings
+              <Link to={`/apps/${appUrlName}/settings/general`}>
+                App Settings
               </Link>
             </div>
             <div className={styles.dropdownItem} onClick={() => handleAction('refresh')}>
