@@ -516,8 +516,8 @@ class Dashboard extends React.Component {
         <Route path="admin" element={<B4aAdminPage />} />
         {/* <Route path="app-templates" element={<B4aAppTemplates />} /> */}
 
-        <Route path="server-settings/" element={<ServerSettings />} />
-        <Route path="server-settings/:targetPage" element={<ServerSettings />} />
+        {/* <Route path="server-settings/" element={<ServerSettings />} /> */}
+        {/* <Route path="server-settings/:targetPage" element={<ServerSettings />} /> */}
         <Route path="domain-settings" element={<DomainSettings />} />
         <Route path="server-url-live-query" element={<ServerURLLiveQuery />} />
         <Route path="advanced-options" element={<CustomParseOptions />} />
