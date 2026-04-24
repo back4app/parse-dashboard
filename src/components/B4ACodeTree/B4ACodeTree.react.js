@@ -236,11 +236,14 @@ export default class B4ACodeTree extends React.Component {
 
   // method to identify the selected tree node
   watchSelectedNode() {
-    $('#tree').on('select_node.jstree', async (e, data) => this.selectNode(data))
+    // Detach any previously bound handlers so repeated calls cannot stack
+    // duplicate listeners (which would cause selectNode to fire N times per
+    // click and freeze the editor on file switches).
+    $('#tree').off('changed.jstree');
     $('#tree').on('changed.jstree', (e, data) => {
       this.selectNode(data);
       this.setState({ selectedNodeData: data });
-    })
+    });
   }
 
   handleTreeChanges() {
@@ -365,6 +368,10 @@ export default class B4ACodeTree extends React.Component {
     if ($('#tree').jstree().get_selected().length <= 0) {
       this.selectCloudFolder();
     }
+  }
+
+  componentWillUnmount() {
+    $('#tree').off('changed.jstree create_node.jstree delete_node.jstree');
   }
 
   render(){
@@ -509,7 +516,7 @@ export default class B4ACodeTree extends React.Component {
                 bottomLeft:false,
                 topLeft:false
               }}>
-              <div id={'tree'} onClick={this.watchSelectedNode.bind(this)}></div>
+              <div id={'tree'}></div>
             </div>
           </div>
         </div>
