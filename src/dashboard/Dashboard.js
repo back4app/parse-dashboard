@@ -37,7 +37,7 @@ import B4aAppTemplates from './B4aAppTemplates/B4aAppTemplates.react';
 import { AsyncStatus } from 'lib/Constants';
 import { get } from 'lib/AJAX';
 import { setBasePath } from 'lib/AJAX';
-import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
+// import ServerSettings from 'dashboard/ServerSettings/ServerSettings.react';
 // // import createClass from 'create-react-class';
 import { Helmet } from 'react-helmet';
 import Playground from './Data/Playground/Playground.react';
@@ -402,8 +402,8 @@ export default class Dashboard extends React.Component {
         <Route path="admin" element={<B4aAdminPage />} />
         <Route path="app-templates" element={<B4aAppTemplates />} />
 
-        <Route path="server-settings/" element={<ServerSettings />} />
-        <Route path="server-settings/:targetPage" element={<ServerSettings />} />
+        {/* <Route path="server-settings/" element={<ServerSettings />} />
+        <Route path="server-settings/:targetPage" element={<ServerSettings />} /> */}
 
         <Route path="index/:className" element={<IndexManager />} />
         <Route path="index" element={<IndexManager />} />
