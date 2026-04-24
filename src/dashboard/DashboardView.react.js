@@ -252,10 +252,10 @@ export default class DashboardView extends React.Component {
       link: '/settings/keys'
     });
     // }
-    settingsSections.push({
-      name: 'Server Settings',
-      link: '/server-settings',
-    });
+    // settingsSections.push({
+    //   name: 'Server Settings',
+    //   link: '/server-settings',
+    // });
 
 
     const appSidebarSections = [];
