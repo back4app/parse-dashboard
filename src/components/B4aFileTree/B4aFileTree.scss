@@ -1,0 +1,161 @@
+.tree {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px 0;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+}
+
+.empty {
+  padding: 16px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+.nodeWrapper {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 8px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.7);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &:focus-visible {
+    outline: 1px solid rgba(32, 138, 236, 0.6);
+    outline-offset: -1px;
+  }
+}
+
+.selected {
+  background: rgba(32, 138, 236, 0.2) !important;
+  color: #208AEC !important;
+
+  &:hover {
+    background: rgba(32, 138, 236, 0.28) !important;
+  }
+}
+
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 200ms ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.children {
+  display: block;
+}
+
+.contextMenu {
+  position: fixed;
+  z-index: 10000;
+  min-width: 160px;
+  padding: 4px 0;
+  background: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+}
+
+.contextMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.8);
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 100ms ease;
+
+  &:hover {
+    background: #094771;
+    color: #ffffff;
+  }
+
+  &:focus-visible {
+    background: #094771;
+    color: #ffffff;
+  }
+}
+
+.contextMenuIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.6);
+}

@@ -152,6 +152,144 @@
 
 }
 
+// VSCode-style sidebar (Explorer header + B4aFileTree). The legacy jstree
+// DOM is rendered alongside it but visually hidden via .hiddenJstree so all
+// the existing edit/drag-drop/deploy flows keep working.
+.vscodeSidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+  overflow: hidden;
+}
+
+.vscodeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.vscodeHeaderTitle {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.vscodeHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.vscodeIconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  &:focus-visible {
+    outline: 1px solid rgba(32, 138, 236, 0.6);
+    outline-offset: -1px;
+  }
+}
+
+.vscodeTreeWrapper {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.uploadDropdownWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.uploadDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  min-width: 150px;
+  margin-top: 4px;
+  padding: 4px 0;
+  background: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.uploadDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 100ms ease;
+
+  &:hover {
+    background: #094771;
+    color: #ffffff;
+  }
+
+  &:focus-visible {
+    background: #094771;
+    color: #ffffff;
+  }
+}
+
+.hiddenInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+// jstree's DOM stays mounted (it's the source of truth + handles edit ops)
+// but is collapsed to zero size so the user only sees <B4aFileTree>.
+.hiddenJstree {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .files-box{
   background-color: $dark-blue;
   padding-top: 1.88rem;
