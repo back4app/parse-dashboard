@@ -2023,7 +2023,7 @@ export default class ParseApp {
   async resendEmailVerification() {
     try {
       return (
-        await axios.post(
+        await axios.get(
           // eslint-disable-next-line no-undef
           `${b4aSettings.BACK4APP_API_PATH}/email-verification/resend`,
           { withCredentials: true }
