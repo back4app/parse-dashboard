@@ -4,12 +4,22 @@ import Editor from '@monaco-editor/react';
 const MONACO_THEME = 'vs-dark';
 
 const languageMap = {
+  bash: 'shell',
+  dart: 'dart',
+  graphql: 'graphql',
   html: 'html',
-  xml: 'xml',
-  css: 'css',
-  json: 'json',
+  java: 'java',
   javascript: 'javascript',
   js: 'javascript',
+  json: 'json',
+  kotlin: 'kotlin',
+  php: 'php',
+  plaintext: 'plaintext',
+  shell: 'shell',
+  swift: 'swift',
+  text: 'plaintext',
+  css: 'css',
+  xml: 'xml',
 };
 
 const loadingFallbackStyle = {

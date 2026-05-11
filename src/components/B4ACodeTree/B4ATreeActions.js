@@ -128,6 +128,8 @@ const encodeFile = async (code, extension) => {
   return extension + ',' + Base64.encode(code);
 }
 
+export const DEFAULT_EMPTY_FILE_DATA = {code: 'data:plain/text;base64,'};
+
 const readFile = (file, newTreeNodes) => {
   newTreeNodes.push({
     text: file.name,
@@ -203,7 +205,7 @@ const getSelectedParent = () => {
   return parent;
 }
 
-const addFileOnSelectedNode = (name, parent, data = {code: 'data:plain/text;base64,IA=='}) => {
+const addFileOnSelectedNode = (name, parent, data = DEFAULT_EMPTY_FILE_DATA) => {
   const newNodeId = $('#tree').jstree('create_node', parent, { data, type: 'new-file', text: name }, 'inside', false, false);
   return newNodeId;
 }

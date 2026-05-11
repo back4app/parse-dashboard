@@ -267,6 +267,36 @@ export default class B4ACodeTree extends React.Component {
     }
   }
 
+  handleFileTreeDrop(sourcePath, targetPath) {
+    if (this.props.hideControls || !sourcePath || !targetPath) {
+      return;
+    }
+    const inst = $('#tree').jstree(true);
+    if (!inst) {
+      return;
+    }
+    const sourceId = this.findNodeIdByPath(sourcePath);
+    const targetId = this.findNodeIdByPath(targetPath);
+    if (!sourceId || !targetId) {
+      return;
+    }
+    const sourceNode = inst.get_node(sourceId);
+    const targetNode = inst.get_node(targetId);
+    if (!sourceNode || !targetNode || (targetNode.type !== 'folder' && targetNode.type !== 'new-folder')) {
+      return;
+    }
+    if (sourceNode.parent === targetNode.id) {
+      return;
+    }
+    const moved = inst.move_node(sourceNode, targetNode, 'last');
+    if (moved === false) {
+      return;
+    }
+    B4ATreeActions.selectFileOnTree(sourceNode.id);
+    this.syncTreeData();
+    this.handleTreeChanges();
+  }
+
   selectSpecificFile(fileName) {
     const tree = $('#tree').jstree(true);
     if (!tree) return;
@@ -606,6 +636,10 @@ export default class B4ACodeTree extends React.Component {
       const toBeDeletedFolder = $('#tree').jstree(true).get_node(id);
       const toBeDeletedIds = [toBeDeletedFolder.id, ...toBeDeletedFolder.children_d];
       this.props.cloudCodeChanges.removeMultiple(toBeDeletedIds);
+    } else if (type === 'move-node') {
+      const movedNode = $('#tree').jstree(true).get_node(id);
+      const movedIds = movedNode ? [movedNode.id, ...movedNode.children_d] : [id];
+      movedIds.forEach(fileId => this.props.cloudCodeChanges.addFile(fileId));
     } else {
       // set updated files.
       const selectedFiles = $('#tree').jstree('get_selected', true)
@@ -655,6 +689,11 @@ export default class B4ACodeTree extends React.Component {
         } else {
           this.updateCodeOnNewFile('delete-file', node?.node?.text, node?.node?.id);
         }
+      });
+      $('#tree').on('move_node.jstree', (event, data) => {
+        amplitudeLogEvent(`CloudCode move ${data?.node?.type}`);
+        this.updateCodeOnNewFile('move-node', data?.node?.text, data?.node?.id);
+        this.handleTreeChanges();
       });
     }
   }
@@ -835,12 +874,13 @@ export default class B4ACodeTree extends React.Component {
                 selectedPath={this.state.selectedTreePath}
                 onFileSelect={(node, path) => this.handleFileTreeSelect(node, path)}
                 onContextAction={!this.props.hideControls ? (action, node, path) => this.handleContextAction(action, node, path) : undefined}
+                onNodeDrop={!this.props.hideControls ? (sourcePath, targetPath) => this.handleFileTreeDrop(sourcePath, targetPath) : undefined}
                 defaultExpanded={['cloud', 'public']}
                 emptyMessage="No files yet"
               />
               {/*
-                jstree still owns selection and edit operations (drag-drop,
-                right-click menu, deploy serialization). Its DOM is hidden
+                jstree still owns selection state, mutation operations, and
+                deploy serialization. Its DOM is hidden
                 but kept mounted so all those existing flows keep working.
               */}
               <div className={styles.hiddenJstree}>

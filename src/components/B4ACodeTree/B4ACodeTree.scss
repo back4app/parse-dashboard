@@ -153,8 +153,8 @@
 }
 
 // VSCode-style sidebar (Explorer header + B4aFileTree). The legacy jstree
-// DOM is rendered alongside it but visually hidden via .hiddenJstree so all
-// the existing edit/drag-drop/deploy flows keep working.
+// DOM is rendered alongside it but visually hidden via .hiddenJstree so the
+// existing mutation and deploy flows keep working.
 .vscodeSidebar {
   display: flex;
   flex-direction: column;

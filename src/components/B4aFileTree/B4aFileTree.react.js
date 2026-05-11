@@ -173,11 +173,28 @@ const ContextMenu = ({ x, y, items, onClose }) => {
   );
 };
 
-const TreeNode = ({ node, parentPath, depth, expanded, selectedPath, onToggle, onSelect, onContextAction }) => {
+const TreeNode = ({
+  node,
+  parentPath,
+  depth,
+  expanded,
+  selectedPath,
+  draggingPath,
+  dropTargetPath,
+  onToggle,
+  onSelect,
+  onContextAction,
+  onDragStart,
+  onDragEnd,
+  onDropNode,
+  canDropNode,
+}) => {
   const folder = isFolder(node);
   const path = buildPath(parentPath, node);
   const isExpanded = expanded.has(path);
   const isSelected = selectedPath === path;
+  const isDragging = draggingPath === path;
+  const isDropTarget = dropTargetPath === path;
 
   const handleClick = () => {
     if (folder) {
@@ -195,8 +212,50 @@ const TreeNode = ({ node, parentPath, depth, expanded, selectedPath, onToggle, o
     onContextAction(node, path, folder, e.clientX, e.clientY);
   };
 
+  const draggable = typeof onDropNode === 'function' && path.indexOf('/') > -1;
+
+  const handleDragStart = e => {
+    if (!draggable) {
+      e.preventDefault();
+      return;
+    }
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', path);
+    onDragStart(path);
+  };
+
+  const handleDragOver = e => {
+    if (!folder || typeof canDropNode !== 'function' || !canDropNode(draggingPath, path)) {
+      return;
+    }
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = e => {
+    if (!folder || typeof onDropNode !== 'function') {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    onDropNode(draggingPath || e.dataTransfer.getData('text/plain'), path);
+  };
+
+  const handleDragEnter = e => {
+    if (!folder || typeof canDropNode !== 'function' || !canDropNode(draggingPath, path)) {
+      return;
+    }
+    e.preventDefault();
+    onToggle(path, true);
+  };
+
   const indentStyle = { paddingLeft: `${depth * 12 + 8}px` };
-  const rowClassName = [styles.row, isSelected ? styles.selected : ''].filter(Boolean).join(' ');
+  const rowClassName = [
+    styles.row,
+    isSelected ? styles.selected : '',
+    isDragging ? styles.dragging : '',
+    isDropTarget ? styles.dropTarget : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <div className={styles.nodeWrapper}>
@@ -206,6 +265,12 @@ const TreeNode = ({ node, parentPath, depth, expanded, selectedPath, onToggle, o
         style={indentStyle}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
+        draggable={draggable}
+        onDragStart={handleDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDrop={handleDrop}
       >
         <span className={`${styles.chevron} ${isExpanded ? styles.chevronOpen : ''}`}>
           {folder ? <ChevronIcon /> : null}
@@ -226,9 +291,15 @@ const TreeNode = ({ node, parentPath, depth, expanded, selectedPath, onToggle, o
               depth={depth + 1}
               expanded={expanded}
               selectedPath={selectedPath}
+              draggingPath={draggingPath}
+              dropTargetPath={dropTargetPath}
               onToggle={onToggle}
               onSelect={onSelect}
               onContextAction={onContextAction}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onDropNode={onDropNode}
+              canDropNode={canDropNode}
             />
           ))}
         </div>
@@ -242,12 +313,15 @@ const B4aFileTree = ({
   selectedPath,
   onFileSelect,
   onContextAction,
+  onNodeDrop,
   rootFilter,
   defaultExpanded,
   emptyMessage,
 }) => {
   const [expanded, setExpanded] = useState(() => new Set(defaultExpanded || []));
   const [ctxMenu, setCtxMenu] = useState(null);
+  const [draggingPath, setDraggingPath] = useState('');
+  const [dropTargetPath, setDropTargetPath] = useState('');
 
   useEffect(() => {
     if (!selectedPath) {
@@ -271,10 +345,12 @@ const B4aFileTree = ({
     });
   }, [selectedPath]);
 
-  const toggleFolder = useCallback(path => {
+  const toggleFolder = useCallback((path, forceOpen) => {
     setExpanded(prev => {
       const next = new Set(prev);
-      if (next.has(path)) {
+      if (forceOpen) {
+        next.add(path);
+      } else if (next.has(path)) {
         next.delete(path);
       } else {
         next.add(path);
@@ -284,6 +360,44 @@ const B4aFileTree = ({
   }, []);
 
   const closeCtxMenu = useCallback(() => setCtxMenu(null), []);
+
+  const canDropNode = useCallback((sourcePath, targetPath) => {
+    if (typeof onNodeDrop !== 'function' || !sourcePath || !targetPath) {
+      return false;
+    }
+    if (sourcePath === targetPath) {
+      return false;
+    }
+    if (sourcePath.indexOf('/') === -1) {
+      return false;
+    }
+    if (sourcePath.split('/').slice(0, -1).join('/') === targetPath) {
+      return false;
+    }
+    if (targetPath.startsWith(`${sourcePath}/`)) {
+      return false;
+    }
+    return true;
+  }, [onNodeDrop]);
+
+  const handleDragStart = useCallback(path => {
+    setDraggingPath(path);
+    setDropTargetPath('');
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingPath('');
+    setDropTargetPath('');
+  }, []);
+
+  const handleDropNode = useCallback((sourcePath, targetPath) => {
+    if (!canDropNode(sourcePath, targetPath)) {
+      handleDragEnd();
+      return;
+    }
+    onNodeDrop(sourcePath, targetPath);
+    handleDragEnd();
+  }, [canDropNode, handleDragEnd, onNodeDrop]);
 
   const handleNodeContext = useCallback((node, path, folder, x, y) => {
     if (typeof onContextAction !== 'function') {
@@ -342,9 +456,19 @@ const B4aFileTree = ({
           depth={0}
           expanded={expanded}
           selectedPath={selectedPath}
+          draggingPath={draggingPath}
+          dropTargetPath={dropTargetPath}
           onToggle={toggleFolder}
           onSelect={onFileSelect}
           onContextAction={typeof onContextAction === 'function' ? handleNodeContext : undefined}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDropNode={typeof onNodeDrop === 'function' ? handleDropNode : undefined}
+          canDropNode={(sourcePath, targetPath) => {
+            const canDrop = canDropNode(sourcePath, targetPath);
+            setDropTargetPath(canDrop ? targetPath : '');
+            return canDrop;
+          }}
         />
       ))}
       {ctxMenu ? (
@@ -359,6 +483,7 @@ B4aFileTree.propTypes = {
   selectedPath: PropTypes.string.describe('The currently selected node path.'),
   onFileSelect: PropTypes.func.isRequired.describe('Called with (node, path) when a file is clicked.'),
   onContextAction: PropTypes.func.describe('Called with (action, node, path) on right-click menu selection. Actions: "create-file", "create-folder".'),
+  onNodeDrop: PropTypes.func.describe('Called with (sourcePath, targetPath) when a node is dropped onto a folder.'),
   rootFilter: PropTypes.arrayOf(PropTypes.string).describe('When set, only root nodes whose `text` is in this list are rendered.'),
   defaultExpanded: PropTypes.arrayOf(PropTypes.string).describe('Paths that should start expanded.'),
   emptyMessage: PropTypes.string.describe('Message to show when the tree is empty.'),

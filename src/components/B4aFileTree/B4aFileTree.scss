@@ -74,6 +74,15 @@
   }
 }
 
+.dragging {
+  opacity: 0.45;
+}
+
+.dropTarget {
+  background: rgba(32, 138, 236, 0.18) !important;
+  box-shadow: inset 2px 0 0 #208AEC;
+}
+
 .chevron {
   display: inline-flex;
   align-items: center;
