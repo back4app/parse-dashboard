@@ -130,6 +130,67 @@ pre.line-numbers:before{
     border-radius: 0.3rem 0 0 0;
 }
 
+.cloudEmptyCodeBlock {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    border-radius: 0.3rem;
+    overflow: visible;
+}
+
+.cloudEmptyEditor {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: #111214;
+    border-radius: 0.3rem;
+    overflow: hidden;
+}
+
+.cloudEmptyCopy {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: #111214;
+    border-radius: 0 0.3rem 0.3rem 0;
+
+    .copyTooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: calc(100% - 100px);
+        transform: translateX(50%);
+        background: $dark-grey;
+        color: $white;
+        border-radius: 5px;
+        padding: .625rem 1rem;
+        font-size: 12px;
+        white-space: nowrap;
+        box-shadow: 0px 6px 16px 0px #0000001A;
+        animation: fadeIn 0.2s ease-in-out;
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: 55%;
+            bottom: -4px;
+            transform: translateX(-50%) rotate(45deg);
+            width: 8px;
+            height: 8px;
+            background: $dark-grey;
+        }
+    }
+
+    .copyButton {
+        background: transparent;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+        line-height: 0;
+        padding: 4px;
+    }
+}
+
 @media screen and (max-width: 1280px){
     .content{
         .titleSection{

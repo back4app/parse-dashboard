@@ -91,6 +91,16 @@ const create = (data, file) => {
 const remove = (data, showAlert = false) => {
   const inst = $.jstree.reference(data)
   const obj = inst.get_node(data);
+  const parent = inst.get_node(obj.parent);
+  const requiredCloudFile = parent?.text === 'cloud' && obj?.text === 'main.js';
+  const requiredPublicFile = parent?.text === 'public' && obj?.text === 'index.html';
+
+  if (requiredCloudFile || requiredPublicFile) {
+    preventRemoveFileModal.text = `Can not remove ${obj.text} file as it is required by cloud code.`;
+    MySwal.fire(preventRemoveFileModal);
+    return false;
+  }
+
   if (showAlert) {
     const RemoveSwal = withReactContent(Swal.mixin({
       customClass: {
@@ -106,7 +116,8 @@ const remove = (data, showAlert = false) => {
       },
       buttonsStyling: false,
     }));
-    confirmRemoveFileModal.text = `Are you sure you want to remove ${obj.text} file?`;
+    const nodeKind = obj.type === 'folder' || obj.type === 'new-folder' ? 'folder' : 'file';
+    confirmRemoveFileModal.text = `Are you sure you want to remove ${obj.text} ${nodeKind}?`;
     RemoveSwal.fire(confirmRemoveFileModal).then((alertResponse) => {
       if (alertResponse.value) {
         if (inst.is_selected(obj)) {return inst.delete_node(inst.get_selected());}

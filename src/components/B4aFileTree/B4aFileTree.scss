@@ -114,6 +114,20 @@
   white-space: nowrap;
 }
 
+.renameInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 24px;
+  padding: 2px 6px;
+  background: #2d2d30;
+  border: 1px solid #208AEC;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(32, 138, 236, 0.35);
+  color: #ffffff;
+  font: inherit;
+  outline: none;
+}
+
 .children {
   display: block;
 }

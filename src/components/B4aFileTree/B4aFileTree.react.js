@@ -118,6 +118,23 @@ const NewFolderIcon = () => (
   </svg>
 );
 
+const RenameIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+  </svg>
+);
+
+const DeleteIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M3 6h18" />
+    <path d="M8 6V4h8v2" />
+    <path d="M19 6l-1 14H6L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+  </svg>
+);
+
 const ContextMenu = ({ x, y, items, onClose }) => {
   const menuRef = useRef(null);
 
@@ -179,11 +196,16 @@ const TreeNode = ({
   depth,
   expanded,
   selectedPath,
+  editingPath,
+  editingValue,
   draggingPath,
   dropTargetPath,
   onToggle,
   onSelect,
   onContextAction,
+  onRenameChange,
+  onRenameCommit,
+  onRenameCancel,
   onDragStart,
   onDragEnd,
   onDropNode,
@@ -193,10 +215,14 @@ const TreeNode = ({
   const path = buildPath(parentPath, node);
   const isExpanded = expanded.has(path);
   const isSelected = selectedPath === path;
+  const isEditing = editingPath === path;
   const isDragging = draggingPath === path;
   const isDropTarget = dropTargetPath === path;
 
   const handleClick = () => {
+    if (isEditing) {
+      return;
+    }
     if (folder) {
       onToggle(path);
     }
@@ -215,7 +241,7 @@ const TreeNode = ({
   const draggable = typeof onDropNode === 'function' && path.indexOf('/') > -1;
 
   const handleDragStart = e => {
-    if (!draggable) {
+    if (isEditing || !draggable) {
       e.preventDefault();
       return;
     }
@@ -278,7 +304,28 @@ const TreeNode = ({
         <span className={styles.icon}>
           {folder ? <FolderIcon open={isExpanded} /> : <FileIcon filename={node.text} />}
         </span>
-        <span className={styles.label}>{node.text}</span>
+        {isEditing ? (
+          <input
+            className={styles.renameInput}
+            value={editingValue}
+            autoFocus
+            onClick={e => e.stopPropagation()}
+            onFocus={e => e.target.select()}
+            onChange={e => onRenameChange(e.target.value)}
+            onBlur={() => onRenameCommit(node, path)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                onRenameCommit(node, path);
+              } else if (e.key === 'Escape') {
+                e.preventDefault();
+                onRenameCancel();
+              }
+            }}
+          />
+        ) : (
+          <span className={styles.label}>{node.text}</span>
+        )}
       </button>
 
       {folder && isExpanded && Array.isArray(node.children) && node.children.length > 0 ? (
@@ -291,11 +338,16 @@ const TreeNode = ({
               depth={depth + 1}
               expanded={expanded}
               selectedPath={selectedPath}
+              editingPath={editingPath}
+              editingValue={editingValue}
               draggingPath={draggingPath}
               dropTargetPath={dropTargetPath}
               onToggle={onToggle}
               onSelect={onSelect}
               onContextAction={onContextAction}
+              onRenameChange={onRenameChange}
+              onRenameCommit={onRenameCommit}
+              onRenameCancel={onRenameCancel}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onDropNode={onDropNode}
@@ -320,6 +372,8 @@ const B4aFileTree = ({
 }) => {
   const [expanded, setExpanded] = useState(() => new Set(defaultExpanded || []));
   const [ctxMenu, setCtxMenu] = useState(null);
+  const [editingPath, setEditingPath] = useState('');
+  const [editingValue, setEditingValue] = useState('');
   const [draggingPath, setDraggingPath] = useState('');
   const [dropTargetPath, setDropTargetPath] = useState('');
 
@@ -360,6 +414,26 @@ const B4aFileTree = ({
   }, []);
 
   const closeCtxMenu = useCallback(() => setCtxMenu(null), []);
+
+  const startRename = useCallback((node, path) => {
+    setEditingPath(path);
+    setEditingValue(node.text || '');
+  }, []);
+
+  const cancelRename = useCallback(() => {
+    setEditingPath('');
+    setEditingValue('');
+  }, []);
+
+  const commitRename = useCallback((node, path) => {
+    const nextName = editingValue.trim();
+    if (!nextName || nextName === node.text) {
+      cancelRename();
+      return;
+    }
+    onContextAction('rename', node, path, nextName);
+    cancelRename();
+  }, [cancelRename, editingValue, onContextAction]);
 
   const canDropNode = useCallback((sourcePath, targetPath) => {
     if (typeof onNodeDrop !== 'function' || !sourcePath || !targetPath) {
@@ -410,6 +484,8 @@ const B4aFileTree = ({
     if (!ctxMenu) {
       return [];
     }
+    const isProtectedRoot =
+      ctxMenu.path.indexOf('/') === -1 && (ctxMenu.node.text === 'cloud' || ctxMenu.node.text === 'public');
     const items = [
       {
         key: 'new-file',
@@ -426,8 +502,24 @@ const B4aFileTree = ({
         action: () => onContextAction('create-folder', ctxMenu.node, ctxMenu.path),
       });
     }
+    if (!isProtectedRoot) {
+      items.push(
+        {
+          key: 'rename',
+          label: 'Rename',
+          icon: <RenameIcon />,
+          action: () => startRename(ctxMenu.node, ctxMenu.path),
+        },
+        {
+          key: 'delete',
+          label: ctxMenu.folder ? 'Delete Folder' : 'Delete File',
+          icon: <DeleteIcon />,
+          action: () => onContextAction('delete', ctxMenu.node, ctxMenu.path),
+        }
+      );
+    }
     return items;
-  }, [ctxMenu, onContextAction]);
+  }, [ctxMenu, onContextAction, startRename]);
 
   const filteredTree = useMemo(() => {
     if (!Array.isArray(tree) || tree.length === 0) {
@@ -456,11 +548,16 @@ const B4aFileTree = ({
           depth={0}
           expanded={expanded}
           selectedPath={selectedPath}
+          editingPath={editingPath}
+          editingValue={editingValue}
           draggingPath={draggingPath}
           dropTargetPath={dropTargetPath}
           onToggle={toggleFolder}
           onSelect={onFileSelect}
           onContextAction={typeof onContextAction === 'function' ? handleNodeContext : undefined}
+          onRenameChange={setEditingValue}
+          onRenameCommit={commitRename}
+          onRenameCancel={cancelRename}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDropNode={typeof onNodeDrop === 'function' ? handleDropNode : undefined}
@@ -482,7 +579,7 @@ B4aFileTree.propTypes = {
   tree: PropTypes.arrayOf(PropTypes.any).isRequired.describe('Hierarchical tree data (jstree-style nodes with text/type/children).'),
   selectedPath: PropTypes.string.describe('The currently selected node path.'),
   onFileSelect: PropTypes.func.isRequired.describe('Called with (node, path) when a file is clicked.'),
-  onContextAction: PropTypes.func.describe('Called with (action, node, path) on right-click menu selection. Actions: "create-file", "create-folder".'),
+  onContextAction: PropTypes.func.describe('Called with (action, node, path) on right-click menu selection. Actions: "create-file", "create-folder", "rename", "delete".'),
   onNodeDrop: PropTypes.func.describe('Called with (sourcePath, targetPath) when a node is dropped onto a folder.'),
   rootFilter: PropTypes.arrayOf(PropTypes.string).describe('When set, only root nodes whose `text` is in this list are rendered.'),
   defaultExpanded: PropTypes.arrayOf(PropTypes.string).describe('Paths that should start expanded.'),

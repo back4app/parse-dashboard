@@ -197,14 +197,45 @@ export default class B4ACodeTree extends React.Component {
     B4ATreeActions.selectFileOnTree(nodeId);
   }
 
-  handleContextAction(action, node, path) {
+  handleContextAction(action, node, path, newName) {
     if (this.props.hideControls) {
       return;
     }
     const isFolder = node && (node.type === 'folder' || node.type === 'new-folder');
+    const nodeId = node && (node.id || this.findNodeIdByPath(path));
+    const isProtectedRoot =
+      path && path.indexOf('/') === -1 && (node.text === 'cloud' || node.text === 'public');
     const parentNodeId = isFolder
       ? (node.id || this.findNodeIdByPath(path))
       : this.findNodeIdByPath(path.split('/').slice(0, -1).join('/'));
+
+    if ((action === 'delete' || action === 'rename') && isProtectedRoot) {
+      return;
+    }
+
+    if (action === 'delete') {
+      if (!nodeId) {
+        return;
+      }
+      B4ATreeActions.selectFileOnTree(nodeId);
+      B4ATreeActions.remove(`#${nodeId}`, true);
+      return;
+    }
+
+    if (action === 'rename') {
+      if (!nodeId) {
+        return;
+      }
+      B4ATreeActions.selectFileOnTree(nodeId);
+      const value = B4ATreeActions.sanitizeHTML((newName || '').trim());
+      if (!value || value === node.text) {
+        return;
+      }
+      const inst = $('#tree').jstree(true);
+      inst.rename_node(nodeId, value);
+      this.setState({ files: inst.get_json() });
+      return;
+    }
 
     if (parentNodeId) {
       B4ATreeActions.selectFileOnTree(parentNodeId);
@@ -588,7 +619,7 @@ export default class B4ACodeTree extends React.Component {
     }
   }
 
-  updateCodeOnNewFile(type, text, id){
+  updateCodeOnNewFile(type, text, id, childrenIds = []){
 
     if (type === 'delete-file') {
       if (!this.props.hasDeployed) {
@@ -634,8 +665,17 @@ export default class B4ACodeTree extends React.Component {
       text && this.props.cloudCodeChanges.addFile(id);
     } else if (type === 'delete-folder') {
       const toBeDeletedFolder = $('#tree').jstree(true).get_node(id);
-      const toBeDeletedIds = [toBeDeletedFolder.id, ...toBeDeletedFolder.children_d];
+      const toBeDeletedIds = toBeDeletedFolder
+        ? [toBeDeletedFolder.id, ...toBeDeletedFolder.children_d]
+        : [id, ...childrenIds];
       this.props.cloudCodeChanges.removeMultiple(toBeDeletedIds);
+    } else if (type === 'rename-node') {
+      const renamedNode = $('#tree').jstree(true).get_node(id);
+      const renamedIds = renamedNode ? [renamedNode.id, ...renamedNode.children_d] : [id];
+      renamedIds.forEach(fileId => this.props.cloudCodeChanges.addFile(fileId));
+      this.props.setUpdatedFile(this.props.cloudCodeChanges.getFiles());
+      B4ATreeActions.refreshEmptyFolderIcons();
+      return;
     } else if (type === 'move-node') {
       const movedNode = $('#tree').jstree(true).get_node(id);
       const movedIds = movedNode ? [movedNode.id, ...movedNode.children_d] : [id];
@@ -683,12 +723,17 @@ export default class B4ACodeTree extends React.Component {
         this.updateCodeOnNewFile(parent?.node?.type, parent?.node?.text, parent?.node?.id);
       });
       $('#tree').on('delete_node.jstree', (parent, node) => {
-        if (node?.node?.type === 'new-folder') {
+        if (node?.node?.type === 'folder' || node?.node?.type === 'new-folder') {
           amplitudeLogEvent(`CloudCode delete ${parent?.node?.type}`);
-          this.updateCodeOnNewFile('delete-folder', node?.node?.text, node?.node?.id);
+          this.updateCodeOnNewFile('delete-folder', node?.node?.text, node?.node?.id, node?.node?.children_d || []);
         } else {
           this.updateCodeOnNewFile('delete-file', node?.node?.text, node?.node?.id);
         }
+      });
+      $('#tree').on('rename_node.jstree', (event, data) => {
+        amplitudeLogEvent(`CloudCode rename ${data?.node?.type}`);
+        this.updateCodeOnNewFile('rename-node', data?.node?.text, data?.node?.id);
+        this.handleTreeChanges();
       });
       $('#tree').on('move_node.jstree', (event, data) => {
         amplitudeLogEvent(`CloudCode move ${data?.node?.type}`);
@@ -873,7 +918,7 @@ export default class B4ACodeTree extends React.Component {
                 tree={this.state.treeData}
                 selectedPath={this.state.selectedTreePath}
                 onFileSelect={(node, path) => this.handleFileTreeSelect(node, path)}
-                onContextAction={!this.props.hideControls ? (action, node, path) => this.handleContextAction(action, node, path) : undefined}
+                onContextAction={!this.props.hideControls ? (action, node, path, newName) => this.handleContextAction(action, node, path, newName) : undefined}
                 onNodeDrop={!this.props.hideControls ? (sourcePath, targetPath) => this.handleFileTreeDrop(sourcePath, targetPath) : undefined}
                 defaultExpanded={['cloud', 'public']}
                 emptyMessage="No files yet"
