@@ -2,10 +2,8 @@ import React from 'react';
 import jstree from 'jstree';
 // 🚫🚫 DO NOT REMOVE ABOVE LINE, as the scripts needs to be loaded that allows to use $('#tree').jstree for proper tree rendering, it took me a whole day to debug 🤯🤯🤯.
 import $ from 'jquery';
-// import { Resizable } from 're-resizable';
-import ReactFileReader from 'react-file-reader';
 import styles from 'components/B4ACodeTree/B4ACodeTree.scss'
-import Button from 'components/Button/Button.react';
+import B4aFileTree from 'components/B4aFileTree/B4aFileTree.react';
 import B4ACloudCodeView from 'components/B4ACloudCodeView/B4ACloudCodeView.react';
 import B4ATreeActions from 'components/B4ACodeTree/B4ATreeActions';
 import Swal from 'sweetalert2';
@@ -48,6 +46,53 @@ const swalWithBootstrapButtons = Swal.mixin({
   buttonsStyling: false,
 });
 
+class UploadMenu extends React.Component {
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside, true);
+    document.addEventListener('keydown', this.handleEscape, true);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside, true);
+    document.removeEventListener('keydown', this.handleEscape, true);
+  }
+
+  handleClickOutside = e => {
+    if (this.props.menuRef?.current && !this.props.menuRef.current.contains(e.target)) {
+      this.props.onClose();
+    }
+  };
+
+  handleEscape = e => {
+    if (e.key === 'Escape') {
+      this.props.onClose();
+    }
+  };
+
+  render() {
+    return (
+      <div ref={this.props.menuRef} className={styles.uploadDropdown}>
+        <button
+          type="button"
+          className={styles.uploadDropdownItem}
+          onClick={this.props.onUploadFiles}
+        >
+          <Icon name="B4a-upload-file-icon" fill="currentColor" width={14} height={14} />
+          Upload Files
+        </button>
+        <button
+          type="button"
+          className={styles.uploadDropdownItem}
+          onClick={this.props.onUploadFolder}
+        >
+          <Icon name="B4a-upload-file-icon" fill="currentColor" width={14} height={14} />
+          Upload Folder
+        </button>
+      </div>
+    );
+  }
+}
+
 export default class B4ACodeTree extends React.Component {
   constructor(props){
     super(props);
@@ -67,11 +112,220 @@ export default class B4ACodeTree extends React.Component {
       isFolderSelected: true,
       selectedNodeData: null,
       loadingFileId: null,
-      errorFileData: null
+      errorFileData: null,
+      // Mirror of jstree's current tree, used to render the VSCode-style
+      // <B4aFileTree>. Kept in sync via syncTreeData() on every jstree mutation.
+      treeData: this.props.files || [],
+      // Path of the currently-selected file in <B4aFileTree>. Kept in sync via
+      // jstree's `changed.jstree` event in selectNode().
+      selectedTreePath: '',
+      showUploadMenu: false,
     }
 
     // Used to track the latest file load request
     this.loadRequestId = 0;
+
+    this.fileInputRef = React.createRef();
+    this.folderInputRef = React.createRef();
+    this.uploadMenuRef = React.createRef();
+  }
+
+  // Read the current tree state from jstree and mirror it into React state so
+  // <B4aFileTree> re-renders. Called after every jstree mutation event.
+  syncTreeData() {
+    const inst = $('#tree').jstree(true);
+    if (!inst) {
+      return;
+    }
+    const data = inst.get_json('#', { no_state: false, no_data: false });
+    this.setState({ treeData: Array.isArray(data) ? data : [] });
+  }
+
+  // Build the VSCode-style "path" (e.g. "cloud/main.js") for a jstree node by
+  // walking up the parent chain. We need this to highlight the selected node
+  // in <B4aFileTree> (which keys nodes by path, not by jstree's internal IDs).
+  getNodePath(nodeId) {
+    const inst = $('#tree').jstree(true);
+    if (!inst || !nodeId) {
+      return '';
+    }
+    const parts = [];
+    let current = inst.get_node(nodeId);
+    while (current && current.id !== '#') {
+      parts.unshift(current.text);
+      current = inst.get_node(current.parent);
+    }
+    return parts.join('/');
+  }
+
+  // Walk a B4aFileTree path back to a jstree node id so we can forward the
+  // click into jstree (which still owns selection state and edit operations).
+  findNodeIdByPath(path) {
+    if (!path) {
+      return null;
+    }
+    const inst = $('#tree').jstree(true);
+    if (!inst) {
+      return null;
+    }
+    const segments = path.split('/');
+    const roots = inst.get_json('#', { flat: false });
+    const findIn = (nodes, depth) => {
+      if (!Array.isArray(nodes) || depth >= segments.length) {
+        return null;
+      }
+      const target = nodes.find(n => n.text === segments[depth]);
+      if (!target) {
+        return null;
+      }
+      if (depth === segments.length - 1) {
+        return target.id;
+      }
+      return findIn(target.children, depth + 1);
+    };
+    return findIn(roots, 0);
+  }
+
+  handleFileTreeSelect(node, path) {
+    if (!node) {
+      return;
+    }
+    const nodeId = node.id || this.findNodeIdByPath(path);
+    if (!nodeId) {
+      return;
+    }
+    B4ATreeActions.selectFileOnTree(nodeId);
+  }
+
+  handleContextAction(action, node, path, newName) {
+    if (this.props.hideControls) {
+      return;
+    }
+    const isFolder = node && (node.type === 'folder' || node.type === 'new-folder');
+    const nodeId = node && (node.id || this.findNodeIdByPath(path));
+    const isProtectedRoot =
+      path && path.indexOf('/') === -1 && (node.text === 'cloud' || node.text === 'public');
+    const parentNodeId = isFolder
+      ? (node.id || this.findNodeIdByPath(path))
+      : this.findNodeIdByPath(path.split('/').slice(0, -1).join('/'));
+
+    if ((action === 'delete' || action === 'rename') && isProtectedRoot) {
+      return;
+    }
+
+    if (action === 'delete') {
+      if (!nodeId) {
+        return;
+      }
+      B4ATreeActions.selectFileOnTree(nodeId);
+      B4ATreeActions.remove(`#${nodeId}`, true);
+      return;
+    }
+
+    if (action === 'rename') {
+      if (!nodeId) {
+        return;
+      }
+      B4ATreeActions.selectFileOnTree(nodeId);
+      const value = B4ATreeActions.sanitizeHTML((newName || '').trim());
+      if (!value || value === node.text) {
+        return;
+      }
+      const inst = $('#tree').jstree(true);
+      inst.rename_node(nodeId, value);
+      this.setState({ files: inst.get_json() });
+      return;
+    }
+
+    if (parentNodeId) {
+      B4ATreeActions.selectFileOnTree(parentNodeId);
+    }
+
+    if (action === 'create-file') {
+      swalWithBootstrapButtons.fire({
+        title: 'Create a new empty file',
+        text: 'Name your file',
+        padding: '1rem 2rem',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off',
+          placeholder: 'File name',
+        },
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonText: 'Create file',
+        buttonsStyling: false,
+        showCloseButton: true,
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then(({ value }) => {
+        if (value) {
+          value = B4ATreeActions.sanitizeHTML(value);
+          const parent = parentNodeId ? [parentNodeId] : B4ATreeActions.getSelectedParent();
+          const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
+          B4ATreeActions.selectFileOnTree(newNodeId);
+          this.setState({ files: $('#tree').jstree(true).get_json() });
+        }
+      });
+    } else if (action === 'create-folder') {
+      swalWithBootstrapButtons.fire({
+        title: 'Create a new folder',
+        text: 'Name your folder',
+        padding: '1rem 2rem',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off',
+          placeholder: 'Folder name',
+        },
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonText: 'Create folder',
+        buttonsStyling: false,
+        showCloseButton: true,
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then(({ value }) => {
+        if (value) {
+          value = B4ATreeActions.sanitizeHTML(value);
+          const targetId = parentNodeId || B4ATreeActions.getSelectedParent()[0];
+          const inst = $('#tree').jstree(true);
+          inst.create_node(targetId, {
+            type: 'new-folder',
+            text: value,
+            state: { opened: true },
+          });
+          this.setState({ files: inst.get_json() });
+        }
+      });
+    }
+  }
+
+  handleFileTreeDrop(sourcePath, targetPath) {
+    if (this.props.hideControls || !sourcePath || !targetPath) {
+      return;
+    }
+    const inst = $('#tree').jstree(true);
+    if (!inst) {
+      return;
+    }
+    const sourceId = this.findNodeIdByPath(sourcePath);
+    const targetId = this.findNodeIdByPath(targetPath);
+    if (!sourceId || !targetId) {
+      return;
+    }
+    const sourceNode = inst.get_node(sourceId);
+    const targetNode = inst.get_node(targetId);
+    if (!sourceNode || !targetNode || (targetNode.type !== 'folder' && targetNode.type !== 'new-folder')) {
+      return;
+    }
+    if (sourceNode.parent === targetNode.id) {
+      return;
+    }
+    const moved = inst.move_node(sourceNode, targetNode, 'last');
+    if (moved === false) {
+      return;
+    }
+    B4ATreeActions.selectFileOnTree(sourceNode.id);
+    this.syncTreeData();
+    this.handleTreeChanges();
   }
 
   selectSpecificFile(fileName) {
@@ -121,6 +375,95 @@ export default class B4ACodeTree extends React.Component {
         B4ATreeActions.selectFileOnTree(newNodeId);
       }
     }
+  }
+
+  handleNativeFileUpload(e) {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) {
+      return;
+    }
+    const readPromises = Array.from(fileList).map(file =>
+      new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ name: file.name, base64: reader.result });
+        reader.readAsDataURL(file);
+      })
+    );
+    Promise.all(readPromises).then(results => {
+      const files = {
+        fileList: results.map(r => ({ name: r.name, size: 1 })),
+        base64: results.map(r => r.base64),
+      };
+      this.handleFiles(files);
+    });
+    e.target.value = '';
+  }
+
+  handleFolderUpload(e) {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) {
+      return;
+    }
+    const inst = $('#tree').jstree(true);
+    if (!inst) {
+      return;
+    }
+    const parent = B4ATreeActions.getSelectedParent();
+    const parentId = parent[0];
+
+    const readPromises = Array.from(fileList).map(file =>
+      new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ path: file.webkitRelativePath, base64: reader.result });
+        reader.readAsDataURL(file);
+      })
+    );
+
+    Promise.all(readPromises).then(results => {
+      const createdFolders = {};
+
+      const ensureFolder = (segments, rootId) => {
+        let currentParent = rootId;
+        let key = '';
+        for (const seg of segments) {
+          key = key ? `${key}/${seg}` : seg;
+          if (!createdFolders[key]) {
+            const existingChildren = inst.get_node(currentParent).children || [];
+            const existing = existingChildren.find(childId => inst.get_node(childId).text === seg);
+            if (existing) {
+              createdFolders[key] = existing;
+            } else {
+              createdFolders[key] = inst.create_node(currentParent, {
+                type: 'new-folder',
+                text: seg,
+                state: { opened: true },
+              });
+            }
+          }
+          currentParent = createdFolders[key];
+        }
+        return currentParent;
+      };
+
+      let lastFileId = null;
+      for (const { path, base64 } of results) {
+        const parts = path.split('/');
+        const fileName = parts.pop();
+        const targetParent = parts.length > 0 ? ensureFolder(parts, parentId) : parentId;
+        lastFileId = inst.create_node(targetParent, {
+          type: 'new-file',
+          text: fileName,
+          data: { code: base64 },
+        });
+      }
+
+      this.setState({ files: inst.get_json() });
+      this.handleTreeChanges();
+      if (lastFileId) {
+        B4ATreeActions.selectFileOnTree(lastFileId);
+      }
+    });
+    e.target.value = '';
   }
 
   deleteFile() {
@@ -222,25 +565,29 @@ export default class B4ACodeTree extends React.Component {
         }
       }
     }
-    this.setState({ 
-      source, 
-      selectedFile, 
-      nodeId, 
-      extension, 
-      isImage, 
-      selectedFolder, 
+    this.setState({
+      source,
+      selectedFile,
+      nodeId,
+      extension,
+      isImage,
+      selectedFolder,
       isFolderSelected: selected.type == 'folder' || selected.type == 'new-folder' ,
-      currentFolder: selected.text
+      currentFolder: selected.text,
+      selectedTreePath: nodeId ? this.getNodePath(nodeId) : (selected.id ? this.getNodePath(selected.id) : ''),
     })
   }
 
   // method to identify the selected tree node
   watchSelectedNode() {
-    $('#tree').on('select_node.jstree', async (e, data) => this.selectNode(data))
+    // Detach any previously bound handlers so repeated calls cannot stack
+    // duplicate listeners (which would cause selectNode to fire N times per
+    // click and freeze the editor on file switches).
+    $('#tree').off('changed.jstree');
     $('#tree').on('changed.jstree', (e, data) => {
       this.selectNode(data);
       this.setState({ selectedNodeData: data });
-    })
+    });
   }
 
   handleTreeChanges() {
@@ -272,7 +619,7 @@ export default class B4ACodeTree extends React.Component {
     }
   }
 
-  updateCodeOnNewFile(type, text, id){
+  updateCodeOnNewFile(type, text, id, childrenIds = []){
 
     if (type === 'delete-file') {
       if (!this.props.hasDeployed) {
@@ -318,8 +665,21 @@ export default class B4ACodeTree extends React.Component {
       text && this.props.cloudCodeChanges.addFile(id);
     } else if (type === 'delete-folder') {
       const toBeDeletedFolder = $('#tree').jstree(true).get_node(id);
-      const toBeDeletedIds = [toBeDeletedFolder.id, ...toBeDeletedFolder.children_d];
+      const toBeDeletedIds = toBeDeletedFolder
+        ? [toBeDeletedFolder.id, ...toBeDeletedFolder.children_d]
+        : [id, ...childrenIds];
       this.props.cloudCodeChanges.removeMultiple(toBeDeletedIds);
+    } else if (type === 'rename-node') {
+      const renamedNode = $('#tree').jstree(true).get_node(id);
+      const renamedIds = renamedNode ? [renamedNode.id, ...renamedNode.children_d] : [id];
+      renamedIds.forEach(fileId => this.props.cloudCodeChanges.addFile(fileId));
+      this.props.setUpdatedFile(this.props.cloudCodeChanges.getFiles());
+      B4ATreeActions.refreshEmptyFolderIcons();
+      return;
+    } else if (type === 'move-node') {
+      const movedNode = $('#tree').jstree(true).get_node(id);
+      const movedIds = movedNode ? [movedNode.id, ...movedNode.children_d] : [id];
+      movedIds.forEach(fileId => this.props.cloudCodeChanges.addFile(fileId));
     } else {
       // set updated files.
       const selectedFiles = $('#tree').jstree('get_selected', true)
@@ -345,18 +705,40 @@ export default class B4ACodeTree extends React.Component {
     }
     $('#tree').jstree(config);
     this.watchSelectedNode();
+
+    // Mirror jstree's data into React state on every mutation so
+    // <B4aFileTree> stays in sync with the source of truth.
+    $('#tree').on(
+      'refresh.jstree create_node.jstree delete_node.jstree rename_node.jstree move_node.jstree set_text.jstree',
+      () => this.syncTreeData()
+    );
+    $('#tree').on('ready.jstree', () => {
+      this.syncTreeData();
+      this.selectCloudFolder();
+    });
+
     if (!this.props.hideControls) {
       $('#tree').on('create_node.jstree', (node, parent) => {
         amplitudeLogEvent(`CloudCode create ${parent?.node?.type}`);
         this.updateCodeOnNewFile(parent?.node?.type, parent?.node?.text, parent?.node?.id);
       });
       $('#tree').on('delete_node.jstree', (parent, node) => {
-        if (node?.node?.type === 'new-folder') {
+        if (node?.node?.type === 'folder' || node?.node?.type === 'new-folder') {
           amplitudeLogEvent(`CloudCode delete ${parent?.node?.type}`);
-          this.updateCodeOnNewFile('delete-folder', node?.node?.text, node?.node?.id);
+          this.updateCodeOnNewFile('delete-folder', node?.node?.text, node?.node?.id, node?.node?.children_d || []);
         } else {
           this.updateCodeOnNewFile('delete-file', node?.node?.text, node?.node?.id);
         }
+      });
+      $('#tree').on('rename_node.jstree', (event, data) => {
+        amplitudeLogEvent(`CloudCode rename ${data?.node?.type}`);
+        this.updateCodeOnNewFile('rename-node', data?.node?.text, data?.node?.id);
+        this.handleTreeChanges();
+      });
+      $('#tree').on('move_node.jstree', (event, data) => {
+        amplitudeLogEvent(`CloudCode move ${data?.node?.type}`);
+        this.updateCodeOnNewFile('move-node', data?.node?.text, data?.node?.id);
+        this.handleTreeChanges();
       });
     }
   }
@@ -365,6 +747,12 @@ export default class B4ACodeTree extends React.Component {
     if ($('#tree').jstree().get_selected().length <= 0) {
       this.selectCloudFolder();
     }
+  }
+
+  componentWillUnmount() {
+    $('#tree').off(
+      'changed.jstree create_node.jstree delete_node.jstree rename_node.jstree move_node.jstree set_text.jstree refresh.jstree ready.jstree'
+    );
   }
 
   render(){
@@ -432,84 +820,117 @@ export default class B4ACodeTree extends React.Component {
       );
     }
 
+    const handleNewFile = () => {
+      if (this.state.selectedFile === '') {
+        this.selectCloudFolder();
+      }
+      swalWithBootstrapButtons.fire({
+        title: 'Create a new empty file',
+        text: 'Name your file',
+        padding: '1rem 2rem',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off',
+          placeholder: 'File name',
+        },
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonText: 'Create file',
+        buttonsStyling: false,
+        showCloseButton: true,
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then(({ value }) => {
+        if (value) {
+          value = B4ATreeActions.sanitizeHTML(value);
+          const parent = B4ATreeActions.getSelectedParent();
+          const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
+          B4ATreeActions.selectFileOnTree(newNodeId);
+          this.setState({ files: $('#tree').jstree(true).get_json() });
+        }
+      });
+    };
+
     return (
       <div className={styles.codeContainer} style={this.props.style ? this.props.style : {}} id="codeContainer">
         <div className={styles.fileSelector}>
-          <div className={`${styles['files-box']}`}>
-            <div className={styles['files-header']} >
-              <p>Files</p>
+          <div className={styles.vscodeSidebar}>
+            <div className={styles.vscodeHeader}>
+              <span className={styles.vscodeHeaderTitle}>Explorer</span>
               {!this.props.hideControls && (
-                <div>
-                  <Button
-                    onClick={() => {
-                      if (this.state.selectedFile === '') {
-                        this.selectCloudFolder();
-                      }
-                      swalWithBootstrapButtons.fire({
-                        title: 'Create a new empty file',
-                        text: 'Name your file',
-                        padding: '1rem 2rem',
-                        input: 'text',
-                        inputAttributes: {
-                          autocapitalize: 'off',
-                          placeholder: 'File name',
-                        },
-                        showCancelButton: true,
-                        reverseButtons: true,
-                        confirmButtonText: 'Create file',
-                        buttonsStyling: false,
-                        showCloseButton: true,
-                        allowOutsideClick: () => !Swal.isLoading()
-                      }).then(({value}) => {
-                        if (value) {
-                          value = B4ATreeActions.sanitizeHTML(value);
-                          const parent = B4ATreeActions.getSelectedParent();
-                          const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
-                          B4ATreeActions.selectFileOnTree(newNodeId); // select new file
-                          this.setState({ files: $('#tree').jstree(true).get_json() });
-                        }
-                      })
-                    }}
-                    disabled={false}
-                    value={
-                      <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
-                        <Icon name="b4a-add-outline-circle" fill="#27AE60" width={18} height={18} />
-                        <span style={{ color: '#f9f9f9', marginLeft:'0.25rem', fontSize: '14px' }}>New File</span>
-                      </div>}
-                    width='20'
-                    additionalStyles={{ minWidth: '40px', background: 'transparent', border: 'none', padding: '0' }}
-                  />
-                  <ReactFileReader
-                    fileTypes={'*/*'}
-                    base64={true}
-                    multipleFiles={true}
-                    handleFiles={this.handleFiles.bind(this)}>
-                    <Button
-                      value={
-                        <div style={{ display: 'flex', alignItems: 'center', borderRadius: '0.3125rem', border: '1px solid rgba(249, 249, 249, 0.06)', background: '#303338', padding: '0.3125rem 0.875rem' }}>
-                          <Icon name="B4a-upload-file-icon" fill="#27AE60" width={18} height={18} />
-                          <span style={{ color: '#f9f9f9', marginLeft: '0.25rem', fontSize: '14px' }}>Upload</span>
-                        </div>}
-                      width='20'
-                      additionalStyles={{ minWidth: '60px', background: 'transparent', border: 'none', padding: '0' }}
+                <div className={styles.vscodeHeaderActions}>
+                  <button
+                    type="button"
+                    className={styles.vscodeIconButton}
+                    onClick={handleNewFile}
+                    title="New file"
+                    aria-label="New file"
+                  >
+                    <Icon name="b4a-add-outline-circle" fill="currentColor" width={16} height={16} />
+                  </button>
+                  <div className={styles.uploadDropdownWrapper}>
+                    <button
+                      type="button"
+                      className={styles.vscodeIconButton}
+                      title="Upload"
+                      aria-label="Upload"
+                      onClick={() => this.setState({ showUploadMenu: !this.state.showUploadMenu })}
+                    >
+                      <Icon name="B4a-upload-file-icon" fill="currentColor" width={16} height={16} />
+                    </button>
+                    {this.state.showUploadMenu && (
+                      <UploadMenu
+                        menuRef={this.uploadMenuRef}
+                        onUploadFiles={() => {
+                          this.setState({ showUploadMenu: false });
+                          this.fileInputRef.current?.click();
+                        }}
+                        onUploadFolder={() => {
+                          this.setState({ showUploadMenu: false });
+                          this.folderInputRef.current?.click();
+                        }}
+                        onClose={() => this.setState({ showUploadMenu: false })}
+                      />
+                    )}
+                    <input
+                      ref={this.fileInputRef}
+                      type="file"
+                      multiple
+                      accept="*/*"
+                      className={styles.hiddenInput}
+                      onChange={e => this.handleNativeFileUpload(e)}
                     />
-                  </ReactFileReader>
+                    <input
+                      ref={this.folderInputRef}
+                      type="file"
+                      /* eslint-disable-next-line react/no-unknown-property */
+                      webkitdirectory=""
+                      directory=""
+                      multiple
+                      className={styles.hiddenInput}
+                      onChange={e => this.handleFolderUpload(e)}
+                    />
+                  </div>
                 </div>
               )}
             </div>
-            <div className={styles['files-tree']}
-              defaultSize={{ height: '100%', overflow: 'auto', width: '100%' }}
-              enable={{
-                top:false,
-                right:false,
-                bottom:true,
-                left:false,
-                topRight:false,
-                bottomRight:false,
-                bottomLeft:false,
-                topLeft:false
-              }}>
-              <div id={'tree'} onClick={this.watchSelectedNode.bind(this)}></div>
+            <div className={styles.vscodeTreeWrapper}>
+              <B4aFileTree
+                tree={this.state.treeData}
+                selectedPath={this.state.selectedTreePath}
+                onFileSelect={(node, path) => this.handleFileTreeSelect(node, path)}
+                onContextAction={!this.props.hideControls ? (action, node, path, newName) => this.handleContextAction(action, node, path, newName) : undefined}
+                onNodeDrop={!this.props.hideControls ? (sourcePath, targetPath) => this.handleFileTreeDrop(sourcePath, targetPath) : undefined}
+                defaultExpanded={['cloud', 'public']}
+                emptyMessage="No files yet"
+              />
+              {/*
+                jstree still owns selection state, mutation operations, and
+                deploy serialization. Its DOM is hidden
+                but kept mounted so all those existing flows keep working.
+              */}
+              <div className={styles.hiddenJstree}>
+                <div id={'tree'}></div>
+              </div>
             </div>
           </div>
         </div>

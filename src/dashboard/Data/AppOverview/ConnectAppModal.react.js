@@ -1,31 +1,10 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, { useState } from 'react';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
 import ReactMarkdown from 'react-markdown';
-import Prism from 'prismjs';
-// Import Prism Line Numbers plugin
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
-
-import 'prismjs/components/prism-markup-templating.js';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-graphql';
-import 'prismjs/components/prism-java';
-import 'prismjs/components/prism-php';
-import 'prismjs/components/prism-dart';
-import 'prismjs/components/prism-kotlin';
-import 'prismjs/components/prism-swift';
-
-import 'prismjs/plugins/line-numbers/prism-line-numbers'
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css'
-
-// eslint-disable-next-line no-unused-vars
-import customPrisma from 'stylesheets/b4a-prisma.css';
-
-const CodeBlock = lazy(() => import('components/CodeBlock/CodeBlock.react'));
+import AppOverviewCodeEditorBlock from './AppOverviewCodeEditorBlock.react';
 
 const LanguageDocMap = {
   rest: {
@@ -925,16 +904,15 @@ const ConnectAppModal = ({ closeModal }) => {
           </div>
         </div>
         <div className={styles.connectAppModalContent} style={{ overflow: 'auto' }}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <ReactMarkdown
-              renderers={{
-                code: ({ language, value }) => (
-                  <CodeBlock language={language} value={value} />
+          <ReactMarkdown
+            renderers={{
+              code: ({ inline, language, value }) =>
+                inline ? <code>{value}</code> : (
+                  <AppOverviewCodeEditorBlock language={language} value={value} />
                 ),
-              }}
-              children={selectedLanguage.content}
-            />
-          </Suspense>
+            }}
+            children={selectedLanguage.content}
+          />
         </div>
       </div>
     </Popover>

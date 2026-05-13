@@ -5,74 +5,9 @@ import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
 import Button from 'components/Button/Button.react';
 import B4aTabToggle from 'components/Toggle/B4aTabToggle.react';
-
-import Prism from 'prismjs';
-import 'prismjs/components/prism-markup-templating.js';
-// eslint-disable-next-line no-unused-vars
-import customPrisma from 'stylesheets/b4a-prisma.css';
+import AppOverviewCodeEditorBlock from './AppOverviewCodeEditorBlock.react';
 
 const origin = new Position(0, 0);
-
-const CodeBlock = ({ language, value, fileName, inline = false }) => {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (typeof Prism !== 'undefined') {
-      Prism.highlightAll();
-    }
-  }, [value, language]);
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
-  };
-
-  if (inline) {
-    return (
-      <div className={styles.inlineCode}>
-        {value} <button className={styles.copyButton} onClick={copyToClipboard} title="Copy to clipboard">
-          <Icon
-            name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`}
-            fill={copied ? '#27AE60' : '#C1E2FF'}
-            width={14}
-            height={14}
-          />
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.codeBlockContainer}>
-      <div className={styles.codeBlockHeader}>
-        <div className={styles.languageLabel}>{fileName ? fileName : language}</div>
-        <div className={styles.copyButtonWrapper}>
-          {copied && (
-            <div className={styles.copyTooltip}>
-              Copied!
-            </div>
-          )}
-          <button className={styles.copyButton} onClick={copyToClipboard} title="Copy to clipboard">
-            <Icon
-              name={`${copied ? 'b4a-check-icon' : 'b4a-copy-icon'}`}
-              fill={copied ? '#27AE60' : '#C1E2FF'}
-              width={14}
-              height={14}
-            />
-          </button>
-        </div>
-      </div>
-      <pre className="line-numbers">
-        <code className={`language-${language}`}>{value}</code>
-      </pre>
-    </div>
-  );
-};
 
 const getManualJsonContent = (ide, mcpKey, isLinux) => {
   if (ide === 'cursor' && isLinux) {
@@ -274,7 +209,7 @@ const getIDEContent = (ide, automatic, mcpKey) => {
             <div style={{ margin: '1rem 0' }}></div>
             <div className={styles.step}><span>2. Alternative: Terminal installation</span></div>
             <div className={styles.text}><span>Or copy and run the command below in your terminal to install </span><span>{ide}</span><span>:</span></div>
-            <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
+            <AppOverviewCodeEditorBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
             <div style={{ margin: '1rem 0' }}></div>
             <div className={styles.step}><span>3. Verify your connection</span></div>
             {getVerifyContent(ide)}
@@ -284,7 +219,7 @@ const getIDEContent = (ide, automatic, mcpKey) => {
           <>
             <div className={styles.step}><span>1. Run the installation command</span></div>
             <div className={styles.text}><span>Copy and run the command below in your terminal to install </span><span>{ide}</span><span>.</span></div>
-            <CodeBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
+            <AppOverviewCodeEditorBlock inline={true} value={`npx @back4app/mcp-installer install ${ide} --account-key ${mcpKey}`} />
             <div style={{ margin: '1rem 0' }}></div>
             <div className={styles.step}><span>2. Verify your connection</span></div>
             {getVerifyContent(ide)}
@@ -298,10 +233,10 @@ const getIDEContent = (ide, automatic, mcpKey) => {
         {getManualInstructions(ide)}
         <div style={{ margin: '1rem 0' }}></div>
         <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}><span>macOS / Linux</span></strong>
-        <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, true)} />
+        <AppOverviewCodeEditorBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, true)} />
         <div style={{ margin: '1rem 0' }}></div>
         <strong style={{ marginBottom: '.5rem', fontSize: '14px' }}><span>Windows</span></strong>
-        <CodeBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, false)} />
+        <AppOverviewCodeEditorBlock language="json" fileName="mcp.json" value={getManualJsonContent(ide, mcpKey, false)} />
       </div>
     );
   }
@@ -373,7 +308,7 @@ const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
           <div className={styles.step}>1. Tell your agent what you need</div>
           <div className={styles.text}>In your AI agent chat, You can use Back4App MCP to interact with your Back4App account.</div>
           <div className={styles.text} style={{ marginBottom: '.5rem' }}>Here is an example to get a list of your apps: </div>
-          <CodeBlock inline={true} value={'List all of the apps in my Back4App account'} />
+          <AppOverviewCodeEditorBlock inline={true} value={'List all of the apps in my Back4App account'} />
           <div style={{ margin: '2rem 0' }}></div>
           <div className={styles.step}>2. Refer to docs for more information</div>
           <div className={styles.text}> <a className={styles.link} href="https://www.back4app.com/docs/mcp" target="_blank" rel="noopener noreferrer">https://www.back4app.com/docs/mcp</a></div>
@@ -405,4 +340,3 @@ const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
 };
 
 export default MCPSetupModal;
-
