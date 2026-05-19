@@ -66,6 +66,8 @@ import { get } from 'jquery';
 const BROWSER_LAST_LOCATION = 'b4a_brower_last_location';
 // The initial and max amount of rows fetched by lazy loading
 const MAX_ROWS_FETCHED = 200;
+const EXPORT_BATCH_SIZE = 100;
+const EXPORT_MAX_FILE_SIZE = Math.pow(2, 30);
 // Alert Content
 const MySwal = withReactContent(Swal);
 const postgresqlAlert = {
@@ -2294,30 +2296,54 @@ class Browser extends DashboardView {
       this.setState({ exporting: false, exportingCount: objects.length });
     } else {
       // export all selected filtered data
-      if (!this.state.filters.isEmpty()) {
-        query = queryFromFilters(this.props.params.className, this.state.filters);
-      }
       let batch = [];
-      query.eachBatch(
-        obj => {
-          batch.push(...obj);
-          if (batch.length % 10 === 0) {
-            this.setState({ exportingCount: batch.length });
+      let lastObjectId = null;
+      let exportedCount = 0;
+      let done = false;
+
+      try {
+        while (!done) {
+          query = this.state.filters.isEmpty()
+            ? new Parse.Query(className)
+            : queryFromFilters(className, this.state.filters);
+          query.ascending('objectId');
+          query.limit(EXPORT_BATCH_SIZE);
+
+          if (lastObjectId) {
+            query.greaterThan('objectId', lastObjectId);
           }
-          const one_gigabyte = Math.pow(2, 30);
-          const size = new TextEncoder().encode(JSON.stringify(batch)).length / one_gigabyte;
-          if (size.length > 1) {
+
+          const objects = await query.find({ useMasterKey: true });
+
+          if (objects.length === 0) {
+            done = true;
+            break;
+          }
+
+          batch.push(...objects);
+          exportedCount += objects.length;
+          lastObjectId = objects[objects.length - 1].id;
+          this.setState({ exportingCount: exportedCount });
+
+          const size = new TextEncoder().encode(JSON.stringify(batch)).length;
+          if (size >= EXPORT_MAX_FILE_SIZE) {
             processObjects(batch);
             batch = [];
           }
-          if (obj.length !== 100) {
-            processObjects(batch);
-            batch = [];
-            this.setState({ exporting: false, exportingCount: 0 });
+
+          if (objects.length < EXPORT_BATCH_SIZE) {
+            done = true;
           }
-        },
-        { useMasterKey: true }
-      );
+        }
+
+        if (batch.length > 0) {
+          processObjects(batch);
+        }
+        this.setState({ exporting: false, exportingCount: exportedCount });
+      } catch (error) {
+        this.setState({ exporting: false, exportingCount: 0 });
+        this.showNote(error.message || String(error), true);
+      }
     }
   }
 
