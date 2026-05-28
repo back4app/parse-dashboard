@@ -77,6 +77,29 @@ const B4aCodeEditorImpl = forwardRef(
       editorRef.current = editor;
       monacoRef.current = monaco;
 
+      const remeasureAndLayout = () => {
+        if (editorRef.current !== editor || monacoRef.current !== monaco) {
+          return;
+        }
+        if (typeof monaco.editor?.remeasureFonts === 'function') {
+          monaco.editor.remeasureFonts();
+        }
+        editor.layout();
+      };
+
+      // Monaco can cache character widths before async webfonts finish loading,
+      // which makes the caret drift horizontally on some machines/browsers.
+      remeasureAndLayout();
+      if (typeof document !== 'undefined' && document.fonts?.ready) {
+        document.fonts.ready.then(() => {
+          if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+            window.requestAnimationFrame(remeasureAndLayout);
+            return;
+          }
+          remeasureAndLayout();
+        });
+      }
+
       if (monaco.languages.typescript) {
         const jsDefaults = monaco.languages.typescript.javascriptDefaults;
         jsDefaults.setDiagnosticsOptions({
