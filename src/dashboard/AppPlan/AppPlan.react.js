@@ -212,6 +212,14 @@ class AppPlan extends DashboardView {
 
     const paddleEventCallback = async function (data) {
       if (data.name === 'checkout.completed') {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'paddle_purchase',
+          value: Number(data.data.totals.total) / 100,
+          currency: data.data.currency_code,
+          transaction_id: data.data.transaction_id
+        });
+
         const paymentData = {
           appId: data.data.custom_data.app_id,
           customerId: data.data.customer.id,
