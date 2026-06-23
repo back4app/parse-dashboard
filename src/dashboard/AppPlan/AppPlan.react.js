@@ -215,7 +215,7 @@ class AppPlan extends DashboardView {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event: 'paddle_purchase',
-          value: Number(data.data.totals.total),
+          value: Number(data.data.totals.total) * 100,
           currency: data.data.currency_code,
           transaction_id: data.data.transaction_id
         });
