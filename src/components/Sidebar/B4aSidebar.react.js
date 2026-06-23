@@ -7,6 +7,7 @@
  */
 import AppsManager from 'lib/AppsManager';
 import FooterMenu from 'components/Sidebar/FooterMenu.react';
+import axios from 'axios';
 import React, { useEffect, useState, useContext, useRef } from 'react';
 // import SidebarHeader  from 'components/Sidebar/SidebarHeader.react';
 import B4aSidebarSection from 'components/Sidebar/B4aSidebarSection.react';
@@ -41,6 +42,7 @@ const B4aSidebar = ({
   const currentApp = useContext(CurrentApp);
   const [appsMenuOpen, setAppsMenuOpen] = useState(false);
   const [aiToolsMenuOpen, setAiToolsMenuOpen] = useState(false);
+  const [isPayingAgent, setIsPayingAgent] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     return isSidebarCollapsed !== undefined ? isSidebarCollapsed : isMobile();
   });
@@ -83,6 +85,24 @@ const B4aSidebar = ({
       window.removeEventListener('resize', windowResizeHandler);
       document.body.removeEventListener('click', checkExternalClick);
     }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const base = new URL(b4aSettings.CONTAINERS_API_PATH, window.location.origin).origin;
+        const { data } = await axios.get(`${base}/agents-subscription/me`, { withCredentials: true });
+        if (!cancelled) {
+          setIsPayingAgent(Boolean(data && data.isPaying));
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setIsPayingAgent(false);
+        }
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -322,10 +342,12 @@ const B4aSidebar = ({
           <Icon name="b4a-chevron-down" width={16} height={16} />
         </div>
         <div className={`${styles.aiToolsMenu} ${aiToolsMenuOpen ? styles.visible : ''}`}>
-          <a href={`${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents`} className={styles.aiToolItem}>
-            <Icon name="b4a-agent" width={20} height={20} />
-            <span>AI Agent</span>
-          </a>
+          {isPayingAgent && (
+            <a href={`${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents`} className={styles.aiToolItem}>
+              <Icon name="b4a-agent" width={20} height={20} />
+              <span>AI Agent</span>
+            </a>
+          )}
           <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer" className={styles.aiToolItem + ' ' + styles.mcp}>
             <Icon name="b4a-mcp" width={20} height={20} />
             <span>Model Context Protocol</span>
