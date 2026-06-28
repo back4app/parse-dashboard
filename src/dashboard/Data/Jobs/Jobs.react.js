@@ -66,10 +66,12 @@ function scheduleString(data) {
   if (data.repeatMinutes) {
     if (data.repeatMinutes === 1440) {
       schedule += 'Every day, ';
-    } else if (data.repeatMinutes > 60) {
-      schedule += 'Each day, every ' + ((data.repeatMinutes / 60) | 0) + ' hours, ';
+    } else if (data.repeatMinutes >= 60 && data.repeatMinutes % 60 === 0) {
+      const hours = data.repeatMinutes / 60;
+      schedule += 'Each day, every ' + hours + (hours === 1 ? ' hour, ' : ' hours, ');
     } else {
-      schedule += 'Each day, every ' + data.repeatMinutes + ' minutes, ';
+      const mins = data.repeatMinutes;
+      schedule += 'Each day, every ' + mins + (mins === 1 ? ' minute, ' : ' minutes, ');
     }
     if (data.timeOfDay) {
       schedule += 'after ' + data.timeOfDay.substr(0, 5) + ', ';

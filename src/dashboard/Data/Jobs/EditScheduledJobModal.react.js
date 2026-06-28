@@ -42,8 +42,8 @@ function parseInitialState(job) {
       repeatType = 'Every day';
     } else {
       repeatType = 'On an interval';
-      if (job.repeatMinutes > 60) {
-        intervalCount = (job.repeatMinutes / 60) | 0;
+      if (job.repeatMinutes >= 60 && job.repeatMinutes % 60 === 0) {
+        intervalCount = job.repeatMinutes / 60;
         intervalUnit = 'hour';
       } else {
         intervalCount = job.repeatMinutes;
