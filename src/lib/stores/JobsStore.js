@@ -12,6 +12,22 @@ import { registerStore } from 'lib/stores/StoreManager';
 
 export const ActionTypes = keyMirror(['FETCH', 'CREATE', 'EDIT', 'DELETE']);
 
+// Scheduled jobs store their interval as an "HH:MM" string in `schedule.intervalRun`
+// (e.g. "01:00" for every hour, "00:15" for every 15 minutes). Convert it back into a
+// total number of minutes so the rest of the dashboard can treat `repeatMinutes` as a
+// number. Returns null when there is no interval set.
+function intervalRunToMinutes(intervalRun) {
+  if (intervalRun === null || intervalRun === undefined || intervalRun === '') {
+    return null;
+  }
+  if (typeof intervalRun === 'number') {
+    return intervalRun || null;
+  }
+  const [hours, minutes] = String(intervalRun).split(':');
+  const total = (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0);
+  return total || null;
+}
+
 // Jobs state should be an Immutable Map with the following fields:
 //   - lastFetch: the last time all data was fetched from the server
 //   - jobs: An Immutable Map of schedule ids to Maps of job details
@@ -41,7 +57,7 @@ function JobsStore(state, action) {
                 job.startAfter ||
                 job.startAt
               ),
-              repeatMinutes: job.schedule && (job.schedule.intervalRun || (job.schedule.dailyRun ? 1440 : null)),
+              repeatMinutes: job.schedule && (intervalRunToMinutes(job.schedule.intervalRun) || (job.schedule.dailyRun ? 1440 : null)),
               timeOfDay: (job.schedule && (job.schedule.dailyRun || job.schedule.timeOfDay)) || null,
               params: job.parameter ? JSON.stringify(job.parameter) : null,
             }));
