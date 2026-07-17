@@ -20,7 +20,7 @@ import Icon from 'components/Icon/Icon.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import { withRouter } from 'lib/withRouter';
 import CloudCodeChanges from 'lib/CloudCodeChanges';
-import { pushGTMEvent } from 'lib/gtm.js';
+import { pushGTMEvent, fireDeepActivation } from 'lib/gtm.js';
 
 @withRouter
 class B4ACloudCode extends CloudCode {
@@ -209,6 +209,8 @@ class B4ACloudCode extends CloudCode {
       })
       // eslint-disable-next-line no-undef
       // back4AppNavigation && back4AppNavigation.deployCloudCodeEvent()
+      // Deep activation: user deployed cloud code.
+      fireDeepActivation();
       await this.fetchSource();
       // force jstree component to upload
       await updateTreeContent(this.state.files);

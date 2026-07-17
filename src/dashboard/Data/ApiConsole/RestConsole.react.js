@@ -19,6 +19,7 @@ import Option from 'components/Dropdown/Option.react';
 import Parse from 'parse';
 import React, { Component } from 'react';
 import request from 'dashboard/Data/ApiConsole/request';
+import { fireDeepActivation } from 'lib/gtm.js';
 import styles from 'dashboard/Data/ApiConsole/RestConsole.scss';
 import TextInput from 'components/TextInput/TextInput.react';
 import B4aToggle from 'components/Toggle/B4aToggle.react';
@@ -124,6 +125,8 @@ export default class RestConsole extends Component {
     request(this.context, this.state.method, endpoint, payload, options).then(response => {
       this.setState({ response });
       document.body.scrollTop = 540;
+      // Deep activation: user sent a query from the REST console.
+      fireDeepActivation();
     });
   }
 
