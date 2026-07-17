@@ -60,7 +60,7 @@ import generatePath from 'lib/generatePath';
 import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { pushGTMEvent } from 'lib/gtm.js'
+import { pushGTMEvent, fireDeepActivation } from 'lib/gtm.js'
 import { get } from 'jquery';
 
 const BROWSER_LAST_LOCATION = 'b4a_brower_last_location';
@@ -902,6 +902,8 @@ class Browser extends DashboardView {
     }).then(() => {
       // Send track event
       // back4AppNavigation && back4AppNavigation.createClassClickEvent()
+      // Deep activation: user touched the DB structure by creating a class.
+      fireDeepActivation();
     }).catch(error => {
       let errorDeletingNote = 'Internal server error'
       if (error.code === 403) {errorDeletingNote = error.message;}
@@ -996,6 +998,8 @@ class Browser extends DashboardView {
     return this.props.schema
       .dispatch(ActionTypes.ADD_COLUMN, payload)
       .then(() => {
+        // Deep activation: user touched the DB structure by creating a column.
+        fireDeepActivation();
         if (required) {
           const requiredCols = [...this.state.requiredColumnFields, name];
           this.setState({
@@ -1113,6 +1117,9 @@ class Browser extends DashboardView {
       objectSaved => {
         const msg = objectSaved.className + ' with id \'' + objectSaved.id + '\' created';
         this.showNote(msg, false);
+
+        // Deep activation: user added data by creating a row.
+        fireDeepActivation();
 
         const state = { data: this.state.data };
         const relation = this.state.relation;

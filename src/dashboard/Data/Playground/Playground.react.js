@@ -9,6 +9,7 @@ import SaveButton from 'components/SaveButton/SaveButton.react';
 import Swal from 'sweetalert2';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import { CurrentApp } from 'context/currentApp';
+import { fireDeepActivation } from 'lib/gtm.js';
 
 import styles from './Playground.scss';
 
@@ -93,6 +94,8 @@ export default class Playground extends Component {
       this.setState({ running: true, results: [] });
 
       await new Function('Parse', finalCode)(Parse);
+      // Deep activation: user ran a query from the JavaScript console.
+      fireDeepActivation();
     } catch (e) {
       console.error(e);
     } finally {

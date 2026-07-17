@@ -11,6 +11,7 @@ import EmptyState from 'components/EmptyState/EmptyState.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import styles from 'dashboard/Data/ApiConsole/ApiConsole.scss';
 import { CurrentApp } from 'context/currentApp';
+import { fireDeepActivation } from 'lib/gtm.js';
 
 export default class GraphQLConsole extends Component {
   static contextType = CurrentApp;
@@ -51,6 +52,12 @@ export default class GraphQLConsole extends Component {
               },
               body: JSON.stringify(graphQLParams),
             });
+            // Deep activation: user sent a query from the GraphQL console.
+            // GraphiQL auto-fires an IntrospectionQuery on load to build the
+            // schema/docs, so ignore it and only count real user queries.
+            if (graphQLParams.operationName !== 'IntrospectionQuery') {
+              fireDeepActivation();
+            }
             return data.json().catch(() => data.text());
           }}
         />
