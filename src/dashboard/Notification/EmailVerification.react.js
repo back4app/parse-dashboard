@@ -21,7 +21,7 @@ import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 
 const DEFAULT_VERIFICATION_BODY =
   'Hi,\n\n' +
-  'You are being asked to confirm the e-mail address *|email|* with *|appname|*\n\n' +
+  'You are being asked to confirm the email address *|email|* with *|appname|*\n\n' +
   'Click here to confirm it:\n' +
   '*|link|*';
 
@@ -30,7 +30,7 @@ const DEFAULT_FIELDS = {
   preventLoginWithUnverifiedEmail: false,
   replyTo: 'no-reply@b4a.app',
   displayName: '',
-  verificationEmailSubject: 'Please verify your e-mail for *|appname|*',
+  verificationEmailSubject: 'Please verify your email for *|appname|*',
   verificationEmailBody: DEFAULT_VERIFICATION_BODY,
 };
 
@@ -379,7 +379,7 @@ class EmailVerification extends DashboardView {
                   input={
                     <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
                       <a
-                        href="https://checkout.back4app.io/subscription/r4bsfi5CNH"
+                        href="https://checkout.back4app.io/subscription/Ecti8S7JZh"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -546,7 +546,7 @@ class EmailVerification extends DashboardView {
                     input={
                       <div className={`${styles.emailTextField} ${styles.emailTextFieldRight}`}>
                         <TextInputSettings
-                          placeholder="Please verify your e-mail for *|appname|*"
+                          placeholder="Please verify your email for *|appname|*"
                           value={fields.verificationEmailSubject ?? ''}
                           onChange={valueOrEvent =>
                             canEditTemplateFields && trackSetField('verificationEmailSubject', getInputValue(valueOrEvent))

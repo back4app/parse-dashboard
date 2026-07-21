@@ -45,6 +45,10 @@ class ServerURLLiveQuery extends DashboardView {
       loadingError: null,
 
       isUserVerified: false,
+      emailVerified: false,
+      cardValidated: false,
+      isResendingVerificationEmail: false,
+      resendVerificationMessage: null,
       hasPermission: true,
 
       isActivated: false,
@@ -182,6 +186,10 @@ class ServerURLLiveQuery extends DashboardView {
     let activated = false;
     let isActivated = false;
     let isUserVerified = false;
+    const currentUser = AccountManager.currentUser();
+    const verification = (currentUser && currentUser.verification) || {};
+    const emailVerified = !!verification.emailVerified;
+    const cardValidated = !!verification.cardValidation;
     const schemasChoose = {};
     let activatedLiveQuery = {};
     let statusLiveQuery = false;
@@ -224,15 +232,11 @@ class ServerURLLiveQuery extends DashboardView {
             plan.planName.indexOf('Free') < 0 &&
             plan.planName.indexOf('Public') < 0) {
           isUserVerified = true;
-        } else {
-          const currentUser = AccountManager.currentUser();
-          if (currentUser && currentUser.verification && currentUser.verification.cardValidation) {
-            isUserVerified = true;
-          }
+        } else if (emailVerified && cardValidated) {
+          isUserVerified = true;
         }
       } catch (planError) {
-        const currentUser = AccountManager.currentUser();
-        if (currentUser && currentUser.verification && currentUser.verification.cardValidation) {
+        if (emailVerified && cardValidated) {
           isUserVerified = true;
         }
       }
@@ -240,6 +244,8 @@ class ServerURLLiveQuery extends DashboardView {
 
     this.setState({
       isUserVerified,
+      emailVerified,
+      cardValidated,
       hasPermission,
       isActivated,
       currentSubdomain,
@@ -264,6 +270,116 @@ class ServerURLLiveQuery extends DashboardView {
       : this.state.availableDomains;
     this.setState({ availableDomains });
     return domain;
+  }
+
+  async handleResendEmailVerification() {
+    if (this.state.isResendingVerificationEmail) {
+      return;
+    }
+
+    this.setState({
+      isResendingVerificationEmail: true,
+      resendVerificationMessage: null,
+    });
+
+    try {
+      const result = await this.context.resendEmailVerification();
+      this.setState({
+        isResendingVerificationEmail: false,
+        resendVerificationMessage: {
+          type: 'success',
+          text: typeof result === 'string' && result.trim()
+            ? result
+            : 'Verification email sent.',
+        },
+      });
+    } catch (err) {
+      this.setState({
+        isResendingVerificationEmail: false,
+        resendVerificationMessage: {
+          type: 'error',
+          text: typeof err === 'string' && err.trim()
+            ? err
+            : (err && err.message) || 'Failed to resend verification email',
+        },
+      });
+    }
+  }
+
+  renderVerificationRequired() {
+    const { emailVerified, cardValidated, isResendingVerificationEmail, resendVerificationMessage } = this.state;
+
+    return (
+      <div className={styles.formWrapper}>
+        <div className={styles.settingsContainer}>
+          <div className={styles.heading}>Server URL and Live Query</div>
+          <div className={styles.subheading}>
+            In this section, you can enable a custom Server URL that can be used for real-time database.
+          </div>
+
+          {!emailVerified && (
+            <div style={{ padding: '12px 16px', marginBottom: '16px', background: '#fff3cd', borderRadius: '6px', color: '#856404' }}>
+              Please verify your email to enable this feature.{' '}
+              <button
+                type="button"
+                onClick={() => this.handleResendEmailVerification()}
+                disabled={isResendingVerificationEmail}
+                style={{
+                  padding: 0,
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#15A9FF',
+                  textDecoration: 'underline',
+                  cursor: isResendingVerificationEmail ? 'default' : 'pointer',
+                  font: 'inherit',
+                }}
+              >
+                {isResendingVerificationEmail ? 'Sending...' : 'Resend email'}
+              </button>
+              {resendVerificationMessage && (
+                <div
+                  style={{
+                    marginTop: '8px',
+                    color: resendVerificationMessage.type === 'error' ? '#b02a37' : '#0f5132',
+                  }}
+                >
+                  {resendVerificationMessage.text}
+                </div>
+              )}
+            </div>
+          )}
+
+          {!cardValidated && (
+            <Fieldset>
+              <Field
+                label={
+                  <Label
+                    text="Validate your card"
+                    dark={true}
+                    description="In order to enable this feature, you must validate your card."
+                  />
+                }
+                input={
+                  <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
+                    <a
+                      href="https://checkout.back4app.io/subscription/r4bsfi5CNH"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button
+                        value="Validate Card"
+                        primary={true}
+                      />
+                    </a>
+                  </div>
+                }
+                theme={Field.Theme.BLUE}
+              />
+            </Fieldset>
+          )}
+        </div>
+      </div>
+    );
   }
 
   renderToolbar() {
@@ -462,42 +578,7 @@ class ServerURLLiveQuery extends DashboardView {
         </div>
       );
     } else if (!this.state.isUserVerified) {
-      content = (
-        <div className={styles.formWrapper}>
-          <div className={styles.settingsContainer}>
-            <div className={styles.heading}>Server URL and Live Query</div>
-            <div className={styles.subheading}>
-              In this section, you can enable a custom Server URL that can be used for real-time database.
-            </div>
-            <Fieldset>
-              <Field
-                label={
-                  <Label
-                    text="Validate your card"
-                    dark={true}
-                    description="In order to enable this feature, you must validate your card."
-                  />
-                }
-                input={
-                  <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-                    <a
-                      href="https://checkout.back4app.io/subscription/r4bsfi5CNH"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button
-                        value="Validate Card"
-                        primary={true}
-                      />
-                    </a>
-                  </div>
-                }
-                theme={Field.Theme.BLUE}
-              />
-            </Fieldset>
-          </div>
-        </div>
-      );
+      content = this.renderVerificationRequired();
     } else {
       const { initialFields, hasPermission } = this.state;
 
