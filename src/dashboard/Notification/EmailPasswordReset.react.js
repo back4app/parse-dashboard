@@ -205,7 +205,6 @@ class EmailPasswordReset extends DashboardView {
 
       const isUserVerified = isPaidPlan || (
         userVerification.emailVerified &&
-        userVerification.phoneNumberVerified &&
         userVerification.cardValidation
       );
       const hasPermission = !featuresPermission || featuresPermission.verificationEmails === 'Write';
