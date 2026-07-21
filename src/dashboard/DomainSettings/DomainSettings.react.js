@@ -24,9 +24,7 @@ import Fieldset from 'components/Fieldset/Fieldset.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
-import StripeValidateCard from 'components/StripeValidateCard/StripeValidateCard.react';
 import { Link } from 'react-router-dom';
-import back4app2 from 'lib/back4app2';
 
 @withRouter
 class DomainSettings extends DashboardView {
@@ -40,9 +38,12 @@ class DomainSettings extends DashboardView {
       domainSettingsError: null,
 
       isUserVerified: false,
+      emailVerified: false,
+      cardValidated: false,
+      isResendingVerificationEmail: false,
+      resendVerificationMessage: null,
       canChangeCustomDomain: false,
       canChangeSubdomain: false,
-      showCardValidation: true,
 
       subdomainName: '',
       currentSubdomain: '',
@@ -96,10 +97,8 @@ class DomainSettings extends DashboardView {
   }
 
   async loadData() {
-    console.log("STATE", this.state);
     try {
       const response = await this.context.getCustomDomain();
-      console.log("RESPONSE", response);
       this.setState({ domainSettings: response });
       await this.loadHostSettings(response);
     } catch (error) {
@@ -119,6 +118,10 @@ class DomainSettings extends DashboardView {
     let isActivated = false;
     let hasPermission = false;
     let isUserVerified = false;
+    const currentUser = AccountManager.currentUser();
+    const verification = (currentUser && currentUser.verification) || {};
+    const emailVerified = !!verification.emailVerified;
+    const cardValidated = !!verification.cardValidation;
 
     if (domains && domains.length > 0) {
       customDomainArray = domains;
@@ -141,8 +144,6 @@ class DomainSettings extends DashboardView {
 
     hasPermission = (!response.featuresPermission || response.featuresPermission.webHostLiveQuery === 'Write');
 
-    console.log("response", createdAt);
-
     if (response && ((appHostSettings.serverURL && appHostSettings.activated) || (createdAt && ((new Date() - new Date(createdAt)) > (6 * 30 * 24 * 60 * 60 * 1000))))) {
       isUserVerified = true;
     }
@@ -152,15 +153,11 @@ class DomainSettings extends DashboardView {
         const plan = await this.context.getAppPlanData();
         if (plan && plan.planName && (plan.planName.indexOf('Free') < 0) && (plan.planName.indexOf('Public') < 0)) {
           isUserVerified = true;
-        } else {
-          const currentUser = AccountManager.currentUser();
-          if (currentUser && currentUser.verification.cardValidation) {
-            isUserVerified = true;
-          }
+        } else if (emailVerified && cardValidated) {
+          isUserVerified = true;
         }
       } catch (planError) {
-        const currentUser = AccountManager.currentUser();
-        if (currentUser && currentUser.verification.cardValidation) {
+        if (emailVerified && cardValidated) {
           isUserVerified = true;
         }
       }
@@ -168,6 +165,8 @@ class DomainSettings extends DashboardView {
 
     this.setState({
       isUserVerified,
+      emailVerified,
+      cardValidated,
 
       subdomainName,
       currentSubdomain,
@@ -296,15 +295,107 @@ class DomainSettings extends DashboardView {
     }
   }
 
-  async verifyUser() {
-    try {
-      const user = await back4app2.me();
-      if (user) {
-        this.setState({ isUserVerified: true });
-      }
-    } catch (e) {
-      console.log('user validation failed!')
+  async handleResendEmailVerification() {
+    if (this.state.isResendingVerificationEmail) {
+      return;
     }
+
+    this.setState({
+      isResendingVerificationEmail: true,
+      resendVerificationMessage: null,
+    });
+
+    try {
+      const result = await this.context.resendEmailVerification();
+      this.setState({
+        isResendingVerificationEmail: false,
+        resendVerificationMessage: {
+          type: 'success',
+          text: typeof result === 'string' && result.trim()
+            ? result
+            : 'Verification email sent.',
+        },
+      });
+    } catch (err) {
+      this.setState({
+        isResendingVerificationEmail: false,
+        resendVerificationMessage: {
+          type: 'error',
+          text: typeof err === 'string' && err.trim()
+            ? err
+            : (err && err.message) || 'Failed to resend verification email',
+        },
+      });
+    }
+  }
+
+  renderVerificationRequired() {
+    const { emailVerified, cardValidated, isResendingVerificationEmail, resendVerificationMessage } = this.state;
+
+    return (
+      <>
+        {!emailVerified && (
+          <div style={{ padding: '12px 16px', marginBottom: '16px', background: '#fff3cd', borderRadius: '6px', color: '#856404' }}>
+            Please verify your email to enable this feature.{' '}
+            <button
+              type="button"
+              onClick={() => this.handleResendEmailVerification()}
+              disabled={isResendingVerificationEmail}
+              style={{
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                color: '#15A9FF',
+                textDecoration: 'underline',
+                cursor: isResendingVerificationEmail ? 'default' : 'pointer',
+                font: 'inherit',
+              }}
+            >
+              {isResendingVerificationEmail ? 'Sending...' : 'Resend email'}
+            </button>
+            {resendVerificationMessage && (
+              <div
+                style={{
+                  marginTop: '8px',
+                  color: resendVerificationMessage.type === 'error' ? '#b02a37' : '#0f5132',
+                }}
+              >
+                {resendVerificationMessage.text}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!cardValidated && (
+          <Fieldset>
+            <Field
+              label={
+                <Label
+                  text="Validate your card"
+                  dark={true}
+                  description="In order to enable this feature, you must validate your card."
+                />
+              }
+              input={
+                <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
+                  <a
+                    href="https://checkout.back4app.io/subscription/VU0VZpDrHh"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      value="Validate Card"
+                      primary={true}
+                    />
+                  </a>
+                </div>
+              }
+              theme={Field.Theme.BLUE}
+            />
+          </Fieldset>
+        )}
+      </>
+    );
   }
 
   getDisplayContent() {
@@ -527,6 +618,8 @@ class DomainSettings extends DashboardView {
         {this.state.errorCustomDomain && <div className={styles.error}>{this.state.errorCustomDomain}</div>}
       </Fieldset>
       </>
+    } else {
+      content = this.renderVerificationRequired();
     }
 
     return (

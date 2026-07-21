@@ -34,7 +34,7 @@ export default class ImportDialog extends React.Component {
       <B4aModal
         type={B4aModal.Types.DEFAULT}
         title='Import data'
-        subtitle={'You will receive an e-mail once your data is imported'}
+        subtitle={'You will receive an email once your data is imported'}
         confirmText='Import'
         cancelText='Cancel'
         disabled={!this.valid()}
@@ -48,7 +48,7 @@ export default class ImportDialog extends React.Component {
                 this.props.showNote(`Import Request failed with the following error: "${res.error }".`)
               } else {
                 this.props.onCancel();
-                this.props.showNote('We are importing your data. You will be notified by e-mail once it is completed.')
+                this.props.showNote('We are importing your data. You will be notified by email once it is completed.')
               }
             }).finally(() => this.setState({ startedImport: false, file: undefined }));
         }}>
