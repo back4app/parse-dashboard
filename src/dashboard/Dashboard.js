@@ -41,8 +41,6 @@ import { setBasePath } from 'lib/AJAX';
 // // import createClass from 'create-react-class';
 import { Helmet } from 'react-helmet';
 import Playground from './Data/Playground/Playground.react';
-import axios from 'lib/axios';
-import moment from 'moment';
 import B4aConnectPage from './B4aConnectPage/B4aConnectPage.react';
 // // import EmptyState from 'components/EmptyState/EmptyState.react';
 import BlockchainPage from './BlockchainPage/BlockChainPage.react';
@@ -86,15 +84,6 @@ const AccountSettingsPage = () => (
   </AccountView>
 );
 
-async function fetchHubUser() {
-  try {
-    // eslint-disable-next-line no-undef
-    return (await axios.get(`${b4aSettings.BACK4APP_API_PATH}/me/hub`, { withCredentials: true })).data;
-  } catch (err) {
-    throw err.response && err.response.data && err.response.data.error ? err.response.data.error : err
-  }
-}
-
 const PARSE_DOT_COM_SERVER_INFO = {
   features: {
     schemas: {
@@ -132,23 +121,6 @@ const PARSE_DOT_COM_SERVER_INFO = {
   status: 'SUCCESS',
 }
 
-const monthQuarter = {
-  '0': 'Q1',
-  '1': 'Q2',
-  '2': 'Q3',
-  '3': 'Q4'
-};
-
-const waitForScriptToLoad = async conditionFn => {
-  for (let i = 1; i <= 20; i++) {
-    if (conditionFn()) {
-      return;
-    }
-    await new Promise(resolve => setTimeout(resolve, i * 50));
-  }
-  throw new Error('Script not loaded yet!');
-};
-
 export default class Dashboard extends React.Component {
   constructor(props) {
     super();
@@ -167,48 +139,6 @@ export default class Dashboard extends React.Component {
 
   componentDidMount() {
     get('/parse-dashboard-config.json').then(({ apps, newFeaturesInLatestVersion = [], user }) => {
-      fetchHubUser().then(userDetail => {
-        const now = moment();
-        const hourDiff = now.diff(userDetail.createdAt, 'hours');
-        if(hourDiff === 0){
-          return;
-        }
-        if (userDetail.disableSolucxForm) {
-          return;
-        }
-        // Flow1 are users who signed up less than 30 days ago (720 hours)
-        const isFlow1 = hourDiff <= 720 ? true : false;
-        let transactionId = userDetail.id;
-        if(!isFlow1){
-          const quarter = monthQuarter[parseInt(now.month() / 3)];
-          transactionId += `${now.year()}${quarter}`;
-        }
-        const options = {
-          transaction_id: transactionId,
-          store_id: isFlow1 ? '1001' : '1002',
-          name: userDetail.username,
-          email: userDetail.username,
-          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',
-        };
-        const retryInterval = isFlow1 ? 5 : 45;
-        const collectInterval = isFlow1 ? 30 : 90;
-        options.param_requestdata = encodeURIComponent(JSON.stringify({
-          userDetail,
-          options,
-          localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
-        }));
-        // eslint-disable-next-line no-undef
-        waitForScriptToLoad(() => typeof createSoluCXWidget === 'function').then(() => {
-          // eslint-disable-next-line no-undef
-          createSoluCXWidget(
-            process.env.SOLUCX_API_KEY,
-            'bottomBoxLeft',
-            options,
-            { collectInterval, retryAttempts: 1, retryInterval }
-          );
-        }).catch(err => console.log(err));
-      });
-
       const stateApps = [];
       apps.forEach(app => {
         app.serverInfo = { status: 'LOADING' };
