@@ -38,7 +38,7 @@ export default class ImportRelationDialog extends React.Component {
         icon='down-outline'
         iconSize={40}
         title='Import relation data'
-        subtitle={'You will receive an e-mail once your data is imported'}
+        subtitle={'You will receive an email once your data is imported'}
         confirmText='Import'
         cancelText='Cancel'
         disabled={!this.valid()}
@@ -71,7 +71,7 @@ export default class ImportRelationDialog extends React.Component {
                     onChange={(file) => {this.setState({ file: file });}} />}
         />
         {this.state.startedImport ?
-          <div style={{ padding: 20 }}>We are importing your data. You will be notified by e-mail once it is completed.</div> : null }
+          <div style={{ padding: 20 }}>We are importing your data. You will be notified by email once it is completed.</div> : null }
         {this.state.errorMessage ?
           <div style={{ padding: 20, color: '#ff395e' }}>Import Request failed with the following error: "{ this.state.errorMessage }".</div> : null }
       </Modal>
