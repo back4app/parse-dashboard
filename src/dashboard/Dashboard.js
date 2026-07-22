@@ -139,23 +139,6 @@ const PARSE_DOT_COM_SERVER_INFO = {
   status: 'SUCCESS',
 }
 
-// const monthQuarter = {
-//   '0': 'Q1',
-//   '1': 'Q2',
-//   '2': 'Q3',
-//   '3': 'Q4'
-// };
-
-const waitForScriptToLoad = async conditionFn => {
-  for (let i = 1; i <= 20; i++) {
-    if (conditionFn()) {
-      return;
-    }
-    await new Promise(resolve => setTimeout(resolve, i * 50));
-  }
-  throw new Error('Script not loaded yet!');
-};
-
 const preloadMap = {
   cloudCode: () => import('./Data/CloudCode/B4ACloudCode.react'),
   graphqlConsole: () => import('./Data/ApiConsole/GraphQLConsole.react'),
@@ -226,47 +209,6 @@ class Dashboard extends React.Component {
       fetchHubUser().then(userDetail => {
         user.createdAt = userDetail.createdAt;
         user.verification = userDetail.verification;
-        const now = new Date();
-        const createdAt = new Date(userDetail.createdAt);
-        const hourDiff = Math.floor((now - createdAt) / (1000 * 60 * 60));
-        if (hourDiff === 0) {
-          return;
-        }
-        if (userDetail.disableSolucxForm) {
-          return;
-        }
-        // Flow1 are users who signed up less than 30 days ago (720 hours)
-        const isFlow1 = hourDiff <= 720;
-        let transactionId = userDetail.id;
-        if (!isFlow1) {
-          const monthQuarter = ['Q1', 'Q2', 'Q3', 'Q4'];
-          const quarter = monthQuarter[Math.floor(now.getMonth() / 3)];
-          transactionId += `${now.getFullYear()}${quarter}`;
-        }
-        const options = {
-          transaction_id: transactionId,
-          store_id: isFlow1 ? '1001' : '1002',
-          name: userDetail.username,
-          email: userDetail.username,
-          journey: isFlow1 ? 'csat-back4app' : 'nps-back4app',
-        };
-        const retryInterval = isFlow1 ? 5 : 45;
-        const collectInterval = isFlow1 ? 30 : 90;
-        options.param_requestdata = encodeURIComponent(JSON.stringify({
-          userDetail,
-          options,
-          localStorage: localStorage.getItem('solucxWidgetLog-' + userDetail.username)
-        }));
-        // eslint-disable-next-line no-undef
-        waitForScriptToLoad(() => typeof createSoluCXWidget === 'function').then(() => {
-          // eslint-disable-next-line no-undef
-          createSoluCXWidget(
-            process.env.SOLUCX_API_KEY,
-            'bottomBoxLeft',
-            options,
-            { collectInterval, retryAttempts: 1, retryInterval }
-          );
-        }).catch(err => console.log(err));
       });
 
       const stateApps = [];
