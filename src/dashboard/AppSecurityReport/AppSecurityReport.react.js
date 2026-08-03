@@ -14,6 +14,8 @@ import styles from './AppSecurityReport.scss';
 import DashboardView from 'dashboard/DashboardView.react';
 import stylesTable from 'dashboard/TableView.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
+import Icon from 'components/Icon/Icon.react';
+import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 
 
 @withRouter
@@ -24,6 +26,7 @@ class AppSecurityReport extends DashboardView {
     this.subsection = 'Security';
     this.state = {
       isLoadingSecurityReport: true,
+      loading: true,
       securityReport: null,
       securityReportError: null,
     };
@@ -48,11 +51,12 @@ class AppSecurityReport extends DashboardView {
   }
 
   onRefresh() {
-    this.loadData();
+    this.loadData(true);
   }
 
-  loadData() {
-    this.context.getSecurityReport().then(res => {
+  loadData(refresh = false) {
+    this.setState({ loading: true, securityReportError: null });
+    this.context.getSecurityReport(refresh).then(res => {
       this.setState({
         securityReport: res,
       });
@@ -61,16 +65,21 @@ class AppSecurityReport extends DashboardView {
         securityReportError: new Error(err.message || err.msg || 'Something went wrong'),
       });
     }).finally(() => {
-      this.setState({ isLoadingSecurityReport: false });
+      this.setState({ isLoadingSecurityReport: false, loading: false });
     });
   }
 
   renderToolbar() {
     return (
       <Toolbar section="Reports" subsection="Security" >
-        {/* <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
+        <a
+          className={browserStyles.toolbarButton}
+          style={{ margin: 0, border: 'none' }}
+          onClick={this.state.loading ? null : this.onRefresh.bind(this)}
+          title="Refresh security report"
+        >
           <Icon name="b4a-refresh-icon" width={18} height={18} />
-        </a> */}
+        </a>
       </Toolbar>
     );
   }

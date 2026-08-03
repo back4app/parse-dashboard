@@ -1636,12 +1636,12 @@ export default class ParseApp {
     }
   }
 
-  async getSecurityReport() {
+  async getSecurityReport(refresh = false) {
     try {
       return (
         await axios.get(
           // eslint-disable-next-line no-undef
-          `${b4aSettings.BACK4APP_API_PATH}/security-report/${this.slug}?fromdashboard=true`,
+          `${b4aSettings.BACK4APP_API_PATH}/security-report/${this.slug}?fromdashboard=true${refresh ? '&refresh=true' : ''}`,
           { withCredentials: true }
         )
       ).data;
