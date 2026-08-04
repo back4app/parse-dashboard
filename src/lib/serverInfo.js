@@ -5,7 +5,6 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'jobs',
   'deployments',
   'webhooks',
-  'config',
   'web-deployment',
   'Overview',
   'Web Deployment',
