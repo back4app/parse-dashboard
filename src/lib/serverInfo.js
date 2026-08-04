@@ -1,5 +1,10 @@
 export const ALWAYS_ALLOWED_ROUTES = [
   'overview',
+  'Cloud Code',
+  'cloud_code',
+  'jobs',
+  'deployments',
+  'webhooks',
   'web-deployment',
   'Overview',
   'Web Deployment',
