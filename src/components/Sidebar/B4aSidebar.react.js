@@ -139,7 +139,7 @@ const B4aSidebar = ({
     }
     return (
       <div className={styles.submenu}>
-        {subsections.map(({ name, link, badge, children: groupChildren }) => {
+        {subsections.map(({ name, link, badge, gated, children: groupChildren }) => {
           if (groupChildren) {
             const isGroupActive = subsection === name || groupChildren.some(c => c.name === subsection);
             const groupLink = link.startsWith('/') ? prefix + link : link;
@@ -189,6 +189,8 @@ const B4aSidebar = ({
           }
 
           const active = subsection === name;
+          // Opt-in: only items flagged `gated` are locked when the app is unreachable.
+          const itemDisabled = gated ? !canAccess(currentApp.serverInfo, link.replace(/^\//, '')) : false;
           link = link.startsWith('/') ? prefix + link : link;
           return (
             <SidebarSubItem
@@ -199,6 +201,7 @@ const B4aSidebar = ({
               actionHandler={active ? actionHandler : null}
               active={active}
               badge={badge}
+              disabled={itemDisabled}
             >
               {active ? children : null}
             </SidebarSubItem>

@@ -161,7 +161,8 @@ export default class DashboardView extends React.Component {
 
     cloudCodeSubSections.push({
       name: 'Config',
-      link: '/config'
+      link: '/config',
+      gated: true
     });
 
     // if (!isLocked && features.logs && Object.keys(features.logs).some(key => features.logs[key])) {
