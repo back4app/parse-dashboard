@@ -313,6 +313,19 @@ export default class DataBrowser extends React.Component {
         });
         e.preventDefault();
         break;
+      case 32: // Space - toggle selection of the current row
+        if (
+          !this.state.editing &&
+          this.state.current?.row >= 0 &&
+          this.props.selectRow &&
+          this.props.data[this.state.current.row]
+        ) {
+          const rowId = this.props.data[this.state.current.row].id;
+          const isSelected = this.props.selection && this.props.selection[rowId];
+          this.props.selectRow(rowId, !isSelected);
+          e.preventDefault();
+        }
+        break;
       case 67: // C
         if ((e.ctrlKey || e.metaKey) && this.state.copyableValue !== undefined) {
           copy(this.state.copyableValue); // Copies current cell value to clipboard
