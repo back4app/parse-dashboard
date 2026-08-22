@@ -111,6 +111,8 @@ class Browser extends DashboardView {
       filters: new List(),
       ordering: '-createdAt',
       selection: {},
+      rowCheckboxDragging: false,
+      draggedRowSelection: false,
       uniqueClassFields: new List(),
       exporting: false,
       exportingCount: 0,
@@ -180,6 +182,9 @@ class Browser extends DashboardView {
     this.showCreateClass = this.showCreateClass.bind(this);
     this.refresh = this.refresh.bind(this);
     this.selectRow = this.selectRow.bind(this);
+    this.onMouseDownRowCheckBox = this.onMouseDownRowCheckBox.bind(this);
+    this.onMouseUpRowCheckBox = this.onMouseUpRowCheckBox.bind(this);
+    this.onMouseOverRowCheckBox = this.onMouseOverRowCheckBox.bind(this);
     this.updateRow = this.updateRow.bind(this);
     this.updateOrdering = this.updateOrdering.bind(this);
     this.handlePointerClick = this.handlePointerClick.bind(this);
@@ -284,7 +289,9 @@ class Browser extends DashboardView {
     window.addEventListener('resize', this.windowResizeHandler);
   }
 
-  async componentDidMount() { 
+  async componentDidMount() {
+    // End row-checkbox drag selection when the mouse is released anywhere.
+    window.addEventListener('mouseup', this.onMouseUpRowCheckBox);
     this.addLocation(this.props.params.appId);
     try {
       await this.props.schema.dispatch(ActionTypes.FETCH);
@@ -319,7 +326,32 @@ class Browser extends DashboardView {
   
 
   componentWillUnmount() {
+    window.removeEventListener('mouseup', this.onMouseUpRowCheckBox);
     this.removeLocation();
+  }
+
+  // Drag over the row checkboxes (mousedown on one, drag over others) to select
+  // a range of rows, matching the upstream Data Browser behavior.
+  onMouseDownRowCheckBox(checked) {
+    this.setState({
+      rowCheckboxDragging: true,
+      draggedRowSelection: !checked,
+    });
+  }
+
+  onMouseUpRowCheckBox() {
+    if (this.state.rowCheckboxDragging) {
+      this.setState({
+        rowCheckboxDragging: false,
+        draggedRowSelection: false,
+      });
+    }
+  }
+
+  onMouseOverRowCheckBox(id) {
+    if (this.state.rowCheckboxDragging) {
+      this.selectRow(id, this.state.draggedRowSelection);
+    }
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -2610,6 +2642,8 @@ class Browser extends DashboardView {
             maxFetched={this.state.lastMax}
             selectRow={this.selectRow}
             selection={this.state.selection}
+            onMouseDownRowCheckBox={this.onMouseDownRowCheckBox}
+            onMouseOverRowCheckBox={this.onMouseOverRowCheckBox}
             data={this.state.data}
             ordering={this.state.ordering}
             newObject={this.state.newObject}

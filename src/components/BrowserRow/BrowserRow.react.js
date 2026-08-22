@@ -34,6 +34,8 @@ export default class BrowserRow extends Component {
       rowWidth,
       selection,
       selectRow,
+      onMouseDownRowCheckBox,
+      onMouseOverRowCheckBox,
       setCopyableValue,
       setCurrent,
       setEditing,
@@ -66,12 +68,16 @@ export default class BrowserRow extends Component {
     }
     return (
       <div className={styles.tableRow} style={{ minWidth: rowWidth + 34 }}> { /** 34 -> extra padding to cover up last column */}
-        <span className={styles.checkCell}>
+        <span
+          className={styles.checkCell}
+          onMouseOver={() => onMouseOverRowCheckBox && onMouseOverRowCheckBox(obj.id)}
+        >
           <input
             disabled={row < 0}
             type='checkbox'
             checked={!!selection['*'] || !!selection[obj.id]}
             onChange={e => selectRow(obj.id, e.target.checked)}
+            onMouseDown={e => onMouseDownRowCheckBox && onMouseDownRowCheckBox(e.target.checked)}
           />
         </span>
         {order.map(({ name, width, visible }, j) => {
