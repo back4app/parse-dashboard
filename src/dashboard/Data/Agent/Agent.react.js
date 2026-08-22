@@ -441,7 +441,7 @@ class Agent extends DashboardView {
     ];
 
     return (
-      <Toolbar section="Core" subsection="Agent">
+      <Toolbar section="Agent" subsection="AI Agent">
         {models.length > 0 && (
           <BrowserMenu
             title="Model"
