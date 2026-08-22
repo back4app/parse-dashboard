@@ -555,15 +555,20 @@ class Agent extends DashboardView {
             />
           ))}
         </BrowserMenu>
-        <BrowserMenu
-          ref={this.browserMenuRef}
-          title="Chat options (clear conversation)"
-          icon="b4a-agent"
-          setCurrent={() => {}}
+        <a
+          className={styles.toolbarAction}
+          title="Add / configure models"
+          onClick={() => this.setState({ showConfigDialog: true })}
         >
-          <MenuItem text="Configure" onClick={() => this.setState({ showConfigDialog: true })} />
-          <MenuItem text="Clear" onClick={() => this.clearChat()} />
-        </BrowserMenu>
+          <Icon name="b4a-add-outline-circle" width={18} height={18} fill="#ffffff" />
+        </a>
+        <a
+          className={styles.toolbarAction}
+          title="Clear conversation"
+          onClick={() => this.clearChat()}
+        >
+          <Icon name="b4a-trash-icon" width={18} height={18} fill="#ffffff" />
+        </a>
       </Toolbar>
     );
   }

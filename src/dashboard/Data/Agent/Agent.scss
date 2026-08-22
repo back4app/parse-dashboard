@@ -23,6 +23,19 @@ $agentAccent: #1669fc;
      the empty-state overlay carry the navy background below the toolbar. */
 }
 
+.toolbarAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 10px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
 .chatContainer {
   display: flex;
   flex-direction: column;
