@@ -219,5 +219,8 @@
     "*.css",
     "*.scss",
     "./src/components/B4ACodeTree/B4ACodeTree.react.js"
-  ]
+  ],
+  "overrides": {
+    "tslib": "2.6.2"
+  }
 }
