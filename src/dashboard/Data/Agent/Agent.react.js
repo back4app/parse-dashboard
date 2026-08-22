@@ -20,6 +20,10 @@ import styles from './Agent.scss';
 import { withRouter } from 'lib/withRouter';
 import { CurrentApp } from 'context/currentApp';
 
+// The app environment variable (Cloud Code env) where the user's OpenAI API key
+// is stored, instead of localStorage.
+const AGENT_ENV_KEY = 'OPENAI_API_KEY';
+
 @withRouter
 class Agent extends DashboardView {
   static contextType = CurrentApp;
@@ -96,19 +100,63 @@ class Agent extends DashboardView {
     }
   }
 
-  saveAgentConfig = (model) => {
-    const config = { models: [model] };
+  // Save the model config. The API key is stored in the app environment variable
+  // (Cloud Code env) — NOT in localStorage. Non-secret parts (name/provider/model)
+  // are cached in localStorage so we know how to build the request. Returns a
+  // promise so the dialog can show "Saving…" and surface errors while the app
+  // rebuilds.
+  saveAgentConfig = async (model) => {
+    const { name, provider, model: modelId, apiKey } = model;
+
+    // 1. Store the API key as an app env var, merging with the existing ones.
+    if (apiKey && this.context && this.context.getEnvVars && this.context.updateEnvVars) {
+      const existing = await this.context.getEnvVars();
+      const envVars = (existing && existing.envVars) || {};
+      await this.context.updateEnvVars({ ...envVars, [AGENT_ENV_KEY]: apiKey });
+    }
+
+    // 2. Cache non-secret parts locally (no API key).
     const key = this.agentConfigStorageKey();
     if (key) {
       try {
-        localStorage.setItem(key, JSON.stringify(config));
+        localStorage.setItem(
+          key,
+          JSON.stringify({ models: [{ name, provider, model: modelId }] })
+        );
       } catch (error) {
-        console.warn('Failed to save agent config:', error);
+        console.warn('Failed to cache agent config:', error);
       }
     }
-    this.setState({ userAgentConfig: config, showConfigDialog: false }, () => {
-      this.setSelectedModel(model.name);
+
+    // 3. Keep the full config (incl. key) in memory for this session.
+    this.setState({ userAgentConfig: { models: [model] } }, () => {
+      this.setSelectedModel(name);
     });
+  }
+
+  // Load the effective config: non-secret parts from localStorage + the API key
+  // from the app environment variable.
+  async loadAgentConfig() {
+    const local = this.getStoredAgentConfig();
+    let apiKey;
+    try {
+      if (this.context && this.context.getEnvVars) {
+        const existing = await this.context.getEnvVars();
+        apiKey = existing && existing.envVars && existing.envVars[AGENT_ENV_KEY];
+      }
+    } catch (error) {
+      console.warn('Failed to read agent API key from env vars:', error);
+    }
+
+    if (local && local.models[0] && apiKey) {
+      const m = local.models[0];
+      const config = {
+        models: [{ name: m.name, provider: m.provider || 'openai', model: m.model, apiKey }],
+      };
+      this.setState({ userAgentConfig: config }, () => this.setDefaultModel());
+    } else {
+      this.setDefaultModel();
+    }
   }
 
   // Effective config: user-provided (localStorage) takes precedence over the
@@ -184,14 +232,9 @@ class Agent extends DashboardView {
       this.setState({ route: 'agent' });
     }
 
-    // Load user-provided agent config (from the Configure dialog) now that
-    // the app context (slug) is available.
-    const storedAgentConfig = this.getStoredAgentConfig();
-    if (storedAgentConfig) {
-      this.setState({ userAgentConfig: storedAgentConfig }, () => this.setDefaultModel());
-    } else {
-      this.setDefaultModel();
-    }
+    // Load user-provided agent config (non-secret parts from localStorage, API
+    // key from the app env var) now that the app context (slug) is available.
+    this.loadAgentConfig();
 
     // Load saved chat state after component mounts when context is available
     this.loadSavedChatState();

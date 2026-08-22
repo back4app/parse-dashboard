@@ -67,15 +67,18 @@ export default class AgentConfigDialog extends React.Component {
         enabled={this.valid()}
         clearFields={this.clearFields}
         onClose={this.props.onClose}
-        onSubmit={() => {
-          this.props.onConfirm({
-            name: this.state.name.trim(),
-            provider: 'openai',
-            model: this.state.model.trim(),
-            apiKey: this.state.apiKey.trim(),
-          });
-          return Promise.resolve();
-        }}
+        onSubmit={() =>
+          // Returns a promise so the modal shows "Saving…" while the API key is
+          // written to the app env var (which triggers an app rebuild).
+          Promise.resolve(
+            this.props.onConfirm({
+              name: this.state.name.trim(),
+              provider: 'openai',
+              model: this.state.model.trim(),
+              apiKey: this.state.apiKey.trim(),
+            })
+          )
+        }
       >
         <Field
           label={<Label text="Provider" />}
@@ -113,7 +116,7 @@ export default class AgentConfigDialog extends React.Component {
           }
         />
         <Field
-          label={<Label text="API Key" description="Stored locally in your browser for now." />}
+          label={<Label text="API Key" description="Saved as the app environment variable OPENAI_API_KEY. Saving rebuilds your app." />}
           input={
             <TextInput
               dark={false}
