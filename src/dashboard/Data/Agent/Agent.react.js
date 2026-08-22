@@ -105,37 +105,45 @@ class Agent extends DashboardView {
   // are cached in localStorage so we know how to build the request. Returns a
   // promise so the dialog can show "Saving…" and surface errors while the app
   // rebuilds.
-  saveAgentConfig = async (model) => {
-    const { name, provider, model: modelId, apiKey } = model;
+  // Save the config: a shared API key + a list of models. The key is stored in
+  // the app env var (Cloud Code env) — NOT in localStorage. The model list
+  // (non-secret) is cached in localStorage. Returns a promise so the dialog can
+  // show "Saving…" and surface errors while the app rebuilds.
+  saveAgentConfig = async ({ apiKey, models }) => {
+    const cleanModels = (models || []).map(m => ({
+      name: m.name,
+      provider: m.provider || 'openai',
+      model: m.model,
+    }));
 
-    // 1. Store the API key as an app env var, merging with the existing ones.
+    // 1. Store the shared API key as an app env var, merging with the existing ones.
     if (apiKey && this.context && this.context.getEnvVars && this.context.updateEnvVars) {
       const existing = await this.context.getEnvVars();
       const envVars = (existing && existing.envVars) || {};
       await this.context.updateEnvVars({ ...envVars, [AGENT_ENV_KEY]: apiKey });
     }
 
-    // 2. Cache non-secret parts locally (no API key).
+    // 2. Cache the (non-secret) model list locally.
     const key = this.agentConfigStorageKey();
     if (key) {
       try {
-        localStorage.setItem(
-          key,
-          JSON.stringify({ models: [{ name, provider, model: modelId }] })
-        );
+        localStorage.setItem(key, JSON.stringify({ models: cleanModels }));
       } catch (error) {
         console.warn('Failed to cache agent config:', error);
       }
     }
 
-    // 3. Keep the full config (incl. key) in memory for this session.
-    this.setState({ userAgentConfig: { models: [model] } }, () => {
-      this.setSelectedModel(name);
+    // 3. Keep the full config (each model carries the shared key) in memory.
+    const config = { models: cleanModels.map(m => ({ ...m, apiKey })) };
+    this.setState({ userAgentConfig: config }, () => {
+      if (cleanModels[0]) {
+        this.setSelectedModel(cleanModels[0].name);
+      }
     });
   }
 
-  // Load the effective config: non-secret parts from localStorage + the API key
-  // from the app environment variable.
+  // Load the effective config: the model list from localStorage + the shared API
+  // key from the app environment variable.
   async loadAgentConfig() {
     const local = this.getStoredAgentConfig();
     let apiKey;
@@ -148,10 +156,14 @@ class Agent extends DashboardView {
       console.warn('Failed to read agent API key from env vars:', error);
     }
 
-    if (local && local.models[0] && apiKey) {
-      const m = local.models[0];
+    if (local && Array.isArray(local.models) && local.models.length > 0 && apiKey) {
       const config = {
-        models: [{ name: m.name, provider: m.provider || 'openai', model: m.model, apiKey }],
+        models: local.models.map(m => ({
+          name: m.name,
+          provider: m.provider || 'openai',
+          model: m.model,
+          apiKey,
+        })),
       };
       this.setState({ userAgentConfig: config }, () => this.setDefaultModel());
     } else {
@@ -706,7 +718,8 @@ class Agent extends DashboardView {
         )}
         <AgentConfigDialog
           open={this.state.showConfigDialog}
-          initialModel={(this.getAgentConfig()?.models || [])[0]}
+          initialModels={this.getAgentConfig()?.models || []}
+          initialApiKey={(this.getAgentConfig()?.models || [])[0]?.apiKey}
           onConfirm={this.saveAgentConfig}
           onClose={() => this.setState({ showConfigDialog: false })}
         />

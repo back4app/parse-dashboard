@@ -12,55 +12,65 @@ import TextInput from 'components/TextInput/TextInput.react';
 import React from 'react';
 
 /**
- * Dialog to let the dashboard user provide their own AI agent credentials
- * from the UI, instead of editing the dashboard configuration file.
- *
- * Only OpenAI is supported for now (see Parse-Dashboard/app.js); the provider
- * is fixed to 'openai'.
- *
- * NOTE: for now this persists to localStorage (see Agent.react.js). That is a
- * temporary/insecure store — the intended design stores the key server-side
- * (app Cloud Code env var). This dialog is UI-first so we can iterate on UX.
+ * Dialog to configure the AI agent from the UI. Supports MULTIPLE models
+ * (add/edit/delete), all sharing a single OpenAI API key. The key is stored as
+ * the app env var (OPENAI_API_KEY); the model list (non-secret) is cached in
+ * localStorage. Only OpenAI is supported for now, so provider is fixed.
  */
+const emptyModel = () => ({ name: '', model: '' });
+
 export default class AgentConfigDialog extends React.Component {
   constructor(props) {
     super(props);
-    this.state = this.fieldsFromProps();
+    this.state = this.stateFromProps();
   }
 
-  fieldsFromProps() {
-    const model = this.props.initialModel || {};
-    return {
-      name: model.name || 'My model',
-      model: model.model || '',
-      apiKey: model.apiKey || '',
-    };
+  stateFromProps() {
+    const initial = this.props.initialModels || [];
+    const models = initial.length
+      ? initial.map(m => ({ name: m.name || '', model: m.model || '' }))
+      : [{ name: 'My model', model: '' }];
+    return { apiKey: this.props.initialApiKey || '', models };
   }
 
   componentDidUpdate(prevProps) {
-    // Refresh the fields from the current config each time the dialog opens.
     if (!prevProps.open && this.props.open) {
-      this.setState(this.fieldsFromProps());
+      this.setState(this.stateFromProps());
     }
+  }
+
+  clearFields = () => this.setState(this.stateFromProps());
+
+  updateModel(index, field, value) {
+    const models = this.state.models.map((m, i) =>
+      i === index ? { ...m, [field]: String(value ?? '') } : m
+    );
+    this.setState({ models });
+  }
+
+  addModel = () => {
+    this.setState({ models: [...this.state.models, emptyModel()] });
+  };
+
+  removeModel(index) {
+    const models = this.state.models.filter((_, i) => i !== index);
+    this.setState({ models: models.length ? models : [emptyModel()] });
   }
 
   valid() {
     return (
-      this.state.name.trim() !== '' &&
-      this.state.model.trim() !== '' &&
-      this.state.apiKey.trim() !== ''
+      this.state.apiKey.trim() !== '' &&
+      this.state.models.length > 0 &&
+      this.state.models.every(m => m.name.trim() !== '' && m.model.trim() !== '')
     );
   }
 
-  clearFields = () => {
-    this.setState(this.fieldsFromProps());
-  };
-
   render() {
+    const { models } = this.state;
     return (
       <B4aFormModal
         title="Configure AI Agent"
-        subtitle="Provide your own OpenAI credentials to use the agent."
+        subtitle="Add one or more OpenAI models. They share the same API key."
         open={this.props.open}
         submitText="Save"
         inProgressText={'Saving…'}
@@ -68,55 +78,24 @@ export default class AgentConfigDialog extends React.Component {
         clearFields={this.clearFields}
         onClose={this.props.onClose}
         onSubmit={() =>
-          // Returns a promise so the modal shows "Saving…" while the API key is
-          // written to the app env var (which triggers an app rebuild).
           Promise.resolve(
             this.props.onConfirm({
-              name: this.state.name.trim(),
-              provider: 'openai',
-              model: this.state.model.trim(),
               apiKey: this.state.apiKey.trim(),
+              models: this.state.models.map(m => ({
+                name: m.name.trim(),
+                provider: 'openai',
+                model: m.model.trim(),
+              })),
             })
           )
         }
       >
         <Field
           label={<Label text="Provider" />}
-          input={
-            <TextInput
-              dark={false}
-              padding="0 1rem"
-              disabled={true}
-              value="OpenAI"
-              onChange={() => {}}
-            />
-          }
+          input={<TextInput dark={false} padding="0 1rem" disabled={true} value="OpenAI" onChange={() => {}} />}
         />
         <Field
-          label={<Label text="Display name" description="Shown in the model picker." />}
-          input={
-            <TextInput
-              dark={false}
-              padding="0 1rem"
-              value={this.state.name}
-              onChange={value => this.setState({ name: String(value ?? '') })}
-            />
-          }
-        />
-        <Field
-          label={<Label text="Model" description="The OpenAI model identifier." />}
-          input={
-            <TextInput
-              dark={false}
-              padding="0 1rem"
-              placeholder="e.g. gpt-4o"
-              value={this.state.model}
-              onChange={value => this.setState({ model: String(value ?? '') })}
-            />
-          }
-        />
-        <Field
-          label={<Label text="API Key" description="Saved as the app environment variable OPENAI_API_KEY. Saving rebuilds your app." />}
+          label={<Label text="API Key" description="Saved as the app env var OPENAI_API_KEY. Saving rebuilds your app." />}
           input={
             <TextInput
               dark={false}
@@ -126,6 +105,52 @@ export default class AgentConfigDialog extends React.Component {
               value={this.state.apiKey}
               onChange={value => this.setState({ apiKey: String(value ?? '') })}
             />
+          }
+        />
+        {models.map((m, i) => (
+          <Field
+            key={i}
+            label={
+              <Label
+                text={`Model ${i + 1}`}
+                description={
+                  models.length > 1 ? (
+                    <a
+                      style={{ color: '#e85c3e', cursor: 'pointer' }}
+                      onClick={() => this.removeModel(i)}
+                    >
+                      Remove
+                    </a>
+                  ) : null
+                }
+              />
+            }
+            input={
+              <div style={{ display: 'flex', gap: '8px', padding: '0 1rem' }}>
+                <TextInput
+                  dark={false}
+                  placeholder="Display name"
+                  value={m.name}
+                  onChange={value => this.updateModel(i, 'name', value)}
+                />
+                <TextInput
+                  dark={false}
+                  placeholder="e.g. gpt-4o"
+                  value={m.model}
+                  onChange={value => this.updateModel(i, 'model', value)}
+                />
+              </div>
+            }
+          />
+        ))}
+        <Field
+          label={<Label text="" />}
+          input={
+            <div style={{ padding: '0 1rem' }}>
+              <a style={{ color: '#1669fc', cursor: 'pointer' }} onClick={this.addModel}>
+                + Add model
+              </a>
+            </div>
           }
         />
       </B4aFormModal>
