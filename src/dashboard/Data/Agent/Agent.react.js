@@ -499,7 +499,7 @@ class Agent extends DashboardView {
       <Toolbar section="Agent" subsection="AI Agent">
         {models.length > 0 && (
           <BrowserMenu
-            title="Model"
+            title="Select AI model"
             icon="b4a-app-settings-icon"
             setCurrent={() => {}}
           >
@@ -527,7 +527,7 @@ class Agent extends DashboardView {
         )}
         <BrowserMenu
           key={`permissions-${permissionsKey}`}
-          title="Permissions"
+          title="Permissions — what the agent can do in your database"
           icon="b4a-lock-icon"
           setCurrent={() => {}}
         >
@@ -557,7 +557,7 @@ class Agent extends DashboardView {
         </BrowserMenu>
         <BrowserMenu
           ref={this.browserMenuRef}
-          title="Chat"
+          title="Chat options (clear conversation)"
           icon="b4a-agent"
           setCurrent={() => {}}
         >

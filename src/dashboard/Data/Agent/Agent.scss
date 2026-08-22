@@ -18,8 +18,9 @@ $agentAccent: #1669fc;
 .agentContainer {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background-color: $agentBg;
+  /* No full-height background: the toolbar has a top margin (header area) and a
+     navy background here would bleed above the gray toolbar. The chat window and
+     the empty-state overlay carry the navy background below the toolbar. */
 }
 
 .chatContainer {
@@ -35,7 +36,7 @@ $agentAccent: #1669fc;
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  padding-top: 116px; /* Add top padding to account for the 96px fixed toolbar + some extra spacing */
+  padding-top: 127px; /* below production2 toolbar (header 63 + toolbar 64) */
   padding-bottom: 80px; /* Add bottom padding to account for the fixed chat form */
   background-color: $agentBg;
   scroll-behavior: smooth;
@@ -46,8 +47,8 @@ $agentAccent: #1669fc;
 
 .emptyStateOverlay {
   position: fixed;
-  left: 300px;
-  top: 116px; /* Account for toolbar height */
+  left: 280px;
+  top: 127px; /* below production2 toolbar (header 63 + toolbar 64) */
   bottom: 0;
   right: 0;
   display: flex;
@@ -75,11 +76,11 @@ $agentAccent: #1669fc;
 
 body:global(.expanded) {
   .emptyStateOverlay {
-    left: $sidebarCollapsedWidth;
+    left: 88px; /* $b4aSidebarCollapsedWidth */
   }
 
   .chatForm {
-    left: $sidebarCollapsedWidth;
+    left: 88px; /* $b4aSidebarCollapsedWidth */
   }
 }
 
@@ -253,7 +254,7 @@ body:global(.expanded) {
   padding: 16px 20px;
   position: fixed;
   bottom: 0;
-  left: 300px;
+  left: 280px;
   right: 0;
   z-index: 20;
 }
