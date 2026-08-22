@@ -7,6 +7,7 @@
  */
 import B4aFormModal from 'components/FormModal/B4aFormModal.react';
 import Field from 'components/Field/Field.react';
+import Icon from 'components/Icon/Icon.react';
 import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import React from 'react';
@@ -107,6 +108,20 @@ export default class AgentConfigDialog extends React.Component {
             />
           }
         />
+        <Field
+          label={<Label text="Models" description="Add one or more models to switch between." />}
+          input={
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 1rem' }}>
+              <span
+                style={{ cursor: 'pointer', display: 'inline-flex' }}
+                onClick={this.addModel}
+                title="Add model"
+              >
+                <Icon name="b4a-add-outline-circle" width={22} height={22} fill="#1669fc" />
+              </span>
+            </div>
+          }
+        />
         {models.map((m, i) => (
           <Field
             key={i}
@@ -143,16 +158,6 @@ export default class AgentConfigDialog extends React.Component {
             }
           />
         ))}
-        <Field
-          label={<Label text="" />}
-          input={
-            <div style={{ padding: '0 1rem' }}>
-              <a style={{ color: '#1669fc', cursor: 'pointer' }} onClick={this.addModel}>
-                + Add model
-              </a>
-            </div>
-          }
-        />
       </B4aFormModal>
     );
   }

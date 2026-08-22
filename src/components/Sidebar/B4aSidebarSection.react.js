@@ -112,6 +112,10 @@ const getIconContent = (icon) => {
           <LazyB4aLogsIcon />
         </Suspense>
       );
+    case 'b4a-agent':
+      // No dedicated colored active-state component; keep the sprite icon so it
+      // does not disappear when the Agent section is active.
+      return <Icon width={20} height={20} name="b4a-agent" fill="#ffffff" />;
     default:
       return null;
   }
