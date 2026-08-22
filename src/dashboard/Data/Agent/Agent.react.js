@@ -567,7 +567,7 @@ class Agent extends DashboardView {
           title="Clear conversation"
           onClick={() => this.clearChat()}
         >
-          <Icon name="b4a-trash-icon" width={18} height={18} fill="#ffffff" />
+          <Icon name="b4a-refresh-icon" width={18} height={18} fill="#ffffff" />
         </a>
       </Toolbar>
     );
