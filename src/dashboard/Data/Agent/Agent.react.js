@@ -564,10 +564,10 @@ class Agent extends DashboardView {
         </a>
         <a
           className={styles.toolbarAction}
-          title="Clear conversation"
+          title="New conversation"
           onClick={() => this.clearChat()}
         >
-          <Icon name="b4a-refresh-icon" width={18} height={18} fill="#ffffff" />
+          <Icon name="edit-outline" width={18} height={18} fill="#ffffff" />
         </a>
       </Toolbar>
     );
