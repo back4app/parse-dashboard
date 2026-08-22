@@ -196,21 +196,8 @@ class AppsIndex extends React.Component {
         </div>
       );
     }
-    let upgradePrompt = null;
-    if (this.props.newFeaturesInLatestVersion.length > 0) {
-      const newFeaturesNodes = this.props.newFeaturesInLatestVersion.map(feature => (
-        <strong>{feature}</strong>
-      ));
-      upgradePrompt = (
-        <FlowFooter>
-          Upgrade to the{' '}
-          <a href="https://www.npmjs.com/package/parse-dashboard" target="_blank">
-            latest version
-          </a>{' '}
-          of Backend Dashboard to get access to: {joinWithFinal('', newFeaturesNodes, ', ', ' and ')}.
-        </FlowFooter>
-      );
-    }
+    // Upgrade prompt banner removed (was shown when newFeaturesInLatestVersion was set).
+    const upgradePrompt = null;
     return (
       <div className={styles.index}>
         <div className={styles.header}>
