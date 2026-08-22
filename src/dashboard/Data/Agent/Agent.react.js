@@ -53,9 +53,14 @@ class Agent extends DashboardView {
     this.action = new SidebarAction('Clear Chat', () => this.clearChat());
   }
 
+  selectedModelStorageKey() {
+    const appSlug = this.context ? this.context.slug : null;
+    return appSlug ? `selectedAgentModel_${appSlug}` : null;
+  }
+
   getStoredSelectedModel() {
-    const stored = localStorage.getItem('selectedAgentModel');
-    return stored;
+    const key = this.selectedModelStorageKey();
+    return key ? localStorage.getItem(key) : null;
   }
 
   getStoredPermissions() {
@@ -296,19 +301,25 @@ class Agent extends DashboardView {
   }
 
   setDefaultModel() {
-    // Set default selected model if none is selected and models are available
+    // Pick the selected model when none is set. Prefer the per-app stored choice
+    // (the constructor can't read it — no app slug yet); fall back to the first.
     const agentConfig = this.getAgentConfig();
     const { selectedModel } = this.state;
     const models = agentConfig?.models || [];
 
     if (!selectedModel && models.length > 0) {
-      this.setSelectedModel(models[0].name);
+      const stored = this.getStoredSelectedModel();
+      const valid = stored && models.some(m => m.name === stored);
+      this.setSelectedModel(valid ? stored : models[0].name);
     }
   }
 
   setSelectedModel(modelName) {
     this.setState({ selectedModel: modelName });
-    localStorage.setItem('selectedAgentModel', modelName);
+    const key = this.selectedModelStorageKey();
+    if (key) {
+      localStorage.setItem(key, modelName);
+    }
   }
 
   scrollToBottom() {
@@ -524,6 +535,14 @@ class Agent extends DashboardView {
               />
             ))}
           </BrowserMenu>
+        )}
+        {selectedModel && (
+          <span
+            className={styles.activeModel}
+            title={`Active model: ${(models.find(m => m.name === selectedModel) || {}).model || ''}`}
+          >
+            {selectedModel}
+          </span>
         )}
         <BrowserMenu
           key={`permissions-${permissionsKey}`}

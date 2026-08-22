@@ -38,6 +38,16 @@ $agentAccent: #1669fc;
   }
 }
 
+.activeModel {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 .chatContainer {
   display: flex;
   flex-direction: column;
