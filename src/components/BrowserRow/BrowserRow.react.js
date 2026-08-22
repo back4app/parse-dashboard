@@ -70,7 +70,7 @@ export default class BrowserRow extends Component {
           <input
             disabled={row < 0}
             type='checkbox'
-            checked={selection['*'] || selection[obj.id]}
+            checked={!!selection['*'] || !!selection[obj.id]}
             onChange={e => selectRow(obj.id, e.target.checked)}
           />
         </span>
