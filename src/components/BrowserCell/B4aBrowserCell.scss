@@ -46,6 +46,72 @@
   }
 }
 
+// Multi-cell (shift-click) selection highlight. The B4a BrowserCell references
+// these classes; without them the selection had no visual feedback.
+.selected {
+  background-color: #e3effd;
+}
+
+.leftBorder {
+  position: relative;
+
+  &:after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+    border-left: 2px solid #555572;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.rightBorder {
+  position: relative;
+
+  &:after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+    border-right: 2px solid #555572;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.topBorder {
+  position: relative;
+
+  &:after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+    border-top: 2px solid #555572;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.bottomBorder {
+  position: relative;
+
+  &:after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+    border-bottom: 2px solid #555572;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
 // .readonly {
 //   color: #353446;
 //   opacity: .9;
