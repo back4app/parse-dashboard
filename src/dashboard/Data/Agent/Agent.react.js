@@ -500,7 +500,7 @@ class Agent extends DashboardView {
         {models.length > 0 && (
           <BrowserMenu
             title="Model"
-            icon="gear-solid"
+            icon="b4a-app-settings-icon"
             setCurrent={() => {}}
           >
             {models.map((model, index) => (
@@ -528,7 +528,7 @@ class Agent extends DashboardView {
         <BrowserMenu
           key={`permissions-${permissionsKey}`}
           title="Permissions"
-          icon="locked-solid"
+          icon="b4a-lock-icon"
           setCurrent={() => {}}
         >
           {permissionOperations.map((operation) => (
@@ -558,7 +558,7 @@ class Agent extends DashboardView {
         <BrowserMenu
           ref={this.browserMenuRef}
           title="Chat"
-          icon="collaborate-solid"
+          icon="b4a-agent"
           setCurrent={() => {}}
         >
           <MenuItem text="Configure" onClick={() => this.setState({ showConfigDialog: true })} />
