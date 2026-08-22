@@ -12,6 +12,7 @@ import AppData from './AppData.react';
 import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
 import Browser from './Data/Browser/Browser.react';
+import Agent from './Data/Agent/Agent.react';
 // import CloudCode from './Data/CloudCode/B4ACloudCode.react';
 import AppOverview from './Data/AppOverview/AppOverview.react';
 import Config from './Data/Config/Config.react';
@@ -424,6 +425,7 @@ class Dashboard extends React.Component {
         <Route path="browser" element={<BrowserRoute />} />
 
         <Route path="cloud_code" element={<LazyComponentWrapper><LazyCloudCode /></LazyComponentWrapper>} />
+        <Route path="agent" element={<Agent />} />
         <Route path="webhooks" element={<Webhooks />} />
 
         <Route path="jobs">{JobsRoute}</Route>

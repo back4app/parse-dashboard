@@ -344,6 +344,13 @@ export default class DashboardView extends React.Component {
       subsections: apiSubSections
     });
 
+    appSidebarSections.push({
+      name: 'Agent',
+      icon: 'collaborate-solid',
+      link: '/agent',
+      subsections: []
+    });
+
     const notificationSubSections = [
       {
         name: 'Email',
