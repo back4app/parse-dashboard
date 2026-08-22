@@ -163,6 +163,39 @@ export default class DataBrowser extends React.Component {
     if (this.props.disableKeyControls) {
       return;
     }
+    // Cmd/Ctrl+C copies the whole selected cell range (tab/newline separated),
+    // not just the focused cell.
+    if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+      const { rowStart, rowEnd, colStart, colEnd } = this.state.selectedCells || {};
+      if (rowStart >= 0 && rowEnd >= 0 && colStart >= 0 && colEnd >= 0) {
+        let copyableValue = '';
+        for (let rowIndex = rowStart; rowIndex <= rowEnd; rowIndex++) {
+          const rowData = [];
+          for (let colIndex = colStart; colIndex <= colEnd; colIndex++) {
+            const field = this.state.order[colIndex].name;
+            const value = field === 'objectId'
+              ? this.props.data[rowIndex].id
+              : this.props.data[rowIndex].attributes[field];
+            if (typeof value === 'number' && !isNaN(value)) {
+              rowData.push(String(value));
+            } else {
+              rowData.push(value || '');
+            }
+          }
+          copyableValue += rowData.join('\t');
+          if (rowIndex < rowEnd) {
+            copyableValue += '\r\n';
+          }
+        }
+        this.setCopyableValue(copyableValue);
+        copy(copyableValue);
+        if (this.props.showNote) {
+          this.props.showNote('Value copied to clipboard', false);
+        }
+        e.preventDefault();
+        return;
+      }
+    }
     if (
       this.state.editing &&
       this.state.current &&

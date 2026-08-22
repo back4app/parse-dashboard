@@ -49,7 +49,7 @@
 // Multi-cell (shift-click) selection highlight. The B4a BrowserCell references
 // these classes; without them the selection had no visual feedback.
 .selected {
-  background-color: #e3effd;
+  background-color: rgba(22, 105, 252, 0.3);
 }
 
 .leftBorder {
@@ -59,7 +59,7 @@
     position: absolute;
     pointer-events: none;
     content: '';
-    border-left: 2px solid #555572;
+    border-left: 2px solid #1669fc;
     top: 0;
     left: 0;
     right: 0;
@@ -74,7 +74,7 @@
     position: absolute;
     pointer-events: none;
     content: '';
-    border-right: 2px solid #555572;
+    border-right: 2px solid #1669fc;
     top: 0;
     left: 0;
     right: 0;
@@ -89,7 +89,7 @@
     position: absolute;
     pointer-events: none;
     content: '';
-    border-top: 2px solid #555572;
+    border-top: 2px solid #1669fc;
     top: 0;
     left: 0;
     right: 0;
@@ -104,7 +104,7 @@
     position: absolute;
     pointer-events: none;
     content: '';
-    border-bottom: 2px solid #555572;
+    border-bottom: 2px solid #1669fc;
     top: 0;
     left: 0;
     right: 0;
