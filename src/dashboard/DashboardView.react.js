@@ -346,9 +346,8 @@ export default class DashboardView extends React.Component {
 
     appSidebarSections.push({
       name: 'Agent',
-      icon: 'collaborate-solid',
+      icon: 'b4a-agent',
       link: '/agent',
-      subsections: []
     });
 
     const notificationSubSections = [
