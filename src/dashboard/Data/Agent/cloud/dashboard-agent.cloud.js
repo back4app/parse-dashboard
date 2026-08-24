@@ -78,6 +78,12 @@ var SYSTEM_PROMPT = [
   'When creating/updating objects you MUST provide the objectData parameter with the actual field values.',
   'If a database function returns an error, include the full error message in your response.',
   '',
+  'DATABASE ACCESS & MASTER KEY:',
+  '- You already have FULL database access through the tools; the master key is applied for you server-side.',
+  '- NEVER tell the user you lack the master key, and NEVER ask them for it. If a request needs data, just call the appropriate tool.',
+  '- To answer questions about the app\'s structure or data, CALL the tools (getSchema, queryClass, countObjects) — do not guess.',
+  '- Never fabricate app IDs, server URLs, class names, or field names. Only state values you got from the app context below or from a tool result.',
+  '',
   'Format responses using Markdown (bold, code, lists, tables, headers) for readability.'
 ].join('\n');
 
@@ -314,9 +320,17 @@ async function callOpenAI(apiKey, body) {
   throw new Error('OpenAI API error: request rejected after adjusting unsupported parameters.');
 }
 
-async function runAgent(userMessage, model, apiKey, history, operationLog, permissions) {
-  var appName = (Parse.applicationId || 'this app');
-  var messages = [{ role: 'system', content: SYSTEM_PROMPT + '\n\nContext: you are helping with the Parse app "' + appName + '".' }];
+async function runAgent(userMessage, model, apiKey, history, operationLog, permissions, appContext) {
+  var ctx = appContext || {};
+  var appName = ctx.appName || Parse.applicationId || 'this app';
+  var contextLines = [
+    '',
+    'APP CONTEXT (authoritative — use these exact values, do not invent others):',
+    '- App name: ' + appName,
+    '- App ID: ' + (ctx.appId || Parse.applicationId || 'unknown'),
+    '- Parse Server URL: ' + (ctx.serverURL || 'unknown')
+  ].join('\n');
+  var messages = [{ role: 'system', content: SYSTEM_PROMPT + '\n' + contextLines }];
   if (Array.isArray(history)) {
     history.forEach(function (m) {
       if (m && m.role && m.content !== null && m.content !== undefined && m.content !== '') {
@@ -363,6 +377,7 @@ Parse.Cloud.define('dashboardAgent', async function (request) {
   var modelName = params.modelName;
   var permissions = params.permissions || {};
   var history = params.history || [];
+  var appContext = params.appContext || {};
 
   if (!message || typeof message !== 'string' || message.trim() === '') {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'Message is required');
@@ -389,6 +404,6 @@ Parse.Cloud.define('dashboardAgent', async function (request) {
   }
 
   var operationLog = [];
-  var response = await runAgent(message.trim(), modelConfig.model, apiKey, history, operationLog, permissions);
+  var response = await runAgent(message.trim(), modelConfig.model, apiKey, history, operationLog, permissions, appContext);
   return { response: response, debug: { modelUsed: modelConfig.model, operations: operationLog } };
 });
