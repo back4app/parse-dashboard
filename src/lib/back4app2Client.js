@@ -12,16 +12,10 @@
 // the rest of the environment uses. No token is passed here.
 import { Back4app2 } from '@back4app2/sdk';
 
-// back4app2 GraphQL endpoint (http + ws). Homolog for now; can be lifted into
-// b4aSettings / a build-time env when we point at other environments.
-const HTTP_URL =
-  // eslint-disable-next-line no-undef
-  (typeof process !== 'undefined' && process.env && process.env.BACK4APP2_API_HTTP_URL) ||
-  'https://api.containers-homolog.back4app.com';
-const WS_URL =
-  // eslint-disable-next-line no-undef
-  (typeof process !== 'undefined' && process.env && process.env.BACK4APP2_API_WS_URL) ||
-  'wss://api.containers-homolog.back4app.com';
+// back4app2 GraphQL endpoint (http + ws). Homolog for now; lift into b4aSettings
+// when we point at other environments.
+const HTTP_URL = 'https://api.containers-homolog.back4app.com';
+const WS_URL = 'wss://api.containers-homolog.back4app.com';
 
 let instance = null;
 

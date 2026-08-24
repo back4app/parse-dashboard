@@ -42,6 +42,7 @@
     "@back4app2/react-components": "1.0.0-beta.440.130",
     "@back4app2/sdk": "^1.0.0-1.0.0-beta.440.165.2",
     "@monaco-editor/react": "4.7.0",
+    "ts-invariant": "^0.10.3",
     "@paddle/paddle-js": "1.4.2",
     "@sentry/react": "8.52.0",
     "@stripe/react-stripe-js": "^3.9.0",
@@ -222,7 +223,6 @@
     "./src/components/B4ACodeTree/B4ACodeTree.react.js"
   ],
   "overrides": {
-    "tslib": "2.6.2",
-    "ts-invariant": "0.10.3"
+    "tslib": "2.6.2"
   }
 }
