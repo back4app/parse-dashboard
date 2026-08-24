@@ -48,26 +48,26 @@ $agentAccent: #1669fc;
   white-space: nowrap;
 }
 
+/* Fixed box below the header (63px) + toolbar (64px) = 127px, spanning from the
+   sidebar to the right edge. A flex column: the chat window scrolls, the input
+   sits at the bottom. */
 .chatContainer {
+  position: fixed;
+  top: 127px;
+  left: 280px; /* $b4aSidebarWidth */
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  height: calc(100vh - 60px); /* Account for toolbar */
-  max-height: calc(100vh - 60px); /* Prevent expansion */
-  overflow: hidden;
+  background-color: $agentBg;
 }
 
 .chatWindow {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0; /* critical: lets the flex child scroll instead of growing */
   overflow-y: auto;
   padding: 20px;
-  padding-top: 127px; /* below production2 toolbar (header 63 + toolbar 64) */
-  padding-bottom: 80px; /* Add bottom padding to account for the fixed chat form */
-  background-color: $agentBg;
   scroll-behavior: smooth;
-  height: calc(100vh - 60px); /* Explicit height constraint */
-  max-height: calc(100vh - 60px); /* Prevent expansion beyond viewport */
-  min-height: 0; /* Allow flex item to shrink below content size */
 }
 
 .emptyStateOverlay {
@@ -104,7 +104,7 @@ body:global(.expanded) {
     left: 88px; /* $b4aSidebarCollapsedWidth */
   }
 
-  .chatForm {
+  .chatContainer {
     left: 88px; /* $b4aSidebarCollapsedWidth */
   }
 }
@@ -273,34 +273,36 @@ body:global(.expanded) {
   }
 }
 
+/* Static flex child at the bottom of .chatContainer (no longer fixed). */
 .chatForm {
+  flex: 0 0 auto;
   background-color: $agentBg;
   border-top: 1px solid $agentBorder;
   padding: 16px 20px;
-  position: fixed;
-  bottom: 0;
-  left: 280px;
-  right: 0;
-  z-index: 20;
 }
 
 .inputContainer {
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .chatInput {
   flex: 1;
   padding: 12px 16px;
   border: 1px solid $agentBorder;
-  border-radius: 24px;
+  border-radius: 20px;
   font-size: 14px;
+  line-height: 1.4;
+  font-family: inherit;
   outline: none;
   resize: none;
   transition: border-color 0.2s ease;
   background-color: $agentSurface;
   color: $agentText;
+  min-height: 44px;
+  max-height: 160px; /* grow with content up to here, then scroll */
+  overflow-y: auto;
 
   &::placeholder {
     color: $agentMuted;

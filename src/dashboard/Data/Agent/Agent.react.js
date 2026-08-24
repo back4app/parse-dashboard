@@ -438,6 +438,14 @@ class Agent extends DashboardView {
     this.setState({ inputValue: event.target.value });
   }
 
+  handleKeyDown = (event) => {
+    // Enter submits; Shift+Enter inserts a newline (default textarea behavior).
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.handleSubmit(event);
+    }
+  }
+
   handleExampleClick = (exampleText) => {
     this.setState({ inputValue: exampleText }, () => {
       // Auto-submit the example query
@@ -619,14 +627,6 @@ class Agent extends DashboardView {
             ))}
           </BrowserMenu>
         )}
-        {selectedModel && models.some(m => m.name === selectedModel) && (
-          <span
-            className={styles.activeModel}
-            title={`Active model: ${(models.find(m => m.name === selectedModel) || {}).model || ''}`}
-          >
-            {selectedModel}
-          </span>
-        )}
         <BrowserMenu
           key={`permissions-${permissionsKey}`}
           title="Permissions — what the agent can do in your database"
@@ -737,14 +737,15 @@ class Agent extends DashboardView {
     return (
       <form className={styles.chatForm} onSubmit={this.handleSubmit}>
         <div className={styles.inputContainer}>
-          <input
+          <textarea
             ref={this.chatInputRef}
-            type="text"
             className={styles.chatInput}
-            placeholder="Type your message here..."
+            placeholder="Type your message here…  (Shift+Enter for a new line)"
             value={inputValue}
             onChange={this.handleInputChange}
+            onKeyDown={this.handleKeyDown}
             disabled={isLoading}
+            rows={1}
             autoFocus
           />
           <button
