@@ -1944,9 +1944,42 @@ export default class ParseApp {
     }
   }
 
-  // Run the AI Agent server-side (back4app API). The OpenAI key is read from the
-  // app's own env var on the backend and never leaves it — nothing secret is sent
-  // from the browser here. `payload` = { message, modelName, permissions, history }.
+  // Read the app's Cloud Code file tree (shape: { tree: [cloud, public] }).
+  async getCloudCode() {
+    try {
+      return (
+        await axios.get(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/cloud`,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      const apiError = err.response && err.response.data && err.response.data.error;
+      throw apiError ? new Error(apiError) : err;
+    }
+  }
+
+  // Deploy a Cloud Code file tree (shape: [cloud, public]). Triggers a rebuild.
+  async saveCloudCode(tree) {
+    try {
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/cloud`,
+          { tree },
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      const apiError = err.response && err.response.data && err.response.data.error;
+      throw apiError ? new Error(apiError) : err;
+    }
+  }
+
+  // Run the AI Agent. The OpenAI key is read from the app's own env var and never
+  // leaves the backend; the heavy work runs inside the app's own Cloud Code
+  // container. `payload` = { message, modelName, permissions, history }.
   async sendAgentMessage(payload) {
     try {
       return (

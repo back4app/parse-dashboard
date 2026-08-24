@@ -127,6 +127,13 @@ export default class AgentConfigDialog extends React.Component {
           )
         }
       >
+        <div style={{ padding: '12px 1rem', margin: '0 0 8px', background: 'rgba(22,105,252,0.08)', border: '1px solid rgba(22,105,252,0.25)', borderRadius: 6, fontSize: 13, lineHeight: 1.4, color: '#334155' }}>
+          <strong>Heads up:</strong> saving will install the agent into your app&apos;s{' '}
+          <strong>Cloud Code</strong> (a managed file <code>cloud/dashboard-agent/index.js</code>{' '}
+          and a <code>require</code> in your <code>main.js</code>), set the{' '}
+          <code>OPENAI_API_KEY</code> and <code>AGENT_MODELS</code> environment variables, and{' '}
+          <strong>redeploy your app</strong>. The agent then runs inside your app&apos;s container.
+        </div>
         <Field
           label={<Label text="Provider" />}
           input={<TextInput dark={false} padding="0 1rem" disabled={true} value="OpenAI" onChange={() => {}} />}

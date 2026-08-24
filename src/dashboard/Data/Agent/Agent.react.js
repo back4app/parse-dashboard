@@ -16,6 +16,7 @@ import SidebarAction from 'components/Sidebar/SidebarAction';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import AgentService from 'lib/AgentService';
 import AgentConfigDialog from './AgentConfigDialog.react';
+import { injectAgent, removeAgent } from './agentCloudProvisioning';
 import styles from './Agent.scss';
 import { withRouter } from 'lib/withRouter';
 import { CurrentApp } from 'context/currentApp';
@@ -100,20 +101,35 @@ class Agent extends DashboardView {
       provider: m.provider || 'openai',
       model: m.model,
     }));
+    const app = this.context;
 
-    // Store the shared API key AND the model list as app env vars, merging with
-    // the existing ones.
-    if (this.context && this.context.getEnvVars && this.context.updateEnvVars) {
-      const existing = await this.context.getEnvVars();
+    // 1. Prepare the updated Cloud Code tree FIRST. injectAgent throws a
+    //    CloudCollisionError if a same-named file the user owns is in the way —
+    //    doing this before any write means a collision aborts cleanly with
+    //    nothing half-applied.
+    let newTree = null;
+    if (app && app.getCloudCode && app.saveCloudCode) {
+      const current = await app.getCloudCode();
+      newTree = injectAgent((current && current.tree) || []);
+    }
+
+    // 2. Store the shared API key AND the model list as app env vars.
+    if (app && app.getEnvVars && app.updateEnvVars) {
+      const existing = await app.getEnvVars();
       const envVars = (existing && existing.envVars) || {};
       const next = { ...envVars, [AGENT_MODELS_ENV_KEY]: JSON.stringify(cleanModels) };
       if (apiKey) {
         next[AGENT_ENV_KEY] = apiKey;
       }
-      await this.context.updateEnvVars(next);
+      await app.updateEnvVars(next);
     }
 
-    // Keep the full config (each model carries the shared key) in memory.
+    // 3. Deploy the agent Cloud Function into the app's container.
+    if (newTree && app && app.saveCloudCode) {
+      await app.saveCloudCode(newTree);
+    }
+
+    // 4. Keep the full config (each model carries the shared key) in memory.
     const config = { models: cleanModels.map(m => ({ ...m, apiKey })) };
     this.setState({ userAgentConfig: config }, () => {
       if (cleanModels[0]) {
@@ -126,12 +142,26 @@ class Agent extends DashboardView {
   // AGENT_MODELS env vars, clear the per-app UI selection, and reset in-memory
   // state back to the empty ("Configure") state. Triggers an app rebuild.
   deleteAgentConfig = async () => {
-    if (this.context && this.context.getEnvVars && this.context.updateEnvVars) {
-      const existing = await this.context.getEnvVars();
+    const app = this.context;
+
+    if (app && app.getEnvVars && app.updateEnvVars) {
+      const existing = await app.getEnvVars();
       const envVars = { ...((existing && existing.envVars) || {}) };
       delete envVars[AGENT_ENV_KEY];
       delete envVars[AGENT_MODELS_ENV_KEY];
-      await this.context.updateEnvVars(envVars);
+      await app.updateEnvVars(envVars);
+    }
+
+    // Remove our managed Cloud Code file + the require() line. Best-effort: a
+    // failure here shouldn't block clearing the config.
+    if (app && app.getCloudCode && app.saveCloudCode) {
+      try {
+        const current = await app.getCloudCode();
+        const newTree = removeAgent((current && current.tree) || []);
+        await app.saveCloudCode(newTree);
+      } catch (error) {
+        console.warn('Failed to remove agent Cloud Code:', error);
+      }
     }
 
     const selKey = this.selectedModelStorageKey();
