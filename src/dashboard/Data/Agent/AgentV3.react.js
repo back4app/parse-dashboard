@@ -17,6 +17,30 @@ import { getBack4app2 } from 'lib/back4app2Client';
 import { ChatMessageStatus } from '@back4app2/sdk';
 import styles from './Agent.scss';
 
+// Strip the agent's technical chatter from a response and pull out the progress
+// events, mirroring back4app2's AgentMessage parsing. The agent streams
+// ```agent-progress\n{json}\n``` fences (current tool/stage), plus tool-call /
+// tool-result / app-info fences and some legacy lines — none of which should be
+// shown as raw text. Returns the clean human-facing text + the latest event.
+function parseAgentContent(content) {
+  const text = String(content || '');
+  const events = [];
+  const progressRe = /`{3,}agent-progress\s*\n([\s\S]*?)\n`{3,}/g;
+  let match;
+  while ((match = progressRe.exec(text)) !== null) {
+    try { events.push(JSON.parse(match[1].trim())); } catch (e) { /* ignore */ }
+  }
+  const cleaned = text
+    .replace(/`{3,}agent-progress\s*\n[\s\S]*?\n`{3,}/g, '')
+    .replace(/`{3,}(?:tool-call|tool-result|app-info)\s*\n[\s\S]*?\n`{3,}/g, '')
+    .replace(/(?:\n\n)?Using tool:\s*`[^`]+`[^\n]*\n?/g, '')
+    .replace(/\s*Done\.\s*/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  const lastEvent = events.length ? events[events.length - 1] : null;
+  return { cleaned, lastEvent };
+}
+
 /**
  * AI Agent V3 chat, scoped to the current Parse app.
  *
@@ -114,6 +138,22 @@ class AgentV3 extends DashboardView {
     }
   };
 
+  // Delete the agent (and its chat) for this app, then reset to the empty state.
+  deleteAgent = async () => {
+    const { agent } = this.state;
+    if (!agent) { return; }
+    // eslint-disable-next-line no-alert
+    if (!window.confirm('Delete this agent and its conversation? This cannot be undone.')) { return; }
+    this.setState({ error: null });
+    try {
+      await getBack4app2().deleteAgent(agent.id);
+      this.teardown();
+      this.setState({ agent: null, chatId: null, messages: [] });
+    } catch (error) {
+      this.setState({ error: error.message || String(error) });
+    }
+  };
+
   subscribe(chatId) {
     const sdk = getBack4app2();
     this.subscription = sdk.subscribeToChatMessageEvents(chatId, (error, event) => {
@@ -176,7 +216,7 @@ class AgentV3 extends DashboardView {
   // Render fenced code blocks with the read-only Monaco editor; prose via Markdown.
   formatMessageContent(content) {
     const text = String(content || '');
-    const fence = /```(\w*)[ \t]*\r?\n([\s\S]*?)```/g;
+    const fence = /```([\w-]*)[ \t]*\r?\n([\s\S]*?)```/g;
     const parts = [];
     let lastIndex = 0;
     let match;
@@ -196,7 +236,35 @@ class AgentV3 extends DashboardView {
   }
 
   renderToolbar() {
-    return <Toolbar section="Agent" subsection="AI Agent" />;
+    const { agent } = this.state;
+    return (
+      <Toolbar section="Agent" subsection="AI Agent">
+        {agent ? (
+          <a className={styles.toolbarAction} title="Delete this agent" onClick={this.deleteAgent}>
+            Delete agent
+          </a>
+        ) : null}
+      </Toolbar>
+    );
+  }
+
+  // Compact "current task" indicator while the agent is working.
+  renderProgress(lastEvent) {
+    if (!lastEvent) {
+      return (
+        <div className={styles.typing}><span></span><span></span><span></span></div>
+      );
+    }
+    const label = lastEvent.stage || 'Working…';
+    const detail = [lastEvent.tool, lastEvent.filePath].filter(Boolean).join(' · ');
+    return (
+      <div className={styles.progressRow}>
+        <div className={styles.typing}><span></span><span></span><span></span></div>
+        <span className={styles.progressText}>
+          {label}{detail ? ` — ${detail}` : ''}
+        </span>
+      </div>
+    );
   }
 
   renderMessages() {
@@ -205,6 +273,9 @@ class AgentV3 extends DashboardView {
       <div className={styles.messagesContainer}>
         {messages.map(m => {
           const failed = m.status === ChatMessageStatus.FAILED || !!m.error;
+          const done = m.status === ChatMessageStatus.RESPONDED;
+          const inProgress = !failed && !done;
+          const { cleaned, lastEvent } = failed ? { cleaned: '', lastEvent: null } : parseAgentContent(m.aiResponse);
           return (
             <React.Fragment key={m.id}>
               {m.question ? (
@@ -216,13 +287,12 @@ class AgentV3 extends DashboardView {
                 <div className={styles.messageContent}>
                   {failed
                     ? `Error: ${(m.error && m.error.message) || 'The agent failed to respond.'}`
-                    : m.aiResponse
-                      ? this.formatMessageContent(m.aiResponse)
-                      : (
-                        <div className={styles.typing}>
-                          <span></span><span></span><span></span>
-                        </div>
-                      )}
+                    : (
+                      <>
+                        {cleaned ? this.formatMessageContent(cleaned) : null}
+                        {inProgress ? this.renderProgress(lastEvent) : null}
+                      </>
+                    )}
                 </div>
               </div>
             </React.Fragment>

@@ -264,6 +264,18 @@ body:global(.expanded) {
   text-align: left;
 }
 
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressText {
+  color: $agentMuted;
+  font-size: 13px;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
 .typing {
   display: flex;
   gap: 4px;
