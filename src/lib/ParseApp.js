@@ -1944,6 +1944,25 @@ export default class ParseApp {
     }
   }
 
+  // Run the AI Agent server-side (back4app API). The OpenAI key is read from the
+  // app's own env var on the backend and never leaves it — nothing secret is sent
+  // from the browser here. `payload` = { message, modelName, permissions, history }.
+  async sendAgentMessage(payload) {
+    try {
+      return (
+        await axios.post(
+          // eslint-disable-next-line no-undef
+          `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/agent`,
+          payload,
+          { withCredentials: true }
+        )
+      ).data;
+    } catch (err) {
+      const apiError = err.response && err.response.data && err.response.data.error;
+      throw apiError ? new Error(apiError) : err;
+    }
+  }
+
   async getOauth() {
     try {
       return (

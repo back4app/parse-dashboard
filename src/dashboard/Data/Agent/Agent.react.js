@@ -461,19 +461,25 @@ class Agent extends DashboardView {
       // Validate model configuration
       AgentService.validateModelConfig(modelConfig);
 
-      // Get app slug from context
-      const appSlug = this.context ? this.context.slug : null;
-      if (!appSlug) {
+      // App context (carries sendAgentMessage, which posts to the back4app API).
+      if (!this.context || typeof this.context.sendAgentMessage !== 'function') {
         throw new Error('App context not available');
       }
 
-      // Get response from AI service with conversation context
+      // Build the recent conversation history to send (the server-side agent is
+      // stateless). `messages` was captured before the current user message was
+      // added, so it is exactly the prior history.
+      const history = messages
+        .filter(m => (m.type === 'user' || m.type === 'agent') && !m.isError && m.content)
+        .map(m => ({ role: m.type === 'user' ? 'user' : 'assistant', content: m.content }));
+
+      // Get response from the AI service (server-side, key never leaves backend).
       const result = await AgentService.sendMessage(
         inputValue.trim(),
         modelConfig,
-        appSlug,
-        this.state.conversationId,
-        this.state.permissions
+        this.context,
+        this.state.permissions,
+        history
       );
 
       const aiMessage = {

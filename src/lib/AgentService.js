@@ -5,22 +5,25 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import { post } from './AJAX';
 
 /**
- * Service class for handling AI agent API requests to different providers
+ * Service class for handling AI agent API requests.
+ *
+ * The request is sent to the back4app API (via the app context), which runs the
+ * agent server-side and reads the OpenAI key from the app's own env var. NO
+ * secret (API key) is sent from the browser here.
  */
 export default class AgentService {
   /**
-   * Send a message to the configured AI model and get a response
+   * Send a message to the configured AI model and get a response.
    * @param {string} message - The user's message
-   * @param {Object} modelConfig - The model configuration object
-   * @param {string} appSlug - The app slug to scope the request to
-   * @param {string|null} conversationId - Optional conversation ID to maintain context
+   * @param {Object} modelConfig - The model configuration object (name/provider/model)
+   * @param {Object} app - The current app context (ParseApp) with sendAgentMessage()
    * @param {Object} permissions - Permission settings for operations
-   * @returns {Promise<{response: string, conversationId: string}>} The AI's response and conversation ID
+   * @param {Array} history - Recent conversation history [{role, content}]
+   * @returns {Promise<{response: string, conversationId: null}>} The AI's response
    */
-  static async sendMessage(message, modelConfig, appSlug, conversationId = null, permissions = {}) {
+  static async sendMessage(message, modelConfig, app, permissions = {}, history = []) {
     if (!modelConfig) {
       throw new Error('Model configuration is required');
     }
@@ -31,47 +34,27 @@ export default class AgentService {
       throw new Error('Model name is required in model configuration');
     }
 
-    if (!appSlug) {
-      throw new Error('App slug is required to send message to agent');
+    if (!app || typeof app.sendAgentMessage !== 'function') {
+      throw new Error('App context is required to send message to agent');
     }
 
     try {
-      const requestBody = {
-        message: message,
-        modelName: name
-      };
+      const response = await app.sendAgentMessage({
+        message,
+        modelName: name,
+        permissions: permissions || {},
+        history: history || [],
+      });
 
-      // If the model config carries its own credentials (provided by the user
-      // through the in-UI Configure dialog, not the dashboard config file),
-      // forward them so the server can use them instead of config.agent.
-      if (modelConfig.apiKey && modelConfig.provider && modelConfig.model) {
-        requestBody.modelConfig = {
-          name: modelConfig.name,
-          provider: modelConfig.provider,
-          model: modelConfig.model,
-          apiKey: modelConfig.apiKey,
-        };
-      }
-
-      // Include conversation ID if provided
-      if (conversationId) {
-        requestBody.conversationId = conversationId;
-      }
-
-      // Include permissions if provided
-      if (permissions) {
-        requestBody.permissions = permissions;
-      }
-
-      const response = await post(`/apps/${appSlug}/agent`, requestBody);
-
-      if (response.error) {
+      if (response && response.error) {
         throw new Error(response.error);
       }
 
       return {
         response: response.response,
-        conversationId: response.conversationId
+        // The server-side agent is stateless (history is sent by the client), so
+        // there is no server conversation id.
+        conversationId: null,
       };
     } catch (error) {
       // Handle specific error types
@@ -103,7 +86,9 @@ export default class AgentService {
       throw new Error('Model configuration is required');
     }
 
-    const { name, provider, model, apiKey } = modelConfig;
+    // The API key is NOT required client-side anymore: it lives in the app env
+    // var and is used server-side. We only validate the non-secret fields.
+    const { name, provider, model } = modelConfig;
 
     if (!name) {
       throw new Error('Model name is required in model configuration');
@@ -115,10 +100,6 @@ export default class AgentService {
 
     if (!model) {
       throw new Error('Model name is required in model configuration');
-    }
-
-    if (!apiKey) {
-      throw new Error('API key is required in model configuration');
     }
 
     return true;
