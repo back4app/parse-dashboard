@@ -251,6 +251,7 @@ class Agent extends DashboardView {
 
     // Load user-provided agent config (non-secret parts from localStorage, API
     // key from the app env var) now that the app context (slug) is available.
+    this._loadedSlug = this.context ? this.context.slug : null;
     this.loadAgentConfig();
 
     // Load saved chat state after component mounts when context is available
@@ -279,6 +280,23 @@ class Agent extends DashboardView {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // The Agent component instance is reused when switching apps (only the app
+    // context/slug changes, not the mounted component). Reset per-app in-memory
+    // state and reload from the new app's storage so the previous app's model
+    // name / config / chat don't bleed across apps.
+    const currentSlug = this.context ? this.context.slug : null;
+    if (currentSlug !== this._loadedSlug) {
+      this._loadedSlug = currentSlug;
+      this.setState(
+        { selectedModel: null, userAgentConfig: null, messages: [], conversationId: null },
+        () => {
+          this.loadAgentConfig();
+          this.loadSavedChatState();
+        }
+      );
+      return;
+    }
+
     // If agentConfig just became available, set default model
     if (!prevProps.agentConfig && this.props.agentConfig) {
       this.setDefaultModel();
