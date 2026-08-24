@@ -180,24 +180,45 @@ body:global(.expanded) {
   }
 
   code {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 2px 4px;
-    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 2px 5px;
+    border-radius: 4px;
     font-family: 'Monaco', 'Menlo', monospace;
     font-size: 13px;
   }
 
-  pre {
-    background-color: rgba(0, 0, 0, 0.35);
-    padding: 8px;
-    border-radius: 4px;
+  // Code blocks come from CodeSnippet (PrismJS with the line-numbers plugin).
+  // Prism's highlight JS never runs here (the markdown is server-rendered to a
+  // string), leaving a light theme + an empty line-numbers gutter that looked
+  // broken. Normalize to a clean dark block, scoped to the chat.
+  pre,
+  pre[class*='language-'] {
+    background: rgba(0, 0, 0, 0.35) !important;
+    color: #e2e8f0 !important;
+    padding: 12px 14px !important; // also removes the line-numbers gutter padding
+    border: none !important;
+    border-radius: 6px;
     overflow-x: auto;
-    margin: 4px 0;
+    margin: 6px 0;
+    min-height: 0 !important;
+    text-shadow: none !important;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+
+    code {
+      background: transparent !important;
+      color: inherit !important;
+      padding: 0 !important;
+      text-shadow: none !important;
+      font-size: inherit;
+      white-space: pre;
+    }
   }
 
-  pre code {
-    background-color: transparent;
-    padding: 0;
+  // The line-numbers plugin's rows aren't generated without its JS.
+  :global(.line-numbers-rows) {
+    display: none !important;
   }
 
   table {
