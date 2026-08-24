@@ -122,6 +122,30 @@ class Agent extends DashboardView {
     });
   }
 
+  // Delete the whole agent for this app: remove the OPENAI_API_KEY and
+  // AGENT_MODELS env vars, clear the per-app UI selection, and reset in-memory
+  // state back to the empty ("Configure") state. Triggers an app rebuild.
+  deleteAgentConfig = async () => {
+    if (this.context && this.context.getEnvVars && this.context.updateEnvVars) {
+      const existing = await this.context.getEnvVars();
+      const envVars = { ...((existing && existing.envVars) || {}) };
+      delete envVars[AGENT_ENV_KEY];
+      delete envVars[AGENT_MODELS_ENV_KEY];
+      await this.context.updateEnvVars(envVars);
+    }
+
+    const selKey = this.selectedModelStorageKey();
+    if (selKey) {
+      localStorage.removeItem(selKey);
+    }
+
+    this.setState({
+      userAgentConfig: null,
+      selectedModel: null,
+      showConfigDialog: false,
+    });
+  }
+
   // Load the effective config entirely from the app environment variables: the
   // model list from AGENT_MODELS + the shared API key from OPENAI_API_KEY. Both
   // are per-app on the backend.
@@ -751,6 +775,7 @@ class Agent extends DashboardView {
           initialModels={this.getAgentConfig()?.models || []}
           initialApiKey={(this.getAgentConfig()?.models || [])[0]?.apiKey}
           onConfirm={this.saveAgentConfig}
+          onDelete={this.deleteAgentConfig}
           onClose={() => this.setState({ showConfigDialog: false })}
         />
       </div>

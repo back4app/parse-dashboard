@@ -30,7 +30,7 @@ export default class AgentConfigDialog extends React.Component {
     const initial = this.props.initialModels || [];
     const models = initial.length
       ? initial.map(m => ({ name: m.name || '', model: m.model || '' }))
-      : [{ name: 'My model', model: '' }];
+      : [emptyModel()];
     return { apiKey: this.props.initialApiKey || '', models };
   }
 
@@ -59,10 +59,12 @@ export default class AgentConfigDialog extends React.Component {
   }
 
   valid() {
+    // The display name is optional (it falls back to the model id on save); only
+    // the API key and the model id are required.
     return (
       this.state.apiKey.trim() !== '' &&
       this.state.models.length > 0 &&
-      this.state.models.every(m => m.name.trim() !== '' && m.model.trim() !== '')
+      this.state.models.every(m => m.model.trim() !== '')
     );
   }
 
@@ -83,7 +85,7 @@ export default class AgentConfigDialog extends React.Component {
             this.props.onConfirm({
               apiKey: this.state.apiKey.trim(),
               models: this.state.models.map(m => ({
-                name: m.name.trim(),
+                name: m.name.trim() || m.model.trim(),
                 provider: 'openai',
                 model: m.model.trim(),
               })),
@@ -144,7 +146,7 @@ export default class AgentConfigDialog extends React.Component {
               <div style={{ display: 'flex', gap: '8px', padding: '0 1rem' }}>
                 <TextInput
                   dark={false}
-                  placeholder="Display name"
+                  placeholder="Display name (optional)"
                   value={m.name}
                   onChange={value => this.updateModel(i, 'name', value)}
                 />
@@ -158,6 +160,26 @@ export default class AgentConfigDialog extends React.Component {
             }
           />
         ))}
+        {this.props.onDelete && this.props.initialApiKey ? (
+          <Field
+            label={<Label text="Danger zone" description="Removes the OpenAI key and models env vars. Rebuilds your app." />}
+            input={
+              <div style={{ padding: '0 1rem' }}>
+                <a
+                  style={{ color: '#e85c3e', cursor: 'pointer', fontWeight: 600 }}
+                  onClick={() => {
+                    // eslint-disable-next-line no-alert
+                    if (window.confirm('Delete the AI agent for this app? This removes the API key and models and rebuilds the app.')) {
+                      this.props.onDelete();
+                    }
+                  }}
+                >
+                  Delete agent
+                </a>
+              </div>
+            }
+          />
+        ) : null}
       </B4aFormModal>
     );
   }
