@@ -26,12 +26,48 @@ export class CloudCollisionError extends Error {
   }
 }
 
+// Cloud Code file contents are stored as base64 data URIs (data:...;base64,<b64>),
+// matching how the dashboard's Cloud Code editor and the deploy endpoint encode
+// them. These helpers convert to/from that form. UTF-8 safe: a customer's
+// main.js may contain accented characters that plain btoa/atob would corrupt.
+const DATA_URI_PREFIX = 'data:plain/text;base64,';
+
+function toBase64Utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) { bin += String.fromCharCode(bytes[i]); }
+  return window.btoa(bin);
+}
+
+function fromBase64Utf8(b64) {
+  try {
+    const bin = window.atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+    return new TextDecoder().decode(bytes);
+  } catch (e) {
+    return '';
+  }
+}
+
+function encodeCode(text) {
+  return DATA_URI_PREFIX + toBase64Utf8(text);
+}
+
+function decodeCode(code) {
+  if (typeof code !== 'string' || !code) { return ''; }
+  const idx = code.indexOf(';base64,');
+  const b64 = idx !== -1 ? code.slice(idx + ';base64,'.length) : code;
+  return fromBase64Utf8(b64);
+}
+
 function findCloudFolder(tree) {
   return (tree || []).find(node => node && node.text === 'cloud' && (node.type === 'folder' || Array.isArray(node.children)));
 }
 
+// Returns the DECODED source text of a file node.
 function fileCode(node) {
-  return (node && node.data && typeof node.data.code === 'string') ? node.data.code : '';
+  return decodeCode(node && node.data ? node.data.code : '');
 }
 
 // True if the app already has our agent file installed (marker present).
@@ -48,14 +84,14 @@ export function isAgentInstalled(tree) {
 function ensureRequire(cloud) {
   const main = cloud.children.find(n => n && n.text === 'main.js');
   if (!main) {
-    cloud.children.push({ text: 'main.js', data: { code: REQUIRE_SNIPPET + '\n' } });
+    cloud.children.push({ text: 'main.js', data: { code: encodeCode(REQUIRE_SNIPPET + '\n') } });
     return;
   }
   const code = fileCode(main);
   if (code.indexOf(REQUIRE_MATCH) === -1) {
     const sep = code.length && !code.endsWith('\n') ? '\n' : '';
     main.data = main.data || {};
-    main.data.code = code + sep + REQUIRE_SNIPPET + '\n';
+    main.data.code = encodeCode(code + sep + REQUIRE_SNIPPET + '\n');
   }
 }
 
@@ -90,16 +126,16 @@ export function injectAgent(tree) {
       throw new CloudCollisionError('A file "' + AGENT_DIR + '/' + AGENT_FILE + '" already exists in your Cloud Code and is not managed by the dashboard. Rename or remove it before configuring the AI Agent.');
     }
     if (file) {
-      file.data = { code: AGENT_SOURCE };
+      file.data = { code: encodeCode(AGENT_SOURCE) };
     } else {
-      existing.children.push({ text: AGENT_FILE, data: { code: AGENT_SOURCE } });
+      existing.children.push({ text: AGENT_FILE, data: { code: encodeCode(AGENT_SOURCE) } });
     }
   } else {
     cloud.children.push({
       text: AGENT_DIR,
       type: 'folder',
       state: { opened: false },
-      children: [{ text: AGENT_FILE, data: { code: AGENT_SOURCE } }]
+      children: [{ text: AGENT_FILE, data: { code: encodeCode(AGENT_SOURCE) } }]
     });
   }
 
@@ -135,7 +171,7 @@ export function removeAgent(tree) {
   if (main) {
     const lines = fileCode(main).split('\n').filter(line => line.indexOf(REQUIRE_MATCH) === -1);
     main.data = main.data || {};
-    main.data.code = lines.join('\n');
+    main.data.code = encodeCode(lines.join('\n'));
   }
 
   next.forEach(node => { if (node) { delete node.mainJsNotExists; delete node.indexHtmlNotExists; } });
