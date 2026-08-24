@@ -218,7 +218,36 @@ async function executeDatabaseFunction(functionName, args, operationLog, permiss
   }
 }
 
-// HTTP helper: prefer global fetch (Node 18+), fall back to Parse.Cloud.httpRequest.
+// POST JSON via Node's built-in https module (no deprecated APIs, zero deps).
+function httpsPostJson(targetUrl, headers, bodyObj, timeoutMs) {
+  return new Promise(function (resolve) {
+    var https = require('https');
+    var u = new URL(targetUrl);
+    var payload = JSON.stringify(bodyObj);
+    var options = {
+      method: 'POST',
+      hostname: u.hostname,
+      port: u.port || 443,
+      path: u.pathname + u.search,
+      headers: Object.assign({}, headers, { 'Content-Length': Buffer.byteLength(payload) })
+    };
+    var req = https.request(options, function (res) {
+      var chunks = '';
+      res.on('data', function (c) { chunks += c; });
+      res.on('end', function () {
+        var data = null;
+        try { data = JSON.parse(chunks); } catch (e) { data = null; }
+        resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data: data });
+      });
+    });
+    req.on('error', function (err) { resolve({ ok: false, status: 0, data: { error: { message: err.message } } }); });
+    req.setTimeout(timeoutMs, function () { req.destroy(); resolve({ ok: false, status: 0, data: { error: { message: 'Request timed out' } } }); });
+    req.write(payload);
+    req.end();
+  });
+}
+
+// HTTP helper: prefer global fetch (Node 18+), fall back to the https module.
 async function httpPostJson(url, headers, bodyObj, timeoutMs) {
   if (typeof fetch === 'function') {
     var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
@@ -234,14 +263,12 @@ async function httpPostJson(url, headers, bodyObj, timeoutMs) {
       var data = null;
       try { data = JSON.parse(text); } catch (e) { data = null; }
       return { ok: resp.ok, status: resp.status, data: data };
+    } catch (err) {
+      var aborted = err && (err.name === 'AbortError' || /abort/i.test(err.message || ''));
+      return { ok: false, status: 0, data: { error: { message: aborted ? 'Request timed out' : (err.message || 'Network error') } } };
     } finally { if (timer) { clearTimeout(timer); } }
   }
-  try {
-    var r = await Parse.Cloud.httpRequest({ method: 'POST', url: url, headers: headers, body: JSON.stringify(bodyObj) });
-    return { ok: r.status >= 200 && r.status < 300, status: r.status, data: r.data };
-  } catch (e) {
-    return { ok: false, status: e.status || 500, data: e.data };
-  }
+  return httpsPostJson(url, headers, bodyObj, timeoutMs);
 }
 
 function adjustUnsupportedParam(body, errorObj, message) {
@@ -277,6 +304,7 @@ async function callOpenAI(apiKey, body) {
       var adjusted = adjustUnsupportedParam(payload, errorObj, apiMessage);
       if (adjusted) { payload = adjusted; continue; }
     }
+    if (res.status === 0) { throw new Error('OpenAI request failed: ' + (apiMessage || 'network error') + '. Try a faster model (e.g. gpt-4o) or a shorter prompt.'); }
     if (res.status === 401) { throw new Error('Invalid API key. Please check your OpenAI API key configuration.'); }
     if (res.status === 429) { throw new Error('Rate limit exceeded. Please try again in a moment.'); }
     if (res.status === 403) { throw new Error('Access forbidden. Please check your API key permissions.'); }
