@@ -23,6 +23,9 @@ import { CurrentApp } from 'context/currentApp';
 // The app environment variable (Cloud Code env) where the user's OpenAI API key
 // is stored, instead of localStorage.
 const AGENT_ENV_KEY = 'OPENAI_API_KEY';
+// The model list (name/provider/model) is stored as an app env var too, so the
+// whole agent config is per-app on the backend and never bleeds between apps.
+const AGENT_MODELS_ENV_KEY = 'AGENT_MODELS';
 
 @withRouter
 class Agent extends DashboardView {
@@ -85,35 +88,12 @@ class Agent extends DashboardView {
     }
   }
 
-  agentConfigStorageKey() {
-    const appSlug = this.context ? this.context.slug : null;
-    return appSlug ? `agentUserConfig_${appSlug}` : null;
-  }
-
-  getStoredAgentConfig() {
-    try {
-      const key = this.agentConfigStorageKey();
-      if (!key) { return null; }
-      const stored = localStorage.getItem(key);
-      if (!stored) { return null; }
-      const parsed = JSON.parse(stored);
-      if (!parsed || !Array.isArray(parsed.models) || parsed.models.length === 0) { return null; }
-      return parsed;
-    } catch (error) {
-      console.warn('Failed to parse stored agent config:', error);
-      return null;
-    }
-  }
-
-  // Save the model config. The API key is stored in the app environment variable
-  // (Cloud Code env) — NOT in localStorage. Non-secret parts (name/provider/model)
-  // are cached in localStorage so we know how to build the request. Returns a
+  // Save the config: a shared API key + a list of models. BOTH are stored as app
+  // env vars (Cloud Code env) — the key in OPENAI_API_KEY and the (non-secret)
+  // model list in AGENT_MODELS. Nothing lives in localStorage, so the whole
+  // config is per-app on the backend and never bleeds between apps. Returns a
   // promise so the dialog can show "Saving…" and surface errors while the app
   // rebuilds.
-  // Save the config: a shared API key + a list of models. The key is stored in
-  // the app env var (Cloud Code env) — NOT in localStorage. The model list
-  // (non-secret) is cached in localStorage. Returns a promise so the dialog can
-  // show "Saving…" and surface errors while the app rebuilds.
   saveAgentConfig = async ({ apiKey, models }) => {
     const cleanModels = (models || []).map(m => ({
       name: m.name,
@@ -121,24 +101,19 @@ class Agent extends DashboardView {
       model: m.model,
     }));
 
-    // 1. Store the shared API key as an app env var, merging with the existing ones.
-    if (apiKey && this.context && this.context.getEnvVars && this.context.updateEnvVars) {
+    // Store the shared API key AND the model list as app env vars, merging with
+    // the existing ones.
+    if (this.context && this.context.getEnvVars && this.context.updateEnvVars) {
       const existing = await this.context.getEnvVars();
       const envVars = (existing && existing.envVars) || {};
-      await this.context.updateEnvVars({ ...envVars, [AGENT_ENV_KEY]: apiKey });
-    }
-
-    // 2. Cache the (non-secret) model list locally.
-    const key = this.agentConfigStorageKey();
-    if (key) {
-      try {
-        localStorage.setItem(key, JSON.stringify({ models: cleanModels }));
-      } catch (error) {
-        console.warn('Failed to cache agent config:', error);
+      const next = { ...envVars, [AGENT_MODELS_ENV_KEY]: JSON.stringify(cleanModels) };
+      if (apiKey) {
+        next[AGENT_ENV_KEY] = apiKey;
       }
+      await this.context.updateEnvVars(next);
     }
 
-    // 3. Keep the full config (each model carries the shared key) in memory.
+    // Keep the full config (each model carries the shared key) in memory.
     const config = { models: cleanModels.map(m => ({ ...m, apiKey })) };
     this.setState({ userAgentConfig: config }, () => {
       if (cleanModels[0]) {
@@ -147,23 +122,36 @@ class Agent extends DashboardView {
     });
   }
 
-  // Load the effective config: the model list from localStorage + the shared API
-  // key from the app environment variable.
+  // Load the effective config entirely from the app environment variables: the
+  // model list from AGENT_MODELS + the shared API key from OPENAI_API_KEY. Both
+  // are per-app on the backend.
   async loadAgentConfig() {
-    const local = this.getStoredAgentConfig();
     let apiKey;
+    let models = [];
     try {
       if (this.context && this.context.getEnvVars) {
         const existing = await this.context.getEnvVars();
-        apiKey = existing && existing.envVars && existing.envVars[AGENT_ENV_KEY];
+        const envVars = (existing && existing.envVars) || {};
+        apiKey = envVars[AGENT_ENV_KEY];
+        const rawModels = envVars[AGENT_MODELS_ENV_KEY];
+        if (rawModels) {
+          try {
+            const parsed = JSON.parse(rawModels);
+            if (Array.isArray(parsed)) {
+              models = parsed;
+            }
+          } catch (error) {
+            console.warn('Failed to parse AGENT_MODELS env var:', error);
+          }
+        }
       }
     } catch (error) {
-      console.warn('Failed to read agent API key from env vars:', error);
+      console.warn('Failed to read agent config from env vars:', error);
     }
 
-    if (local && Array.isArray(local.models) && local.models.length > 0 && apiKey) {
+    if (models.length > 0 && apiKey) {
       const config = {
-        models: local.models.map(m => ({
+        models: models.map(m => ({
           name: m.name,
           provider: m.provider || 'openai',
           model: m.model,
@@ -172,7 +160,7 @@ class Agent extends DashboardView {
       };
       this.setState({ userAgentConfig: config }, () => this.setDefaultModel());
     } else {
-      this.setDefaultModel();
+      this.setState({ userAgentConfig: null }, () => this.setDefaultModel());
     }
   }
 
@@ -554,7 +542,7 @@ class Agent extends DashboardView {
             ))}
           </BrowserMenu>
         )}
-        {selectedModel && (
+        {selectedModel && models.some(m => m.name === selectedModel) && (
           <span
             className={styles.activeModel}
             title={`Active model: ${(models.find(m => m.name === selectedModel) || {}).model || ''}`}
