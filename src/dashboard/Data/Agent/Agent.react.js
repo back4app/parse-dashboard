@@ -26,7 +26,34 @@ import { CurrentApp } from 'context/currentApp';
 const AGENT_ENV_KEY = 'OPENAI_API_KEY';
 // The model list (name/provider/model) is stored as an app env var too, so the
 // whole agent config is per-app on the backend and never bleeds between apps.
+// It is base64-encoded: raw JSON (quotes/braces) gets mangled by the container's
+// env-var injection, so the Cloud Function couldn't parse it.
 const AGENT_MODELS_ENV_KEY = 'AGENT_MODELS';
+
+// Base64 (UTF-8 safe) encode/decode for the model list env var.
+function encodeAgentModels(models) {
+  const json = JSON.stringify(models || []);
+  const bytes = new TextEncoder().encode(json);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) { bin += String.fromCharCode(bytes[i]); }
+  return window.btoa(bin);
+}
+
+function decodeAgentModels(raw) {
+  if (!raw) { return []; }
+  // Legacy plain JSON.
+  try { const p = JSON.parse(raw); if (Array.isArray(p)) { return p; } } catch (e) { /* not plain JSON */ }
+  // base64(JSON).
+  try {
+    const bin = window.atob(raw);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+    const json = new TextDecoder().decode(bytes);
+    const p = JSON.parse(json);
+    if (Array.isArray(p)) { return p; }
+  } catch (e) { /* not base64 JSON */ }
+  return [];
+}
 
 @withRouter
 class Agent extends DashboardView {
@@ -117,7 +144,7 @@ class Agent extends DashboardView {
     if (app && app.getEnvVars && app.updateEnvVars) {
       const existing = await app.getEnvVars();
       const envVars = (existing && existing.envVars) || {};
-      const next = { ...envVars, [AGENT_MODELS_ENV_KEY]: JSON.stringify(cleanModels) };
+      const next = { ...envVars, [AGENT_MODELS_ENV_KEY]: encodeAgentModels(cleanModels) };
       if (apiKey) {
         next[AGENT_ENV_KEY] = apiKey;
       }
@@ -187,17 +214,7 @@ class Agent extends DashboardView {
         const existing = await this.context.getEnvVars();
         const envVars = (existing && existing.envVars) || {};
         apiKey = envVars[AGENT_ENV_KEY];
-        const rawModels = envVars[AGENT_MODELS_ENV_KEY];
-        if (rawModels) {
-          try {
-            const parsed = JSON.parse(rawModels);
-            if (Array.isArray(parsed)) {
-              models = parsed;
-            }
-          } catch (error) {
-            console.warn('Failed to parse AGENT_MODELS env var:', error);
-          }
-        }
+        models = decodeAgentModels(envVars[AGENT_MODELS_ENV_KEY]);
       }
     } catch (error) {
       console.warn('Failed to read agent config from env vars:', error);

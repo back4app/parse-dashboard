@@ -366,6 +366,18 @@ async function runAgent(userMessage, model, apiKey, history, operationLog, permi
   return responseMessage.content || 'Done.';
 }
 
+// Parse the AGENT_MODELS env var. Prefer base64(JSON); fall back to plain JSON.
+function parseAgentModels(raw) {
+  if (!raw) { return []; }
+  try { var p = JSON.parse(raw); if (Array.isArray(p)) { return p; } } catch (e) { /* not plain JSON */ }
+  try {
+    var json = Buffer.from(raw, 'base64').toString('utf8');
+    var p2 = JSON.parse(json);
+    if (Array.isArray(p2)) { return p2; }
+  } catch (e) { /* not base64 JSON */ }
+  return [];
+}
+
 Parse.Cloud.define('dashboardAgent', async function (request) {
   // Only the dashboard (calling with the master key) may run the agent.
   if (!request.master) {
@@ -388,8 +400,9 @@ Parse.Cloud.define('dashboardAgent', async function (request) {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'No OpenAI API key configured (set the OPENAI_API_KEY environment variable).');
   }
 
-  var models = [];
-  try { var raw = process.env.AGENT_MODELS; if (raw) { var parsed = JSON.parse(raw); if (Array.isArray(parsed)) { models = parsed; } } } catch (e) { models = []; }
+  // AGENT_MODELS is stored base64-encoded (JSON with quotes/braces gets mangled
+  // by container env-var injection). Accept both base64 and legacy plain JSON.
+  var models = parseAgentModels(process.env.AGENT_MODELS);
   if (models.length === 0) {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, 'No models configured (set the AGENT_MODELS environment variable).');
   }
