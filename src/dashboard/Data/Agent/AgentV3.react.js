@@ -17,12 +17,6 @@ import { getBack4app2 } from 'lib/back4app2Client';
 import { ChatMessageStatus } from '@back4app2/sdk';
 import styles from './Agent.scss';
 
-const IN_PROGRESS = [
-  ChatMessageStatus.INITIALIZING,
-  ChatMessageStatus.INITIALIZED,
-  ChatMessageStatus.RESPONDING,
-];
-
 /**
  * AI Agent V3 chat, scoped to the current Parse app.
  *
@@ -46,6 +40,7 @@ class AgentV3 extends DashboardView {
       inputValue: '',
       isLoading: true,
       isSending: false,
+      isCreating: false,
       error: null,
     };
     this.chatWindowRef = React.createRef();
@@ -55,13 +50,13 @@ class AgentV3 extends DashboardView {
   }
 
   componentDidMount() {
-    this._loadedAppId = this.context ? this.context.appId : null;
+    this._loadedAppId = this.context ? this.context.applicationId : null;
     this.init();
   }
 
   componentDidUpdate() {
     // The view is reused across apps — reload when the app changes.
-    const appId = this.context ? this.context.appId : null;
+    const appId = this.context ? this.context.applicationId : null;
     if (appId !== this._loadedAppId) {
       this._loadedAppId = appId;
       this.teardown();
@@ -81,7 +76,7 @@ class AgentV3 extends DashboardView {
   }
 
   async init() {
-    const appId = this.context ? this.context.appId : null;
+    const appId = this.context ? this.context.applicationId : null;
     if (!appId) {
       this.setState({ isLoading: false, error: 'App context not available' });
       return;
@@ -102,6 +97,22 @@ class AgentV3 extends DashboardView {
       this.setState({ isLoading: false, error: error.message || String(error) });
     }
   }
+
+  // Create a V3 agent and bind it to the current app, then load its chat.
+  createAgent = async () => {
+    const appId = this.context ? this.context.applicationId : null;
+    if (!appId || this.state.isCreating) { return; }
+    this.setState({ isCreating: true, error: null });
+    try {
+      const sdk = getBack4app2();
+      const name = (this.context && this.context.name) || 'App agent';
+      const agent = await sdk.createAgent(name, 'V3');
+      await sdk.setAgentCurrentApp(agent.id, appId);
+      this.setState({ isCreating: false }, () => this.init());
+    } catch (error) {
+      this.setState({ isCreating: false, error: error.message || String(error) });
+    }
+  };
 
   subscribe(chatId) {
     const sdk = getBack4app2();
@@ -193,7 +204,6 @@ class AgentV3 extends DashboardView {
     return (
       <div className={styles.messagesContainer}>
         {messages.map(m => {
-          const inProgress = IN_PROGRESS.indexOf(m.status) !== -1;
           const failed = m.status === ChatMessageStatus.FAILED || !!m.error;
           return (
             <React.Fragment key={m.id}>
@@ -250,8 +260,8 @@ class AgentV3 extends DashboardView {
     );
   }
 
-  render() {
-    const { messages, isLoading, agent, error } = this.state;
+  renderContent() {
+    const { messages, isLoading, agent, error, isCreating } = this.state;
     const hasAgent = !!agent;
 
     return (
@@ -271,12 +281,16 @@ class AgentV3 extends DashboardView {
               description={
                 isLoading
                   ? 'Loading…'
-                  : error
-                    ? `Couldn't load the agent: ${error}`
-                    : hasAgent
-                      ? 'Ask the AI agent anything about this app to get started.'
-                      : 'No AI agent is set up for this app yet.'
+                  : isCreating
+                    ? 'Creating your agent…'
+                    : error
+                      ? `Couldn't load the agent: ${error}`
+                      : hasAgent
+                        ? 'Ask the AI agent anything about this app to get started.'
+                        : 'No AI agent is set up for this app yet. Create one to start chatting.'
               }
+              cta={!isLoading && !isCreating && !hasAgent ? 'Create agent' : undefined}
+              action={!isLoading && !isCreating && !hasAgent ? this.createAgent : undefined}
             />
           </div>
         )}
