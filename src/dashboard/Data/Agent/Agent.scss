@@ -139,6 +139,9 @@ body:global(.expanded) {
 
 .message.agent {
   align-self: flex-start;
+  // Agent replies can contain code editors — give them more room than user
+  // bubbles so code is readable.
+  max-width: 85%;
   background-color: $agentSurface;
   color: $agentText;
   border: 1px solid $agentBorder;

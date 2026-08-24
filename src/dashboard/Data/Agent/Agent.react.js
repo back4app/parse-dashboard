@@ -16,6 +16,7 @@ import SidebarAction from 'components/Sidebar/SidebarAction';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import AgentService from 'lib/AgentService';
 import AgentConfigDialog from './AgentConfigDialog.react';
+import AppOverviewCodeEditorBlock from 'dashboard/Data/AppOverview/AppOverviewCodeEditorBlock.react';
 import { injectAgent, removeAgent } from './agentCloudProvisioning';
 import styles from './Agent.scss';
 import { withRouter } from 'lib/withRouter';
@@ -676,8 +677,35 @@ class Agent extends DashboardView {
   }
 
   formatMessageContent(content) {
-    // Use the existing Markdown component to render the content
-    return <Markdown content={content} />;
+    // Render fenced code blocks with the read-only Monaco editor (same component
+    // Cloud Code / deployments use), and the surrounding prose with Markdown.
+    const text = String(content || '');
+    const fence = /```(\w*)[ \t]*\r?\n([\s\S]*?)```/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    let key = 0;
+
+    while ((match = fence.exec(text)) !== null) {
+      const before = text.slice(lastIndex, match.index);
+      if (before.trim()) {
+        parts.push(<Markdown key={`t${key++}`} content={before} />);
+      }
+      const lang = match[1] || 'plaintext';
+      const code = match[2].replace(/\n$/, '');
+      parts.push(<AppOverviewCodeEditorBlock key={`c${key++}`} language={lang} value={code} />);
+      lastIndex = fence.lastIndex;
+    }
+
+    const rest = text.slice(lastIndex);
+    if (rest.trim()) {
+      parts.push(<Markdown key={`t${key++}`} content={rest} />);
+    }
+
+    if (parts.length === 0) {
+      return <Markdown content={text} />;
+    }
+    return <>{parts}</>;
   }
 
   renderMessages() {
