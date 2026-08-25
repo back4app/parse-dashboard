@@ -125,21 +125,51 @@ class AgentV3 extends DashboardView {
     }
   }
 
-  // Open the credentials dialog first, THEN create. On a BYOK-only plan the key
-  // is what makes the agent usable, so it belongs in the creation step — not as
-  // an afterthought on an already-created (and useless) agent.
+  // The key is set at creation and is FIXED for the agent's life: an agent is
+  // 1:1 with its app and its LLM provider/key can't be reconfigured in place
+  // (switching OpenAI↔Anthropic means a new container = a new agent). So the
+  // only ways to change it are "New agent" (destructive) and "Clear key".
   openCreateDialog = () => this.setState({ showKeyDialog: true, keyDialogMode: 'create' });
+  openNewAgentDialog = () => this.setState({ showKeyDialog: true, keyDialogMode: 'new' });
 
-  // Route the dialog's confirm to create-with-keys or edit-keys.
+  // 'create' = no agent yet; 'new' = replace the current one (delete + create).
   handleKeyDialogConfirm = creds =>
-    this.state.keyDialogMode === 'create' ? this.createAgent(creds) : this.saveKeys(creds);
+    this.state.keyDialogMode === 'new' ? this.replaceAgent(creds) : this.createAgent(creds);
 
-  // Create a V4 agent, bind it to the current app, optionally set its own LLM
-  // credentials, then load its chat. Blank keys = use the platform default.
-  createAgent = async ({ openaiApiKey, anthropicApiKey } = {}) => {
-    const appId = this.context ? this.context.applicationId : null;
-    if (!appId || this.state.isCreating) { return; }
+  createAgent = async (creds = {}) => {
+    if (this.state.isCreating) { return; }
     this.setState({ isCreating: true, showKeyDialog: false, error: null });
+    await this._provisionAgent(creds);
+  };
+
+  // "New agent": permanently delete the current agent + conversation, then
+  // provision a fresh one (optionally with a new key). This is the ONLY path to
+  // switch the LLM key/provider.
+  replaceAgent = async (creds = {}) => {
+    if (this.state.isCreating) { return; }
+    const { agent } = this.state;
+    this.setState({ isCreating: true, showKeyDialog: false, error: null });
+    try {
+      if (agent) {
+        await getBack4app2().deleteAgent(agent.id);
+        this.teardown();
+        this.setState({ agent: null, chatId: null, messages: [] });
+      }
+    } catch (error) {
+      this.setState({ isCreating: false, error: error.message || String(error) });
+      return;
+    }
+    await this._provisionAgent(creds);
+  };
+
+  // Shared creation core. Assumes isCreating is already true. Creates a V4 agent,
+  // binds it to this app, optionally sets its own LLM key, then loads its chat.
+  _provisionAgent = async ({ openaiApiKey, anthropicApiKey } = {}) => {
+    const appId = this.context ? this.context.applicationId : null;
+    if (!appId) {
+      this.setState({ isCreating: false, error: 'App context not available' });
+      return;
+    }
     try {
       const sdk = getBack4app2();
       const name = (this.context && this.context.name) || 'App agent';
@@ -173,23 +203,18 @@ class AgentV3 extends DashboardView {
     }
   };
 
-  // BYOK: save the user's own OpenAI/Anthropic key for this app's agent. Only
-  // non-empty fields are sent (blank = keep current). Requires the @back4app2/sdk
-  // to expose setAgentLLMCredentials (republish + version bump).
-  saveKeys = async ({ openaiApiKey, anthropicApiKey }) => {
+  // "Clear key": non-destructive — drop the BYOK key (back to the platform
+  // default), keeping the conversation. Sends null to clear both columns. Takes
+  // effect on the next container launch.
+  clearKeys = async () => {
     const { agent } = this.state;
     if (!agent) { return; }
-    const creds = {};
-    if (openaiApiKey) { creds.openaiApiKey = openaiApiKey; }
-    if (anthropicApiKey) { creds.anthropicApiKey = anthropicApiKey; }
-    if (Object.keys(creds).length === 0) {
-      this.setState({ showKeyDialog: false });
-      return;
-    }
+    // eslint-disable-next-line no-alert
+    if (!window.confirm('Clear your API key? The agent falls back to the platform default. Your conversation is kept.')) { return; }
+    this.setState({ error: null });
     try {
-      await getBack4app2().setAgentLLMCredentials(agent.id, creds);
-      // Reload to refresh the has* flags.
-      this.setState({ showKeyDialog: false }, () => this.init());
+      await getBack4app2().setAgentLLMCredentials(agent.id, { openaiApiKey: null, anthropicApiKey: null });
+      this.init(); // refresh the has* flags
     } catch (error) {
       this.setState({ error: error.message || String(error) });
     }
@@ -278,15 +303,25 @@ class AgentV3 extends DashboardView {
 
   renderToolbar() {
     const { agent } = this.state;
+    const hasKey = !!(agent && (agent.hasOpenaiApiKey || agent.hasAnthropicApiKey));
     return (
       <Toolbar section="Agent" subsection="AI Agent">
         {agent ? (
           <a
             className={styles.toolbarAction}
-            title="Use your own OpenAI / Anthropic key"
-            onClick={() => this.setState({ showKeyDialog: true, keyDialogMode: 'edit' })}
+            title="Start a fresh agent (needed to switch the LLM key/provider — the conversation is lost)"
+            onClick={this.openNewAgentDialog}
           >
-            API key
+            New agent
+          </a>
+        ) : null}
+        {hasKey ? (
+          <a
+            className={styles.toolbarAction}
+            title="Remove your API key and fall back to the platform default (keeps the conversation)"
+            onClick={this.clearKeys}
+          >
+            Clear key
           </a>
         ) : null}
         {agent ? (
@@ -445,8 +480,6 @@ class AgentV3 extends DashboardView {
         <AgentKeyDialog
           open={this.state.showKeyDialog}
           mode={this.state.keyDialogMode}
-          hasOpenai={!!(agent && agent.hasOpenaiApiKey)}
-          hasAnthropic={!!(agent && agent.hasAnthropicApiKey)}
           onConfirm={this.handleKeyDialogConfirm}
           onClose={() => this.setState({ showKeyDialog: false })}
         />

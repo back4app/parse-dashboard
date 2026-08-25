@@ -12,11 +12,14 @@ import TextInput from 'components/TextInput/TextInput.react';
 import React from 'react';
 
 /**
- * BYOK dialog: let the user set their own OpenAI / Anthropic key for THIS app's
- * agent. The key is sent to the back4app2 API (stored encrypted, injected into
- * the agent container). Leaving a field blank keeps the current value — the key
- * is never shown back. Only whether a key is set (hasOpenai/hasAnthropic) is
- * known here.
+ * Agent creation dialog. The LLM key is set at creation and is FIXED for the
+ * agent's life (1 agent : 1 app, no in-place reconfigure). Two modes:
+ *   - 'create': no agent exists yet.
+ *   - 'new':    replace the current agent — destructive, warns the conversation
+ *               is lost forever. This is the only way to switch key/provider.
+ * The key is sent to the back4app2 API (stored encrypted, injected into the
+ * container) and never shown back. Leaving both fields blank uses the platform
+ * default key.
  */
 export default class AgentKeyDialog extends React.Component {
   constructor(props) {
@@ -33,22 +36,20 @@ export default class AgentKeyDialog extends React.Component {
   clearFields = () => this.setState({ openaiApiKey: '', anthropicApiKey: '' });
 
   render() {
-    const { hasOpenai, hasAnthropic } = this.props;
-    const isCreate = this.props.mode === 'create';
-    const openaiSet = this.state.openaiApiKey.trim() !== '';
-    const anthropicSet = this.state.anthropicApiKey.trim() !== '';
+    const isNew = this.props.mode === 'new';
     return (
       <B4aFormModal
-        title={isCreate ? 'Create AI agent' : 'AI credentials'}
+        title={isNew ? 'Start a new agent' : 'Create AI agent'}
         subtitle={
-          isCreate
-            ? "Optionally use your own OpenAI / Anthropic key for this agent. Leave blank to use the platform's default key — you can add or change it later. The value is encrypted and never shown again."
-            : "Use your own OpenAI / Anthropic key for this app's agent. Leave a field blank to keep the current key. The value is encrypted and never shown again."
+          (isNew
+            ? 'This permanently deletes this agent and its entire conversation — this cannot be undone. '
+            : '') +
+          "Optionally use your own OpenAI / Anthropic key. Leave blank to use the platform's default. The key is FIXED for this agent — to switch it later you create a new agent. The value is encrypted and never shown again."
         }
         open={this.props.open}
-        submitText={isCreate ? 'Create agent' : 'Save'}
-        inProgressText={isCreate ? 'Creating…' : 'Saving…'}
-        enabled={isCreate || openaiSet || anthropicSet}
+        submitText={isNew ? 'Delete & create' : 'Create agent'}
+        inProgressText={isNew ? 'Recreating…' : 'Creating…'}
+        enabled={true}
         clearFields={this.clearFields}
         onClose={this.props.onClose}
         onSubmit={() =>
@@ -64,11 +65,7 @@ export default class AgentKeyDialog extends React.Component {
           label={
             <Label
               text="OpenAI API key"
-              description={
-                hasOpenai
-                  ? 'A key is currently set. Enter a new one to replace it.'
-                  : 'Not set — the agent uses the platform key.'
-              }
+              description="Leave blank to use the platform key."
             />
           }
           input={
@@ -86,7 +83,7 @@ export default class AgentKeyDialog extends React.Component {
           label={
             <Label
               text="Anthropic API key (optional)"
-              description={hasAnthropic ? 'A key is currently set.' : 'Not set.'}
+              description="Leave blank to use the platform key."
             />
           }
           input={
