@@ -13,7 +13,7 @@ import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import AppOverviewCodeEditorBlock from 'dashboard/Data/AppOverview/AppOverviewCodeEditorBlock.react';
 import { CurrentApp } from 'context/currentApp';
 import { withRouter } from 'lib/withRouter';
-import { getBack4app2 } from 'lib/back4app2Client';
+import { getBack4app2, AGENT_FLAVOR } from 'lib/back4app2Client';
 import { ChatMessageStatus } from '@back4app2/sdk';
 import styles from './Agent.scss';
 
@@ -107,7 +107,7 @@ class AgentV3 extends DashboardView {
     }
     try {
       const sdk = getBack4app2();
-      const agents = await sdk.findAgents('V3');
+      const agents = await sdk.findAgents(AGENT_FLAVOR);
       const agent = (agents || []).find(a => a.currentAppId === appId) || null;
       if (!agent || !agent.mainChat) {
         this.setState({ isLoading: false, agent: null, chatId: null });
@@ -130,7 +130,7 @@ class AgentV3 extends DashboardView {
     try {
       const sdk = getBack4app2();
       const name = (this.context && this.context.name) || 'App agent';
-      const agent = await sdk.createAgent(name, 'V3');
+      const agent = await sdk.createAgent(name, AGENT_FLAVOR);
       await sdk.setAgentCurrentApp(agent.id, appId);
       this.setState({ isCreating: false }, () => this.init());
     } catch (error) {
