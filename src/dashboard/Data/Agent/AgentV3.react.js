@@ -299,10 +299,29 @@ class AgentV3 extends DashboardView {
   }
 
   // Compact "current task" indicator while the agent is working.
-  renderProgress(lastEvent) {
-    if (!lastEvent) {
+  renderProgress(lastEvent, status) {
+    // Cold start: the container is being provisioned for this message. Surface
+    // it explicitly — it can take a while, and with no signal it looks like
+    // nothing happened (until it suddenly becomes available).
+    if (status === ChatMessageStatus.INITIALIZING) {
       return (
-        <div className={styles.typing}><span></span><span></span><span></span></div>
+        <div className={styles.progressRow}>
+          <div className={styles.typing}><span></span><span></span><span></span></div>
+          <span className={styles.progressText}>
+            Starting the agent… this can take a moment on the first message
+          </span>
+        </div>
+      );
+    }
+    if (!lastEvent) {
+      // Container is up; waiting for the first tokens.
+      return (
+        <div className={styles.progressRow}>
+          <div className={styles.typing}><span></span><span></span><span></span></div>
+          {status === ChatMessageStatus.INITIALIZED ? (
+            <span className={styles.progressText}>Agent ready — thinking…</span>
+          ) : null}
+        </div>
       );
     }
     const label = lastEvent.stage || 'Working…';
@@ -340,7 +359,7 @@ class AgentV3 extends DashboardView {
                     : (
                       <>
                         {cleaned ? this.formatMessageContent(cleaned) : null}
-                        {inProgress ? this.renderProgress(lastEvent) : null}
+                        {inProgress ? this.renderProgress(lastEvent, m.status) : null}
                       </>
                     )}
                 </div>
