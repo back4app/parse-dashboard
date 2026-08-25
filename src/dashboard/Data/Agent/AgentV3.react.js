@@ -67,6 +67,7 @@ class AgentV3 extends DashboardView {
       isSending: false,
       isCreating: false,
       showKeyDialog: false,
+      keyDialogMode: 'edit', // 'create' (asked before the agent exists) | 'edit'
       error: null,
     };
     this.chatWindowRef = React.createRef();
@@ -124,16 +125,32 @@ class AgentV3 extends DashboardView {
     }
   }
 
-  // Create a V3 agent and bind it to the current app, then load its chat.
-  createAgent = async () => {
+  // Open the credentials dialog first, THEN create. On a BYOK-only plan the key
+  // is what makes the agent usable, so it belongs in the creation step — not as
+  // an afterthought on an already-created (and useless) agent.
+  openCreateDialog = () => this.setState({ showKeyDialog: true, keyDialogMode: 'create' });
+
+  // Route the dialog's confirm to create-with-keys or edit-keys.
+  handleKeyDialogConfirm = creds =>
+    this.state.keyDialogMode === 'create' ? this.createAgent(creds) : this.saveKeys(creds);
+
+  // Create a V4 agent, bind it to the current app, optionally set its own LLM
+  // credentials, then load its chat. Blank keys = use the platform default.
+  createAgent = async ({ openaiApiKey, anthropicApiKey } = {}) => {
     const appId = this.context ? this.context.applicationId : null;
     if (!appId || this.state.isCreating) { return; }
-    this.setState({ isCreating: true, error: null });
+    this.setState({ isCreating: true, showKeyDialog: false, error: null });
     try {
       const sdk = getBack4app2();
       const name = (this.context && this.context.name) || 'App agent';
       const agent = await sdk.createAgent(name, AGENT_FLAVOR);
       await sdk.setAgentCurrentApp(agent.id, appId);
+      const creds = {};
+      if (openaiApiKey) { creds.openaiApiKey = openaiApiKey; }
+      if (anthropicApiKey) { creds.anthropicApiKey = anthropicApiKey; }
+      if (Object.keys(creds).length > 0) {
+        await sdk.setAgentLLMCredentials(agent.id, creds);
+      }
       this.setState({ isCreating: false }, () => this.init());
     } catch (error) {
       this.setState({ isCreating: false, error: error.message || String(error) });
@@ -267,7 +284,7 @@ class AgentV3 extends DashboardView {
           <a
             className={styles.toolbarAction}
             title="Use your own OpenAI / Anthropic key"
-            onClick={() => this.setState({ showKeyDialog: true })}
+            onClick={() => this.setState({ showKeyDialog: true, keyDialogMode: 'edit' })}
           >
             API key
           </a>
@@ -401,16 +418,17 @@ class AgentV3 extends DashboardView {
                       : 'No AI agent is set up for this app yet. Create one to start chatting.'
               }
               cta={!isLoading && !isCreating ? 'Create agent' : undefined}
-              action={!isLoading && !isCreating ? this.createAgent : undefined}
+              action={!isLoading && !isCreating ? this.openCreateDialog : undefined}
             />
           </div>
         )}
 
         <AgentKeyDialog
           open={this.state.showKeyDialog}
+          mode={this.state.keyDialogMode}
           hasOpenai={!!(agent && agent.hasOpenaiApiKey)}
           hasAnthropic={!!(agent && agent.hasAnthropicApiKey)}
-          onConfirm={this.saveKeys}
+          onConfirm={this.handleKeyDialogConfirm}
           onClose={() => this.setState({ showKeyDialog: false })}
         />
       </div>

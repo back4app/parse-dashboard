@@ -34,16 +34,21 @@ export default class AgentKeyDialog extends React.Component {
 
   render() {
     const { hasOpenai, hasAnthropic } = this.props;
+    const isCreate = this.props.mode === 'create';
     const openaiSet = this.state.openaiApiKey.trim() !== '';
     const anthropicSet = this.state.anthropicApiKey.trim() !== '';
     return (
       <B4aFormModal
-        title="AI credentials"
-        subtitle="Use your own OpenAI / Anthropic key for this app's agent. Leave a field blank to keep the current key. The value is encrypted and never shown again."
+        title={isCreate ? 'Create AI agent' : 'AI credentials'}
+        subtitle={
+          isCreate
+            ? "Optionally use your own OpenAI / Anthropic key for this agent. Leave blank to use the platform's default key — you can add or change it later. The value is encrypted and never shown again."
+            : "Use your own OpenAI / Anthropic key for this app's agent. Leave a field blank to keep the current key. The value is encrypted and never shown again."
+        }
         open={this.props.open}
-        submitText="Save"
-        inProgressText={'Saving…'}
-        enabled={openaiSet || anthropicSet}
+        submitText={isCreate ? 'Create agent' : 'Save'}
+        inProgressText={isCreate ? 'Creating…' : 'Saving…'}
+        enabled={isCreate || openaiSet || anthropicSet}
         clearFields={this.clearFields}
         onClose={this.props.onClose}
         onSubmit={() =>
