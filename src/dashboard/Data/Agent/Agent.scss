@@ -264,6 +264,17 @@ body:global(.expanded) {
   text-align: left;
 }
 
+// Centered hint shown inside the chat window when an agent exists but has no
+// messages yet — keeps the input visible (unlike the full-screen overlay).
+.inlineEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 320px;
+}
+
 .progressRow {
   display: flex;
   align-items: center;

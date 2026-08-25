@@ -340,11 +340,21 @@ class AgentV3 extends DashboardView {
         <div className={styles.chatContainer}>
           <div ref={this.chatWindowRef} className={styles.chatWindow}>
             {hasAgent && messages.length > 0 ? this.renderMessages() : null}
+            {hasAgent && messages.length === 0 ? (
+              <div className={styles.inlineEmpty}>
+                <B4aEmptyState
+                  title="AI Agent"
+                  description="Ask the AI agent anything about this app to get started."
+                />
+              </div>
+            ) : null}
           </div>
+          {/* Input is always available once an agent exists. */}
           {hasAgent ? this.renderChatInput() : null}
         </div>
 
-        {(!hasAgent || messages.length === 0) && (
+        {/* Full-screen overlay only when there is NO agent (create/loading). */}
+        {!hasAgent && (
           <div className={styles.emptyStateOverlay}>
             <B4aEmptyState
               title="AI Agent"
@@ -355,12 +365,10 @@ class AgentV3 extends DashboardView {
                     ? 'Creating your agent…'
                     : error
                       ? `Couldn't load the agent: ${error}`
-                      : hasAgent
-                        ? 'Ask the AI agent anything about this app to get started.'
-                        : 'No AI agent is set up for this app yet. Create one to start chatting.'
+                      : 'No AI agent is set up for this app yet. Create one to start chatting.'
               }
-              cta={!isLoading && !isCreating && !hasAgent ? 'Create agent' : undefined}
-              action={!isLoading && !isCreating && !hasAgent ? this.createAgent : undefined}
+              cta={!isLoading && !isCreating ? 'Create agent' : undefined}
+              action={!isLoading && !isCreating ? this.createAgent : undefined}
             />
           </div>
         )}
