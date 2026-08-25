@@ -19,10 +19,9 @@ const WS_URL = 'wss://api.containers-homolog.back4app.com';
 
 // Backend agent flavor this differentiated ("v4") dashboard agent talks to.
 // v4 is the reduced, app-scoped agent for parse-dashboard — segregated from the
-// full v3/v5 flavors. It currently rides on the existing 'V3' flavor because the
-// dedicated 'V4' flavor doesn't exist in the backend yet; flip this to 'V4' once
-// the segregated v4 lands in back4app2 (AgentFlavor) + the Python agent.
-export const AGENT_FLAVOR = 'V3';
+// full v3/v5 flavors (its own AgentFlavor in back4app2 + tools/v4 + base_v4 in
+// the Python agent). Requires the v4 backend to be deployed.
+export const AGENT_FLAVOR = 'V4';
 
 let instance = null;
 
