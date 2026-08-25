@@ -13,6 +13,7 @@ import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import AppOverviewCodeEditorBlock from 'dashboard/Data/AppOverview/AppOverviewCodeEditorBlock.react';
 import { CurrentApp } from 'context/currentApp';
 import { withRouter } from 'lib/withRouter';
+import AgentKeyDialog from './AgentKeyDialog.react';
 import { getBack4app2, AGENT_FLAVOR } from 'lib/back4app2Client';
 import { ChatMessageStatus } from '@back4app2/sdk';
 import styles from './Agent.scss';
@@ -65,6 +66,7 @@ class AgentV3 extends DashboardView {
       isLoading: true,
       isSending: false,
       isCreating: false,
+      showKeyDialog: false,
       error: null,
     };
     this.chatWindowRef = React.createRef();
@@ -149,6 +151,28 @@ class AgentV3 extends DashboardView {
       await getBack4app2().deleteAgent(agent.id);
       this.teardown();
       this.setState({ agent: null, chatId: null, messages: [] });
+    } catch (error) {
+      this.setState({ error: error.message || String(error) });
+    }
+  };
+
+  // BYOK: save the user's own OpenAI/Anthropic key for this app's agent. Only
+  // non-empty fields are sent (blank = keep current). Requires the @back4app2/sdk
+  // to expose setAgentLLMCredentials (republish + version bump).
+  saveKeys = async ({ openaiApiKey, anthropicApiKey }) => {
+    const { agent } = this.state;
+    if (!agent) { return; }
+    const creds = {};
+    if (openaiApiKey) { creds.openaiApiKey = openaiApiKey; }
+    if (anthropicApiKey) { creds.anthropicApiKey = anthropicApiKey; }
+    if (Object.keys(creds).length === 0) {
+      this.setState({ showKeyDialog: false });
+      return;
+    }
+    try {
+      await getBack4app2().setAgentLLMCredentials(agent.id, creds);
+      // Reload to refresh the has* flags.
+      this.setState({ showKeyDialog: false }, () => this.init());
     } catch (error) {
       this.setState({ error: error.message || String(error) });
     }
@@ -239,6 +263,15 @@ class AgentV3 extends DashboardView {
     const { agent } = this.state;
     return (
       <Toolbar section="Agent" subsection="AI Agent">
+        {agent ? (
+          <a
+            className={styles.toolbarAction}
+            title="Use your own OpenAI / Anthropic key"
+            onClick={() => this.setState({ showKeyDialog: true })}
+          >
+            API key
+          </a>
+        ) : null}
         {agent ? (
           <a className={styles.toolbarAction} title="Delete this agent" onClick={this.deleteAgent}>
             Delete agent
@@ -372,6 +405,14 @@ class AgentV3 extends DashboardView {
             />
           </div>
         )}
+
+        <AgentKeyDialog
+          open={this.state.showKeyDialog}
+          hasOpenai={!!(agent && agent.hasOpenaiApiKey)}
+          hasAnthropic={!!(agent && agent.hasAnthropicApiKey)}
+          onConfirm={this.saveKeys}
+          onClose={() => this.setState({ showKeyDialog: false })}
+        />
       </div>
     );
   }
