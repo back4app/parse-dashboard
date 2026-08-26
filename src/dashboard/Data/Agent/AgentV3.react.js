@@ -20,6 +20,17 @@ import { getBack4app2, AGENT_FLAVOR } from 'lib/back4app2Client';
 import { ChatMessageStatus } from '@back4app2/sdk';
 import styles from './Agent.scss';
 
+// Turn a raw agent failure (often a full Python traceback / container-startup
+// dump) into a single human-facing line: the final "SomeError: message" from the
+// traceback, else the first line stripped of the "Last container logs:" noise.
+function cleanErrorMessage(raw) {
+  const text = String(raw || '').trim();
+  if (!text) { return 'The agent failed to respond.'; }
+  const matches = [...text.matchAll(/(?:[A-Za-z_][\w.]*)?(?:Error|Exception):\s*([^\n]+)/g)];
+  if (matches.length) { return matches[matches.length - 1][1].trim(); }
+  return text.split('\n')[0].replace(/\s*Last container logs:.*$/i, '').trim() || 'The agent failed to respond.';
+}
+
 // Strip the agent's technical chatter from a response and pull out the progress
 // events, mirroring back4app2's AgentMessage parsing. The agent streams
 // ```agent-progress\n{json}\n``` fences (current tool/stage), plus tool-call /
@@ -391,7 +402,7 @@ class AgentV3 extends DashboardView {
               <div className={`${styles.message} ${styles.agent} ${failed ? styles.error : ''}`}>
                 <div className={styles.messageContent}>
                   {failed
-                    ? `Error: ${(m.error && m.error.message) || 'The agent failed to respond.'}`
+                    ? `Error: ${cleanErrorMessage(m.error && m.error.message)}`
                     : (
                       <>
                         {cleaned ? this.formatMessageContent(cleaned) : null}
