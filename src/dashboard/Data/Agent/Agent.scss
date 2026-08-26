@@ -383,17 +383,22 @@ body:global(.expanded) {
   padding: 12px 24px;
   background-color: $agentAccent;
   color: #ffffff;
-  border: none;
+  border: 1px solid transparent; /* reserve the border; colored only when usable */
   border-radius: 24px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
   min-width: 80px;
+}
+
+.sendButton:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.7); /* looks like a button when actionable */
 }
 
 .sendButton:hover:not(:disabled) {
   background-color: #0f52cc;
+  border-color: #ffffff;
 }
 
 .sendButton:disabled {
