@@ -472,3 +472,11 @@ body:global(.expanded) {
     font-weight: 600;
   }
 }
+
+// Subtitle text inside the B4aModal confirmations (delete / clear key),
+// matching the Cloud Code section's modal styling.
+.subtitleModal {
+  font-size: 14px;
+  color: #303338;
+  opacity: 0.7;
+}

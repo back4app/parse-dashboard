@@ -10,6 +10,7 @@ import DashboardView from 'dashboard/DashboardView.react';
 import Toolbar from 'components/Toolbar/Toolbar.react';
 import Markdown from 'components/Markdown/Markdown.react';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
+import B4aModal from 'components/B4aModal/B4aModal.react';
 import AppOverviewCodeEditorBlock from 'dashboard/Data/AppOverview/AppOverviewCodeEditorBlock.react';
 import { CurrentApp } from 'context/currentApp';
 import { withRouter } from 'lib/withRouter';
@@ -67,7 +68,8 @@ class AgentV3 extends DashboardView {
       isSending: false,
       isCreating: false,
       showKeyDialog: false,
-      keyDialogMode: 'edit', // 'create' (asked before the agent exists) | 'edit'
+      keyDialogMode: 'create', // 'create' (no agent yet) | 'new' (replace)
+      modal: null, // confirmation modal (B4aModal), like the Cloud Code section
       error: null,
     };
     this.chatWindowRef = React.createRef();
@@ -187,13 +189,34 @@ class AgentV3 extends DashboardView {
     }
   };
 
-  // Delete the agent (and its chat) for this app, then reset to the empty state.
-  deleteAgent = async () => {
+  // Delete the agent (and its chat) for this app. Confirm with a B4aModal, the
+  // same danger dialog the Cloud Code section uses — not a browser alert.
+  deleteAgent = () => {
+    if (!this.state.agent) { return; }
+    this.setState({
+      modal: (
+        <B4aModal
+          type={B4aModal.Types.DANGER}
+          icon="b4a-warn-fill-icon"
+          iconFill="#cccccc"
+          title="Delete agent?"
+          buttonsInCenter={true}
+          confirmText="Delete agent"
+          onConfirm={this.confirmDeleteAgent}
+          onCancel={() => this.setState({ modal: null })}
+        >
+          <span className={styles.subtitleModal}>
+            This permanently deletes this agent and its entire conversation. This cannot be undone.
+          </span>
+        </B4aModal>
+      ),
+    });
+  };
+
+  confirmDeleteAgent = async () => {
     const { agent } = this.state;
+    this.setState({ modal: null, error: null });
     if (!agent) { return; }
-    // eslint-disable-next-line no-alert
-    if (!window.confirm('Delete this agent and its conversation? This cannot be undone.')) { return; }
-    this.setState({ error: null });
     try {
       await getBack4app2().deleteAgent(agent.id);
       this.teardown();
@@ -204,14 +227,32 @@ class AgentV3 extends DashboardView {
   };
 
   // "Clear key": non-destructive — drop the BYOK key (back to the platform
-  // default), keeping the conversation. Sends null to clear both columns. Takes
-  // effect on the next container launch.
-  clearKeys = async () => {
+  // default), keeping the conversation. Confirm with a B4aModal.
+  clearKeys = () => {
+    if (!this.state.agent) { return; }
+    this.setState({
+      modal: (
+        <B4aModal
+          type={B4aModal.Types.DEFAULT}
+          title="Clear API key?"
+          buttonsInCenter={true}
+          confirmText="Clear key"
+          onConfirm={this.confirmClearKeys}
+          onCancel={() => this.setState({ modal: null })}
+        >
+          <span className={styles.subtitleModal}>
+            The agent falls back to the platform default key. Your conversation is kept.
+          </span>
+        </B4aModal>
+      ),
+    });
+  };
+
+  // Sends null to clear both columns. Takes effect on the next container launch.
+  confirmClearKeys = async () => {
     const { agent } = this.state;
+    this.setState({ modal: null, error: null });
     if (!agent) { return; }
-    // eslint-disable-next-line no-alert
-    if (!window.confirm('Clear your API key? The agent falls back to the platform default. Your conversation is kept.')) { return; }
-    this.setState({ error: null });
     try {
       await getBack4app2().setAgentLLMCredentials(agent.id, { openaiApiKey: null, anthropicApiKey: null });
       this.init(); // refresh the has* flags
@@ -483,6 +524,8 @@ class AgentV3 extends DashboardView {
           onConfirm={this.handleKeyDialogConfirm}
           onClose={() => this.setState({ showKeyDialog: false })}
         />
+
+        {this.state.modal}
       </div>
     );
   }
