@@ -393,12 +393,11 @@ body:global(.expanded) {
 }
 
 .sendButton:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.7); /* looks like a button when actionable */
+  border-color: $agentBorder; /* same as the message cards — looks like a button */
 }
 
 .sendButton:hover:not(:disabled) {
   background-color: #0f52cc;
-  border-color: #ffffff;
 }
 
 .sendButton:disabled {
