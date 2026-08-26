@@ -51,10 +51,9 @@ export default class AgentKeyDialog extends React.Component {
       <B4aFormModal
         title={isNew ? 'Start a new agent' : 'Create AI agent'}
         subtitle={
-          (isNew
-            ? 'This permanently deletes this agent and its entire conversation — this cannot be undone. '
-            : '') +
-          'Pick one LLM provider and provide your own API key for it (required). The provider/key is FIXED for this agent — to switch it you create a new agent. The value is encrypted and never shown again.'
+          isNew
+            ? 'Permanently deletes this agent and its conversation. Choose a provider and enter a new API key — stored encrypted, never shown again.'
+            : 'Choose a provider and enter your own API key — stored encrypted, never shown again.'
         }
         open={this.props.open}
         submitText={isNew ? 'Delete & create' : 'Create agent'}
