@@ -31,6 +31,14 @@ function cleanErrorMessage(raw) {
   return text.split('\n')[0].replace(/\s*Last container logs:.*$/i, '').trim() || 'The agent failed to respond.';
 }
 
+// Agent-container states where the runtime is still coming up — sending a
+// message now yields "agent has not initialized". Gate the chat until the agent
+// leaves this set (i.e. reaches READY).
+const AGENT_STARTING_STATES = ['INITIALIZING', 'INITIALIZED', 'LAUNCHING'];
+function isAgentStarting(agent) {
+  return !!agent && AGENT_STARTING_STATES.indexOf(agent.status) !== -1;
+}
+
 // Strip the agent's technical chatter from a response and pull out the progress
 // events, mirroring back4app2's AgentMessage parsing. The agent streams
 // ```agent-progress\n{json}\n``` fences (current tool/stage), plus tool-call /
@@ -87,6 +95,7 @@ class AgentV3 extends DashboardView {
     this.chatWindowRef = React.createRef();
     this.chatInputRef = React.createRef();
     this.subscription = null;
+    this.statusPoll = null;
     this._loadedAppId = null;
   }
 
@@ -114,6 +123,28 @@ class AgentV3 extends DashboardView {
       try { this.subscription.unsubscribe(); } catch (e) { /* noop */ }
       this.subscription = null;
     }
+    if (this.statusPoll) { clearTimeout(this.statusPoll); this.statusPoll = null; }
+  }
+
+  // Poll the agent's status until it leaves the "starting" states (reaches READY
+  // or FAILED), so the chat input can un-gate. Stops itself when the view moves
+  // to another agent/app or unmounts (teardown clears the timer).
+  pollStatusUntilReady(agent) {
+    if (this.statusPoll) { clearTimeout(this.statusPoll); this.statusPoll = null; }
+    if (!isAgentStarting(agent)) { return; }
+    const agentId = agent.id;
+    const tick = async () => {
+      if (!this.state.agent || this.state.agent.id !== agentId) { return; }
+      try {
+        const fresh = await getBack4app2().getAgent(agentId);
+        if (!this.state.agent || this.state.agent.id !== agentId) { return; }
+        this.setState(prev => ({ agent: { ...prev.agent, status: fresh.status } }));
+        this.statusPoll = isAgentStarting(fresh) ? setTimeout(tick, 2500) : null;
+      } catch (e) {
+        this.statusPoll = setTimeout(tick, 3000); // transient — retry
+      }
+    };
+    this.statusPoll = setTimeout(tick, 2000);
   }
 
   async init() {
@@ -134,6 +165,7 @@ class AgentV3 extends DashboardView {
       const history = await sdk.findChatMessages(chatId);
       this.setState({ agent, chatId, messages: history || [], isLoading: false }, () => this.scrollToBottom());
       this.subscribe(chatId);
+      this.pollStatusUntilReady(agent);
     } catch (error) {
       this.setState({ isLoading: false, error: error.message || String(error) });
     }
@@ -277,7 +309,7 @@ class AgentV3 extends DashboardView {
     if (event) { event.preventDefault(); }
     const { inputValue, agent, isSending } = this.state;
     const question = inputValue.trim();
-    if (!question || !agent || isSending) { return; }
+    if (!question || !agent || isSending || isAgentStarting(agent)) { return; }
     this.setState({ inputValue: '', isSending: true, error: null });
     try {
       // Optimistically show the question; the subscription streams the response.
@@ -420,24 +452,28 @@ class AgentV3 extends DashboardView {
 
   renderChatInput() {
     const { inputValue, isSending, agent } = this.state;
+    const starting = isAgentStarting(agent);
+    const disabled = !agent || isSending || starting;
     return (
       <form className={styles.chatForm} onSubmit={this.handleSubmit}>
         <div className={styles.inputContainer}>
           <textarea
             ref={this.chatInputRef}
             className={styles.chatInput}
-            placeholder="Type your message here…  (Shift+Enter for a new line)"
+            placeholder={starting
+              ? 'Preparing your agent… you can chat once it is ready'
+              : 'Type your message here…  (Shift+Enter for a new line)'}
             value={inputValue}
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
-            disabled={!agent || isSending}
+            disabled={disabled}
             rows={1}
             autoFocus
           />
           <button
             type="submit"
             className={styles.sendButton}
-            disabled={!agent || isSending || inputValue.trim() === ''}
+            disabled={disabled || inputValue.trim() === ''}
           >
             Send
           </button>
@@ -460,7 +496,9 @@ class AgentV3 extends DashboardView {
               <div className={styles.inlineEmpty}>
                 <B4aEmptyState
                   title="AI Agent"
-                  description="Ask the AI agent anything about this app to get started."
+                  description={isAgentStarting(agent)
+                    ? 'Preparing your agent… this can take a moment. You can chat once it is ready.'
+                    : 'Ask the AI agent anything about this app to get started.'}
                 />
               </div>
             ) : null}
