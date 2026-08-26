@@ -38,6 +38,19 @@ $agentAccent: #1669fc;
   }
 }
 
+.toolbarIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 44px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
 .activeModel {
   display: inline-flex;
   align-items: center;

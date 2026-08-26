@@ -11,6 +11,7 @@ import Toolbar from 'components/Toolbar/Toolbar.react';
 import Markdown from 'components/Markdown/Markdown.react';
 import B4aEmptyState from 'components/B4aEmptyState/B4aEmptyState.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
+import Icon from 'components/Icon/Icon.react';
 import AppOverviewCodeEditorBlock from 'dashboard/Data/AppOverview/AppOverviewCodeEditorBlock.react';
 import { CurrentApp } from 'context/currentApp';
 import { withRouter } from 'lib/withRouter';
@@ -313,16 +314,20 @@ class AgentV3 extends DashboardView {
       <Toolbar section="Agent" subsection="AI Agent">
         {agent ? (
           <a
-            className={styles.toolbarAction}
-            title="Start a fresh agent (needed to switch the LLM key/provider — the conversation is lost)"
+            className={styles.toolbarIconBtn}
+            title="New agent — start fresh (switches the LLM key/provider; the conversation is lost)"
             onClick={this.openNewAgentDialog}
           >
-            New agent
+            <Icon name="b4a-refresh-icon" fill="#ffffff" width={18} height={18} />
           </a>
         ) : null}
         {agent ? (
-          <a className={styles.toolbarAction} title="Delete this agent" onClick={this.deleteAgent}>
-            Delete agent
+          <a
+            className={styles.toolbarIconBtn}
+            title="Delete this agent and its conversation"
+            onClick={this.deleteAgent}
+          >
+            <Icon name="b4a-delete-icon" fill="#E85C3E" width={22} height={18} />
           </a>
         ) : null}
       </Toolbar>
