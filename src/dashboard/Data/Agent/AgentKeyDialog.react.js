@@ -6,10 +6,11 @@
  * the root directory of this source tree.
  */
 import B4aFormModal from 'components/FormModal/B4aFormModal.react';
+import Dropdown from 'components/Dropdown/Dropdown.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
+import Option from 'components/Dropdown/Option.react';
 import TextInput from 'components/TextInput/TextInput.react';
-import Toggle from 'components/Toggle/Toggle.react';
 import React from 'react';
 
 /**
@@ -70,15 +71,13 @@ export default class AgentKeyDialog extends React.Component {
             />
           }
           input={
-            <Toggle
-              type={Toggle.Types.TWO_WAY}
-              optionLeft="OpenAI"
-              optionRight="Anthropic"
-              value={isOpenai ? 'OpenAI' : 'Anthropic'}
-              onChange={value =>
-                this.setState({ provider: value === 'Anthropic' ? 'anthropic' : 'openai' })
-              }
-            />
+            <Dropdown
+              value={provider}
+              onChange={value => this.setState({ provider: value })}
+            >
+              <Option value="openai">OpenAI</Option>
+              <Option value="anthropic">Anthropic</Option>
+            </Dropdown>
           }
         />
         <Field
