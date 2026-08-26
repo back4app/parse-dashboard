@@ -9,34 +9,42 @@ import B4aFormModal from 'components/FormModal/B4aFormModal.react';
 import Field from 'components/Field/Field.react';
 import Label from 'components/Label/Label.react';
 import TextInput from 'components/TextInput/TextInput.react';
+import Toggle from 'components/Toggle/Toggle.react';
 import React from 'react';
 
 /**
- * Agent creation dialog. The LLM key is set at creation and is FIXED for the
- * agent's life (1 agent : 1 app, no in-place reconfigure). Two modes:
+ * Agent creation dialog. An agent uses a SINGLE LLM provider (OpenAI OR
+ * Anthropic), fixed for its life (1 agent : 1 app, no in-place reconfigure —
+ * switching provider means a new container = a new agent). Two modes:
  *   - 'create': no agent exists yet.
  *   - 'new':    replace the current agent — destructive, warns the conversation
- *               is lost forever. This is the only way to switch key/provider.
+ *               is lost forever. This is the only way to switch provider/key.
  * The key is sent to the back4app2 API (stored encrypted, injected into the
- * container) and never shown back. Leaving both fields blank uses the platform
- * default key.
+ * container) and never shown back. Leaving it blank uses the platform default.
  */
 export default class AgentKeyDialog extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { openaiApiKey: '', anthropicApiKey: '' };
+    this.state = { provider: 'openai', apiKey: '' };
   }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.open && this.props.open) {
-      this.setState({ openaiApiKey: '', anthropicApiKey: '' });
+      this.setState({ provider: 'openai', apiKey: '' });
     }
   }
 
-  clearFields = () => this.setState({ openaiApiKey: '', anthropicApiKey: '' });
+  clearFields = () => this.setState({ apiKey: '' });
 
   render() {
     const isNew = this.props.mode === 'new';
+    const { provider, apiKey } = this.state;
+    const isOpenai = provider === 'openai';
+    // Send only the chosen provider's key; the other is explicitly empty so the
+    // agent runs on a single provider (no accidental platform fallback).
+    const creds = isOpenai
+      ? { openaiApiKey: apiKey.trim(), anthropicApiKey: '' }
+      : { openaiApiKey: '', anthropicApiKey: apiKey.trim() };
     return (
       <B4aFormModal
         title={isNew ? 'Start a new agent' : 'Create AI agent'}
@@ -44,7 +52,7 @@ export default class AgentKeyDialog extends React.Component {
           (isNew
             ? 'This permanently deletes this agent and its entire conversation — this cannot be undone. '
             : '') +
-          "Optionally use your own OpenAI / Anthropic key. Leave blank to use the platform's default. The key is FIXED for this agent — to switch it later you create a new agent. The value is encrypted and never shown again."
+          "Pick one LLM provider and optionally use your own key for it. Leave the key blank to use the platform's default. The provider/key is FIXED for this agent — to switch it you create a new agent. The value is encrypted and never shown again."
         }
         open={this.props.open}
         submitText={isNew ? 'Delete & create' : 'Create agent'}
@@ -52,37 +60,31 @@ export default class AgentKeyDialog extends React.Component {
         enabled={true}
         clearFields={this.clearFields}
         onClose={this.props.onClose}
-        onSubmit={() =>
-          Promise.resolve(
-            this.props.onConfirm({
-              openaiApiKey: this.state.openaiApiKey.trim(),
-              anthropicApiKey: this.state.anthropicApiKey.trim(),
-            })
-          )
-        }
+        onSubmit={() => Promise.resolve(this.props.onConfirm(creds))}
       >
         <Field
           label={
             <Label
-              text="OpenAI API key"
-              description="Leave blank to use the platform key."
+              text="Provider"
+              description="The agent uses a single LLM provider."
             />
           }
           input={
-            <TextInput
-              dark={false}
-              padding="0 1rem"
-              hidden={true}
-              placeholder="sk-…"
-              value={this.state.openaiApiKey}
-              onChange={value => this.setState({ openaiApiKey: String(value ?? '') })}
+            <Toggle
+              type={Toggle.Types.TWO_WAY}
+              optionLeft="OpenAI"
+              optionRight="Anthropic"
+              value={isOpenai ? 'OpenAI' : 'Anthropic'}
+              onChange={value =>
+                this.setState({ provider: value === 'Anthropic' ? 'anthropic' : 'openai' })
+              }
             />
           }
         />
         <Field
           label={
             <Label
-              text="Anthropic API key (optional)"
+              text={isOpenai ? 'OpenAI API key' : 'Anthropic API key'}
               description="Leave blank to use the platform key."
             />
           }
@@ -91,9 +93,9 @@ export default class AgentKeyDialog extends React.Component {
               dark={false}
               padding="0 1rem"
               hidden={true}
-              placeholder="sk-ant-…"
-              value={this.state.anthropicApiKey}
-              onChange={value => this.setState({ anthropicApiKey: String(value ?? '') })}
+              placeholder={isOpenai ? 'sk-…' : 'sk-ant-…'}
+              value={apiKey}
+              onChange={value => this.setState({ apiKey: String(value ?? '') })}
             />
           }
         />
