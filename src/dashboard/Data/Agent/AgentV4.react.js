@@ -64,15 +64,15 @@ function parseAgentContent(content) {
 }
 
 /**
- * AI Agent V3 chat, scoped to the current Parse app.
+ * AI Agent V4 chat, scoped to the current Parse app.
  *
  * Consumes the back4app2 SDK directly (GraphQL + graphql-ws), authenticated via
- * the shared `connect.sid` session cookie from the navbar. Resolves the V3 agent
+ * the shared `connect.sid` session cookie from the navbar. Resolves the V4 agent
  * bound to this app (agent.currentAppId === app.appId), then streams its chat.
  * Only the chat is used here — no preview/sandbox/hosting.
  */
 @withRouter
-class AgentV3 extends DashboardView {
+class AgentV4 extends DashboardView {
   static contextType = CurrentApp;
 
   constructor(props) {
@@ -547,4 +547,4 @@ class AgentV3 extends DashboardView {
   }
 }
 
-export default AgentV3;
+export default AgentV4;

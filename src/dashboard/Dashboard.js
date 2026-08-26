@@ -12,7 +12,7 @@ import AppData from './AppData.react';
 import AppsIndex from './Apps/AppsIndex.react';
 import AppsManager from 'lib/AppsManager';
 import Browser from './Data/Browser/Browser.react';
-import Agent from './Data/Agent/AgentV3.react';
+import Agent from './Data/Agent/AgentV4.react';
 // import CloudCode from './Data/CloudCode/B4ACloudCode.react';
 import AppOverview from './Data/AppOverview/AppOverview.react';
 import Config from './Data/Config/Config.react';

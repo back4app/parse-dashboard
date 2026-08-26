@@ -7,7 +7,7 @@
  */
 
 // Singleton client for the back4app2 GraphQL API (`@back4app2/sdk`), used by the
-// AI Agent V3 chat. Authentication is implicit: the SDK reads the shared
+// AI Agent V4 chat. Authentication is implicit: the SDK reads the shared
 // `connect.sid` session cookie set by the back4app2 navbar — the same session
 // the rest of the environment uses. No token is passed here.
 import { Back4app2 } from '@back4app2/sdk';
