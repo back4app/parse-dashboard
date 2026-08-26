@@ -21,7 +21,8 @@ import React from 'react';
  *   - 'new':    replace the current agent — destructive, warns the conversation
  *               is lost forever. This is the only way to switch provider/key.
  * The key is sent to the back4app2 API (stored encrypted, injected into the
- * container) and never shown back. Leaving it blank uses the platform default.
+ * container) and never shown back. A key is REQUIRED — the agent always runs on
+ * the client's own key (no platform fallback).
  */
 export default class AgentKeyDialog extends React.Component {
   constructor(props) {
@@ -53,12 +54,12 @@ export default class AgentKeyDialog extends React.Component {
           (isNew
             ? 'This permanently deletes this agent and its entire conversation — this cannot be undone. '
             : '') +
-          "Pick one LLM provider and optionally use your own key for it. Leave the key blank to use the platform's default. The provider/key is FIXED for this agent — to switch it you create a new agent. The value is encrypted and never shown again."
+          'Pick one LLM provider and provide your own API key for it (required). The provider/key is FIXED for this agent — to switch it you create a new agent. The value is encrypted and never shown again.'
         }
         open={this.props.open}
         submitText={isNew ? 'Delete & create' : 'Create agent'}
         inProgressText={isNew ? 'Recreating…' : 'Creating…'}
-        enabled={true}
+        enabled={apiKey.trim() !== ''}
         clearFields={this.clearFields}
         onClose={this.props.onClose}
         onSubmit={() => Promise.resolve(this.props.onConfirm(creds))}
@@ -84,7 +85,7 @@ export default class AgentKeyDialog extends React.Component {
           label={
             <Label
               text={isOpenai ? 'OpenAI API key' : 'Anthropic API key'}
-              description="Leave blank to use the platform key."
+              description="Required — the agent runs on your own key."
             />
           }
           input={

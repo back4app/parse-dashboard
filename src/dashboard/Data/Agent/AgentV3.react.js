@@ -226,41 +226,6 @@ class AgentV3 extends DashboardView {
     }
   };
 
-  // "Clear key": non-destructive — drop the BYOK key (back to the platform
-  // default), keeping the conversation. Confirm with a B4aModal.
-  clearKeys = () => {
-    if (!this.state.agent) { return; }
-    this.setState({
-      modal: (
-        <B4aModal
-          type={B4aModal.Types.DEFAULT}
-          title="Clear API key?"
-          buttonsInCenter={true}
-          confirmText="Clear key"
-          onConfirm={this.confirmClearKeys}
-          onCancel={() => this.setState({ modal: null })}
-        >
-          <span className={styles.subtitleModal}>
-            The agent falls back to the platform default key. Your conversation is kept.
-          </span>
-        </B4aModal>
-      ),
-    });
-  };
-
-  // Sends null to clear both columns. Takes effect on the next container launch.
-  confirmClearKeys = async () => {
-    const { agent } = this.state;
-    this.setState({ modal: null, error: null });
-    if (!agent) { return; }
-    try {
-      await getBack4app2().setAgentLLMCredentials(agent.id, { openaiApiKey: null, anthropicApiKey: null });
-      this.init(); // refresh the has* flags
-    } catch (error) {
-      this.setState({ error: error.message || String(error) });
-    }
-  };
-
   subscribe(chatId) {
     const sdk = getBack4app2();
     this.subscription = sdk.subscribeToChatMessageEvents(chatId, (error, event) => {
@@ -344,7 +309,6 @@ class AgentV3 extends DashboardView {
 
   renderToolbar() {
     const { agent } = this.state;
-    const hasKey = !!(agent && (agent.hasOpenaiApiKey || agent.hasAnthropicApiKey));
     return (
       <Toolbar section="Agent" subsection="AI Agent">
         {agent ? (
@@ -354,15 +318,6 @@ class AgentV3 extends DashboardView {
             onClick={this.openNewAgentDialog}
           >
             New agent
-          </a>
-        ) : null}
-        {hasKey ? (
-          <a
-            className={styles.toolbarAction}
-            title="Remove your API key and fall back to the platform default (keeps the conversation)"
-            onClick={this.clearKeys}
-          >
-            Clear key
           </a>
         ) : null}
         {agent ? (
