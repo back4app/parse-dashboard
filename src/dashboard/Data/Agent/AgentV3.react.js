@@ -318,7 +318,11 @@ class AgentV3 extends DashboardView {
     } catch (error) {
       this.setState({ error: error.message || String(error) });
     } finally {
-      this.setState({ isSending: false });
+      // Keep the cursor in the input so the user can keep typing without
+      // clicking back into it after every send.
+      this.setState({ isSending: false }, () => {
+        if (this.chatInputRef.current) { this.chatInputRef.current.focus(); }
+      });
     }
   };
 
@@ -453,7 +457,10 @@ class AgentV3 extends DashboardView {
   renderChatInput() {
     const { inputValue, isSending, agent } = this.state;
     const starting = isAgentStarting(agent);
-    const disabled = !agent || isSending || starting;
+    // Keep the textarea enabled while a send is in flight so it never loses
+    // focus (only gate it before the agent is ready). Only the Send button is
+    // disabled mid-send.
+    const inputDisabled = !agent || starting;
     return (
       <form className={styles.chatForm} onSubmit={this.handleSubmit}>
         <div className={styles.inputContainer}>
@@ -466,14 +473,14 @@ class AgentV3 extends DashboardView {
             value={inputValue}
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
-            disabled={disabled}
+            disabled={inputDisabled}
             rows={1}
             autoFocus
           />
           <button
             type="submit"
             className={styles.sendButton}
-            disabled={disabled || inputValue.trim() === ''}
+            disabled={inputDisabled || isSending || inputValue.trim() === ''}
           >
             Send
           </button>
