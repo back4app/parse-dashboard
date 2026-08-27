@@ -210,7 +210,7 @@ class AgentV4 extends DashboardView {
 
   // Shared creation core. Assumes isCreating is already true. Creates a V4 agent,
   // binds it to this app, optionally sets its own LLM key, then loads its chat.
-  _provisionAgent = async ({ openaiApiKey, anthropicApiKey } = {}) => {
+  _provisionAgent = async ({ openaiApiKey, anthropicApiKey, model } = {}) => {
     const appId = this.context ? this.context.applicationId : null;
     if (!appId) {
       this.setState({ isCreating: false, error: 'App context not available' });
@@ -224,6 +224,7 @@ class AgentV4 extends DashboardView {
       const creds = {};
       if (openaiApiKey) { creds.openaiApiKey = openaiApiKey; }
       if (anthropicApiKey) { creds.anthropicApiKey = anthropicApiKey; }
+      if (model) { creds.model = model; }
       if (Object.keys(creds).length > 0) {
         await sdk.setAgentLLMCredentials(agent.id, creds);
       }
