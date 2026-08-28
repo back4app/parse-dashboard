@@ -346,6 +346,22 @@ $aiToolsOpenHeight: 110px;
     & svg {
       fill: currentColor;
     }
+
+    // B4aBadge positions itself with `float: right`, which works in the default
+    // (block) header but is ignored here: this active header is a flex
+    // container, and floats do not apply to flex items — the badge would end up
+    // flush against the label. `margin-left: auto` is the flex equivalent.
+    //
+    // Matches the last span ONLY when it is not the only one, i.e. exactly when
+    // a badge follows the label. With no badge (or a collapsed sidebar, where
+    // the label span is not rendered) nothing matches, so the label is never
+    // pushed right.
+    > span:last-of-type:not(:only-of-type) {
+      margin-left: auto;
+      // The badge's 5px top offset compensates for the block layout; here
+      // align-items: center already handles it.
+      margin-top: 0;
+    }
   }
 }
 
