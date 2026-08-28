@@ -64,7 +64,7 @@ function parseAgentContent(content) {
 }
 
 /**
- * AI Agent V4 chat, scoped to the current Parse app.
+ * Backend Agent (flavor V4) chat, scoped to the current Parse app.
  *
  * Consumes the back4app2 SDK directly (GraphQL + graphql-ws), authenticated via
  * the shared `connect.sid` session cookie from the navbar. Resolves the V4 agent
@@ -77,8 +77,7 @@ class AgentV4 extends DashboardView {
 
   constructor(props) {
     super(props);
-    this.section = 'Agent';
-    this.subsection = 'AI Agent';
+    this.section = 'Backend Agent';
     this.state = {
       agent: null,
       chatId: null,
@@ -359,7 +358,7 @@ class AgentV4 extends DashboardView {
   renderToolbar() {
     const { agent } = this.state;
     return (
-      <Toolbar section="Agent" subsection="AI Agent">
+      <Toolbar section="Backend Agent">
         {agent ? (
           <a
             className={styles.toolbarIconBtn}
@@ -503,10 +502,10 @@ class AgentV4 extends DashboardView {
             {hasAgent && messages.length === 0 ? (
               <div className={styles.inlineEmpty}>
                 <B4aEmptyState
-                  title="AI Agent"
+                  title="Backend Agent"
                   description={isAgentStarting(agent)
                     ? 'Preparing your agent… this can take a moment. You can chat once it is ready.'
-                    : 'Ask the AI agent anything about this app to get started.'}
+                    : 'Ask the Backend Agent anything about this app to get started.'}
                 />
               </div>
             ) : null}
@@ -519,7 +518,7 @@ class AgentV4 extends DashboardView {
         {!hasAgent && (
           <div className={styles.emptyStateOverlay}>
             <B4aEmptyState
-              title="AI Agent"
+              title="Backend Agent"
               description={
                 isLoading
                   ? 'Loading…'
@@ -527,7 +526,7 @@ class AgentV4 extends DashboardView {
                     ? 'Creating your agent…'
                     : error
                       ? `Couldn't load the agent: ${error}`
-                      : 'No AI agent is set up for this app yet. Create one to start chatting.'
+                      : 'No Backend Agent is set up for this app yet. Create one to start chatting.'
               }
               cta={!isLoading && !isCreating ? 'Create agent' : undefined}
               action={!isLoading && !isCreating ? this.openCreateDialog : undefined}

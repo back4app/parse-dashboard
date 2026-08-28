@@ -117,13 +117,13 @@ export function injectAgent(tree) {
   if (existing) {
     // A non-folder node with our name → collision.
     if (existing.type && existing.type !== 'folder') {
-      throw new CloudCollisionError('A file named "' + AGENT_DIR + '" already exists in your Cloud Code. Rename or remove it before configuring the AI Agent.');
+      throw new CloudCollisionError('A file named "' + AGENT_DIR + '" already exists in your Cloud Code. Rename or remove it before configuring the Backend Agent.');
     }
     if (!Array.isArray(existing.children)) { existing.children = []; }
     const file = existing.children.find(n => n && n.text === AGENT_FILE);
     if (file && fileCode(file).indexOf(AGENT_MARKER) === -1) {
       // Same-named file the customer created — do not clobber.
-      throw new CloudCollisionError('A file "' + AGENT_DIR + '/' + AGENT_FILE + '" already exists in your Cloud Code and is not managed by the dashboard. Rename or remove it before configuring the AI Agent.');
+      throw new CloudCollisionError('A file "' + AGENT_DIR + '/' + AGENT_FILE + '" already exists in your Cloud Code and is not managed by the dashboard. Rename or remove it before configuring the Backend Agent.');
     }
     if (file) {
       file.data = { code: encodeCode(AGENT_SOURCE) };

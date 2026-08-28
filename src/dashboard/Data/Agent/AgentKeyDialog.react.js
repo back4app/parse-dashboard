@@ -76,7 +76,7 @@ export default class AgentKeyDialog extends React.Component {
     };
     return (
       <B4aFormModal
-        title={isNew ? 'Start a new agent' : 'Create AI agent'}
+        title={isNew ? 'Start a new Backend Agent' : 'Create Backend Agent'}
         subtitle={
           isNew
             ? 'Permanently deletes this agent and its conversation. Choose a provider, model and API key — stored encrypted, never shown again.'

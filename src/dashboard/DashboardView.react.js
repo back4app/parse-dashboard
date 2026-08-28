@@ -345,9 +345,10 @@ export default class DashboardView extends React.Component {
     });
 
     appSidebarSections.push({
-      name: 'Agent',
-      icon: 'b4a-agent',
+      name: 'Backend Agent',
+      icon: 'b4a-ai',
       link: '/agent',
+      badgeParams: { label: 'NEW', color: 'green' },
     });
 
     const notificationSubSections = [
