@@ -12,10 +12,15 @@
 // the rest of the environment uses. No token is passed here.
 import { Back4app2 } from '@back4app2/sdk';
 
-// back4app2 GraphQL endpoint (http + ws). Homolog for now; lift into b4aSettings
-// when we point at other environments.
-const HTTP_URL = 'https://api.containers-homolog.back4app.com';
-const WS_URL = 'wss://api.containers-homolog.back4app.com';
+// back4app2 GraphQL endpoint (http + ws), driven by b4aSettings so each
+// environment hits its own API: dev.json -> http://localhost:4040, homolog and
+// production -> their respective hosts. Previously hardcoded to homolog, which
+// made the local dashboard talk to the remote API (and fail auth, since the
+// `connect.sid` cookie is scoped to localhost).
+const HTTP_URL = b4aSettings.CONTAINERS_API_PATH;
+// No separate WS entry in b4aSettings — derive it from the HTTP URL so the two
+// can never drift apart: http -> ws, https -> wss.
+const WS_URL = HTTP_URL.replace(/^http/, 'ws');
 
 // Backend agent flavor this differentiated ("v4") dashboard agent talks to.
 // v4 is the reduced, app-scoped agent for parse-dashboard — segregated from the
