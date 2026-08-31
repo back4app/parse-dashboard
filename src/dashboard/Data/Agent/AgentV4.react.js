@@ -199,10 +199,16 @@ class AgentV4 extends DashboardView {
       // whether to offer "Create agent" at all).
       const [agents, parseApps] = await Promise.all([
         sdk.findAgents(AGENT_FLAVOR, appId),
-        sdk.getParseApps().catch(() => []),
+        sdk.getParseApps().catch(() => null),
       ]);
+      // Fail closed. If /listApps errored or simply doesn't list this app, we
+      // cannot claim the user owns it — and the owner-only actions here delete
+      // an agent and its whole conversation. Treating "unknown" as owner would
+      // put a Delete button in front of a collaborator that only ever 404s;
+      // treating it as collaborator merely hides buttons from an owner until
+      // the call works, which is visible and recoverable.
       const thisApp = (parseApps || []).find(a => a && a.appId === appId);
-      const isCollab = !!(thisApp && thisApp.isCollab);
+      const isCollab = !thisApp || !!thisApp.isCollab;
       // The server already scoped this to the app; more than one row means an
       // agent was created per user before the lookup moved to the app. Prefer
       // the oldest so everyone converges on the same one.
