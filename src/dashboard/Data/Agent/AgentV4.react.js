@@ -39,6 +39,23 @@ function isAgentStarting(agent) {
   return !!agent && AGENT_STARTING_STATES.indexOf(agent.status) !== -1;
 }
 
+// Starter prompts shown in the empty state — clicking one submits it. Ported
+// from the upstream agent chat.
+const EXAMPLE_PROMPTS = [
+  'How many users do I have?',
+  'What classes do I have in my database?',
+  'Can you fill a class with test data?',
+];
+
+// One-time caution pinned at the top of the conversation: the agent operates on
+// this app's data with elevated (master-key) access. Ported from the upstream
+// agent chat.
+const AGENT_WARNING =
+  'The Backend Agent has full access to this app\'s database using the master key. ' +
+  'It can read, modify, and delete any data. This is highly recommended for ' +
+  'development environments only. Always back up important data before using the ' +
+  'agent.';
+
 // Strip the agent's technical chatter from a response and pull out the progress
 // events, mirroring back4app2's AgentMessage parsing. The agent streams
 // ```agent-progress\n{json}\n``` fences (current tool/stage), plus tool-call /
@@ -298,6 +315,13 @@ class AgentV4 extends DashboardView {
 
   handleInputChange = event => this.setState({ inputValue: event.target.value });
 
+  // Click on a starter prompt: drop it into the input and submit right away.
+  handleExampleClick = text => {
+    const { agent, isSending } = this.state;
+    if (!agent || isSending || isAgentStarting(agent)) { return; }
+    this.setState({ inputValue: text }, () => this.handleSubmit());
+  };
+
   handleKeyDown = event => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -423,6 +447,10 @@ class AgentV4 extends DashboardView {
     const { messages } = this.state;
     return (
       <div className={styles.messagesContainer}>
+        <div className={styles.warningMessage}>
+          <Icon name="b4a-warn-fill-icon" width={16} height={16} fill="#ffd97a" className={styles.warningIcon} />
+          <div className={styles.warningContent}>{AGENT_WARNING}</div>
+        </div>
         {messages.map(m => {
           const failed = m.status === ChatMessageStatus.FAILED || !!m.error;
           const done = m.status === ChatMessageStatus.RESPONDED;
@@ -507,6 +535,22 @@ class AgentV4 extends DashboardView {
                     ? 'Preparing your agent… this can take a moment. You can chat once it is ready.'
                     : 'Ask the Backend Agent anything about this app to get started.'}
                 />
+                {!isAgentStarting(agent) ? (
+                  <div className={styles.exampleQueries}>
+                    <h4>Try asking:</h4>
+                    <div className={styles.queryExamples}>
+                      {EXAMPLE_PROMPTS.map(prompt => (
+                        <button
+                          key={prompt}
+                          className={styles.exampleButton}
+                          onClick={() => this.handleExampleClick(prompt)}
+                        >
+                          &ldquo;{prompt}&rdquo;
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>
