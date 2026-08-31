@@ -389,8 +389,38 @@ body:global(.expanded) {
   background-color: $agentSurface;
   color: $agentText;
   min-height: 44px;
-  max-height: 160px; /* grow with content up to here, then scroll */
+  /* Grown to fit by autoGrowInput() in AgentV4.react.js, which caps at this
+     same value (INPUT_MAX_HEIGHT) and then lets the textarea scroll. */
+  max-height: 160px;
   overflow-y: auto;
+
+  /* A native scrollbar is painted at the very edge of the padding box, which
+     the 20px radius then clips around — the thumb reads as sitting outside
+     the pill. Inset it and round it so it stays within the input. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 14px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    /* Transparent border + content-box clipping keeps the visible thumb away
+       from the rounded edge without needing extra padding on the text. */
+    border: 3px solid transparent;
+    background-clip: content-box;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
 
   &::placeholder {
     color: $agentMuted;

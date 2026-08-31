@@ -39,6 +39,10 @@ function isAgentStarting(agent) {
   return !!agent && AGENT_STARTING_STATES.indexOf(agent.status) !== -1;
 }
 
+// Tallest the composer grows before it starts scrolling. Must match
+// `max-height` on .chatInput in Agent.scss.
+const INPUT_MAX_HEIGHT = 160;
+
 // Starter prompts shown in the empty state — clicking one submits it. Ported
 // from the upstream agent chat.
 const EXAMPLE_PROMPTS = [
@@ -321,7 +325,19 @@ class AgentV4 extends DashboardView {
     }, () => this.scrollToBottom());
   }
 
-  handleInputChange = event => this.setState({ inputValue: event.target.value });
+  // The textarea is rendered with rows={1} and grows with its content up to
+  // INPUT_MAX_HEIGHT. Without this it stays at its one-row min-height and the
+  // native scrollbar shows up on the second line — drawn past the 20px
+  // border-radius, so the thumb ends up outside the pill.
+  autoGrowInput = () => {
+    const el = this.chatInputRef.current;
+    if (!el) { return; }
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, INPUT_MAX_HEIGHT)}px`;
+  };
+
+  handleInputChange = event =>
+    this.setState({ inputValue: event.target.value }, this.autoGrowInput);
 
   // Click on a starter prompt: drop it into the input and submit right away.
   handleExampleClick = text => {
@@ -342,7 +358,7 @@ class AgentV4 extends DashboardView {
     const { inputValue, agent, isSending } = this.state;
     const question = inputValue.trim();
     if (!question || !agent || isSending || isAgentStarting(agent)) { return; }
-    this.setState({ inputValue: '', isSending: true, error: null });
+    this.setState({ inputValue: '', isSending: true, error: null }, this.autoGrowInput);
     try {
       // Optimistically show the question; the subscription streams the response.
       const created = await getBack4app2().askQuestionToAgent(agent.id, question);
