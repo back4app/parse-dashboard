@@ -169,12 +169,25 @@ body:global(.expanded) {
 
 .messageContent {
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.55;
 
   // Markdown formatting styles
   h1, h2, h3, h4, h5, h6 {
-    margin: 8px 0 4px 0;
+    margin: 16px 0 6px 0;
     font-weight: 600;
+  }
+
+  // Don't let the first/last block push the bubble open. <Markdown> wraps its
+  // output in a plain <div>, so the real first paragraph is one level deeper
+  // than the direct child — both levels are matched.
+  > :first-child,
+  > :first-child > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child,
+  > :last-child > :last-child {
+    margin-bottom: 0;
   }
 
   h1 { font-size: 18px; }
@@ -183,16 +196,31 @@ body:global(.expanded) {
   h4, h5, h6 { font-size: 14px; }
 
   p {
-    margin: 4px 0;
+    margin: 10px 0;
   }
 
+  // base.scss applies a global `list-style: none` reset, so markdown lists
+  // arrive here with the indent but no markers at all. Put them back.
   ul, ol {
-    margin: 4px 0;
-    padding-left: 20px;
+    margin: 10px 0;
+    padding-left: 22px;
   }
+
+  ul { list-style: disc outside; }
+  ol { list-style: decimal outside; }
+  ul ul { list-style: circle outside; }
+  ul ul ul { list-style: square outside; }
 
   li {
-    margin: 2px 0;
+    margin: 4px 0;
+    // The reset also hits nested <li>, which inherits none otherwise.
+    list-style: inherit;
+  }
+
+  // Tight lists: marked wraps each item's text in a <p> when the source list
+  // has blank lines between items, which would stack li + p margins.
+  li > p {
+    margin: 0;
   }
 
   code {
