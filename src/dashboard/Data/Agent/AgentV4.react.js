@@ -72,8 +72,16 @@ function parseAgentContent(content) {
   const cleaned = text
     .replace(/`{3,}agent-progress\s*\n[\s\S]*?\n`{3,}/g, '')
     .replace(/`{3,}(?:tool-call|tool-result|app-info)\s*\n[\s\S]*?\n`{3,}/g, '')
+    // Drop the agent's standalone "Done." marker. Two things matter here:
+    //   - It stays anchored to its own line. The previous /\s*Done\.\s*/ ate
+    //     the blank lines around it too, welding the paragraph before a tool
+    //     call onto the one after it — every tool call collapsed the reply into
+    //     one dense block.
+    //   - It runs BEFORE the "Using tool:" strip, which swallows the newline
+    //     that keeps "Done." at the start of its own line. Reversed, the marker
+    //     survives glued to the previous sentence.
+    .replace(/^[ \t]*Done\.[ \t]*$/gm, '')
     .replace(/(?:\n\n)?Using tool:\s*`[^`]+`[^\n]*\n?/g, '')
-    .replace(/\s*Done\.\s*/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   const lastEvent = events.length ? events[events.length - 1] : null;
@@ -374,7 +382,27 @@ class AgentV4 extends DashboardView {
       lastIndex = fence.lastIndex;
     }
     const rest = text.slice(lastIndex);
-    if (rest.trim()) { parts.push(<Markdown key={`t${key++}`} content={rest} />); }
+    if (rest.trim()) {
+      // The loop above consumed every CLOSED fence, so a ``` still sitting in
+      // the tail is one the agent has not finished streaming. Handing it to
+      // Markdown would render the code as a paragraph — and marked runs with
+      // breaks:false, so every newline collapses and the block shows up as a
+      // single line until the closing fence finally arrives.
+      const unterminated = /```([\w-]*)[ \t]*\r?\n([\s\S]*)$/.exec(rest);
+      if (unterminated) {
+        const before = rest.slice(0, unterminated.index);
+        if (before.trim()) { parts.push(<Markdown key={`t${key++}`} content={before} />); }
+        parts.push(
+          <AppOverviewCodeEditorBlock
+            key={`c${key++}`}
+            language={unterminated[1] || 'plaintext'}
+            value={unterminated[2]}
+          />
+        );
+      } else {
+        parts.push(<Markdown key={`t${key++}`} content={rest} />);
+      }
+    }
     if (parts.length === 0) { return <Markdown content={text} />; }
     return <>{parts}</>;
   }
@@ -405,8 +433,10 @@ class AgentV4 extends DashboardView {
     );
   }
 
-  // Compact "current task" indicator while the agent is working.
-  renderProgress(lastEvent, status) {
+  // Compact "current task" indicator while the agent is working. `hasContent`
+  // says the answer text has already streamed in, which changes what the
+  // indicator should claim — see the !lastEvent branch below.
+  renderProgress(lastEvent, status, hasContent) {
     // Cold start: the container is being provisioned for this message. Surface
     // it explicitly — it can take a while, and with no signal it looks like
     // nothing happened (until it suddenly becomes available).
@@ -421,6 +451,18 @@ class AgentV4 extends DashboardView {
       );
     }
     if (!lastEvent) {
+      // The answer already streamed in full and no tool is running: what is
+      // left is the agent's post-turn housekeeping (memory extraction +
+      // session save) before it sends FINISHED, which is what flips the
+      // message to RESPONDED. Animated dots here read as "still writing your
+      // answer", so say what is actually happening instead.
+      if (hasContent) {
+        return (
+          <div className={styles.progressRow}>
+            <span className={styles.progressText}>Wrapping up…</span>
+          </div>
+        );
+      }
       // Container is up; waiting for the first tokens.
       return (
         <div className={styles.progressRow}>
@@ -470,7 +512,7 @@ class AgentV4 extends DashboardView {
                     : (
                       <>
                         {cleaned ? this.formatMessageContent(cleaned) : null}
-                        {inProgress ? this.renderProgress(lastEvent, m.status) : null}
+                        {inProgress ? this.renderProgress(lastEvent, m.status, !!cleaned) : null}
                       </>
                     )}
                 </div>
