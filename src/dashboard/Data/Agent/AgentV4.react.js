@@ -116,6 +116,11 @@ class AgentV4 extends DashboardView {
       isSending: false,
       isCreating: false,
       showKeyDialog: false,
+      // True when this user reaches the app as a collaborator. They share the
+      // agent and its conversation, but creating/replacing/deleting it stays
+      // with the owner (it holds the owner's LLM key and bills to them), so the
+      // corresponding actions are hidden. The server enforces this regardless.
+      isCollab: false,
       keyDialogMode: 'create', // 'create' (no agent yet) | 'new' (replace)
       modal: null, // confirmation modal (B4aModal), like the Cloud Code section
       error: null,
@@ -138,7 +143,7 @@ class AgentV4 extends DashboardView {
     if (appId !== this._loadedAppId) {
       this._loadedAppId = appId;
       this.teardown();
-      this.setState({ agent: null, chatId: null, messages: [], error: null, isLoading: true }, () => this.init());
+      this.setState({ agent: null, chatId: null, messages: [], error: null, isCollab: false, isLoading: true }, () => this.init());
     }
   }
 
@@ -183,15 +188,34 @@ class AgentV4 extends DashboardView {
     }
     try {
       const sdk = getBack4app2();
-      const agents = await sdk.findAgents(AGENT_FLAVOR);
-      const agent = (agents || []).find(a => a.currentAppId === appId) || null;
+      // Ask for the agents ON THIS APP rather than "my agents". The old call
+      // listed the caller's own agents and filtered by currentAppId here, which
+      // meant a collaborator — a different back4app2 user — got an empty list
+      // and was shown the "create an agent" state for an app that already had
+      // one. The agent belongs to the app, so the app is what we query by.
+      // /listApps is the only place that says whether this user owns the app or
+      // merely collaborates on it — resolved in parallel with the agent lookup
+      // because it is needed even when the app has no agent yet (to decide
+      // whether to offer "Create agent" at all).
+      const [agents, parseApps] = await Promise.all([
+        sdk.findAgents(AGENT_FLAVOR, appId),
+        sdk.getParseApps().catch(() => []),
+      ]);
+      const thisApp = (parseApps || []).find(a => a && a.appId === appId);
+      const isCollab = !!(thisApp && thisApp.isCollab);
+      // The server already scoped this to the app; more than one row means an
+      // agent was created per user before the lookup moved to the app. Prefer
+      // the oldest so everyone converges on the same one.
+      const agent = (agents || [])
+        .slice()
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0] || null;
       if (!agent || !agent.mainChat) {
-        this.setState({ isLoading: false, agent: null, chatId: null });
+        this.setState({ isLoading: false, agent: null, chatId: null, isCollab });
         return;
       }
       const chatId = agent.mainChat.id;
       const history = await sdk.findChatMessages(chatId);
-      this.setState({ agent, chatId, messages: history || [], isLoading: false }, () => this.scrollToBottom());
+      this.setState({ agent, chatId, messages: history || [], isCollab, isLoading: false }, () => this.scrollToBottom());
       this.subscribe(chatId);
       this.pollStatusUntilReady(agent);
     } catch (error) {
@@ -424,10 +448,13 @@ class AgentV4 extends DashboardView {
   }
 
   renderToolbar() {
-    const { agent } = this.state;
+    const { agent, isCollab } = this.state;
+    // Both actions here are destructive and owner-only server-side; a
+    // collaborator clicking them would only ever get an error.
+    const canManage = agent && !isCollab;
     return (
       <Toolbar section="Backend Agent">
-        {agent ? (
+        {canManage ? (
           <a
             className={styles.toolbarIconBtn}
             title="New agent — start fresh (switches the LLM key/provider; the conversation is lost)"
@@ -436,7 +463,7 @@ class AgentV4 extends DashboardView {
             <Icon name="b4a-refresh-icon" fill="#ffffff" width={18} height={18} />
           </a>
         ) : null}
-        {agent ? (
+        {canManage ? (
           <a
             className={styles.toolbarIconBtn}
             title="Delete this agent and its conversation"
@@ -576,7 +603,7 @@ class AgentV4 extends DashboardView {
   }
 
   renderContent() {
-    const { messages, isLoading, agent, error, isCreating } = this.state;
+    const { messages, isLoading, agent, error, isCreating, isCollab } = this.state;
     const hasAgent = !!agent;
 
     return (
@@ -628,10 +655,12 @@ class AgentV4 extends DashboardView {
                     ? 'Creating your agent…'
                     : error
                       ? `Couldn't load the agent: ${error}`
-                      : 'No Backend Agent is set up for this app yet. Create one to start chatting.'
+                      : isCollab
+                        ? 'No Backend Agent is set up for this app yet. Only the app owner can create one.'
+                        : 'No Backend Agent is set up for this app yet. Create one to start chatting.'
               }
-              cta={!isLoading && !isCreating ? 'Create agent' : undefined}
-              action={!isLoading && !isCreating ? this.openCreateDialog : undefined}
+              cta={!isLoading && !isCreating && !isCollab ? 'Create agent' : undefined}
+              action={!isLoading && !isCreating && !isCollab ? this.openCreateDialog : undefined}
             />
           </div>
         )}
