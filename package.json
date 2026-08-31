@@ -40,7 +40,7 @@
     "@babel/runtime-corejs3": "7.20.13",
     "@back4app/back4app-settings": "1.6.5",
     "@back4app2/react-components": "1.0.0-beta.440.130",
-    "@back4app2/sdk": "^1.0.0-beta.440.178",
+    "@back4app2/sdk": "^1.0.0-beta.440.180",
     "@monaco-editor/react": "4.7.0",
     "@paddle/paddle-js": "1.4.2",
     "@sentry/react": "8.52.0",
