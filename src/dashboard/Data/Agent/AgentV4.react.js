@@ -199,16 +199,23 @@ class AgentV4 extends DashboardView {
       // whether to offer "Create agent" at all).
       const [agents, parseApps] = await Promise.all([
         sdk.findAgents(AGENT_FLAVOR, appId),
-        sdk.getParseApps().catch(() => null),
+        // Only consulted when the app has NO agent yet, to decide whether to
+        // offer "Create agent". Deliberately not the source for the buttons on
+        // an existing agent: deriving ownership from a second lookup was
+        // fragile — when it didn't resolve, EVERY user got mislabelled, first
+        // all as owners and then, after inverting the default, all as
+        // collaborators. Ownership of an existing agent now comes from the
+        // agent itself (agent.isOwner), computed server-side.
+        sdk.getParseApps().catch(e => {
+          console.warn('[BackendAgent] getParseApps failed:', e);
+          return null;
+        }),
       ]);
-      // Fail closed. If /listApps errored or simply doesn't list this app, we
-      // cannot claim the user owns it — and the owner-only actions here delete
-      // an agent and its whole conversation. Treating "unknown" as owner would
-      // put a Delete button in front of a collaborator that only ever 404s;
-      // treating it as collaborator merely hides buttons from an owner until
-      // the call works, which is visible and recoverable.
       const thisApp = (parseApps || []).find(a => a && a.appId === appId);
-      const isCollab = !thisApp || !!thisApp.isCollab;
+      // Only a positive answer counts as "collaborator" here; an unresolved
+      // lookup must not take "Create agent" away from an owner. A collaborator
+      // who gets through anyway is refused by the server.
+      const isCollab = !!(thisApp && thisApp.isCollab);
       // The server already scoped this to the app; more than one row means an
       // agent was created per user before the lookup moved to the app. Prefer
       // the oldest so everyone converges on the same one.
@@ -454,10 +461,12 @@ class AgentV4 extends DashboardView {
   }
 
   renderToolbar() {
-    const { agent, isCollab } = this.state;
-    // Both actions here are destructive and owner-only server-side; a
-    // collaborator clicking them would only ever get an error.
-    const canManage = agent && !isCollab;
+    const { agent } = this.state;
+    // Both actions here are destructive and owner-only server-side. isOwner is
+    // computed by the API from the agent's own userId, so it needs no second
+    // call and cannot be wrong. Tested against `false` explicitly: undefined
+    // means the field wasn't selected, not that the user is a collaborator.
+    const canManage = agent && agent.isOwner !== false;
     return (
       <Toolbar section="Backend Agent">
         {canManage ? (
