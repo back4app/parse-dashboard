@@ -64,14 +64,32 @@ export const Constraints = {
     composable: true,
     comparable: true,
   },
+  matches: {
+    name: 'matches regex',
+    field: 'String',
+    composable: true,
+    comparable: true,
+  },
   before: {
     name: 'is before',
     field: 'Date',
     composable: true,
     comparable: true,
   },
+  onOrBefore: {
+    name: 'is on or before',
+    field: 'Date',
+    composable: true,
+    comparable: true,
+  },
   after: {
     name: 'is after',
+    field: 'Date',
+    composable: true,
+    comparable: true,
+  },
+  onOrAfter: {
+    name: 'is on or after',
     field: 'Date',
     composable: true,
     comparable: true,
@@ -174,8 +192,8 @@ export const FieldConstraints = {
   Pointer: ['exists', 'dne', 'eq', 'neq', 'unique', 'isNull'],
   Boolean: ['exists', 'dne', 'eq', 'unique', 'isNull'],
   Number: ['exists', 'dne', 'eq', 'neq', 'lt', 'lte', 'gt', 'gte', 'unique', 'isNull'],
-  String: ['exists', 'dne', 'eq', 'neq', 'starts', 'ends', 'stringContainsString', 'unique', 'isNull'],
-  Date: ['exists', 'dne', 'before', 'after', 'unique', 'isNull'],
+  String: ['exists', 'dne', 'eq', 'neq', 'starts', 'ends', 'stringContainsString', 'matches', 'unique', 'isNull'],
+  Date: ['exists', 'dne', 'before', 'onOrBefore', 'after', 'onOrAfter', 'unique', 'isNull'],
   Object: [
     'exists',
     'dne',

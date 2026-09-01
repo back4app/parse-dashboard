@@ -42,8 +42,15 @@ module.exports = {
   module: {
     rules: [
       {
+        // Import a file as a raw string with `import src from './file.js?raw'`.
+        // Used to inject Cloud Code source (the AI Agent function) into apps.
+        resourceQuery: /raw/,
+        type: 'asset/source',
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
+        resourceQuery: { not: [/raw/] },
         use: ['babel-loader'],
       },
       {

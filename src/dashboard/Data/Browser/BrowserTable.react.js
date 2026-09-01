@@ -159,6 +159,8 @@ export default class BrowserTable extends React.Component {
                     rowWidth={rowWidth}
                     selection={this.props.selection}
                     selectRow={this.props.selectRow}
+                    onMouseDownRowCheckBox={this.props.onMouseDownRowCheckBox}
+                    onMouseOverRowCheckBox={this.props.onMouseOverRowCheckBox}
                     setCurrent={this.props.setCurrent}
                     setEditing={this.props.setEditing}
                     setRelation={this.props.setRelation}
@@ -231,6 +233,8 @@ export default class BrowserTable extends React.Component {
               rowWidth={rowWidth}
               selection={this.props.selection}
               selectRow={this.props.selectRow}
+              onMouseDownRowCheckBox={this.props.onMouseDownRowCheckBox}
+              onMouseOverRowCheckBox={this.props.onMouseOverRowCheckBox}
               setCurrent={this.props.setCurrent}
               setEditing={this.props.setEditing}
               setRelation={this.props.setRelation}
@@ -313,6 +317,8 @@ export default class BrowserTable extends React.Component {
             rowWidth={rowWidth}
             selection={this.props.selection}
             selectRow={this.props.selectRow}
+            onMouseDownRowCheckBox={this.props.onMouseDownRowCheckBox}
+            onMouseOverRowCheckBox={this.props.onMouseOverRowCheckBox}
             setCurrent={this.props.setCurrent}
             setEditing={this.props.setEditing}
             setRelation={this.props.setRelation}

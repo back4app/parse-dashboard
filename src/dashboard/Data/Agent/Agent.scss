@@ -1,0 +1,557 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+
+// Dark theme palette (matches the production2 dashboard)
+$agentBg: #0f1c32;
+$agentSurface: #17253d;
+$agentBorder: rgba(255, 255, 255, 0.12);
+$agentText: #e2e8f0;
+$agentMuted: #94a3b8;
+$agentAccent: #1669fc;
+
+.agentContainer {
+  display: flex;
+  flex-direction: column;
+  /* No full-height background: the toolbar has a top margin (header area) and a
+     navy background here would bleed above the gray toolbar. The chat window and
+     the empty-state overlay carry the navy background below the toolbar. */
+}
+
+.toolbarAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 13px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.toolbarIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 44px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.activeModel {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Fixed box below the header (63px) + toolbar (64px) = 127px, spanning from the
+   sidebar to the right edge. A flex column: the chat window scrolls, the input
+   sits at the bottom. */
+.chatContainer {
+  position: fixed;
+  top: 127px;
+  left: 280px; /* $b4aSidebarWidth */
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: $agentBg;
+}
+
+.chatWindow {
+  flex: 1 1 auto;
+  min-height: 0; /* critical: lets the flex child scroll instead of growing */
+  overflow-y: auto;
+  padding: 20px;
+  scroll-behavior: smooth;
+}
+
+.emptyStateOverlay {
+  position: fixed;
+  left: 280px;
+  top: 127px; /* below production2 toolbar (header 63 + toolbar 64) */
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 40px; /* Reduced padding */
+  pointer-events: none; /* Allow clicks to pass through to the input below */
+  z-index: 10;
+  overflow-y: auto; /* Allow scrolling if content is too tall */
+  background-color: $agentBg;
+}
+
+.emptyStateOverlay > * {
+  pointer-events: auto; /* Re-enable pointer events for the actual content */
+}
+
+.welcomeState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+body:global(.expanded) {
+  .emptyStateOverlay {
+    left: 88px; /* $b4aSidebarCollapsedWidth */
+  }
+
+  .chatContainer {
+    left: 88px; /* $b4aSidebarCollapsedWidth */
+  }
+}
+
+.messagesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0; /* Allow container to be smaller than content */
+}
+
+.message {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  margin-bottom: 8px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: $agentAccent;
+  color: #ffffff;
+  margin-left: auto;
+
+  code {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+}
+
+.message.agent {
+  align-self: flex-start;
+  // Agent replies can contain code editors — give them more room than user
+  // bubbles so code is readable.
+  max-width: 85%;
+  background-color: $agentSurface;
+  color: $agentText;
+  border: 1px solid $agentBorder;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.message.agent.error {
+  background-color: #3b1f24;
+  color: #f8b7bf;
+  border-color: #7a2e38;
+}
+
+.messageContent {
+  font-size: 14px;
+  line-height: 1.55;
+
+  // Markdown formatting styles
+  h1, h2, h3, h4, h5, h6 {
+    margin: 16px 0 6px 0;
+    font-weight: 600;
+  }
+
+  // Don't let the first/last block push the bubble open. <Markdown> wraps its
+  // output in a plain <div>, so the real first paragraph is one level deeper
+  // than the direct child — both levels are matched.
+  > :first-child,
+  > :first-child > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child,
+  > :last-child > :last-child {
+    margin-bottom: 0;
+  }
+
+  h1 { font-size: 18px; }
+  h2 { font-size: 16px; }
+  h3 { font-size: 15px; }
+  h4, h5, h6 { font-size: 14px; }
+
+  p {
+    margin: 10px 0;
+  }
+
+  // base.scss applies a global `list-style: none` reset, so markdown lists
+  // arrive here with the indent but no markers at all. Put them back.
+  ul, ol {
+    margin: 10px 0;
+    padding-left: 22px;
+  }
+
+  ul { list-style: disc outside; }
+  ol { list-style: decimal outside; }
+  ul ul { list-style: circle outside; }
+  ul ul ul { list-style: square outside; }
+
+  li {
+    margin: 4px 0;
+    // The reset also hits nested <li>, which inherits none otherwise.
+    list-style: inherit;
+  }
+
+  // Tight lists: marked wraps each item's text in a <p> when the source list
+  // has blank lines between items, which would stack li + p margins.
+  li > p {
+    margin: 0;
+  }
+
+  code {
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 13px;
+  }
+
+  // Code blocks come from CodeSnippet (PrismJS with the line-numbers plugin).
+  // Prism's highlight JS never runs here (the markdown is server-rendered to a
+  // string), leaving a light theme + an empty line-numbers gutter that looked
+  // broken. Normalize to a clean dark block, scoped to the chat.
+  pre,
+  pre[class*='language-'] {
+    background: rgba(0, 0, 0, 0.35) !important;
+    color: #e2e8f0 !important;
+    padding: 12px 14px !important; // also removes the line-numbers gutter padding
+    border: none !important;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 6px 0;
+    min-height: 0 !important;
+    text-shadow: none !important;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+
+    code {
+      background: transparent !important;
+      color: inherit !important;
+      padding: 0 !important;
+      text-shadow: none !important;
+      font-size: inherit;
+      white-space: pre;
+    }
+  }
+
+  // The line-numbers plugin's rows aren't generated without its JS.
+  :global(.line-numbers-rows) {
+    display: none !important;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 13px;
+  }
+
+  th, td {
+    border: 1px solid $agentBorder;
+    padding: 4px 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: rgba(255, 255, 255, 0.06);
+    font-weight: 600;
+  }
+
+  blockquote {
+    border-left: 3px solid $agentBorder;
+    padding-left: 8px;
+    margin: 4px 0;
+    font-style: italic;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.messageTime {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.message.agent .messageTime {
+  text-align: left;
+}
+
+// Centered hint shown inside the chat window when an agent exists but has no
+// messages yet — keeps the input visible (unlike the full-screen overlay).
+.inlineEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 320px;
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressText {
+  color: $agentMuted;
+  font-size: 13px;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $agentMuted;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typing {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Static flex child at the bottom of .chatContainer (no longer fixed). */
+.chatForm {
+  flex: 0 0 auto;
+  background-color: $agentBg;
+  border-top: 1px solid $agentBorder;
+  padding: 16px 20px;
+}
+
+.inputContainer {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid $agentBorder;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s ease;
+  background-color: $agentSurface;
+  color: $agentText;
+  min-height: 44px;
+  /* Grown to fit by autoGrowInput() in AgentV4.react.js, which caps at this
+     same value (INPUT_MAX_HEIGHT) and then lets the textarea scroll. */
+  max-height: 160px;
+  overflow-y: auto;
+
+  /* A native scrollbar is painted at the very edge of the padding box, which
+     the 20px radius then clips around — the thumb reads as sitting outside
+     the pill. Inset it and round it so it stays within the input. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 14px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    /* Transparent border + content-box clipping keeps the visible thumb away
+       from the rounded edge without needing extra padding on the text. */
+    border: 3px solid transparent;
+    background-clip: content-box;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  &::placeholder {
+    color: $agentMuted;
+  }
+}
+
+.chatInput:focus {
+  border-color: $agentAccent;
+  box-shadow: 0 0 0 2px rgba(22, 105, 252, 0.35);
+}
+
+.chatInput:disabled {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: $agentMuted;
+}
+
+.sendButton {
+  padding: 12px 24px;
+  background-color: $agentAccent;
+  color: #ffffff;
+  border: 1px solid transparent; /* reserve the border; colored only when usable */
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  min-width: 80px;
+}
+
+.sendButton:not(:disabled) {
+  border-color: $agentBorder; /* same as the message cards — looks like a button */
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: #0f52cc;
+}
+
+.sendButton:disabled {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: $agentMuted;
+  cursor: not-allowed;
+}
+
+.emptyStateContainer {
+  text-align: center;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px; /* Increased gap for better spacing */
+  width: 100%;
+}
+
+.exampleQueries {
+  margin-top: 0; /* Remove margin since we're using gap in parent */
+  width: 100%;
+
+  h4 {
+    color: $agentMuted;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+}
+
+.queryExamples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.exampleButton {
+  background: transparent;
+  border: 1px solid $agentAccent;
+  color: #6ea8ff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 350px;
+  text-align: center;
+
+  &:hover {
+    background-color: $agentAccent;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(22, 105, 252, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.warningMessage {
+  background-color: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  color: #ffd97a;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  position: relative;
+  max-width: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  .warningIcon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .warningContent {
+    flex: 1;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+// Subtitle text inside the B4aModal confirmations (delete / clear key),
+// matching the Cloud Code section's modal styling.
+.subtitleModal {
+  font-size: 14px;
+  color: #303338;
+  opacity: 0.7;
+}
