@@ -29,6 +29,7 @@ function arraysEqual(a, b) {
 
 const PROVIDER_FIELDS = {
   apple: ['client_id'],
+  google: ['client_id'],
   facebook: ['appIds'],
   twitter: ['consumer_key', 'consumer_secret'],
   vkontakte: ['appIds', 'appSecret'],
@@ -44,6 +45,18 @@ function normalizeValue(val) {
   return val;
 }
 
+// Apple client_id is stored as an array of Bundle IDs. Older apps may still
+// have a single string saved, so normalize it to an array.
+function toAppleClientIds(clientId) {
+  if (Array.isArray(clientId)) {
+    return clientId;
+  }
+  if (typeof clientId === 'string' && clientId.trim() !== '') {
+    return [clientId.trim()];
+  }
+  return [];
+}
+
 function buildOauthPayload(oauth) {
   const payload = {};
   for (const [provider, config] of Object.entries(oauth || {})) {
@@ -54,6 +67,10 @@ function buildOauthPayload(oauth) {
     const rest = {};
     for (const field of fields) {
       rest[field] = normalizeValue(config[field]);
+    }
+    if (provider === 'apple') {
+      const ids = toAppleClientIds(rest.client_id);
+      rest.client_id = ids.length ? ids : null;
     }
     payload[provider] = rest;
   }
@@ -72,11 +89,30 @@ function renderOauthFooterChanges(changes, initialFields) {
   if ((curApple.enabled ?? false) !== (initApple.enabled ?? false)) {
     descriptions.push(curApple.enabled ? 'enabled Apple Login' : 'disabled Apple Login');
   }
-  if ((curApple.client_id || '') !== (initApple.client_id || '')) {
+  const curAppleIds = toAppleClientIds(curApple.client_id);
+  const initAppleIds = toAppleClientIds(initApple.client_id);
+  if (!arraysEqual(curAppleIds, initAppleIds)) {
+    const added = curAppleIds.filter(id => !initAppleIds.includes(id));
+    const removed = initAppleIds.filter(id => !curAppleIds.includes(id));
+    if (added.length && removed.length) {
+      descriptions.push('updated Apple Login Bundle IDs');
+    } else if (added.length) {
+      descriptions.push('added Apple Login Bundle ID' + (added.length > 1 ? 's' : ''));
+    } else if (removed.length) {
+      descriptions.push('removed Apple Login Bundle ID' + (removed.length > 1 ? 's' : ''));
+    }
+  }
+
+  const curGoogle = current.google || {};
+  const initGoogle = initial.google || {};
+  if ((curGoogle.enabled ?? false) !== (initGoogle.enabled ?? false)) {
+    descriptions.push(curGoogle.enabled ? 'enabled Google Login' : 'disabled Google Login');
+  }
+  if ((curGoogle.client_id || '') !== (initGoogle.client_id || '')) {
     descriptions.push(
-      initApple.client_id
-        ? 'changed Apple Login Bundle ID'
-        : 'added Apple Login Bundle ID'
+      initGoogle.client_id
+        ? 'changed Google Login Client ID'
+        : 'added Google Login Client ID'
     );
   }
 
@@ -151,6 +187,8 @@ class SocialAuth extends DashboardView {
       initialFields: { oauth: {} },
       fbAppIdInput: '',
       fbAppIdError: null,
+      appleClientIdInput: '',
+      appleClientIdError: null,
       isDirty: false,
       modal: null,
     };
@@ -263,6 +301,10 @@ class SocialAuth extends DashboardView {
       const oauth = (result && result.oauth) || {};
       if (oauth.apple) {
         oauth.apple.enabled = true;
+        oauth.apple.client_id = toAppleClientIds(oauth.apple.client_id);
+      }
+      if (oauth.google) {
+        oauth.google.enabled = true;
       }
       if (oauth.facebook) {
         oauth.facebook.enabled = true;
@@ -311,6 +353,23 @@ class SocialAuth extends DashboardView {
     this.setState({ fbAppIdInput: '', fbAppIdError: null });
   }
 
+  handleAppleAddClientId(oauth, setField) {
+    const input = (this.state.appleClientIdInput || '').trim();
+    if (!input) {
+      return;
+    }
+    const clientIds = toAppleClientIds(oauth.apple?.client_id);
+    if (clientIds.includes(input)) {
+      this.setState({ appleClientIdError: 'This Bundle ID is already included' });
+      return;
+    }
+    const next = JSON.parse(JSON.stringify(oauth));
+    next.apple = next.apple || {};
+    next.apple.client_id = [...clientIds, input];
+    setField('oauth', next);
+    this.setState({ appleClientIdInput: '', appleClientIdError: null });
+  }
+
   renderOauthForm({ fields, changes, setField }) {
     const oauth = changes.oauth || fields.oauth || {};
 
@@ -336,6 +395,9 @@ class SocialAuth extends DashboardView {
 
     const apple = oauth.apple || {};
     const appleEnabled = apple.enabled ?? false;
+    const appleClientIds = toAppleClientIds(apple.client_id);
+    const google = oauth.google || {};
+    const googleEnabled = google.enabled ?? false;
     const facebook = oauth.facebook || {};
     const facebookEnabled = facebook.enabled ?? false;
     const facebookAppIds = facebook.appIds || [];
@@ -352,7 +414,7 @@ class SocialAuth extends DashboardView {
 
           <Fieldset
             legend='Apple Login'
-            description='Configure Apple Sign-In with your Bundle ID.'
+            description='Configure Apple Sign-In with your Bundle IDs.'
           >
             <Field
               label={
@@ -363,7 +425,7 @@ class SocialAuth extends DashboardView {
                 />
               }
               input={
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <FieldSettings
                     containerStyles={{ borderTop: 'none', borderBottom: appleEnabled ? undefined : 'none' }}
                     padding={'16px 0px'}
@@ -379,17 +441,116 @@ class SocialAuth extends DashboardView {
                     }
                   />
                   {appleEnabled && (
+                    <>
+                      <FieldSettings
+                        padding={'16px 0px'}
+                        labelWidth={'50%'}
+                        label={<BaseLabelSettings text='Bundle ID' description='Add Apple client_id (Bundle Identifier) values for OAuth' />}
+                        input={
+                          <div className={fbStyles.fbInputRow}>
+                            <input
+                              className={fbStyles.fbInput}
+                              type='text'
+                              placeholder='Enter to add'
+                              value={this.state.appleClientIdInput}
+                              onChange={({ target: { value } }) =>
+                                this.setState({ appleClientIdInput: value, appleClientIdError: null })
+                              }
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  this.handleAppleAddClientId(oauth, setField);
+                                }
+                              }}
+                            />
+                            <button
+                              className={fbStyles.fbAddBtn}
+                              onClick={() => this.handleAppleAddClientId(oauth, setField)}
+                            >+</button>
+                          </div>
+                        }
+                      />
+                      {this.state.appleClientIdError && (
+                        <div className={fbStyles.fieldError}>{this.state.appleClientIdError}</div>
+                      )}
+                      {appleClientIds.length > 0 && (
+                        <FieldSettings
+                          containerStyles={{ borderBottom: 'none' }}
+                          padding={'16px 0px'}
+                          labelWidth={'50%'}
+                          label={<BaseLabelSettings text="Bundle IDs added" />}
+                          input={
+                            <div className={fbStyles.fbAppIdList}>
+                              {appleClientIds.map(clientId => (
+                                <div key={clientId} className={fbStyles.fbAppIdRow}>
+                                  <span className={fbStyles.fbAppIdText}>{clientId}</span>
+                                  <button
+                                    className={fbStyles.fbRemoveBtn}
+                                    onClick={() => {
+                                      const next = JSON.parse(JSON.stringify(oauth));
+                                      next.apple = next.apple || {};
+                                      next.apple.client_id = toAppleClientIds(next.apple.client_id).filter(id => id !== clientId);
+                                      setField('oauth', next);
+                                    }}
+                                    title="Remove"
+                                  >
+                                    <Icon name="b4a-delete-icon" fill="#E85C3E" width={16} height={16} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          }
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+              }
+              theme={Field.Theme.BLUE}
+            />
+          </Fieldset>
+
+          <hr className={layoutStyles.fieldHr} />
+
+          <Fieldset
+            legend='Google Login'
+            description='Configure Google Sign-In with your OAuth Client ID.'
+          >
+            <Field
+              label={
+                <Label
+                  text='Google Login'
+                  description='Configure Google authentication'
+                  dark={true}
+                />
+              }
+              input={
+                <div style={{ flex: 1 }}>
+                  <FieldSettings
+                    containerStyles={{ borderTop: 'none', borderBottom: googleEnabled ? undefined : 'none' }}
+                    padding={'16px 0px'}
+                    labelWidth={'50%'}
+                    input={
+                      <B4aToggle
+                        type={B4aToggle.Types.YES_NO}
+                        value={googleEnabled}
+                        onChange={(val) => setProviderField('google', 'enabled', val)}
+                        additionalStyles={{ margin: '0', marginRight: '16px' }}
+                      />
+                    }
+                  />
+                  {googleEnabled && (
                     <FieldSettings
                       containerStyles={{ borderBottom: 'none' }}
                       padding={'16px 0px'}
                       labelWidth={'50%'}
-                      label={<BaseLabelSettings text='Bundle ID' description='Apple client_id (Bundle Identifier)' />}
+                      label={<BaseLabelSettings text='Client ID' description='Google OAuth client_id (e.g. xxx.apps.googleusercontent.com)' />}
                       input={
                         <TextInputSettings
-                          placeholder='Bundle ID'
-                          value={apple.client_id ?? ''}
+                          placeholder='Client ID'
+                          value={google.client_id ?? ''}
                           onChange={({ target: { value } }) =>
-                            setProviderField('apple', 'client_id', value)
+                            setProviderField('google', 'client_id', value)
                           }
                         />
                       }
