@@ -123,157 +123,125 @@
       max-width: 100%;
     }
 
-    & .appInfoCard {
+    // App summary: name, App ID and Actions on top; one row of facts below.
+    & .appSummary {
       @include InterFont;
       margin-top: 18px;
-      padding: 24px;
-      display: flex;
-      justify-content: space-between;
-      gap: 32px;
+      padding: 20px 24px;
       border-radius: 8px;
       border: 1px solid rgba($regal-blue, 0.4);
       font-size: 14px;
-      flex-wrap: wrap;
+    }
 
-      & hr {
-        border-color: rgba($regal-blue, 0.4);
-        margin: 12px 0;
-      }
+    & .appSummaryHead {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba($regal-blue, 0.4);
+    }
 
-      & .appInformationBox, & .appKeysBox {
-        flex: 1;
-        min-width: 350px;
-      }
-      
-      & .appInfoCardHeader {
-        font-weight: 600;
-        margin-bottom: 12px;
-        font-size: 16px;
-        line-height: 140%;
-        white-space: nowrap;
+    & .appSummaryTitle {
+      min-width: 0;
+    }
+
+    & .appSummaryName {
+      @include SoraFont;
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 140%;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .appSummaryId {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+
+      & code {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 13px;
+        color: $white;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
+    }
 
-      & .appKeyWrapper {
-        display: flex;
-        // align-items: center;
-        gap: 8px;
+    & .copyValue {
+      display: flex;
+      flex: none;
+      padding: 2px;
+      border-radius: 4px;
+      cursor: pointer;
 
-        & label {
-          font-size: 14px;
-          color: $white;
-          margin-top: 8px;
-        }
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
       }
+    }
 
-      & .appKeyContainer {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        width: 100%;
-        flex-direction: column;
-      }
+    // As many columns as fit (the page narrows with the agent panel), each
+    // at least 170px wide.
+    & .appFacts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px 24px;
+      padding-top: 16px;
+    }
 
-      & .dropdownContainer {
-        position: relative;
-        min-width: 100%;
-      }
+    & .appFact {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
 
-      & .dropdownTrigger {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
-        background: #1b3454;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        user-select: none;
-        transition: all 0.2s ease;
-        color: $white;
+    & .appFactLabel {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba($light-grey, 0.75);
+    }
 
-        span {
-          margin-right: 8px;
-          font-size: 14px;
-          color: $white;
-        }
-      }
+    & .appFactValue {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      color: $white;
+    }
 
-      & .dropdownMenu {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
-        width: 100%;
-        background: #1b3454;
-        border-radius: 4px;
-        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        max-height: 200px;
-        overflow-y: auto;
-      }
+    & .appFactText {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-      & .dropdownItem {
-        padding: 8px 12px;
-        font-size: 14px;
-        color: $white;
-        cursor: pointer;
-        transition: all 0.2s ease;
+    & .appFactExtra {
+      font-size: 12px;
+      color: $light-grey;
+    }
 
-        &:hover {
-          background: #114370;
-        }
+    & .greyText {
+      color: #ccc;
+    }
 
-      }
-
-      & .keyValueContainer {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: 1;
-        width: 100%;
-        justify-content: space-between;
-        margin-left: 8px;
-      }
-
-      & .keyValue {
-        font-size: 14px;
-        color: $white;
-        margin-left: 8px;
-      }
-
-      & .copyButton {
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-      }
-
-      & .appMCPBtn {
-         border: 1px solid $white;
-         outline: none;
-         border-radius: 12px;
-         padding: 8px 12px;
-         font-size: 12px;
-         color: $white;
-         margin-left: .5rem;
-      }
-
-      & .greyText {
-        color: #ccc;
-      }
-
-      & .changeRegionLink {
-        display: inline-block;
-        margin-left: 4px;
-        font-size: 12px;
-        color: $white;
-        cursor: pointer;
-        border: 1px solid $regal-blue;
-        border-radius: 4px;
-        padding: 2px 8px;
-        text-decoration: none;
-        border-radius: 0.5rem;
-      }
+    & .changeRegionLink {
+      display: inline-block;
+      font-size: 12px;
+      color: $white;
+      cursor: pointer;
+      border: 1px solid $regal-blue;
+      padding: 2px 8px;
+      text-decoration: none;
+      border-radius: 0.5rem;
     }
 
     & .serverLogsWrapper {
