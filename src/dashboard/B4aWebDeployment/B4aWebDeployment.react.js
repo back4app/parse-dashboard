@@ -99,7 +99,7 @@ class B4aWebDeployment extends DashboardView {
         <div className={styles.mainContent}>
           <div className={styles.wrapper}>
             <div className={styles.header}>
-              <div className={styles.title}>Manage Your Web Applications <span className={styles.chip}>beta</span> </div>
+              <div className={styles.title}>Manage Your Web Applications</div>
               <div className={styles.subtitle}>Explore your existing applications or kickstart a new project with ease.</div>
             </div>
             <div className={styles.subHeader}>
