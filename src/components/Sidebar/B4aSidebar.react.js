@@ -308,7 +308,8 @@ const B4aSidebar = ({
             style,
             link,
             subsections,
-            badgeParams
+            badgeParams,
+            headerAction
           }) => {
             const active = name === section;
             const badge = badgeParams && <B4aBadge {...badgeParams} /> || ''
@@ -325,6 +326,7 @@ const B4aSidebar = ({
                 primaryBackgroundColor={primaryBackgroundColor}
                 secondaryBackgroundColor={secondaryBackgroundColor}
                 badge={badge}
+                headerAction={headerAction}
                 locked={!canAccess(currentApp.serverInfo, name)}
               >
                 {active ? _subMenu(subsections) : null}

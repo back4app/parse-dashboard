@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Popover from 'components/Popover/Popover.react';
-import Position from 'lib/Position';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
 import Button from 'components/Button/Button.react';
 import B4aTabToggle from 'components/Toggle/B4aTabToggle.react';
 import AppOverviewCodeEditorBlock from './AppOverviewCodeEditorBlock.react';
 
-const origin = new Position(0, 0);
+const IDES = [
+  { key: 'cursor', name: 'Cursor' },
+  { key: 'vscode', name: 'VSCode' },
+  { key: 'windsurf', name: 'Windsurf' },
+];
 
 const getManualJsonContent = (ide, mcpKey, isLinux) => {
   if (ide === 'cursor' && isLinux) {
@@ -242,16 +244,15 @@ const getIDEContent = (ide, automatic, mcpKey) => {
   }
 }
 
-const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+/**
+ * MCP tab of the Connect modal: pick the IDE, install the Back4App MCP server
+ * (one-click / terminal, or a manual mcp.json), then try it. Same content the
+ * standalone MCP setup modal had, laid out on one page instead of two steps.
+ */
+const MCPSetup = ({ context }) => {
+  const [ide, setIde] = useState('cursor');
   const [automatic, setAutomatic] = useState(true);
   const [mcpKey, setMcpKey] = useState('YOUR_ACCOUNT_KEY');
-
-  useEffect(() => {
-    if (!selectedIDE) {
-      setCurrentStep(1);
-    }
-  }, [selectedIDE]);
 
   useEffect(() => {
     const getMcpKey = async () => {
@@ -265,16 +266,25 @@ const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
     getMcpKey();
   }, []);
 
-  let content = null;
-
-  if (currentStep === 1) {
-    content = (
+  return (
+    <div className={styles.mcpModalContent}>
       <div className={styles.mcpModalStep2}>
-        <div className={styles.mcpModalStep2Header}>
-          <Icon name={`b4a-${selectedIDE}-icon`} width={26} height={30} fill="#C1E2FF" />
-          <div className={styles.mcpModalStep2Title}><span>Install MCP on </span><span>{selectedIDE}</span></div>
+        <div className={styles.mcpModalStep2Description}>
+          Your AI agent operates this app from your IDE through the Back4App MCP server.
         </div>
-        <div className={styles.mcpModalStep2Description}><span>Follow the steps below to get MCP working with </span><span>{selectedIDE}</span><span>.</span></div>
+        <div className={styles.connectChips}>
+          {IDES.map(option => (
+            <button
+              key={option.key}
+              type="button"
+              className={`${styles.connectChip} ${ide === option.key ? styles.selected : ''}`}
+              onClick={() => setIde(option.key)}
+            >
+              <Icon name={`b4a-${option.key}-icon`} width={16} height={16} fill="#C1E2FF" />
+              {option.name}
+            </button>
+          ))}
+        </div>
         <div className={styles.mcpTabButtons}>
           <B4aTabToggle
             value={automatic ? 'Automatic' : 'Manual'}
@@ -283,60 +293,22 @@ const MCPSetupModal = ({ closeModal, context, selectedIDE }) => {
             optionRight="Manual"
           />
         </div>
-        {/* Step instructions go here */}
-        <div key={automatic ? 'automatic' : 'manual'}>
-          {getIDEContent(selectedIDE, automatic, mcpKey)}
+        <div key={`${ide}-${automatic ? 'automatic' : 'manual'}`}>
+          {getIDEContent(ide, automatic, mcpKey)}
         </div>
 
-        <div className={styles.mcpModalStep2Footer} style={{ marginTop: '2rem' }}>
-          <Button
-            primary={true}
-            value="Continue"
-            onClick={() => setCurrentStep(2)}
-          />
-        </div>
-      </div>
-    );
-  } else if (currentStep === 2) {
-    content = (
-      <div className={styles.mcpModalStep2}>
-        <div className={styles.mcpModalStep2Header}>
-          <div className={styles.mcpModalStep2Title}>Test your connection</div>
-        </div>
-        <div className={styles.mcpModalStep2Description}>Let's test your connection with back4app MCP.</div>
-        <div style={{ marginTop: '2rem' }}>
-          <div className={styles.step}>1. Tell your agent what you need</div>
-          <div className={styles.text}>In your AI agent chat, You can use Back4App MCP to interact with your Back4App account.</div>
-          <div className={styles.text} style={{ marginBottom: '.5rem' }}>Here is an example to get a list of your apps: </div>
-          <AppOverviewCodeEditorBlock inline={true} value={'List all of the apps in my Back4App account'} />
-          <div style={{ margin: '2rem 0' }}></div>
-          <div className={styles.step}>2. Refer to docs for more information</div>
-          <div className={styles.text}> <a className={styles.link} href="https://www.back4app.com/docs/mcp" target="_blank" rel="noopener noreferrer">https://www.back4app.com/docs/mcp</a></div>
+        <div className={styles.connectDivider} />
 
-          <div style={{ margin: '2rem 0'}}>
-            <Button
-              primary={true}
-              value={'Close'}
-              onClick={closeModal}
-            />
-          </div>
+        <div className={styles.step}>Test your connection</div>
+        <div className={styles.text}>In your AI agent chat, You can use Back4App MCP to interact with your Back4App account.</div>
+        <div className={styles.text} style={{ marginBottom: '.5rem' }}>Here is an example to get a list of your apps: </div>
+        <AppOverviewCodeEditorBlock inline={true} value={'List all of the apps in my Back4App account'} />
+        <div className={styles.text} style={{ marginTop: '1rem' }}>
+          More in the docs: <a className={styles.link} href="https://www.back4app.com/docs/mcp" target="_blank" rel="noopener noreferrer">https://www.back4app.com/docs/mcp</a>
         </div>
       </div>
-    );
-  } else {content = <div>Invalid step</div>;}
-
-  return (
-    <Popover fadeIn={true} fixed={true} position={origin} modal={true} color="rgba(17,13,17,0.8)">
-      <div className={styles.mcpModal}>
-        <div className={styles.closeIcon} onClick={closeModal}>
-          <Icon name="close" fill="#f9f9f9" width={14} height={14} />
-        </div>
-        <div className={styles.mcpModalContent}>
-          {content}
-        </div>
-      </div>
-    </Popover>
+    </div>
   );
 };
 
-export default MCPSetupModal;
+export default MCPSetup;

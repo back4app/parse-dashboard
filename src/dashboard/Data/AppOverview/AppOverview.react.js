@@ -6,7 +6,7 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import DashboardView from 'dashboard/DashboardView.react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { withRouter } from 'lib/withRouter';
@@ -18,7 +18,6 @@ import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
 import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
-// import ConnectAppModal from './ConnectAppModal.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
@@ -26,9 +25,8 @@ import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
 import { Link } from 'react-router-dom';
 
-import MCPIntegrationIDE from './MCPIntegrationIDE.js';
-const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
-const LazyMCPSetupModal = lazy(() => import('./MCPSetupModal.js'));
+import GetConnected from './GetConnected.react';
+import { openConnect } from './connectEvents';
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -63,9 +61,6 @@ class AppOverview extends DashboardView {
       globalTimeLimit: '60',
 
       showCopiedTooltip: false,
-      showConnectAppModal: false,
-      showMCPSetupModal: false,
-      selectedMcpIde: null,
 
       isLoadingWebhosting: true,
       webhosting: undefined,
@@ -77,7 +72,6 @@ class AppOverview extends DashboardView {
     this.loadCardInformation = this.loadCardInformation.bind(this);
     this.pollSchemas = this.pollSchemas.bind(this);
     this.handleLimitChange = this.handleLimitChange.bind(this);
-    this.handleMcpIdeClick = this.handleMcpIdeClick.bind(this);
   }
 
   componentWillMount() {
@@ -88,11 +82,6 @@ class AppOverview extends DashboardView {
       appKeys,
     });
     this.loadCardInformation();
-  }
-
-  componentDidMount() {
-    import('./ConnectAppModal.react');
-    import('./MCPSetupModal.js');
   }
 
   copyText(copyText = '') {
@@ -124,13 +113,6 @@ class AppOverview extends DashboardView {
     }, () => {
       // Recarregar todos os dados com o novo limite
       this.loadAllPerformanceData(this.context, value);
-    });
-  }
-
-  handleMcpIdeClick(ide) {
-    this.setState({
-      showMCPSetupModal: true,
-      selectedMcpIde: ide
     });
   }
 
@@ -274,8 +256,6 @@ class AppOverview extends DashboardView {
               </div>
               <hr />
               <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
-              <hr />
-              <button className={styles.appContentBtn} onClick={() => this.setState({ showConnectAppModal: true })}>Connect App</button>
             </div>
             <div className={styles.appInformationBox}>
               <div className={styles.appInfoCardHeader}>App Information</div>
@@ -313,11 +293,11 @@ class AppOverview extends DashboardView {
               </div>
             </div>
           </div>
-          <MCPIntegrationIDE handleSelectedIDE={this.handleMcpIdeClick} />
+          <GetConnected onOpen={openConnect} />
 
           <ComplianceCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} isSignedBAA={this.context.custom.isSignedBAA} />
 
-          <OnboardingBoxes  currentUser={AccountManager.currentUser()} slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
+          <OnboardingBoxes  currentUser={AccountManager.currentUser()} slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => openConnect('sdk')} />
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
@@ -382,21 +362,6 @@ class AppOverview extends DashboardView {
           </div>
         </div>
 
-        {this.state.showConnectAppModal && (
-          <Suspense fallback={'Loading...'}>
-            <LazyConnectAppModal closeModal={() => this.setState({ showConnectAppModal: false })} />
-          </Suspense>
-        )}
-
-        {this.state.showMCPSetupModal && (
-          <Suspense fallback={'Loading...'}>
-            <LazyMCPSetupModal 
-              closeModal={() => this.setState({ showMCPSetupModal: false, selectedMcpIde: null })} 
-              context={this.context} 
-              selectedIDE={this.state.selectedMcpIde}
-            />
-          </Suspense> 
-        )}
       </div>
     );
   }

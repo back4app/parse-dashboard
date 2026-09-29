@@ -248,17 +248,6 @@
         border-radius: 4px;
       }
 
-      & .appContentBtn {
-        background: $white;
-        color: $dark-blue;
-        border: none;
-        outline: none;
-        border-radius: 12px;
-        padding: 8px 12px;
-        font-size: 12px;
-        margin-left: .5rem;
-      }
-
       & .appMCPBtn {
          border: 1px solid $white;
          outline: none;
@@ -1475,7 +1464,7 @@
   }
 }
 
-.mcpSelectIDEContainer {
+.getConnected {
   display: flex;
   flex-direction: column;
   margin: 1.5rem 0;
@@ -1486,56 +1475,232 @@
   padding: 1.5rem;
   gap: 1rem;
 
-  & .mcpChoiceIDEList {
-    display: flex;
-    gap: 1.5rem;
+  & .getConnectedList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
   }
 
-  & .mcpChoiceIDE {
+  & .getConnectedItem {
+    @include InterFont;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
     padding: 1rem;
     border: 1px solid #34506F;
-    transition: all 0.3s ease;
     border-radius: 0.5rem;
+    background: transparent;
+    color: $white;
+    text-align: left;
     cursor: pointer;
-    width: 100%;
-    gap: 1rem;
-    & .mcpChoiceTitle {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      span:first-child {
-        font-size: 1rem;
-        font-weight: 600;
-        line-height: 140%;
-      }
-      span:last-child {
-        font-size: 0.75rem;
-        font-weight: 400;
-      }
-    }
-    & .mcpConnectBtn {
-      outline: none;
-      border: none;
-      border-radius: 0.5rem;
-      border: 1px solid #34506F;
-      background: rgba(255, 255, 255, 0.00);
-      padding: 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      flex-shrink: 0;
-      align-self: flex-end;
+    transition: all 0.3s ease;
 
-      &:hover {
-        background: rgba($regal-blue, 0.1);
+    & svg {
+      margin-bottom: 0.5rem;
+    }
+
+    &:hover {
+      border-color: #15A9FF;
+      background: rgba(21, 169, 255, 0.06);
+
+      & .getConnectedLabel {
+        color: #15A9FF;
       }
     }
   }
 
+  & .getConnectedLabel {
+    @include SoraFont;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 140%;
+    transition: color 0.3s ease;
+  }
 
-  & svg {
-    fill: $light-blue;
+  & .getConnectedDescription {
+    font-size: 0.75rem;
+    color: $light-grey;
+  }
+}
+
+// The Connect modal (ConnectModal.react.js): the .connectAppModal shell with a
+// row of tabs under the header and a scrolling body.
+.connectModal {
+  width: min(920px, 90vw);
+  // A fixed height, so switching tabs doesn't resize and re-center the modal.
+  height: min(80vh, 760px);
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  & .connectAppModalHeader {
+    position: static;
+  }
+
+  & .connectAppModalContent {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  // The MCP content keeps its own styles but not the padding of the old
+  // standalone modal — the body already has it.
+  & .mcpModalContent .mcpModalStep2 {
+    padding: 0;
+  }
+
+  & .mcpTabButtons {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.connectModalServer {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.75rem;
+  color: $light-grey;
+  margin-top: 0.25rem;
+}
+
+.connectTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 0;
+
+  & .connectTab {
+    @include InterFont;
+    flex: 1 1 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #34506F;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: $white;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    & span:first-child {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    & span:last-child {
+      font-size: 0.75rem;
+      color: $light-grey;
+    }
+
+    &:hover {
+      border-color: $light-blue;
+    }
+
+    &.selected {
+      border-color: #15A9FF;
+      background: rgba(21, 169, 255, 0.12);
+
+      & span:last-child {
+        color: $light-blue;
+      }
+    }
+  }
+}
+
+// Sub-choice inside a tab: the IDE for MCP, the language for SDK.
+.connectChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+
+  .connectModal .connectAppModalContent > &:first-child {
+    margin-top: 0;
+  }
+
+  & .connectChip {
+    @include InterFont;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3125rem 0.75rem;
+    border: 1px solid #34506F;
+    border-radius: 20px;
+    background: transparent;
+    color: $white;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $light-blue;
+    }
+
+    &.selected {
+      border-color: #15A9FF;
+      background: rgba(21, 169, 255, 0.12);
+    }
+  }
+}
+
+.connectDivider {
+  height: 1px;
+  margin: 2rem 0 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.connectKeys {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #34506F;
+  border-radius: 0.5rem;
+  overflow: hidden;
+
+  & .connectKeyRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+
+    & + .connectKeyRow {
+      border-top: 1px solid #34506F;
+    }
+  }
+
+  & .connectKeyLabel {
+    flex: none;
+    width: 140px;
+    font-size: 0.875rem;
+    color: $light-grey;
+  }
+
+  & .connectKeyValue {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.8125rem;
+    color: $white;
+  }
+
+  & .connectKeyCopy {
+    flex: none;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 }
 
