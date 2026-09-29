@@ -1496,18 +1496,23 @@
     cursor: pointer;
     transition: all 0.3s ease;
 
-    & svg {
-      margin-bottom: 0.5rem;
-    }
-
     &:hover {
       border-color: #15A9FF;
       background: rgba(21, 169, 255, 0.06);
 
-      & .getConnectedLabel {
+      & .getConnectedLabel,
+      & .getConnectedIcon {
         color: #15A9FF;
       }
     }
+  }
+
+  // Icons draw in currentColor (inline ones) or take it as fill (sprite ones).
+  & .getConnectedIcon {
+    display: flex;
+    margin-bottom: 0.5rem;
+    color: $light-blue;
+    transition: color 0.3s ease;
   }
 
   & .getConnectedLabel {

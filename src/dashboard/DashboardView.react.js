@@ -18,6 +18,7 @@ import { post } from 'lib/AJAX';
 import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 import { canAccess } from 'lib/serverInfo';
 import { openConnect } from 'dashboard/Data/AppOverview/connectEvents';
+import { PlugIcon } from 'dashboard/Data/AppOverview/connectIcons.react';
 
 // Alert parameters
 const MySwal = withReactContent(Swal);
@@ -320,7 +321,7 @@ export default class DashboardView extends React.Component {
       name: 'Overview',
       icon: 'b4a-app-overview-icon',
       link: '/overview',
-      headerAction: { label: 'Connect', icon: 'api', onClick: () => openConnect('mcp') },
+      headerAction: { label: 'Connect', icon: <PlugIcon size={14} />, onClick: () => openConnect('mcp') },
     })
 
     if (databaseSubsections.length > 0) {

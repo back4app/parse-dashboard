@@ -177,7 +177,9 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
         headerAction.onClick();
       }}
     >
-      {headerAction.icon ? <Icon width={14} height={14} name={headerAction.icon} /> : null}
+      {typeof headerAction.icon === 'string'
+        ? <Icon width={14} height={14} name={headerAction.icon} />
+        : headerAction.icon || null}
       {headerAction.label}
     </button>
   ) : null;

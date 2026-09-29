@@ -411,8 +411,14 @@ $aiToolsOpenHeight: 110px;
   border-radius: 5px;
   cursor: pointer;
 
+  // Sprite icons take the green as fill; inline outline icons draw in
+  // currentColor, which is the green too.
   & svg {
     fill: $cta-green;
+  }
+
+  & svg[fill='none'] {
+    fill: none;
   }
 
   &:hover {
