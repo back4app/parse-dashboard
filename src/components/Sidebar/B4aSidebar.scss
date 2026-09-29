@@ -389,6 +389,20 @@ $aiToolsOpenHeight: 110px;
   }
 }
 
+// Marks an AI Tools entry as the older generation. Quiet on purpose: an
+// outline, not a filled badge like NEW.
+.legacyBadge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border: 1px solid rgba($light-blue, 0.35);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba($light-blue, 0.75);
+}
+
 // A section-level action (e.g. Connect on Overview): the look of .action, but
 // inline at the end of the section's row instead of pinned to a subitem.
 .sectionAction {
