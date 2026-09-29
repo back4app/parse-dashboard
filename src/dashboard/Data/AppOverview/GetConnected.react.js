@@ -21,12 +21,14 @@ const TabIcon = ({ icon: InlineIcon }) =>
 
 const GetConnected = ({ onOpen }) => (
   <div className={styles.getConnected}>
-    <span>Get connected</span>
+    <div className={styles.getConnectedTitle}>Get connected</div>
     <div className={styles.getConnectedList}>
       {CONNECT_TABS.map(tab => (
         <button key={tab.key} type="button" className={styles.getConnectedItem} onClick={() => onOpen(tab.key)}>
-          <span className={styles.getConnectedIcon}><TabIcon icon={tab.icon} /></span>
-          <span className={styles.getConnectedLabel}>{tab.label}</span>
+          <span className={styles.getConnectedHead}>
+            <span className={styles.getConnectedIcon}><TabIcon icon={tab.icon} /></span>
+            <span className={styles.getConnectedLabel}>{tab.label}</span>
+          </span>
           <span className={styles.getConnectedDescription}>{tab.description}</span>
         </button>
       ))}
