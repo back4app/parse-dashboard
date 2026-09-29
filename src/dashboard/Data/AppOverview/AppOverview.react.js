@@ -273,7 +273,9 @@ class AppOverview extends DashboardView {
               <AppFact
                 label="Database"
                 extra={this.context.isMongoUpgradeAvailable && showDatabaseVersion ? (
-                  <>MongoDB 8.0 available upgrading your plan. <a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></>
+                  // One button like the other facts' actions; the explanation
+                  // moves to its tooltip so the column stays one line tall.
+                  <a className={styles.changeRegionLink} title="MongoDB 8.0 is available when you upgrade your plan" onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade to 8.0</a>
                 ) : null}
               >
                 {database}
