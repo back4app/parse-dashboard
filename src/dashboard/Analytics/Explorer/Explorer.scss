@@ -17,7 +17,7 @@
 .header, .footer {
   position: fixed;
   left: 0px;
-  right: 0px;
+  right: var(--agent-dock, 0px); // leave room for the docked AgentPanel
   min-height: 50px;
   background-color: $pushDetailsHeaderBackground;
 }

@@ -555,3 +555,97 @@ body:global(.expanded) {
   color: #303338;
   opacity: 0.7;
 }
+
+// The chat docked in AgentPanel instead of filling the page: it flows inside
+// the panel rather than being fixed under the toolbar, and tightens to fit a
+// ~360px column.
+.panelVariant {
+  position: relative;
+  height: 100%;
+
+  .chatContainer {
+    position: static;
+    height: 100%;
+  }
+
+  .emptyStateOverlay {
+    position: absolute;
+    inset: 0;
+    padding: 32px 16px 0;
+    z-index: 1;
+  }
+
+  .inlineEmpty {
+    min-height: 0;
+    padding: 12px 0;
+  }
+
+  // B4aEmptyState's ghost is sized for a full page.
+  .inlineEmpty img,
+  .emptyStateOverlay img {
+    max-width: 96px;
+  }
+
+  .chatWindow {
+    padding: 14px;
+  }
+
+  .messagesContainer {
+    gap: 10px;
+  }
+
+  .message {
+    max-width: 88%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    margin-bottom: 4px;
+  }
+
+  // Replies carry code editors and tables; give them the whole column.
+  .message.agent {
+    max-width: 100%;
+  }
+
+  .messageContent {
+    font-size: 13px;
+
+    table {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+
+  .warningMessage {
+    font-size: 12.5px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+
+  .progressText {
+    font-size: 12px;
+  }
+
+  .chatForm {
+    padding: 12px;
+  }
+
+  .inputContainer {
+    gap: 8px;
+  }
+
+  .chatInput {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-height: 40px;
+  }
+
+  .sendButton {
+    padding: 10px 14px;
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .exampleButton {
+    max-width: 100%;
+  }
+}

@@ -12,7 +12,7 @@
   // @include animation('footer-enter 0.2s cubic-bezier(0.165, 0.84, 0.44, 1)');
   position: fixed;
   top: $header-height;
-  right: 0;
+  right: var(--agent-dock, 0px); // leave room for the docked AgentPanel
   background: transparent;
   // border-top: 1px solid $regal-blue;
   min-height: 49px;
@@ -38,7 +38,7 @@
 .content {
   position: fixed;
   top: calc($header-height + $toolbar-height);
-  right: 0;
+  right: var(--agent-dock, 0px);
   color: rgba($white, 0.7);
   border-bottom: 1px solid rgba($white, 0.06);
   font-size: 13px;
