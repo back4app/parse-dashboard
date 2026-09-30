@@ -389,6 +389,62 @@ $aiToolsOpenHeight: 110px;
   }
 }
 
+// Marks an AI Tools entry as the older generation. Quiet on purpose: an
+// outline, not a filled badge like NEW.
+.legacyBadge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border: 1px solid rgba($light-blue, 0.35);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba($light-blue, 0.75);
+}
+
+// A section-level action (e.g. Connect on Overview): the look of .action, but
+// inline at the end of the section's row instead of pinned to a subitem.
+.sectionAction {
+  @include InterFont;
+  // float for the plain row (display: block), margin-left: auto for the active
+  // one (display: flex) — either way it sits at the right edge.
+  float: right;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: -1px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 140%;
+  color: $cta-green;
+  background: transparent;
+  border: 1px solid $cta-green;
+  border-radius: 5px;
+  cursor: pointer;
+
+  // Sprite icons take the green as fill; inline outline icons draw in
+  // currentColor, which is the green too.
+  & svg {
+    fill: $cta-green;
+  }
+
+  & svg[fill='none'] {
+    fill: none;
+  }
+
+  &:hover {
+    background: rgba($cta-green, $alpha: 0.1);
+  }
+}
+
+// The row underlines on hover; the button shouldn't.
+.section_header:hover .sectionAction {
+  text-decoration: none;
+}
+
 .section_contents {
   // background: rgba(16, 32, 58, 0.60);
   padding: 16px 16px 16px 48px;

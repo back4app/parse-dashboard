@@ -12,7 +12,7 @@
   position: fixed;
   top: $toolbar-height;
   left: $b4aSidebarWidth;
-  right: 0;
+  right: var(--agent-dock, 0px); // leave room for the docked AgentPanel
   bottom: 0;
   overflow: auto;
   padding-top: 30px;
@@ -411,7 +411,7 @@ body:global(.sidebarCollapsed) {
 
   .selectionSection {
     position: fixed;
-    right: 20px;
+    right: calc(20px + var(--agent-dock, 0px));
     width: 142px;
     font-size: 12px;
     color: #0E69A1;
@@ -586,7 +586,7 @@ body:global(.sidebarCollapsed) {
 }
 
 .b4aLoadingWrapper {
-  width: calc(100vw - $b4aSidebarWidth);
+  width: calc(100vw - $b4aSidebarWidth - var(--agent-dock, 0px));
   height: calc(100% - 54px);
   display: flex;
   justify-content: center;

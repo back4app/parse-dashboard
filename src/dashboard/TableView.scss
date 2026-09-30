@@ -12,7 +12,7 @@
   position: fixed;
   top: calc($header-height + $toolbar-height);
   left: $b4aSidebarWidth;
-  right: 0;
+  right: var(--agent-dock, 0px); // leave room for the docked AgentPanel
   background: $dark;
   height: 46px;
   white-space: nowrap;

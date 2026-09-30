@@ -11,6 +11,8 @@ import AppsManager from 'lib/AppsManager';
 import { CurrentApp } from 'context/currentApp';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { canAccess } from 'lib/serverInfo';
+import AgentPanel from 'dashboard/Data/Agent/AgentPanel.react';
+import ConnectHost from 'dashboard/Data/AppOverview/ConnectHost.react';
 // import baseStyles from 'stylesheets/base.scss';
 // import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 
@@ -58,6 +60,10 @@ function AppData() {
   return (
     <CurrentApp.Provider value={current}>
       <Outlet />
+      {/* Beside the routes, not inside them, so the chat survives navigation
+          and Connect opens from any page. */}
+      <AgentPanel />
+      <ConnectHost />
     </CurrentApp.Provider>
   );
 }

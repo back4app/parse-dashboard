@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import Popover from 'components/Popover/Popover.react';
-import Position from 'lib/Position';
-import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
-import Icon from 'components/Icon/Icon.react';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import AppOverviewCodeEditorBlock from './AppOverviewCodeEditorBlock.react';
 
-const LanguageDocMap = {
+// How to reach the app from each client, one entry per SDK/API. Shown in the
+// Connect modal: REST and GraphQL get their own tabs, the rest are the SDKs.
+export const LanguageDocMap = {
   rest: {
     content: `Since no SDK installation is required, you can simply use HTTP requests with the proper headers.
 
@@ -851,72 +849,16 @@ function deleteObject($objectId) {
     iconColor: '#4f5b93',
   },
 };
-const origin = new Position(0, 0);
 
-const ConnectAppModal = ({ closeModal }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState(LanguageDocMap['js-browser']);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  return (
-    <Popover fadeIn={true} fixed={true} position={origin} modal={true} color="rgba(17,13,17,0.8)">
-      <div className={styles.connectAppModal}>
-        <div className={styles.connectAppModalHeader}>
-          <div className={styles.connectAppModalTitle}>
-            <div className={styles.dropdownContainer}>
-              <div
-                className={styles.dropdownTrigger}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <div className={styles.selectedLanguage}>
-                  <Icon
-                    name={selectedLanguage.icon}
-                    fill={selectedLanguage.iconColor || ''}
-                    width={20}
-                    height={20}
-                  />
-                  <span style={{ fontSize: '0.875rem' }}>{selectedLanguage.name}</span>
-                </div>
-                <Icon name="b4a-chevron-down" width={16} height={16} fill="#f9f9f9" />
-              </div>
-              {isDropdownOpen && (
-                <div className={styles.dropdownMenu}>
-                  {Object.entries(LanguageDocMap).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className={`${styles.dropdownItem} ${
-                        selectedLanguage.name === value.name ? styles.selected : ''
-                      }`}
-                      onClick={() => {
-                        setSelectedLanguage(value);
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      <Icon name={value.icon} fill={value.iconColor || ''} width={16} height={16} />
-                      <span>{value.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className={styles.closeIcon} onClick={closeModal}>
-            <Icon name="close" fill="#f9f9f9" width={14} height={14} />
-          </div>
-        </div>
-        <div className={styles.connectAppModalContent} style={{ overflow: 'auto' }}>
-          <ReactMarkdown
-            renderers={{
-              code: ({ inline, language, value }) =>
-                inline ? <code>{value}</code> : (
-                  <AppOverviewCodeEditorBlock language={language} value={value} />
-                ),
-            }}
-            children={selectedLanguage.content}
-          />
-        </div>
-      </div>
-    </Popover>
-  );
-};
-
-export default ConnectAppModal;
+// Renders one entry's markdown, with fenced code in the read-only editor.
+export const ConnectDoc = ({ doc }) => (
+  <ReactMarkdown
+    renderers={{
+      code: ({ inline, language, value }) =>
+        inline ? <code>{value}</code> : (
+          <AppOverviewCodeEditorBlock language={language} value={value} />
+        ),
+    }}
+    children={doc.content}
+  />
+);

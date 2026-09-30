@@ -123,168 +123,125 @@
       max-width: 100%;
     }
 
-    & .appInfoCard {
+    // App summary: name, App ID and Actions on top; one row of facts below.
+    & .appSummary {
       @include InterFont;
       margin-top: 18px;
-      padding: 24px;
-      display: flex;
-      justify-content: space-between;
-      gap: 32px;
+      padding: 20px 24px;
       border-radius: 8px;
       border: 1px solid rgba($regal-blue, 0.4);
       font-size: 14px;
-      flex-wrap: wrap;
+    }
 
-      & hr {
-        border-color: rgba($regal-blue, 0.4);
-        margin: 12px 0;
-      }
+    & .appSummaryHead {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba($regal-blue, 0.4);
+    }
 
-      & .appInformationBox, & .appKeysBox {
-        flex: 1;
-        min-width: 350px;
-      }
-      
-      & .appInfoCardHeader {
-        font-weight: 600;
-        margin-bottom: 12px;
-        font-size: 16px;
-        line-height: 140%;
-        white-space: nowrap;
+    & .appSummaryTitle {
+      min-width: 0;
+    }
+
+    & .appSummaryName {
+      @include SoraFont;
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 140%;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .appSummaryId {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+
+      & code {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 13px;
+        color: $white;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
+    }
 
-      & .appKeyWrapper {
-        display: flex;
-        // align-items: center;
-        gap: 8px;
+    & .copyValue {
+      display: flex;
+      flex: none;
+      padding: 2px;
+      border-radius: 4px;
+      cursor: pointer;
 
-        & label {
-          font-size: 14px;
-          color: $white;
-          margin-top: 8px;
-        }
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
       }
+    }
 
-      & .appKeyContainer {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        width: 100%;
-        flex-direction: column;
-      }
+    // As many columns as fit (the page narrows with the agent panel), each
+    // at least 170px wide.
+    & .appFacts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px 24px;
+      padding-top: 16px;
+    }
 
-      & .dropdownContainer {
-        position: relative;
-        min-width: 100%;
-      }
+    & .appFact {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
 
-      & .dropdownTrigger {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
-        background: #1b3454;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        user-select: none;
-        transition: all 0.2s ease;
-        color: $white;
+    & .appFactLabel {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba($light-grey, 0.75);
+    }
 
-        span {
-          margin-right: 8px;
-          font-size: 14px;
-          color: $white;
-        }
-      }
+    & .appFactValue {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      color: $white;
+    }
 
-      & .dropdownMenu {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
-        width: 100%;
-        background: #1b3454;
-        border-radius: 4px;
-        // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        max-height: 200px;
-        overflow-y: auto;
-      }
+    & .appFactText {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-      & .dropdownItem {
-        padding: 8px 12px;
-        font-size: 14px;
-        color: $white;
-        cursor: pointer;
-        transition: all 0.2s ease;
+    & .appFactExtra {
+      font-size: 12px;
+      color: $light-grey;
+    }
 
-        &:hover {
-          background: #114370;
-        }
+    & .greyText {
+      color: #ccc;
+    }
 
-      }
-
-      & .keyValueContainer {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: 1;
-        width: 100%;
-        justify-content: space-between;
-        margin-left: 8px;
-      }
-
-      & .keyValue {
-        font-size: 14px;
-        color: $white;
-        margin-left: 8px;
-      }
-
-      & .copyButton {
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-      }
-
-      & .appContentBtn {
-        background: $white;
-        color: $dark-blue;
-        border: none;
-        outline: none;
-        border-radius: 12px;
-        padding: 8px 12px;
-        font-size: 12px;
-        margin-left: .5rem;
-      }
-
-      & .appMCPBtn {
-         border: 1px solid $white;
-         outline: none;
-         border-radius: 12px;
-         padding: 8px 12px;
-         font-size: 12px;
-         color: $white;
-         margin-left: .5rem;
-      }
-
-      & .greyText {
-        color: #ccc;
-      }
-
-      & .changeRegionLink {
-        display: inline-block;
-        margin-left: 4px;
-        font-size: 12px;
-        color: $white;
-        cursor: pointer;
-        border: 1px solid $regal-blue;
-        border-radius: 4px;
-        padding: 2px 8px;
-        text-decoration: none;
-        border-radius: 0.5rem;
-      }
+    & .changeRegionLink {
+      display: inline-block;
+      font-size: 12px;
+      color: $white;
+      cursor: pointer;
+      border: 1px solid $regal-blue;
+      padding: 2px 8px;
+      text-decoration: none;
+      border-radius: 0.5rem;
     }
 
     & .serverLogsWrapper {
@@ -1475,7 +1432,7 @@
   }
 }
 
-.mcpSelectIDEContainer {
+.getConnected {
   display: flex;
   flex-direction: column;
   margin: 1.5rem 0;
@@ -1486,56 +1443,251 @@
   padding: 1.5rem;
   gap: 1rem;
 
-  & .mcpChoiceIDEList {
-    display: flex;
-    gap: 1.5rem;
+  // Same weight as the other section titles (Compliance, System Logs).
+  & .getConnectedTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 140%;
   }
 
-  & .mcpChoiceIDE {
+  & .getConnectedList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  & .getConnectedItem {
+    @include InterFont;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid #34506F;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: $white;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #15A9FF;
+      background: rgba(21, 169, 255, 0.06);
+
+      & .getConnectedLabel,
+      & .getConnectedIcon {
+        color: #15A9FF;
+      }
+    }
+  }
+
+  // Icon and name on one line, the description under them.
+  & .getConnectedHead {
     display: flex;
     align-items: center;
-    padding: 1rem;
-    border: 1px solid #34506F;
-    transition: all 0.3s ease;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    width: 100%;
-    gap: 1rem;
-    & .mcpChoiceTitle {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      span:first-child {
-        font-size: 1rem;
-        font-weight: 600;
-        line-height: 140%;
-      }
-      span:last-child {
-        font-size: 0.75rem;
-        font-weight: 400;
-      }
-    }
-    & .mcpConnectBtn {
-      outline: none;
-      border: none;
-      border-radius: 0.5rem;
-      border: 1px solid #34506F;
-      background: rgba(255, 255, 255, 0.00);
-      padding: 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      flex-shrink: 0;
-      align-self: flex-end;
+    gap: 0.5rem;
+  }
 
-      &:hover {
-        background: rgba($regal-blue, 0.1);
+  // Icons draw in currentColor (inline ones) or take it as fill (sprite ones).
+  & .getConnectedIcon {
+    display: flex;
+    flex: none;
+    color: $light-blue;
+    transition: color 0.3s ease;
+  }
+
+  & .getConnectedLabel {
+    @include SoraFont;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 140%;
+    transition: color 0.3s ease;
+  }
+
+  & .getConnectedDescription {
+    font-size: 0.75rem;
+    color: $light-grey;
+  }
+}
+
+// The Connect modal (ConnectModal.react.js): the .connectAppModal shell with a
+// row of tabs under the header and a scrolling body.
+.connectModal {
+  width: min(920px, 90vw);
+  // A fixed height, so switching tabs doesn't resize and re-center the modal.
+  height: min(80vh, 760px);
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  & .connectAppModalHeader {
+    position: static;
+  }
+
+  & .connectAppModalContent {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  // The MCP content keeps its own styles but not the padding of the old
+  // standalone modal — the body already has it.
+  & .mcpModalContent .mcpModalStep2 {
+    padding: 0;
+  }
+
+  & .mcpTabButtons {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.connectModalServer {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.75rem;
+  color: $light-grey;
+  margin-top: 0.25rem;
+}
+
+.connectTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 0;
+
+  & .connectTab {
+    @include InterFont;
+    flex: 1 1 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #34506F;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: $white;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    & span:first-child {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    & span:last-child {
+      font-size: 0.75rem;
+      color: $light-grey;
+    }
+
+    &:hover {
+      border-color: $light-blue;
+    }
+
+    &.selected {
+      border-color: #15A9FF;
+      background: rgba(21, 169, 255, 0.12);
+
+      & span:last-child {
+        color: $light-blue;
       }
     }
   }
+}
 
+// Sub-choice inside a tab: the IDE for MCP, the language for SDK.
+.connectChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
 
-  & svg {
-    fill: $light-blue;
+  .connectModal .connectAppModalContent > &:first-child {
+    margin-top: 0;
+  }
+
+  & .connectChip {
+    @include InterFont;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3125rem 0.75rem;
+    border: 1px solid #34506F;
+    border-radius: 20px;
+    background: transparent;
+    color: $white;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $light-blue;
+    }
+
+    &.selected {
+      border-color: #15A9FF;
+      background: rgba(21, 169, 255, 0.12);
+    }
+  }
+}
+
+.connectDivider {
+  height: 1px;
+  margin: 2rem 0 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.connectKeys {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #34506F;
+  border-radius: 0.5rem;
+  overflow: hidden;
+
+  & .connectKeyRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+
+    & + .connectKeyRow {
+      border-top: 1px solid #34506F;
+    }
+  }
+
+  & .connectKeyLabel {
+    flex: none;
+    width: 140px;
+    font-size: 0.875rem;
+    color: $light-grey;
+  }
+
+  & .connectKeyValue {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.8125rem;
+    color: $white;
+  }
+
+  & .connectKeyCopy {
+    flex: none;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 }
 

@@ -6,19 +6,17 @@
  * This source code is licensed under the license found in the LICENSE file in
  * the root directory of this source tree.
  */
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import DashboardView from 'dashboard/DashboardView.react';
 import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { withRouter } from 'lib/withRouter';
 import Icon from 'components/Icon/Icon.react';
 import SystemLogsCard from './SystemLogsCard.react';
-import AppKeysComponent from './AppKeysComp.react';
 import AppPlanCard from './AppPlanCard.react';
 import AppSecurityCard from './AppSecurityCard.react';
 import AppPerformanceCard from './AppPerformanceCard.react';
 import AppLoadingText from './AppLoadingText.react';
 import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
-// import ConnectAppModal from './ConnectAppModal.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
@@ -26,9 +24,41 @@ import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
 import { Link } from 'react-router-dom';
 
-import MCPIntegrationIDE from './MCPIntegrationIDE.js';
-const LazyConnectAppModal = lazy(() => import('./ConnectAppModal.react'));
-const LazyMCPSetupModal = lazy(() => import('./MCPSetupModal.js'));
+import GetConnected from './GetConnected.react';
+import { openConnect } from './connectEvents';
+
+// Copy button with a "Copied!" tooltip, for the App ID and the API URL.
+const CopyValue = ({ value }) => {
+  const [copied, setCopied] = React.useState(false);
+  const copy = () => {
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(value);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <B4aTooltip value={'Copied!'} visible={copied} placement='top' theme='dark'>
+      <div className={styles.copyValue} onClick={copy}>
+        <Icon name={copied ? 'b4a-check-icon' : 'b4a-copy-icon'} fill={copied ? '#27AE60' : '#15A9FF'} width={14} height={14} />
+      </div>
+    </B4aTooltip>
+  );
+};
+
+// One column of the facts row: small label, the value, and an optional action
+// or note under it.
+// A missing value shows as a dash rather than an empty column.
+const AppFact = ({ label, children, extra, copy }) => (
+  <div className={styles.appFact}>
+    <div className={styles.appFactLabel}>{label}</div>
+    <div className={styles.appFactValue} title={typeof children === 'string' ? children : undefined}>
+      <span className={styles.appFactText}>{children || <span className={styles.greyText}>—</span>}</span>
+      {copy ? <CopyValue value={copy} /> : null}
+    </div>
+    {extra ? <div className={styles.appFactExtra}>{extra}</div> : null}
+  </div>
+);
 
 @withRouter
 class AppOverview extends DashboardView {
@@ -40,7 +70,6 @@ class AppOverview extends DashboardView {
     const user = AccountManager.currentUser();
 
     this.state = {
-      appKeys: new Map(),
       isLoadingServerLogs: true,
       serverLogs: '',
 
@@ -62,10 +91,6 @@ class AppOverview extends DashboardView {
       // Performance card global time limit
       globalTimeLimit: '60',
 
-      showCopiedTooltip: false,
-      showConnectAppModal: false,
-      showMCPSetupModal: false,
-      selectedMcpIde: null,
 
       isLoadingWebhosting: true,
       webhosting: undefined,
@@ -73,39 +98,19 @@ class AppOverview extends DashboardView {
 
       currentUser: user,
     };
-    this.copyText = this.copyText.bind(this);
     this.loadCardInformation = this.loadCardInformation.bind(this);
     this.pollSchemas = this.pollSchemas.bind(this);
     this.handleLimitChange = this.handleLimitChange.bind(this);
-    this.handleMcpIdeClick = this.handleMcpIdeClick.bind(this);
   }
 
   componentWillMount() {
     amplitudeLogEvent('At App Overview - Backend');
-    const currentApp = this.context;
-    const appKeys = new Map(Object.entries(currentApp).filter(([k]) => k.includes('Key')));
-    this.setState({
-      appKeys,
-    });
     this.loadCardInformation();
-  }
-
-  componentDidMount() {
-    import('./ConnectAppModal.react');
-    import('./MCPSetupModal.js');
-  }
-
-  copyText(copyText = '') {
-    if (navigator) {
-      navigator.clipboard.writeText(copyText);
-    }
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
     if (nextContext.applicationId !== this.context.applicationId) {
-      const appKeys = new Map(Object.entries(nextContext).filter(([k]) => k.includes('Key')));
       this.setState({
-        appKeys,
         isLoadingServerLogs: true,
         isLoadingAppPlanData: true,
         isLoadingSecurityReport: true,
@@ -124,13 +129,6 @@ class AppOverview extends DashboardView {
     }, () => {
       // Recarregar todos os dados com o novo limite
       this.loadAllPerformanceData(this.context, value);
-    });
-  }
-
-  handleMcpIdeClick(ide) {
-    this.setState({
-      showMCPSetupModal: true,
-      selectedMcpIde: ide
     });
   }
 
@@ -239,85 +237,77 @@ class AppOverview extends DashboardView {
   }
 
   renderContent() {
+    const { isLoadingAppPlanData, appPlanData } = this.state;
+    // Same rule as before: the version shows on Free plans or once on MongoDB 8.0.
+    const showDatabaseVersion = (!isLoadingAppPlanData && !(appPlanData instanceof Error) && /Free/i.test(appPlanData.planName))
+      || this.context.databaseVersion === '8.0';
+    const webhost = this.state.webhosting?.hostSettings?.webhost;
+    const database = [this.context.databaseType, showDatabaseVersion && this.context.databaseVersion].filter(Boolean).join(' ');
     return (
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.title}>Overview</div>
         </div>
         <div className={styles.content}>
-          <AppOverviewActions
-            appUrlName={this.context.slug}
-            context={this.context}
-          />
-
           <AppLoadingText appName={this.context.name} appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
 
-          <div className={styles.appInfoCard}>
-            <div className={styles.appKeysBox}>
-              <div className={styles.appInfoCardHeader}>{this.context.name}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <span style={{ color: '#CCC'}}>App ID:</span> {' '}
-                  {this.context.applicationId}
+          {/* The app at a glance: name + App ID + Actions on top, then one row
+              of facts. The keys live in Get connected → Keys. */}
+          <div className={styles.appSummary}>
+            <div className={styles.appSummaryHead}>
+              <div className={styles.appSummaryTitle}>
+                <div className={styles.appSummaryName}>{this.context.name}</div>
+                <div className={styles.appSummaryId}>
+                  <span className={styles.greyText}>App ID</span>
+                  <code>{this.context.applicationId}</code>
+                  <CopyValue value={this.context.applicationId} />
                 </div>
-                <B4aTooltip value={'Copied!'} visible={this.state.showCopiedTooltip} placement='top' theme='dark'>
-                  <div style={{ cursor: 'pointer', marginLeft: '4px' }} onClick={() => {
-                    this.copyText(this.context.applicationId);
-                    this.setState({ showCopiedTooltip: true });
-                    setTimeout(() => {
-                      this.setState({ showCopiedTooltip: false });
-                    }, 2_000);
-                  }}>
-                    <Icon name={`${this.state.showCopiedTooltip ? 'b4a-check-icon' : 'b4a-copy-icon'}`} fill={this.state.showCopiedTooltip ? '#27AE60' : '#15A9FF'} width={14} height={14} />
-                  </div>
-                </B4aTooltip>
               </div>
-              <hr />
-              <AppKeysComponent appKeys={this.state.appKeys} copyText={this.copyText} />
-              <hr />
-              <button className={styles.appContentBtn} onClick={() => this.setState({ showConnectAppModal: true })}>Connect App</button>
+              <AppOverviewActions
+                appUrlName={this.context.slug}
+                context={this.context}
+              />
             </div>
-            <div className={styles.appInformationBox}>
-              <div className={styles.appInfoCardHeader}>App Information</div>
-              <div className="">
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Parse Server Version: </span>{this.context.parseVersion}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>
-                  Database: </span>{this.context.databaseType}
-                {(!this.state.isLoadingAppPlanData && !(this.state.appPlanData instanceof Error) && /Free/i.test(this.state.appPlanData.planName) || this.context.databaseVersion === '8.0') ? (
-                  <>
-                    {' '}{this.context.databaseVersion}
-                    {this.context.isMongoUpgradeAvailable && (
-                      <div style={{ marginTop: '4px', fontSize: '0.75rem', color: '#ccc' }}>MongoDB 8.0 available upgrading your plan. <span><a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade Plan</a></span></div>
-                    )}
-                  </>
-                ) : ('')}
-                </div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>API URL: </span>{this.context.serverURL}</div>
-                <div style={{ marginBottom: '8px' }}><span className={styles.greyText}>Hosting Region: </span>{this.context.region} <span><a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - Change Hosting Region Button')} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a></span></div>
-                <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}><span className={styles.greyText}>Web Hosting: </span>
-                  {this.state.isLoadingWebhosting ?
-                    <Icon name="status-spinner" width="16px" height="16px" fill="#1377B8" className={styles.spinnerStatus} /> :
-                    <>{this.state.webhosting?.hostSettings?.webhost ?
-                      <>
-                        <a
-                          className={styles.webhostingLink}
-                          href={`https://${this.state.webhosting.hostSettings.webhost}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {this.state.webhosting.hostSettings.webhost}
-                        </a>
-                        <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>{this.state.webhosting.domains.length > 0 ? 'Domain Settings' : 'Add custom domain'}</Link>
-                      </> :
-                      (<Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>Configure</Link>)}</>}</div>
-              </div>
+            <div className={styles.appFacts}>
+              <AppFact label="Parse Server">{this.context.parseVersion}</AppFact>
+              <AppFact
+                label="Database"
+                extra={this.context.isMongoUpgradeAvailable && showDatabaseVersion ? (
+                  // One button like the other facts' actions; the explanation
+                  // moves to its tooltip so the column stays one line tall.
+                  <a className={styles.changeRegionLink} title="MongoDB 8.0 is available when you upgrade your plan" onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade to 8.0</a>
+                ) : null}
+              >
+                {database}
+              </AppFact>
+              <AppFact label="API URL" copy={this.context.serverURL}>{this.context.serverURL}</AppFact>
+              <AppFact
+                label="Hosting Region"
+                extra={<a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - Change Hosting Region Button')} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a>}
+              >
+                {this.context.region}
+              </AppFact>
+              <AppFact
+                label="Web Hosting"
+                extra={this.state.isLoadingWebhosting ? null : (
+                  <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>
+                    {webhost ? (this.state.webhosting.domains.length > 0 ? 'Domain Settings' : 'Add custom domain') : 'Configure'}
+                  </Link>
+                )}
+              >
+                {this.state.isLoadingWebhosting
+                  ? <Icon name="status-spinner" width="16px" height="16px" fill="#1377B8" className={styles.spinnerStatus} />
+                  : webhost
+                    ? <a className={styles.webhostingLink} href={`https://${webhost}`} target="_blank" rel="noopener noreferrer">{webhost}</a>
+                    : <span className={styles.greyText}>Not configured</span>}
+              </AppFact>
             </div>
           </div>
-          <MCPIntegrationIDE handleSelectedIDE={this.handleMcpIdeClick} />
+          <GetConnected onOpen={openConnect} />
 
           <ComplianceCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appId={this.context.applicationId} isSignedBAA={this.context.custom.isSignedBAA} />
 
-          <OnboardingBoxes  currentUser={AccountManager.currentUser()} slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => this.setState({ showConnectAppModal: true })} />
+          <OnboardingBoxes  currentUser={AccountManager.currentUser()} slug={this.context.slug} appName={this.context.name} appId={this.context.applicationId} openConnectModal={() => openConnect('sdk')} />
 
           {/* System Logs Card */}
           <SystemLogsCard loading={this.state.isLoadingServerLogs} logs={this.state.serverLogs} appSlug={this.context.slug} />
@@ -382,21 +372,6 @@ class AppOverview extends DashboardView {
           </div>
         </div>
 
-        {this.state.showConnectAppModal && (
-          <Suspense fallback={'Loading...'}>
-            <LazyConnectAppModal closeModal={() => this.setState({ showConnectAppModal: false })} />
-          </Suspense>
-        )}
-
-        {this.state.showMCPSetupModal && (
-          <Suspense fallback={'Loading...'}>
-            <LazyMCPSetupModal 
-              closeModal={() => this.setState({ showMCPSetupModal: false, selectedMcpIde: null })} 
-              context={this.context} 
-              selectedIDE={this.state.selectedMcpIde}
-            />
-          </Suspense> 
-        )}
       </div>
     );
   }

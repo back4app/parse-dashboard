@@ -12,7 +12,7 @@
   @include SoraFont;
   position: fixed;
   top: 0;
-  right: 0;
+  right: var(--agent-dock, 0px); // leave room for the docked AgentPanel
   left: $b4aSidebarWidth;
   background: $dark-grey;
   padding: 0.5rem 1.5rem;

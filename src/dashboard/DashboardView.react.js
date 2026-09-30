@@ -17,6 +17,8 @@ import AccountManager from 'lib/AccountManager';
 import { post } from 'lib/AJAX';
 import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 import { canAccess } from 'lib/serverInfo';
+import { openConnect } from 'dashboard/Data/AppOverview/connectEvents';
+import { PlugIcon } from 'dashboard/Data/AppOverview/connectIcons.react';
 
 // Alert parameters
 const MySwal = withReactContent(Swal);
@@ -319,6 +321,7 @@ export default class DashboardView extends React.Component {
       name: 'Overview',
       icon: 'b4a-app-overview-icon',
       link: '/overview',
+      headerAction: { label: 'Connect', icon: <PlugIcon size={14} />, onClick: () => openConnect('mcp') },
     })
 
     if (databaseSubsections.length > 0) {
@@ -342,13 +345,6 @@ export default class DashboardView extends React.Component {
       icon: 'b4a-api-icon',
       link: '/connect',
       subsections: apiSubSections
-    });
-
-    appSidebarSections.push({
-      name: 'Backend Agent',
-      icon: 'b4a-ai',
-      link: '/agent',
-      badgeParams: { label: 'NEW', color: 'green' },
     });
 
     const notificationSubSections = [

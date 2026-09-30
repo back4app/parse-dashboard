@@ -121,7 +121,7 @@ const getIconContent = (icon) => {
   }
 }
 
-const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge, locked }) => {
+const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryBackgroundColor, secondaryBackgroundColor, isCollapsed, onClick, badge, locked, headerAction }) => {
   const classes = [styles.section, 'section']; // Adding 'section' for the Tour to be able to select
   const [showPopoverSection, setShowPopoverSection] = useState(false);
   const [position, setPosition] = useState(null);
@@ -164,10 +164,29 @@ const B4aSidebarSection = ({ active, children, name, link, icon, style, primaryB
     iconContent = getIconContent(icon);
   }
   const textContent = !isCollapsed && <span>{name}</span>;
+  // Optional button on the section's own row, styled like the green sidebar
+  // actions (Add class, Add webhook). The header is a link, so the click must
+  // not also navigate.
+  const actionContent = headerAction && !isCollapsed && !locked ? (
+    <button
+      type="button"
+      className={styles.sectionAction}
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        headerAction.onClick();
+      }}
+    >
+      {typeof headerAction.icon === 'string'
+        ? <Icon width={14} height={14} name={headerAction.icon} />
+        : headerAction.icon || null}
+      {headerAction.label}
+    </button>
+  ) : null;
   const sectionContent = active
-    ? <div className={styles.section_header} style={{ ...style, background: primaryBackgroundColor, justifyContent: isCollapsed ? 'center' : '' }} onClick={onClick}>{iconContent}{textContent}{badge}</div>
+    ? <div className={styles.section_header} style={{ ...style, background: primaryBackgroundColor, justifyContent: isCollapsed ? 'center' : '' }} onClick={onClick}>{iconContent}{textContent}{badge}{actionContent}</div>
     : link.startsWith('/')
-      ? <Link style={style} className={styles.section_header} to={{ pathname: link || '' }} onClick={onClick}>{iconContent}{textContent}{badge}</Link>
+      ? <Link style={style} className={styles.section_header} to={{ pathname: link || '' }} onClick={onClick}>{iconContent}{textContent}{badge}{actionContent}</Link>
       : <a style={style} className={styles.section_header} href={link} target="_blank" onClick={() => sendEvent()}>{iconContent}{textContent}{badge}</a>;
 
   let popover = null;

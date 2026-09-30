@@ -1,0 +1,211 @@
+/*
+ * Copyright (c) 2016-present, Parse, LLC
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the LICENSE file in
+ * the root directory of this source tree.
+ */
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+$stripWidth: 44px;
+// The user drags the panel to --agent-panel-width (set by AgentPanel.react.js,
+// default 360px). Clamped here so it holds when the window shrinks too: never
+// under 300px, and the page keeps at least the sidebar + 480px. Keep these in
+// sync with MIN_WIDTH / PAGE_MIN_WIDTH there.
+$panelWidth: clamp(300px, var(--agent-panel-width, 360px), calc(100vw - #{$b4aSidebarWidth} - 480px));
+$panelBorder: rgba(255, 255, 255, 0.12);
+
+// The width the page gives up to the panel. Anything fixed to the right edge
+// of the viewport uses `right: var(--agent-dock, 0px)` so it ends where the
+// panel starts. Unset (0) on the Backend Agent page and outside an app.
+// (Attribute selectors carry no class, so CSS Modules leaves them global.)
+body[data-agent-dock='open'] {
+  --agent-dock: #{$panelWidth};
+}
+
+body[data-agent-dock='collapsed'] {
+  --agent-dock: #{$stripWidth};
+}
+
+// Too narrow to share: the open panel floats over the page instead of
+// pushing it, and the page only keeps room for the strip.
+@media (max-width: 1020px) {
+  body[data-agent-dock='open'] {
+    --agent-dock: #{$stripWidth};
+  }
+}
+
+.panel {
+  @include InterFont;
+  position: fixed;
+  top: $header-height;
+  right: 0;
+  bottom: 0;
+  width: $panelWidth;
+  z-index: 90; // over page content, under the sidebar (100) and popovers/modals
+  display: flex;
+  flex-direction: column;
+  background: $dark;
+  border-left: 1px solid $panelBorder;
+  color: $white;
+
+  @media (max-width: 1020px) {
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.45);
+  }
+
+  &.collapsed {
+    width: $stripWidth;
+    background: $mid-blue;
+    box-shadow: none;
+
+    .body {
+      display: none;
+    }
+
+    .strip {
+      display: flex;
+    }
+  }
+}
+
+// The draggable left edge: a few pixels wide straddling the border, lit on
+// hover/focus. Lives in .body, so it disappears with it when minimized.
+.resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  width: 8px;
+  z-index: 2;
+  cursor: col-resize;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3px;
+    width: 2px;
+    background: transparent;
+    transition: background 0.15s ease;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    background: #208aec;
+  }
+}
+
+.resizeSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  cursor: col-resize;
+}
+
+// Minimized state: a vertical strip, the mirror of the collapsed sidebar.
+.strip {
+  display: none;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  padding: 22px 0;
+  border: none;
+  background: transparent;
+  color: $light-blue;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.stripLabel {
+  writing-mode: vertical-rl;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+// An answer arrived while minimized.
+.badge {
+  display: none;
+  position: absolute;
+  top: 14px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $cta-green;
+}
+
+.strip.unread .badge {
+  display: block;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+// Same height and color as the page toolbar beside it, so the two read as one
+// band across the top.
+.head {
+  @include SoraFont;
+  flex: none;
+  height: $toolbar-height;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 16px;
+  background: $dark-grey;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.iconBtn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  // The first button after the title takes the free space, pushing the
+  // group to the right edge.
+  &.first {
+    margin-left: auto;
+  }
+}
+
+// The sidebar's collapse glyph, mirrored: this panel folds to the right.
+.minimize svg {
+  transform: scaleX(-1);
+}
+
+.chat {
+  flex: 1;
+  min-height: 0;
+}

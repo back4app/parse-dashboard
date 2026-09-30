@@ -16,6 +16,7 @@ import styles from 'components/Sidebar/B4aSidebar.scss';
 import Icon from 'components/Icon/Icon.react';
 import { isMobile } from 'lib/browserUtils';
 import B4aBadge from 'components/B4aBadge/B4aBadge.react';
+import { McpIcon } from 'dashboard/Data/AppOverview/connectIcons.react';
 import AppsMenu from 'components/Sidebar/AppsMenu.react';
 import AppName from 'components/Sidebar/AppName.react';
 import { CurrentApp } from 'context/currentApp';
@@ -308,7 +309,8 @@ const B4aSidebar = ({
             style,
             link,
             subsections,
-            badgeParams
+            badgeParams,
+            headerAction
           }) => {
             const active = name === section;
             const badge = badgeParams && <B4aBadge {...badgeParams} /> || ''
@@ -325,6 +327,7 @@ const B4aSidebar = ({
                 primaryBackgroundColor={primaryBackgroundColor}
                 secondaryBackgroundColor={secondaryBackgroundColor}
                 badge={badge}
+                headerAction={headerAction}
                 locked={!canAccess(currentApp.serverInfo, name)}
               >
                 {active ? _subMenu(subsections) : null}
@@ -349,10 +352,13 @@ const B4aSidebar = ({
             <a href={`${b4aSettings.CONTAINERS_DASHBOARD_PATH}/agents`} className={styles.aiToolItem}>
               <Icon name="b4a-agent" width={20} height={20} />
               <span>AI Agent</span>
+              {/* The containers agent predates the Backend Agent docked in the app. */}
+              <span className={styles.legacyBadge}>Legacy</span>
             </a>
           )}
           <a href={`${b4aSettings.BACK4APP_SITE_PATH}/docs/mcp`} target="_blank" rel="noopener noreferrer" className={styles.aiToolItem + ' ' + styles.mcp}>
-            <Icon name="b4a-mcp" width={20} height={20} />
+            {/* Official MCP mark, inline: the sprite's b4a-mcp loses its outline. */}
+            <McpIcon size={20} />
             <span>Model Context Protocol</span>
           </a>
         </div>
