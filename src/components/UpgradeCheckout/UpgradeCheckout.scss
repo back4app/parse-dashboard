@@ -192,6 +192,16 @@
   margin-top: 1.25rem;
 }
 
+.nextStep {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--uc-muted);
+
+  a {
+    color: $cta-green;
+  }
+}
+
 .error {
   padding: 1rem 0;
   color: var(--uc-text);

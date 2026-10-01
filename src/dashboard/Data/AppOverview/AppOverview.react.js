@@ -244,6 +244,12 @@ class AppOverview extends DashboardView {
     const showDatabaseVersion = (!isLoadingAppPlanData && !(appPlanData instanceof Error) && /Free/i.test(appPlanData.planName))
       || this.context.databaseVersion === '8.0';
     const webhost = this.state.webhosting?.hostSettings?.webhost;
+    const customDomain = (this.state.webhosting?.domains || [])[0];
+    const webUrl = customDomain || webhost;
+    // Same rule as the Domains paywall: the plan cannot get a Web URL and nothing is configured yet.
+    const webUrlLocked = !webUrl && this.state.webhosting?.canChangeSubdomain === false;
+    // MVP includes custom domains but not HTTPS on them; that starts on Pay As You Go.
+    const httpsLocked = !!customDomain && (this.state.appPlanData?.planName || '').indexOf('MVP') === 0;
     const database = [this.context.databaseType, showDatabaseVersion && this.context.databaseVersion].filter(Boolean).join(' ');
     return (
       <div className={styles.container}>
@@ -295,18 +301,28 @@ class AppOverview extends DashboardView {
                 {this.context.region}
               </AppFact>
               <AppFact
-                label="Web Hosting"
-                extra={this.state.isLoadingWebhosting ? null : (
+                label="Web URL"
+                extra={this.state.isLoadingWebhosting ? null : webUrlLocked ? (
+                  <UpgradeGateButton
+                    gate={UpgradeGate.OVERVIEW_WEB_HOSTING}
+                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Get a Web URL</a>}
+                  />
+                ) : httpsLocked ? (
+                  <UpgradeGateButton
+                    gate={UpgradeGate.HTTPS}
+                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable HTTPS</a>}
+                  />
+                ) : (
                   <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>
-                    {webhost ? (this.state.webhosting.domains.length > 0 ? 'Domain Settings' : 'Add custom domain') : 'Configure'}
+                    {!webUrl ? 'Get a Web URL' : customDomain ? 'Manage' : 'Use your domain'}
                   </Link>
                 )}
               >
                 {this.state.isLoadingWebhosting
                   ? <Icon name="status-spinner" width="16px" height="16px" fill="#1377B8" className={styles.spinnerStatus} />
-                  : webhost
-                    ? <a className={styles.webhostingLink} href={`https://${webhost}`} target="_blank" rel="noopener noreferrer">{webhost}</a>
-                    : <span className={styles.greyText}>Not configured</span>}
+                  : webUrl
+                    ? <a className={styles.webhostingLink} href={`${httpsLocked ? 'http' : 'https'}://${webUrl}`} target="_blank" rel="noopener noreferrer">{webUrl}</a>
+                    : <span className={styles.greyText}>Not set</span>}
               </AppFact>
             </div>
           </div>

@@ -13,6 +13,7 @@ import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';
 const ORIGIN = new Position(0, 0);
+const SUPPORT_TICKET_URL = 'https://help.back4app.com/hc/en-us/requests/new';
 
 // Follows the OS/browser light or dark preference. Read once: Paddle cannot switch theme after opening.
 const prefersDark = () =>
@@ -20,12 +21,19 @@ const prefersDark = () =>
 
 // What the user asked for when they hit the paywall, and the cheapest plan that unlocks it.
 const GATE_OFFERS = {
-  [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Put your app online with web hosting' },
-  [UpgradeGate.CUSTOM_DOMAIN]: { plan: 'MVP', headline: 'Use your own domain' },
+  [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Get a Web URL and use your own domain' },
+  [UpgradeGate.OVERVIEW_WEB_HOSTING]: { plan: 'MVP', headline: 'Get a Web URL and use your own domain' },
+  [UpgradeGate.CUSTOM_DOMAIN]: { plan: 'MVP', headline: 'Connect your own domain to your app' },
   [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Customize your app emails' },
   [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Unlock custom Parse Server options' },
   [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Invite collaborators to your app' },
   [UpgradeGate.MONGODB_8]: { plan: 'MVP', headline: 'Upgrade your database to MongoDB 8.0' },
+  // HTTPS on a custom domain is turned on by support after the upgrade.
+  [UpgradeGate.HTTPS]: {
+    plan: 'Pay As You Go',
+    headline: 'Serve your custom domain over HTTPS',
+    nextStep: 'Next, open a support ticket and our team will enable HTTPS on your domain.',
+  },
   [UpgradeGate.COMPLIANCE_SOC2]: { plan: 'Pay As You Go', headline: 'Run on SOC 2 certified infrastructure' },
   [UpgradeGate.COMPLIANCE_ISO27001]: { plan: 'Pay As You Go', headline: 'Run on ISO 27001 certified infrastructure' },
   [UpgradeGate.COMPLIANCE_HIPAA]: { plan: 'Dedicated', headline: 'Get HIPAA-ready infrastructure' },
@@ -174,7 +182,15 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
 
           {completed ? (
             <div className={styles.done}>
-              <div>You are on {plan.name} now.</div>
+              <div>
+                You are on {plan.name} now.
+                {offer.nextStep ? (
+                  <div className={styles.nextStep}>
+                    {offer.nextStep}{' '}
+                    <a href={SUPPORT_TICKET_URL} target="_blank" rel="noopener noreferrer">Open a ticket</a>
+                  </div>
+                ) : null}
+              </div>
               <Button primary={true} value="Done" onClick={close} />
             </div>
           ) : (

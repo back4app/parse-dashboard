@@ -18,7 +18,7 @@ jest.mock(
       {
         name: 'MVP', pricePerMonth: '25', pricePerYear: '15', savePercent: '40%',
         monthlyPlanId: 'mvp-m', annuallyPlanId: 'mvp-y', monthlyProductId: 'pri_mvp_m', annuallyProductId: 'pri_mvp_y',
-        details: [{ text: 'Custom domain & web hosting' }, { number: '500 K', text: 'Requests' }],
+        details: [{ text: 'Web URL & custom domain' }, { number: '500 K', text: 'Requests' }],
       },
       {
         name: 'Pay As You Go', pricePerMonth: '100', pricePerYear: '80', savePercent: '20%',
@@ -96,9 +96,9 @@ describe('UpgradeCheckoutModal', () => {
       { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'custom_domain' },
     ]);
     const text = textOf(tree);
-    expect(text).toContain('Use your own domain');
+    expect(text).toContain('Connect your own domain to your app');
     expect(text).toContain('Upgrade to ');
-    expect(text).toContain('Custom domain & web hosting');
+    expect(text).toContain('Web URL & custom domain');
   });
 
   it('switches the open checkout to the yearly price without reopening it', async () => {
@@ -164,6 +164,25 @@ describe('UpgradeCheckoutModal', () => {
 
     expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('dark');
     expect(tree.root.findAll(node => typeof node.props.className === 'string' && node.props.className.includes('dark')).length).toBeGreaterThan(0);
+  });
+
+  it('sells the Web URL on MVP from the Overview', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="overview_web_hosting" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
+    expect(textOf(tree)).toContain('Get a Web URL and use your own domain');
+  });
+
+  it('sells HTTPS on Pay As You Go and tells the buyer support turns it on', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="https" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_m');
+    expect(textOf(tree)).not.toContain('open a support ticket');
+
+    await renderer.act(async () => {
+      await paddleCallback({ name: 'checkout.completed', data: {} });
+    });
+    const text = textOf(tree);
+    expect(text).toContain('open a support ticket');
+    expect(tree.root.findByProps({ href: 'https://help.back4app.com/hc/en-us/requests/new' })).toBeTruthy();
   });
 
   it('offers the plan that actually unlocks each compliance badge', async () => {
