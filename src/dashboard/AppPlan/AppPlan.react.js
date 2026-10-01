@@ -37,7 +37,7 @@ const prices = [
     savePercent: '40%',
     details: [
       {
-        text: 'Custom domain & web hosting',
+        text: 'Web URL & custom domain',
       },
       {
         text: 'Daily Backups',
@@ -103,6 +103,9 @@ const prices = [
       },
       {
         text: 'Daily Backups',
+      },
+      {
+        text: 'HTTPS on your custom domain',
       },
       {
         text: 'SOC 2 and ISO 27001',

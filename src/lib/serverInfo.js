@@ -23,6 +23,7 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'security',
   'domain-settings',
   'Domain Settings',
+  'Domains',
   'Advanced Options',
   'advanced-options',
   'environment-variable',
@@ -41,6 +42,7 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'push/ios-settings',
   'server-url-live-query',
   'Server URL & Live Query',
+  'Real-time Updates',
 ];
 
 export const canAccess = (serverInfo, route) => {

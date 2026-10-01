@@ -32,7 +32,7 @@ class DomainSettings extends DashboardView {
   constructor() {
     super();
     this.section = 'App Settings';
-    this.subsection = 'Domain Settings';
+    this.subsection = 'Domains';
     this.state = {
       isLoading: true,
       domainSettings: {},
@@ -191,7 +191,7 @@ class DomainSettings extends DashboardView {
 
   renderToolbar() {
     return (
-      <Toolbar section="App Settings" subsection="Domain Settings">
+      <Toolbar section="App Settings" subsection="Domains">
         <a className={browserStyles.toolbarButton} style={{ margin: 0, border: 'none' }} onClick={this.onRefresh.bind(this)}>
           <Icon name="b4a-refresh-icon" width={18} height={18} />
         </a>
@@ -406,7 +406,7 @@ class DomainSettings extends DashboardView {
       !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentSubdomain.trim().length === 0 && this.state.customDomainArray.length === 0) {
       content = <Fieldset>
         <Field
-          label={<Label text="Upgrade your plan" dark={true} description="Please upgrade your plan to activate your web hosting." />}
+          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to get a Web URL for your pages and use your own domain." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
             <UpgradeGateButton gate={UpgradeGate.WEB_HOSTING} />
           </div>}
@@ -416,7 +416,7 @@ class DomainSettings extends DashboardView {
     } else if (this.state.isUserVerified) {
       content = <><Fieldset>
         <Field
-          label={<Label text="Activate Web Hosting" dark={true} description="Toggle to enable or disable web hosting for your app." />}
+          label={<Label text="Activate your Web URL" dark={true} description="Toggle to enable or disable the b4a.app Web URL for your pages." />}
           input={
             <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
               {this.state.canChangeSubdomain || this.state.currentSubdomain.trim().length > 0 ? (
@@ -610,8 +610,8 @@ class DomainSettings extends DashboardView {
 
     return (
       <div className={styles.domainSettingsContainer}>
-        <div className={styles.heading}>Web Hosting</div>
-        <div className={styles.subheading}>You can use this section to enable a subdomain to host your pages and create your own custom domain.</div>
+        <div className={styles.heading}>Domains</div>
+        <div className={styles.subheading}>Get a b4a.app Web URL for your pages and connect your own domain.</div>
         <div className={styles.formContainer}>
           {content}
         </div>
