@@ -270,7 +270,7 @@ class AppOverview extends DashboardView {
     const webhost = this.state.webhosting?.hostSettings?.webhost;
     const customDomain = (this.state.webhosting?.domains || [])[0];
     const webUrl = customDomain || webhost;
-    // Same rule as the Domains paywall: the plan cannot get a Web URL and nothing is configured yet.
+    // Same rule as the Domains paywall: the plan cannot use web hosting and nothing is configured yet.
     const webUrlLocked = !webUrl && this.state.webhosting?.canChangeSubdomain === false;
     // MVP includes custom domains but not HTTPS on them; that starts on Pay As You Go.
     const httpsLocked = !!customDomain && (this.state.appPlanData?.planName || '').indexOf('MVP') === 0;
@@ -328,11 +328,11 @@ class AppOverview extends DashboardView {
                 {this.context.region}
               </AppFact>
               <AppFact
-                label="Web URL"
+                label="Web Hosting"
                 extra={this.state.isLoadingWebhosting ? null : webUrlLocked ? (
                   <UpgradeGateButton
                     gate={UpgradeGate.OVERVIEW_WEB_HOSTING}
-                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Get a Web URL</a>}
+                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable web hosting</a>}
                   />
                 ) : httpsLocked ? (
                   <UpgradeGateButton
@@ -341,7 +341,7 @@ class AppOverview extends DashboardView {
                   />
                 ) : (
                   <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>
-                    {!webUrl ? 'Get a Web URL' : customDomain ? 'Manage' : 'Use your domain'}
+                    {!webUrl ? 'Enable web hosting' : customDomain ? 'Manage' : 'Use your domain'}
                   </Link>
                 )}
               >

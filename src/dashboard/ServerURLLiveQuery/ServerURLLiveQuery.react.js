@@ -39,7 +39,7 @@ class ServerURLLiveQuery extends DashboardView {
   constructor() {
     super();
     this.section = 'App Settings';
-    this.subsection = 'Real-time Updates';
+    this.subsection = 'Real-time (Live Query)';
     this.state = {
       isLoading: true,
       loadingError: null,
@@ -312,7 +312,7 @@ class ServerURLLiveQuery extends DashboardView {
     return (
       <div className={styles.formWrapper}>
         <div className={styles.settingsContainer}>
-          <div className={styles.heading}>Real-time Updates (LiveQuery)</div>
+          <div className={styles.heading}>Real-time (Live Query)</div>
           <div className={styles.subheading}>
             In this section, you can enable a custom Server URL that can be used for real-time database.
           </div>
@@ -384,7 +384,7 @@ class ServerURLLiveQuery extends DashboardView {
 
   renderToolbar() {
     return (
-      <Toolbar section="App Settings" subsection="Real-time Updates" />
+      <Toolbar section="App Settings" subsection="Real-time (Live Query)" />
     );
   }
 
@@ -421,7 +421,7 @@ class ServerURLLiveQuery extends DashboardView {
     return (
       <div className={styles.formWrapper}>
         <div className={styles.settingsContainer}>
-          <div className={styles.heading}>Real-time Updates (LiveQuery)</div>
+          <div className={styles.heading}>Real-time (Live Query)</div>
           <div className={styles.subheading}>
             In this section, you can enable a custom Server URL that can be used for real-time database.
           </div>

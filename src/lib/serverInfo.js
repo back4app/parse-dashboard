@@ -42,7 +42,7 @@ export const ALWAYS_ALLOWED_ROUTES = [
   'push/ios-settings',
   'server-url-live-query',
   'Server URL & Live Query',
-  'Real-time Updates',
+  'Real-time (Live Query)',
 ];
 
 export const canAccess = (serverInfo, route) => {

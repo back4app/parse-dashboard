@@ -406,7 +406,7 @@ class DomainSettings extends DashboardView {
       !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentSubdomain.trim().length === 0 && this.state.customDomainArray.length === 0) {
       content = <Fieldset>
         <Field
-          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to get a Web URL for your pages and use your own domain." />}
+          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to enable web hosting for your pages and use your own domain." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
             <UpgradeGateButton gate={UpgradeGate.WEB_HOSTING} />
           </div>}
@@ -416,7 +416,7 @@ class DomainSettings extends DashboardView {
     } else if (this.state.isUserVerified) {
       content = <><Fieldset>
         <Field
-          label={<Label text="Activate your Web URL" dark={true} description="Toggle to enable or disable the b4a.app Web URL for your pages." />}
+          label={<Label text="Activate Web Hosting" dark={true} description="Toggle to enable or disable web hosting on your b4a.app subdomain." />}
           input={
             <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
               {this.state.canChangeSubdomain || this.state.currentSubdomain.trim().length > 0 ? (
@@ -611,7 +611,7 @@ class DomainSettings extends DashboardView {
     return (
       <div className={styles.domainSettingsContainer}>
         <div className={styles.heading}>Domains</div>
-        <div className={styles.subheading}>Get a b4a.app Web URL for your pages and connect your own domain.</div>
+        <div className={styles.subheading}>Host your pages on a b4a.app subdomain and connect your own domain.</div>
         <div className={styles.formContainer}>
           {content}
         </div>

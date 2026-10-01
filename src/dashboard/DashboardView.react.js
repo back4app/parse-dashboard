@@ -274,7 +274,7 @@ export default class DashboardView extends React.Component {
     });
 
     settingsSections.push({
-      name: 'Real-time Updates',
+      name: 'Real-time (Live Query)',
       link: '/server-url-live-query',
     });
 

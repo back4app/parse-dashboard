@@ -37,7 +37,7 @@ const prices = [
     savePercent: '40%',
     details: [
       {
-        text: 'Web URL & custom domain',
+        text: 'Web hosting & custom domain',
       },
       {
         text: 'Daily Backups',
@@ -456,7 +456,7 @@ class AppPlan extends DashboardView {
                 <div className={styles.upgradeFeaturesTitle}>WHAT YOU GET:</div>
                 <div className={styles.upgradeFeaturesList}>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>MVP:</span> Web URL & custom domain, daily backups, latest MongoDB, email templates and collaborators
+                    <span className={styles.planName}>MVP:</span> Web hosting & custom domain, daily backups, latest MongoDB, email templates and collaborators
                   </div>
                   <div className={styles.upgradeFeature}>
                     <span className={styles.planName}>Pay-as-you-Go:</span> SOC 2 and ISO 27001-certified infrastructure

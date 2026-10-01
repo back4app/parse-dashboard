@@ -18,7 +18,7 @@ jest.mock(
       {
         name: 'MVP', pricePerMonth: '25', pricePerYear: '15', savePercent: '40%',
         monthlyPlanId: 'mvp-m', annuallyPlanId: 'mvp-y', monthlyProductId: 'pri_mvp_m', annuallyProductId: 'pri_mvp_y',
-        details: [{ text: 'Web URL & custom domain' }, { number: '500 K', text: 'Requests' }],
+        details: [{ text: 'Web hosting & custom domain' }, { number: '500 K', text: 'Requests' }],
       },
       {
         name: 'Pay As You Go', pricePerMonth: '100', pricePerYear: '80', savePercent: '20%',
@@ -98,7 +98,7 @@ describe('UpgradeCheckoutModal', () => {
     const text = textOf(tree);
     expect(text).toContain('Put your API and pages on your own domain');
     expect(text).toContain('Upgrade to ');
-    expect(text).toContain('Web URL & custom domain');
+    expect(text).toContain('Web hosting & custom domain');
   });
 
   it('switches the open checkout to the yearly price without reopening it', async () => {
@@ -166,10 +166,10 @@ describe('UpgradeCheckoutModal', () => {
     expect(tree.root.findAll(node => typeof node.props.className === 'string' && node.props.className.includes('dark')).length).toBeGreaterThan(0);
   });
 
-  it('sells the Web URL on MVP from the Overview', async () => {
+  it('sells web hosting on MVP from the Overview', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="overview_web_hosting" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
-    expect(textOf(tree)).toContain('Get a Web URL and use your own domain');
+    expect(textOf(tree)).toContain('Host your pages and use your own domain');
   });
 
   it('sells HTTPS on Pay As You Go and tells the buyer support turns it on', async () => {
