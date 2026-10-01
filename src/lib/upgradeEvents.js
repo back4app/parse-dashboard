@@ -24,6 +24,7 @@ export const UpgradeGate = {
   MONGODB_8: 'mongodb_8',
   DB_PROFILER: 'db_profiler',
   OVERVIEW_PLAN_CARD: 'overview_plan_card',
+  OVERVIEW_PLAN_BADGE: 'overview_plan_badge',
   OVERVIEW_WEB_HOSTING: 'overview_web_hosting',
   HTTPS: 'https',
   COMPLIANCE_HIPAA: 'compliance_hipaa',

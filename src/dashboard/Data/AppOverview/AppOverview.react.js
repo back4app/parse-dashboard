@@ -51,6 +51,30 @@ const CopyValue = ({ value }) => {
 // One column of the facts row: small label, the value, and an optional action
 // or note under it.
 // A missing value shows as a dash rather than an empty column.
+// The app's plan next to its name. Free opens the MVP checkout; other plans open Plan Usage.
+const PlanBadge = ({ planData, slug }) => {
+  if (!planData || planData instanceof Error || !planData.planName) {
+    return null;
+  }
+  const name = planData.planName.replace(/ Plan$/, '');
+  if (/paused/i.test(name)) {
+    return <Link className={styles.appPlanBadge} to={`/apps/${slug}/plan-usage`}>Paused</Link>;
+  }
+  if (/^free/i.test(name)) {
+    return (
+      <UpgradeGateButton
+        gate={UpgradeGate.OVERVIEW_PLAN_BADGE}
+        renderTrigger={open => (
+          <a className={styles.appPlanBadge} href="#" onClick={open}>
+            Free · <span className={styles.appPlanBadgeAction}>Upgrade</span>
+          </a>
+        )}
+      />
+    );
+  }
+  return <Link className={`${styles.appPlanBadge} ${styles.appPlanBadgePaid}`} to={`/apps/${slug}/plan-usage`}>{name}</Link>;
+};
+
 const AppFact = ({ label, children, extra, copy }) => (
   <div className={styles.appFact}>
     <div className={styles.appFactLabel}>{label}</div>
@@ -264,7 +288,10 @@ class AppOverview extends DashboardView {
           <div className={styles.appSummary}>
             <div className={styles.appSummaryHead}>
               <div className={styles.appSummaryTitle}>
-                <div className={styles.appSummaryName}>{this.context.name}</div>
+                <div className={styles.appSummaryNameRow}>
+                  <div className={styles.appSummaryName}>{this.context.name}</div>
+                  <PlanBadge planData={this.state.appPlanData} slug={this.context.slug} />
+                </div>
                 <div className={styles.appSummaryId}>
                   <span className={styles.greyText}>App ID</span>
                   <code>{this.context.applicationId}</code>

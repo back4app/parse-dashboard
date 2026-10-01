@@ -4,6 +4,7 @@ import { Button } from '@back4app2/react-components';
 import Icon from 'components/Icon/Icon.react';
 import { Link } from 'react-router-dom';
 import { UpgradeGate, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 
 const formatDate = (dateString) => {
   try {
@@ -19,6 +20,9 @@ const formatDate = (dateString) => {
 }
 
 const AppPlanCard = ({ loading, planData, appSlug, appId }) => {
+  // Free has a single next step (MVP), so its button opens that checkout directly.
+  // Paid plans still go to the plan page to compare the next tier.
+  const isFree = !loading && planData && !(planData instanceof Error) && /Free/i.test(planData.planName || '');
   let content = null;
   if (loading) {
     content =  <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
@@ -47,9 +51,20 @@ const AppPlanCard = ({ loading, planData, appSlug, appId }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <Link to={planUsagePath(appSlug, UpgradeGate.OVERVIEW_PLAN_CARD)} onClick={() => logGateClicked(UpgradeGate.OVERVIEW_PLAN_CARD, appId)}>
-          <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
-        </Link>
+        {isFree ? (
+          <UpgradeGateButton
+            gate={UpgradeGate.OVERVIEW_PLAN_CARD}
+            renderTrigger={open => (
+              <a href="#" onClick={open}>
+                <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
+              </a>
+            )}
+          />
+        ) : (
+          <Link to={planUsagePath(appSlug, UpgradeGate.OVERVIEW_PLAN_CARD)} onClick={() => logGateClicked(UpgradeGate.OVERVIEW_PLAN_CARD, appId)}>
+            <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
+          </Link>
+        )}
       </div>
       <div className={styles.planDataBox}>
         {content}

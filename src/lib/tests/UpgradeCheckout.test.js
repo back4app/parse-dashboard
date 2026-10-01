@@ -185,6 +185,15 @@ describe('UpgradeCheckoutModal', () => {
     expect(tree.root.findByProps({ href: 'https://help.back4app.com/hc/en-us/requests/new' })).toBeTruthy();
   });
 
+  it('sells MVP as a whole from the generic Overview upgrade buttons', async () => {
+    for (const gate of ['overview_plan_card', 'overview_plan_badge']) {
+      paddle.Checkout.open.mockClear();
+      const tree = await mount(<UpgradeCheckoutModal gate={gate} onClose={() => {}} />);
+      expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
+      expect(textOf(tree)).toContain('Take this app to production');
+    }
+  });
+
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_m');

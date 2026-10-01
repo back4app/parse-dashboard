@@ -19,6 +19,12 @@ const SUPPORT_TICKET_URL = 'https://help.back4app.com/hc/en-us/requests/new';
 const prefersDark = () =>
   typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+const MVP_AS_A_WHOLE = {
+  plan: 'MVP',
+  headline: 'Take this app to production',
+  subline: 'Web URL and your own domain, daily backups, the latest MongoDB and your team in the app.',
+};
+
 // What the user asked for when they hit the paywall, and the cheapest plan that unlocks it.
 const GATE_OFFERS = {
   [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Get a Web URL and use your own domain' },
@@ -27,6 +33,9 @@ const GATE_OFFERS = {
   [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Send emails with your brand and words' },
   [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Tune your Parse Server' },
   [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Bring your team into this app' },
+  // The overview's generic upgrade entry points: no single feature asked for, so they sell MVP as a whole.
+  [UpgradeGate.OVERVIEW_PLAN_CARD]: MVP_AS_A_WHOLE,
+  [UpgradeGate.OVERVIEW_PLAN_BADGE]: MVP_AS_A_WHOLE,
   [UpgradeGate.MONGODB_8]: {
     plan: 'MVP',
     headline: 'Get the latest MongoDB',
