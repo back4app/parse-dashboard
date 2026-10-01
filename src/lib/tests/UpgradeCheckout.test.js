@@ -6,16 +6,9 @@ jest.mock('../paddleCheckout', () => {
   return { ...actual, initPaddle: jest.fn(), recordSubscription: jest.fn(() => Promise.resolve()) };
 });
 jest.mock('../../components/Icon/Icon.react', () => ({ __esModule: true, default: () => null }));
-jest.mock('../../components/B4aModal/B4aModal.react', () => {
+jest.mock('../../components/Popover/Popover.react', () => {
   const React = require('react');
-  const B4aModal = ({ children, onCancel }) => (
-    <div>
-      <button id="modal-close" onClick={onCancel} />
-      {children}
-    </div>
-  );
-  B4aModal.Types = { DEFAULT: 'default' };
-  return { __esModule: true, default: B4aModal };
+  return { __esModule: true, default: ({ children }) => <div>{children}</div> };
 });
 jest.mock('context/currentApp', () => ({ CurrentApp: require('react').createContext(null) }), { virtual: true });
 jest.mock(
@@ -130,7 +123,7 @@ describe('UpgradeCheckoutModal', () => {
     const onClose = jest.fn();
     const tree = await mount(<UpgradeCheckoutModal gate="email_templates" onClose={onClose} />);
 
-    renderer.act(() => tree.root.findByProps({ id: 'modal-close' }).props.onClick());
+    renderer.act(() => tree.root.findByProps({ 'aria-label': 'Close' }).props.onClick());
 
     expect(loggedEvents('baas_checkout_closed')).toEqual([
       { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'email_templates' },
@@ -153,11 +146,24 @@ describe('UpgradeCheckoutModal', () => {
     // Tests run in the node environment, so stub the window the component reloads.
     const reload = jest.fn();
     global.window = { location: { reload } };
-    renderer.act(() => tree.root.findByProps({ id: 'modal-close' }).props.onClick());
+    renderer.act(() => tree.root.findByProps({ 'aria-label': 'Close' }).props.onClick());
     delete global.window;
 
     expect(reload).toHaveBeenCalled();
     expect(loggedEvents('baas_checkout_closed')).toEqual([]);
+  });
+
+  it('follows the light or dark preference, including the Paddle frame', async () => {
+    await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('light');
+
+    paddle.Checkout.open.mockClear();
+    global.window = { matchMedia: query => ({ matches: query === '(prefers-color-scheme: dark)' }) };
+    const tree = await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    delete global.window;
+
+    expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('dark');
+    expect(tree.root.findAll(node => typeof node.props.className === 'string' && node.props.className.includes('dark')).length).toBeGreaterThan(0);
   });
 
   it('offers the plan that actually unlocks each compliance badge', async () => {

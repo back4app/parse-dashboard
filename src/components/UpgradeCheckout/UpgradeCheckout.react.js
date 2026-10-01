@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import B4aModal from 'components/B4aModal/B4aModal.react';
+import Popover from 'components/Popover/Popover.react';
+import Position from 'lib/Position';
 import Button from 'components/Button/Button.react';
 import Icon from 'components/Icon/Icon.react';
 import AccountManager from 'lib/AccountManager';
@@ -11,6 +12,11 @@ import { prices } from 'dashboard/AppPlan/AppPlan.react';
 import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';
+const ORIGIN = new Position(0, 0);
+
+// Follows the OS/browser light or dark preference. Read once: Paddle cannot switch theme after opening.
+const prefersDark = () =>
+  typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 // What the user asked for when they hit the paywall, and the cheapest plan that unlocks it.
 const GATE_OFFERS = {
@@ -49,6 +55,7 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
   const offer = GATE_OFFERS[gate];
   const plan = prices.find(p => p.name === offer.plan);
 
+  const [dark] = useState(prefersDark);
   const [cycle, setCycle] = useState(Cycle.MONTHLY);
   const [paddle, setPaddle] = useState(null);
   const [ownerEmail, setOwnerEmail] = useState(null);
@@ -82,12 +89,12 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
       items: [{ priceId: paddlePriceId(plan, cycle), quantity: 1 }],
       settings: {
         displayMode: 'inline',
-        theme: 'light',
+        theme: dark ? 'dark' : 'light',
         locale: 'en',
         variant: 'one-page',
         frameTarget: CHECKOUT_FRAME_CLASS,
         frameInitialHeight: '450',
-        frameStyle: 'width: 100%; min-width: 312px; background-color: #f9f9f9; border: none;',
+        frameStyle: 'width: 100%; min-width: 312px; background-color: transparent; border: none;',
       },
       customData: { appId: context.applicationId, planId: paddlePlanId(plan, cycle) },
       allowLogout: false,
@@ -126,8 +133,11 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
   const price = priceSummary(plan, cycle);
 
   return (
-    <B4aModal type={B4aModal.Types.DEFAULT} width="80vw" customFooter={<div></div>} onCancel={close}>
-      <div className={styles.checkout}>
+    <Popover fadeIn={true} fixed={true} position={ORIGIN} modal={true} color="rgba(17,13,17,0.8)">
+      <div className={[styles.checkout, dark ? styles.dark : styles.light].join(' ')}>
+        <button className={styles.close} onClick={close} aria-label="Close">
+          <Icon name="close" width={12} height={12} fill={dark ? '#C3CAD6' : '#4A5568'} />
+        </button>
         <div className={styles.summary}>
           <div className={styles.eyebrow}>Upgrade to {plan.name}</div>
           <div className={styles.headline}>{offer.headline}</div>
@@ -180,7 +190,7 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
           <div className={CHECKOUT_FRAME_CLASS} ref={setFrame}></div>
         </div>
       </div>
-    </B4aModal>
+    </Popover>
   );
 };
 
