@@ -37,6 +37,22 @@ const prices = [
     savePercent: '40%',
     details: [
       {
+        text: 'Custom domain & web hosting',
+      },
+      {
+        text: 'Daily Backups',
+      },
+      {
+        text: 'MongoDB 8.0',
+      },
+      {
+        text: 'Custom email templates',
+      },
+      {
+        number: 'Up to 3',
+        text: 'collaborators',
+      },
+      {
         number: '500 K',
         text: 'Requests',
       },
@@ -52,12 +68,9 @@ const prices = [
         number: '50 GB',
         text: 'File Storage',
       },
-      {
-        text: 'Daily Backups',
-      },
     ],
     icon: 'b4a-mvp-plan-icon',
-    greenText: '20x more requests'
+    greenText: 'Go live with your own domain'
   },
   {
     id: 1,
@@ -434,13 +447,13 @@ class AppPlan extends DashboardView {
               <div className={styles.upgradeCardHeader}>
                 <div className={styles.upgradeCardTitle}>Ready to Scale?</div>
               </div>
-              <div className={styles.upgradeCardSubText}>Upgrade for Backups, Resilience & Compliance</div>
+              <div className={styles.upgradeCardSubText}>Go live with your own domain, backups and a modern database</div>
 
               <div className={styles.upgradeFeatures}>
                 <div className={styles.upgradeFeaturesTitle}>WHAT YOU GET:</div>
                 <div className={styles.upgradeFeaturesList}>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>MVP:</span> Daily automated backups
+                    <span className={styles.planName}>MVP:</span> Custom domain, daily backups, MongoDB 8.0, email templates and collaborators
                   </div>
                   <div className={styles.upgradeFeature}>
                     <span className={styles.planName}>Pay-as-you-Go:</span> SOC 2 and ISO 27001-certified infrastructure
