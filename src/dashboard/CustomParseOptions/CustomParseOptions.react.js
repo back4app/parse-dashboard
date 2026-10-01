@@ -28,8 +28,8 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import Icon from 'components/Icon/Icon.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import B4aCodeEditor from 'components/CodeEditor/B4aCodeEditor.react';
-import { Link } from 'react-router-dom';
-import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 
 import deepmerge from 'deepmerge';
 import renderFlowFooterChanges from 'lib/renderFlowFooterChanges';
@@ -463,13 +463,7 @@ class CustomParseOptions extends DashboardView {
                 }
                 input={
                   <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-                    <Link to={planUsagePath(this.context.slug, UpgradeGate.PARSE_OPTIONS)} onClick={() => logGateClicked(UpgradeGate.PARSE_OPTIONS, this.context.applicationId)}>
-                      <UpgradeGateView gate={UpgradeGate.PARSE_OPTIONS} appId={this.context.applicationId} />
-                      <Button
-                        value='Upgrade Plan'
-                        primary={true}
-                      />
-                    </Link>
+                    <UpgradeGateButton gate={UpgradeGate.PARSE_OPTIONS} />
                   </div>
                 }
                 theme={Field.Theme.BLUE}

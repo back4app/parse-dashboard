@@ -15,10 +15,10 @@ import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import joinWithFinal from 'lib/joinWithFinal';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
-import { Link } from 'react-router-dom';
 import validateEmailFormat from 'lib/validateEmailFormat';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 
 const DEFAULT_VERIFICATION_BODY =
   'Hi,\n\n' +
@@ -471,13 +471,7 @@ class EmailVerification extends DashboardView {
                     }
                     input={
                       <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-                        <Link to={planUsagePath(this.context.slug, UpgradeGate.EMAIL_TEMPLATES)} onClick={() => logGateClicked(UpgradeGate.EMAIL_TEMPLATES, this.context.applicationId)}>
-                          <UpgradeGateView gate={UpgradeGate.EMAIL_TEMPLATES} appId={this.context.applicationId} />
-                          <Button
-                            value="Upgrade Plan"
-                            primary={true}
-                          />
-                        </Link>
+                        <UpgradeGateButton gate={UpgradeGate.EMAIL_TEMPLATES} />
                       </div>
                     }
                     theme={Field.Theme.BLUE}

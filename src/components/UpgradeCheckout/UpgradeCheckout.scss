@@ -1,0 +1,123 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+.checkout {
+  display: flex;
+  flex-wrap: wrap;
+  max-height: 80vh;
+  overflow: auto;
+  text-align: left;
+}
+
+.summary {
+  @include InterFont;
+  flex: 1 1 320px;
+  padding: 1.5rem 2rem;
+  background: $dark-blue;
+  color: $white;
+  border-radius: 4px 0 0 4px;
+}
+
+.payment {
+  flex: 1 1 360px;
+  padding: 1rem;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.headline {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.price {
+  margin-top: 1.25rem;
+}
+
+.priceValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.priceUnit {
+  margin-left: 0.25rem;
+  opacity: 0.7;
+}
+
+.priceNote {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.cycles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.cycle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.save {
+  color: $green;
+  font-weight: 600;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.875rem;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 600;
+}
+
+.comparePlans {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: $white;
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.error {
+  padding: 1rem;
+  color: $dark-blue;
+}

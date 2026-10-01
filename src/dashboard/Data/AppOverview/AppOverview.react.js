@@ -20,7 +20,8 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
 import { Link } from 'react-router-dom';
@@ -276,7 +277,12 @@ class AppOverview extends DashboardView {
                 extra={this.context.isMongoUpgradeAvailable && showDatabaseVersion ? (
                   // One button like the other facts' actions; the explanation
                   // moves to its tooltip so the column stays one line tall.
-                  <a className={styles.changeRegionLink} title="MongoDB 8.0 is available when you upgrade your plan" onClick={() => { amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button'); logGateClicked(UpgradeGate.MONGODB_8, this.context.applicationId); }} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer"><UpgradeGateView gate={UpgradeGate.MONGODB_8} appId={this.context.applicationId} />Upgrade to 8.0</a>
+                  <UpgradeGateButton
+                    gate={UpgradeGate.MONGODB_8}
+                    renderTrigger={open => (
+                      <a className={styles.changeRegionLink} title="MongoDB 8.0 is available when you upgrade your plan" href="#" onClick={event => { amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button'); open(event); }}>Upgrade to 8.0</a>
+                    )}
+                  />
                 ) : null}
               >
                 {database}

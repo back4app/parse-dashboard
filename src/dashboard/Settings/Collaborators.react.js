@@ -22,6 +22,7 @@ import TextInput from 'components/TextInput/TextInput.react';
 import validateEmailFormat from 'lib/validateEmailFormat';
 import { CurrentApp } from 'context/currentApp';
 import { UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import styles from 'dashboard/Settings/GeneralSettings.scss';
 
 import buttonStyles from 'components/Button/Button.scss';
@@ -387,15 +388,10 @@ export default class Collaborators extends React.Component {
         input={
           <div style={{ width: '100%', padding: '0 1rem' }}>
             {maxCollaborators === 0 || maxCollaborators === null  || maxCollaborators === false ? (
-              <a
-                href="https://www.back4app.com/pricing/backend-as-a-service"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => logGateClicked(UpgradeGate.COLLABORATORS, this.context.applicationId)}
-              >
-                <UpgradeGateView gate={UpgradeGate.COLLABORATORS} appId={this.context.applicationId} />
-                Upgrade Plan
-              </a>
+              <UpgradeGateButton
+                gate={UpgradeGate.COLLABORATORS}
+                renderTrigger={open => <a href="#" onClick={open}>Upgrade Plan</a>}
+              />
             ) : maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
               <a
                 href="https://www.back4app.com/pricing/backend-as-a-service"
