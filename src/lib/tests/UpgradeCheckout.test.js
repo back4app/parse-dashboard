@@ -96,7 +96,7 @@ describe('UpgradeCheckoutModal', () => {
       { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'custom_domain' },
     ]);
     const text = textOf(tree);
-    expect(text).toContain('Connect your own domain to your app');
+    expect(text).toContain('Put your API and pages on your own domain');
     expect(text).toContain('Upgrade to ');
     expect(text).toContain('Web URL & custom domain');
   });
@@ -204,7 +204,7 @@ describe('UpgradeGateButton', () => {
 
   it('logs the paywall view, then the click, and opens the checkout in place', async () => {
     const tree = await mount(
-      <UpgradeGateButton gate="mongodb_8" renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade to 8.0</a>} />
+      <UpgradeGateButton gate="mongodb_8" renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade database</a>} />
     );
     expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'mongodb_8', app_id: 'app-1' }]);
     expect(initPaddle).not.toHaveBeenCalled();
@@ -217,6 +217,7 @@ describe('UpgradeGateButton', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(loggedEvents('baas_upgrade_gate_clicked')).toEqual([{ gate: 'mongodb_8', app_id: 'app-1' }]);
     expect(initPaddle).toHaveBeenCalledTimes(1);
-    expect(textOf(tree)).toContain('Upgrade your database to MongoDB 8.0');
+    expect(textOf(tree)).toContain('Get the latest MongoDB');
+    expect(textOf(tree)).toContain('Faster queries and the newest MongoDB features.');
   });
 });

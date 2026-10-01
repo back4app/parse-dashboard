@@ -23,20 +23,25 @@ const prefersDark = () =>
 const GATE_OFFERS = {
   [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Get a Web URL and use your own domain' },
   [UpgradeGate.OVERVIEW_WEB_HOSTING]: { plan: 'MVP', headline: 'Get a Web URL and use your own domain' },
-  [UpgradeGate.CUSTOM_DOMAIN]: { plan: 'MVP', headline: 'Connect your own domain to your app' },
-  [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Customize your app emails' },
-  [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Unlock custom Parse Server options' },
-  [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Invite collaborators to your app' },
-  [UpgradeGate.MONGODB_8]: { plan: 'MVP', headline: 'Upgrade your database to MongoDB 8.0' },
+  [UpgradeGate.CUSTOM_DOMAIN]: { plan: 'MVP', headline: 'Put your API and pages on your own domain' },
+  [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Send emails with your brand and words' },
+  [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Tune your Parse Server' },
+  [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Bring your team into this app' },
+  [UpgradeGate.MONGODB_8]: {
+    plan: 'MVP',
+    headline: 'Get the latest MongoDB',
+    subline: 'Faster queries and the newest MongoDB features.',
+  },
   // HTTPS on a custom domain is turned on by support after the upgrade.
   [UpgradeGate.HTTPS]: {
     plan: 'Pay As You Go',
     headline: 'Serve your custom domain over HTTPS',
+    subline: 'Your domain is on HTTP, so browsers mark it "Not secure".',
     nextStep: 'Next, open a support ticket and our team will enable HTTPS on your domain.',
   },
-  [UpgradeGate.COMPLIANCE_SOC2]: { plan: 'Pay As You Go', headline: 'Run on SOC 2 certified infrastructure' },
-  [UpgradeGate.COMPLIANCE_ISO27001]: { plan: 'Pay As You Go', headline: 'Run on ISO 27001 certified infrastructure' },
-  [UpgradeGate.COMPLIANCE_HIPAA]: { plan: 'Dedicated', headline: 'Get HIPAA-ready infrastructure' },
+  [UpgradeGate.COMPLIANCE_SOC2]: { plan: 'Pay As You Go', headline: 'Pass your customer\'s security review', subline: 'SOC 2 Type 2 certified infrastructure.' },
+  [UpgradeGate.COMPLIANCE_ISO27001]: { plan: 'Pay As You Go', headline: 'Pass your customer\'s security review', subline: 'ISO 27001 certified infrastructure.' },
+  [UpgradeGate.COMPLIANCE_HIPAA]: { plan: 'Dedicated', headline: 'Pass your customer\'s security review', subline: 'HIPAA-ready infrastructure, after a signed BAA.' },
 };
 
 const detailText = detail => [detail.number, detail.text].filter(Boolean).join(' ');
@@ -149,6 +154,7 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
         <div className={styles.summary}>
           <div className={styles.eyebrow}>Upgrade to {plan.name}</div>
           <div className={styles.headline}>{offer.headline}</div>
+          {offer.subline ? <div className={styles.subline}>{offer.subline}</div> : null}
           <div className={styles.price}>
             <span className={styles.priceValue}>${price.perMonth}</span>
             <span className={styles.priceUnit}>/month</span>

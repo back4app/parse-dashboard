@@ -286,7 +286,7 @@ class AppOverview extends DashboardView {
                   <UpgradeGateButton
                     gate={UpgradeGate.MONGODB_8}
                     renderTrigger={open => (
-                      <a className={styles.changeRegionLink} title="MongoDB 8.0 is available when you upgrade your plan" href="#" onClick={event => { amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button'); open(event); }}>Upgrade to 8.0</a>
+                      <a className={styles.changeRegionLink} title="The latest MongoDB is available on paid plans" href="#" onClick={event => { amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button'); open(event); }}>Upgrade database</a>
                     )}
                   />
                 ) : null}
