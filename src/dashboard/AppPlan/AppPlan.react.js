@@ -155,7 +155,7 @@ class AppPlan extends DashboardView {
       appPlanName: 'Free Plan',
       appPlanError: null,
       selectedPlan: prices[1],
-      billingCycle: 0, // 0 --> monthly || 1 --> yearly
+      billingCycle: 1, // 0 --> monthly || 1 --> yearly
       isLoadingPaddle: false,
       paddleError: null,
       paddle: null,
@@ -342,7 +342,7 @@ class AppPlan extends DashboardView {
       const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
       this.state.paddle?.Checkout.open({
         items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
-        title: plan.planName,
+        title: plan.name,
         settings: {
           displayMode: 'inline',
           theme: 'light',
