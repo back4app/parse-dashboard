@@ -21,6 +21,7 @@ import React from 'react';
 import TextInput from 'components/TextInput/TextInput.react';
 import validateEmailFormat from 'lib/validateEmailFormat';
 import { CurrentApp } from 'context/currentApp';
+import { UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
 import styles from 'dashboard/Settings/GeneralSettings.scss';
 
 import buttonStyles from 'components/Button/Button.scss';
@@ -390,7 +391,9 @@ export default class Collaborators extends React.Component {
                 href="https://www.back4app.com/pricing/backend-as-a-service"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => logGateClicked(UpgradeGate.COLLABORATORS, this.context.applicationId)}
               >
+                <UpgradeGateView gate={UpgradeGate.COLLABORATORS} appId={this.context.applicationId} />
                 Upgrade Plan
               </a>
             ) : maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
@@ -398,7 +401,9 @@ export default class Collaborators extends React.Component {
                 href="https://www.back4app.com/pricing/backend-as-a-service"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => logGateClicked(UpgradeGate.COLLABORATORS, this.context.applicationId)}
               >
+                <UpgradeGateView gate={UpgradeGate.COLLABORATORS} appId={this.context.applicationId} />
                 Add More Spots
               </a>
             ) : (
@@ -527,7 +532,8 @@ export default class Collaborators extends React.Component {
                 </strong>{' '}
                 Need more?{' '}
                 <strong>
-                  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.back4app.com/pricing/backend-as-a-service" target="_blank" rel="noopener noreferrer" onClick={() => logGateClicked(UpgradeGate.COLLABORATORS, this.context.applicationId)}>
+                    <UpgradeGateView gate={UpgradeGate.COLLABORATORS} appId={this.context.applicationId} />
                     Add More Spots
                   </a>
                 </strong>

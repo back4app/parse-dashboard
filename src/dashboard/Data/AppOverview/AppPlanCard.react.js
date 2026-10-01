@@ -3,6 +3,7 @@ import styles from 'dashboard/Data/AppOverview/AppOverview.scss';
 import { Button } from '@back4app2/react-components';
 import Icon from 'components/Icon/Icon.react';
 import { Link } from 'react-router-dom';
+import { UpgradeGate, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
 
 const formatDate = (dateString) => {
   try {
@@ -17,7 +18,7 @@ const formatDate = (dateString) => {
   }
 }
 
-const AppPlanCard = ({ loading, planData, appSlug }) => {
+const AppPlanCard = ({ loading, planData, appSlug, appId }) => {
   let content = null;
   if (loading) {
     content =  <div className={styles.loading}><Icon name="status-spinner" width="24px" height="24px" fill="#1377B8" className={styles.spinnerStatus} /></div>;
@@ -46,7 +47,7 @@ const AppPlanCard = ({ loading, planData, appSlug }) => {
     <div className={styles.serverLogsWrapper}>
       <div className={styles.header}>
         <div className={styles.headerText}>Plan Usage</div>
-        <Link to={`/apps/${appSlug}/plan-usage`}>
+        <Link to={planUsagePath(appSlug, UpgradeGate.OVERVIEW_PLAN_CARD)} onClick={() => logGateClicked(UpgradeGate.OVERVIEW_PLAN_CARD, appId)}>
           <Button type="primary" value="Upgrade Plan" className={styles.upgradeBtn} />
         </Link>
       </div>

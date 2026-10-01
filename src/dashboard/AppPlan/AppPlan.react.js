@@ -19,6 +19,8 @@ import B4aToggle from 'components/Toggle/B4aToggle.react';
 import Icon from 'components/Icon/Icon.react';
 import { initializePaddle } from '@paddle/paddle-js';
 import B4aModal from 'components/B4aModal/B4aModal.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeEvent, getGateFromSearch } from 'lib/upgradeEvents';
 
 const prices = [
   {
@@ -210,8 +212,11 @@ class AppPlan extends DashboardView {
       pwCustomer: {}
     }
 
+    // Paddle calls this as a plain function, so keep a handle on the component for the funnel context.
+    const component = this;
     const paddleEventCallback = async function (data) {
       if (data.name === 'checkout.completed') {
+        component.checkoutCompleted = true;
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event: 'paddle_purchase',
@@ -254,6 +259,8 @@ class AppPlan extends DashboardView {
                   planName: paymentData.planName,
                   planType: data.data.items[0].billing_cycle.interval,
                   subscriptionTotal: data.data.totals.total,
+                  source: component.checkoutContext?.source,
+                  gate: component.checkoutContext?.gate,
                 }
               }
             ]
@@ -320,6 +327,16 @@ class AppPlan extends DashboardView {
   }
 
   async handleOnClickPlan(plan) {
+    const gate = getGateFromSearch(this.props.location?.search);
+    this.checkoutContext = {
+      app_id: this.context.applicationId,
+      plan: plan.name,
+      cycle: this.state.billingCycle === 0 ? 'monthly' : 'yearly',
+      source: gate ? 'gate' : 'plan_page',
+      gate,
+    };
+    this.checkoutCompleted = false;
+    amplitudeLogEvent(UpgradeEvent.CHECKOUT_OPENED, this.checkoutContext);
     this.setState({ selectedPlan: plan, openCheckout: true }, () => {
       const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;
       const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
@@ -491,7 +508,12 @@ class AppPlan extends DashboardView {
             type={B4aModal.Types.DEFAULT}
             width={'80vw'}
             customFooter={<div></div>}
-            onCancel={() => this.setState({ openCheckout: false })}
+            onCancel={() => {
+              if (!this.checkoutCompleted) {
+                amplitudeLogEvent(UpgradeEvent.CHECKOUT_CLOSED, this.checkoutContext);
+              }
+              this.setState({ openCheckout: false });
+            }}
           >
             <div className="checkout-container"></div>
           </B4aModal>

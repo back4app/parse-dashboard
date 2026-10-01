@@ -22,6 +22,7 @@ import Field from 'components/Field/Field.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
 import { Link } from 'react-router-dom';
@@ -407,7 +408,8 @@ class DomainSettings extends DashboardView {
         <Field
           label={<Label text="Upgrade your plan" dark={true} description="Please upgrade your plan to activate your web hosting." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-            <Link to={`/apps/${this.context.slug}/plan-usage`}>
+            <Link to={planUsagePath(this.context.slug, UpgradeGate.WEB_HOSTING)} onClick={() => logGateClicked(UpgradeGate.WEB_HOSTING, this.context.applicationId)}>
+              <UpgradeGateView gate={UpgradeGate.WEB_HOSTING} appId={this.context.applicationId} />
               <Button
                 value="Upgrade Plan"
                 primary={true}
@@ -431,7 +433,8 @@ class DomainSettings extends DashboardView {
                   disabled={!this.state.canChangeSubdomain && this.state.currentSubdomain.trim().length === 0}
                 />
               ) : (
-                <Link to={`/apps/${this.context.slug}/plan-usage`}>
+                <Link to={planUsagePath(this.context.slug, UpgradeGate.WEB_HOSTING)} onClick={() => logGateClicked(UpgradeGate.WEB_HOSTING, this.context.applicationId)}>
+                  <UpgradeGateView gate={UpgradeGate.WEB_HOSTING} appId={this.context.applicationId} />
                   <Button
                     value="Upgrade Plan"
                     primary={true}
@@ -567,7 +570,8 @@ class DomainSettings extends DashboardView {
                   />
                 </>
               ) : (
-                <Link to={`/apps/${this.context.slug}/plan-usage`}>
+                <Link to={planUsagePath(this.context.slug, UpgradeGate.CUSTOM_DOMAIN)} onClick={() => logGateClicked(UpgradeGate.CUSTOM_DOMAIN, this.context.applicationId)}>
+                  <UpgradeGateView gate={UpgradeGate.CUSTOM_DOMAIN} appId={this.context.applicationId} />
                   <Button
                     value="Upgrade Plan"
                     primary={true}

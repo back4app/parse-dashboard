@@ -18,6 +18,7 @@ import Button from 'components/Button/Button.react';
 import { Link } from 'react-router-dom';
 import validateEmailFormat from 'lib/validateEmailFormat';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
 
 const DEFAULT_VERIFICATION_BODY =
   'Hi,\n\n' +
@@ -470,7 +471,8 @@ class EmailVerification extends DashboardView {
                     }
                     input={
                       <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-                        <Link to={`/apps/${this.context.slug}/plan-usage`}>
+                        <Link to={planUsagePath(this.context.slug, UpgradeGate.EMAIL_TEMPLATES)} onClick={() => logGateClicked(UpgradeGate.EMAIL_TEMPLATES, this.context.applicationId)}>
+                          <UpgradeGateView gate={UpgradeGate.EMAIL_TEMPLATES} appId={this.context.applicationId} />
                           <Button
                             value="Upgrade Plan"
                             primary={true}
