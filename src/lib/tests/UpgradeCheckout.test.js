@@ -47,7 +47,7 @@ const renderer = require('react-test-renderer');
 const { CurrentApp } = require('context/currentApp');
 const { amplitudeLogEvent } = require('../amplitudeEvents');
 const { initPaddle, recordSubscription } = require('../paddleCheckout');
-const { UpgradeCheckoutModal, UpgradeGateButton, hasDirectCheckout } = require('../../components/UpgradeCheckout/UpgradeCheckout.react');
+const { UpgradeCheckoutModal, UpgradeGateButton } = require('../../components/UpgradeCheckout/UpgradeCheckout.react');
 
 const app = { applicationId: 'app-1', slug: 'my-app', custom: { isOwner: true } };
 
@@ -167,11 +167,6 @@ describe('UpgradeCheckoutModal', () => {
     paddle.Checkout.open.mockClear();
     await mount(<UpgradeCheckoutModal gate="compliance_hipaa" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_m');
-  });
-
-  it('only offers a direct checkout for paywalls it knows', () => {
-    expect(hasDirectCheckout('mongodb_8')).toBe(true);
-    expect(hasDirectCheckout('jobs')).toBe(false);
   });
 });
 

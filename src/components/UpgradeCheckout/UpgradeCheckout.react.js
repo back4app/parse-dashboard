@@ -25,8 +25,6 @@ const GATE_OFFERS = {
   [UpgradeGate.COMPLIANCE_HIPAA]: { plan: 'Dedicated', headline: 'Get HIPAA-ready infrastructure' },
 };
 
-export const hasDirectCheckout = gate => !!GATE_OFFERS[gate];
-
 const detailText = detail => [detail.number, detail.text].filter(Boolean).join(' ');
 
 const priceSummary = (plan, cycle) => {
