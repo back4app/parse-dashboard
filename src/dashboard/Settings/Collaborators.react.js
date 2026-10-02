@@ -388,7 +388,9 @@ export default class Collaborators extends React.Component {
         input={
           <div style={{ width: '100%', padding: '0 1rem' }}>
             {maxCollaborators === 0 || maxCollaborators === null  || maxCollaborators === false ? (
-              <UpgradeGateButton gate={UpgradeGate.COLLABORATORS} />
+              <div style={{ textAlign: 'right' }}>
+                <UpgradeGateButton gate={UpgradeGate.COLLABORATORS} />
+              </div>
             ) : maxCollaborators !== true && maxCollaborators !== null && collaboratorUsage >= maxCollaborators ? (
               <a
                 href="https://www.back4app.com/pricing/backend-as-a-service"
