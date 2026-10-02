@@ -269,12 +269,12 @@ export default class DashboardView extends React.Component {
     // });
 
     settingsSections.push({
-      name: 'Domain Settings',
+      name: 'Domains',
       link: '/domain-settings',
     });
 
     settingsSections.push({
-      name: 'Server URL & Live Query',
+      name: 'Real-time (Live Query)',
       link: '/server-url-live-query',
     });
 

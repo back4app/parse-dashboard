@@ -14,7 +14,8 @@ import EmptyGhostState from 'components/EmptyGhostState/EmptyGhostState.react';
 import joinWithFinal from 'lib/joinWithFinal';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import Button from 'components/Button/Button.react';
-import { Link } from 'react-router-dom';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 
 const DEFAULT_FIELDS = {
   passwordResetEmailSubject: 'Password Reset Request for *|appname|*',
@@ -278,12 +279,7 @@ class EmailPasswordReset extends DashboardView {
               }
               input={
                 <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-                  <Link to={`/apps/${this.context.slug}/plan-usage`}>
-                    <Button
-                      value="Upgrade Plan"
-                      primary={true}
-                    />
-                  </Link>
+                  <UpgradeGateButton gate={UpgradeGate.EMAIL_TEMPLATES} />
                 </div>
               }
               theme={Field.Theme.BLUE}

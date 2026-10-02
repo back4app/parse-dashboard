@@ -19,6 +19,8 @@ import B4aToggle from 'components/Toggle/B4aToggle.react';
 import Icon from 'components/Icon/Icon.react';
 import { initializePaddle } from '@paddle/paddle-js';
 import B4aModal from 'components/B4aModal/B4aModal.react';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeEvent, getGateFromSearch } from 'lib/upgradeEvents';
 
 const prices = [
   {
@@ -35,6 +37,22 @@ const prices = [
     savePercent: '40%',
     details: [
       {
+        text: 'Web hosting & custom domain',
+      },
+      {
+        text: 'Daily Backups',
+      },
+      {
+        text: 'Latest MongoDB',
+      },
+      {
+        text: 'Custom email templates',
+      },
+      {
+        number: 'Up to 3',
+        text: 'collaborators',
+      },
+      {
         number: '500 K',
         text: 'Requests',
       },
@@ -50,12 +68,9 @@ const prices = [
         number: '50 GB',
         text: 'File Storage',
       },
-      {
-        text: 'Daily Backups',
-      },
     ],
     icon: 'b4a-mvp-plan-icon',
-    greenText: '20x more requests'
+    greenText: 'Go live with your own domain'
   },
   {
     id: 1,
@@ -88,6 +103,9 @@ const prices = [
       },
       {
         text: 'Daily Backups',
+      },
+      {
+        text: 'HTTPS on your custom domain',
       },
       {
         text: 'SOC 2 and ISO 27001',
@@ -153,7 +171,7 @@ class AppPlan extends DashboardView {
       appPlanName: 'Free Plan',
       appPlanError: null,
       selectedPlan: prices[1],
-      billingCycle: 0, // 0 --> monthly || 1 --> yearly
+      billingCycle: 1, // 0 --> monthly || 1 --> yearly
       isLoadingPaddle: false,
       paddleError: null,
       paddle: null,
@@ -210,8 +228,11 @@ class AppPlan extends DashboardView {
       pwCustomer: {}
     }
 
+    // Paddle calls this as a plain function, so keep a handle on the component for the funnel context.
+    const component = this;
     const paddleEventCallback = async function (data) {
       if (data.name === 'checkout.completed') {
+        component.checkoutCompleted = true;
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event: 'paddle_purchase',
@@ -254,6 +275,8 @@ class AppPlan extends DashboardView {
                   planName: paymentData.planName,
                   planType: data.data.items[0].billing_cycle.interval,
                   subscriptionTotal: data.data.totals.total,
+                  source: component.checkoutContext?.source,
+                  gate: component.checkoutContext?.gate,
                 }
               }
             ]
@@ -320,12 +343,22 @@ class AppPlan extends DashboardView {
   }
 
   async handleOnClickPlan(plan) {
+    const gate = getGateFromSearch(this.props.location?.search);
+    this.checkoutContext = {
+      app_id: this.context.applicationId,
+      plan: plan.name,
+      cycle: this.state.billingCycle === 0 ? 'monthly' : 'yearly',
+      source: gate ? 'gate' : 'plan_page',
+      gate,
+    };
+    this.checkoutCompleted = false;
+    amplitudeLogEvent(UpgradeEvent.CHECKOUT_OPENED, this.checkoutContext);
     this.setState({ selectedPlan: plan, openCheckout: true }, () => {
       const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;
       const productId = this.state.billingCycle === 0 ? plan.monthlyProductId : plan.annuallyProductId;
       this.state.paddle?.Checkout.open({
         items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
-        title: plan.planName,
+        title: plan.name,
         settings: {
           displayMode: 'inline',
           theme: 'light',
@@ -417,13 +450,13 @@ class AppPlan extends DashboardView {
               <div className={styles.upgradeCardHeader}>
                 <div className={styles.upgradeCardTitle}>Ready to Scale?</div>
               </div>
-              <div className={styles.upgradeCardSubText}>Upgrade for Backups, Resilience & Compliance</div>
+              <div className={styles.upgradeCardSubText}>Go live with your own domain, backups and a modern database</div>
 
               <div className={styles.upgradeFeatures}>
                 <div className={styles.upgradeFeaturesTitle}>WHAT YOU GET:</div>
                 <div className={styles.upgradeFeaturesList}>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>MVP:</span> Daily automated backups
+                    <span className={styles.planName}>MVP:</span> Web hosting & custom domain, daily backups, latest MongoDB, email templates and collaborators
                   </div>
                   <div className={styles.upgradeFeature}>
                     <span className={styles.planName}>Pay-as-you-Go:</span> SOC 2 and ISO 27001-certified infrastructure
@@ -491,7 +524,12 @@ class AppPlan extends DashboardView {
             type={B4aModal.Types.DEFAULT}
             width={'80vw'}
             customFooter={<div></div>}
-            onCancel={() => this.setState({ openCheckout: false })}
+            onCancel={() => {
+              if (!this.checkoutCompleted) {
+                amplitudeLogEvent(UpgradeEvent.CHECKOUT_CLOSED, this.checkoutContext);
+              }
+              this.setState({ openCheckout: false });
+            }}
           >
             <div className="checkout-container"></div>
           </B4aModal>

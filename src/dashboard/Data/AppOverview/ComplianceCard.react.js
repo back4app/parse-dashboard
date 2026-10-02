@@ -2,19 +2,24 @@ import React from 'react';
 import styles from './AppOverview.scss';
 import Icon from 'components/Icon/Icon.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 
 const complianceTypes = {
   'HIPAA': {
     name: 'HIPAA',
     description: 'Healthcare privacy & security regulation',
+    gate: UpgradeGate.COMPLIANCE_HIPAA,
   },
   'SOC 2': {
     name: 'SOC 2',
     description: 'Audit-backed controls for secure data handling',
+    gate: UpgradeGate.COMPLIANCE_SOC2,
   },
   'ISO 27001': {
     name: 'ISO 27001',
     description: 'Global information-security management standard',
+    gate: UpgradeGate.COMPLIANCE_ISO27001,
   },
 }
 
@@ -71,7 +76,19 @@ const ComplianceItem = ({ type, enabled, appId, isSignedBAA }) => {
       <div className={styles.complianceItemDescriptionText}>
         {complianceTypes[type].description}
       </div>
-      {showUpgrade && <a href={`${b4aSettings.BACK4APP_SITE_PATH}/pricing/backend-as-a-service?appId=${appId}&type=parse}`} onClick={() => amplitudeLogEvent(`On Click - At Upgrade Plan for ${type} compliance`)} target="_blank" rel="noopener noreferrer"><button className={styles.complianceItemUpgradeBtn}>Upgrade</button></a>}
+      {showUpgrade && (
+        <UpgradeGateButton
+          gate={complianceTypes[type].gate}
+          renderTrigger={open => (
+            <button
+              className={styles.complianceItemUpgradeBtn}
+              onClick={event => { amplitudeLogEvent(`On Click - At Upgrade Plan for ${type} compliance`); open(event); }}
+            >
+              Upgrade
+            </button>
+          )}
+        />
+      )}
       {showSignBAA && <a href={`https://back4app.typeform.com/to/qagI6LKi?appId=${appId}`} onClick={() => amplitudeLogEvent(`On Click - At Sign BAA for ${type} compliance`)} target="_blank" rel="noopener noreferrer"><button className={styles.complianceItemSignBtn}>Sign BAA</button></a>}
     </div>
   </div>
