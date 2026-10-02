@@ -107,7 +107,8 @@ describe('UpgradeCheckoutModal', () => {
     expect(textOf(tree)).toContain('180');
     const radios = tree.root.findAll(node => node.type === 'input' && node.props.type === 'radio');
 
-    renderer.act(() => radios[0].props.onChange());
+    // Yearly is listed first, monthly second.
+    renderer.act(() => radios[1].props.onChange());
 
     expect(paddle.Checkout.open).toHaveBeenCalledTimes(1);
     expect(paddle.Checkout.updateCheckout).toHaveBeenCalledWith({

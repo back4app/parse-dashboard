@@ -173,12 +173,12 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
 
           <div className={styles.cycles}>
             <label className={styles.cycle}>
-              <input type="radio" checked={cycle === Cycle.MONTHLY} onChange={() => changeCycle(Cycle.MONTHLY)} disabled={completed} />
-              Monthly · ${plan.pricePerMonth}/month
-            </label>
-            <label className={styles.cycle}>
               <input type="radio" checked={cycle === Cycle.YEARLY} onChange={() => changeCycle(Cycle.YEARLY)} disabled={completed} />
               Yearly · ${plan.pricePerYear}/month <span className={styles.save}>Save {plan.savePercent}</span>
+            </label>
+            <label className={styles.cycle}>
+              <input type="radio" checked={cycle === Cycle.MONTHLY} onChange={() => changeCycle(Cycle.MONTHLY)} disabled={completed} />
+              Monthly · ${plan.pricePerMonth}/month
             </label>
           </div>
 
