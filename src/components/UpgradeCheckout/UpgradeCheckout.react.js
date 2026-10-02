@@ -78,7 +78,8 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
   const plan = prices.find(p => p.name === offer.plan);
 
   const [dark] = useState(prefersDark);
-  const [cycle, setCycle] = useState(Cycle.MONTHLY);
+  // Yearly first, like the pricing page; monthly stays one click away.
+  const [cycle, setCycle] = useState(Cycle.YEARLY);
   const [paddle, setPaddle] = useState(null);
   const [ownerEmail, setOwnerEmail] = useState(null);
   const [frame, setFrame] = useState(null);
