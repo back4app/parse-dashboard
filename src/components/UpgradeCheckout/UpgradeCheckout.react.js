@@ -6,14 +6,13 @@ import Icon from 'components/Icon/Icon.react';
 import AccountManager from 'lib/AccountManager';
 import { CurrentApp } from 'context/currentApp';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
 import { prices } from 'dashboard/AppPlan/AppPlan.react';
 import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';
 const ORIGIN = new Position(0, 0);
-const SUPPORT_TICKET_URL = 'https://help.back4app.com/hc/en-us/requests/new';
 
 // Follows the OS/browser light or dark preference. Read once: Paddle cannot switch theme after opening.
 const prefersDark = () =>
@@ -64,6 +63,11 @@ const GATE_OFFERS = {
     headline: 'Serve your custom domain over HTTPS',
     subline: 'Your domain is on HTTP, so browsers mark it "Not secure".',
     nextStep: 'Next, open a support ticket and our team will enable HTTPS on your domain.',
+  },
+  [UpgradeGate.LOGS_RETENTION]: {
+    plan: 'MVP',
+    headline: 'Debug with a week of access logs',
+    subline: 'Free keeps access logs for 1 day; MVP keeps 7 days.',
   },
   [UpgradeGate.DB_PROFILER]: {
     plan: 'Dedicated',

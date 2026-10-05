@@ -30,10 +30,13 @@ export const UpgradeGate = {
   BACKUP_DELETE_CLASS: 'backup_delete_class',
   BACKUP_DELETE_ROWS: 'backup_delete_rows',
   USAGE_LIMIT: 'usage_limit',
+  LOGS_RETENTION: 'logs_retention',
   COMPLIANCE_HIPAA: 'compliance_hipaa',
   COMPLIANCE_SOC2: 'compliance_soc2',
   COMPLIANCE_ISO27001: 'compliance_iso27001',
 };
+
+export const SUPPORT_TICKET_URL = 'https://help.back4app.com/hc/en-us/requests/new';
 
 export const planUsagePath = (slug, gate) => `/apps/${slug}/plan-usage?gate=${gate}`;
 
