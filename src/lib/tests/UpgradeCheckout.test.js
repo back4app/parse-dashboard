@@ -197,6 +197,12 @@ describe('UpgradeCheckoutModal', () => {
     }
   });
 
+  it('sells MVP from the job limit on Free', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="jobs" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+    expect(textOf(tree)).toContain('Schedule more background jobs');
+  });
+
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');

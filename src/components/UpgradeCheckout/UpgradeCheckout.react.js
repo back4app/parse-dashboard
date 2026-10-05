@@ -39,6 +39,8 @@ const GATE_OFFERS = {
   [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Send emails with your brand and words' },
   [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Tune your Parse Server' },
   [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Bring your team into this app' },
+  // Only Free reaches this checkout from the job limit; paid plans go to Plan Usage.
+  [UpgradeGate.JOBS]: { plan: 'MVP', headline: 'Schedule more background jobs', subline: 'MVP lets you schedule up to 3 jobs.' },
   // The overview's generic upgrade entry points: no single feature asked for, so they sell MVP as a whole.
   [UpgradeGate.OVERVIEW_PLAN_CARD]: MVP_AS_A_WHOLE,
   [UpgradeGate.OVERVIEW_PLAN_BADGE]: MVP_AS_A_WHOLE,
