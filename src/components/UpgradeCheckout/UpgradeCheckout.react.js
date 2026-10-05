@@ -25,6 +25,12 @@ const MVP_AS_A_WHOLE = {
   subline: 'Web hosting and your own domain, daily backups, the latest MongoDB and your team in the app.',
 };
 
+const BACKUPS = {
+  plan: 'MVP',
+  headline: 'Keep daily backups of your data',
+  subline: 'MVP keeps a daily backup of your app for 7 days.',
+};
+
 // What the user asked for when they hit the paywall, and the cheapest plan that unlocks it.
 const GATE_OFFERS = {
   [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages and use your own domain' },
@@ -41,6 +47,9 @@ const GATE_OFFERS = {
     headline: 'Get the latest MongoDB',
     subline: 'Faster queries and the newest MongoDB features.',
   },
+  // Shown inside delete confirmations on Free, where nothing can be recovered.
+  [UpgradeGate.BACKUP_DELETE_CLASS]: BACKUPS,
+  [UpgradeGate.BACKUP_DELETE_ROWS]: BACKUPS,
   // HTTPS on a custom domain is turned on by support after the upgrade.
   [UpgradeGate.HTTPS]: {
     plan: 'Pay As You Go',

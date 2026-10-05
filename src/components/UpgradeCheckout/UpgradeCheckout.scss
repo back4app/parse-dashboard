@@ -208,6 +208,31 @@
   }
 }
 
+// Sits inside the (light) delete confirmation modal, not the themed checkout.
+.backupUpsell {
+  @include InterFont;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 1rem 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e6ec;
+  border-radius: 8px;
+  background: #f5f7fa;
+  color: #10203a;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.backupUpsellLink {
+  flex-shrink: 0;
+  color: $cta-green;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .error {
   padding: 1rem 0;
   color: var(--uc-text);

@@ -10,6 +10,8 @@ import Label from 'components/Label/Label.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import React from 'react';
 import TextInput from 'components/TextInput/TextInput.react';
+import BackupUpsell from 'components/UpgradeCheckout/BackupUpsell.react';
+import { UpgradeGate } from 'lib/upgradeEvents';
 
 export default class DeleteRowsDialog extends React.Component {
   constructor() {
@@ -102,6 +104,7 @@ export default class DeleteRowsDialog extends React.Component {
         onConfirm={this.props.onConfirm}
         buttonsInCenter={false}
       >
+        {this.props.relation ? null : <BackupUpsell gate={UpgradeGate.BACKUP_DELETE_ROWS} />}
         {content}
       </B4aModal>
     );

@@ -41,6 +41,7 @@ const { CurrentApp } = require('context/currentApp');
 const { amplitudeLogEvent } = require('../amplitudeEvents');
 const { initPaddle, recordSubscription } = require('../paddleCheckout');
 const { UpgradeCheckoutModal, UpgradeGateButton } = require('../../components/UpgradeCheckout/UpgradeCheckout.react');
+const BackupUpsell = require('../../components/UpgradeCheckout/BackupUpsell.react').default;
 
 const app = { applicationId: 'app-1', slug: 'my-app', custom: { isOwner: true } };
 
@@ -230,5 +231,44 @@ describe('UpgradeGateButton', () => {
     expect(initPaddle).toHaveBeenCalledTimes(1);
     expect(textOf(tree)).toContain('Get the latest MongoDB');
     expect(textOf(tree)).toContain('Faster queries and the newest MongoDB features.');
+  });
+});
+
+describe('BackupUpsell', () => {
+  const mountWithPlan = async planName => {
+    let tree;
+    const appWithPlan = { ...app, getAppPlanData: () => Promise.resolve({ planName }) };
+    await renderer.act(async () => {
+      tree = renderer.create(
+        <CurrentApp.Provider value={appWithPlan}>
+          <BackupUpsell gate="backup_delete_class" />
+        </CurrentApp.Provider>,
+        { createNodeMock: () => ({}) }
+      );
+    });
+    return tree;
+  };
+
+  beforeEach(() => {
+    amplitudeLogEvent.mockClear();
+    initPaddle.mockReset();
+    initPaddle.mockImplementation(() => Promise.resolve(fakePaddle()));
+  });
+
+  it('warns Free apps that deleted data cannot be recovered and offers backups', async () => {
+    const tree = await mountWithPlan('Free Plan');
+    expect(textOf(tree)).toContain('this can\'t be recovered');
+    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'backup_delete_class', app_id: 'app-1' }]);
+
+    await renderer.act(async () => {
+      tree.root.findByType('a').props.onClick({ preventDefault: () => {} });
+    });
+    expect(textOf(tree)).toContain('Keep daily backups of your data');
+  });
+
+  it('stays out of the way on paid plans', async () => {
+    const tree = await mountWithPlan('MVP Plan');
+    expect(tree.toJSON()).toBe(null);
+    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([]);
   });
 });
