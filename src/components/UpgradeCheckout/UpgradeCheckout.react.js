@@ -47,6 +47,12 @@ const GATE_OFFERS = {
     headline: 'Get the latest MongoDB',
     subline: 'Faster queries and the newest MongoDB features.',
   },
+  // Overview usage banner: near or over a Free limit, where the app gets blocked.
+  [UpgradeGate.USAGE_LIMIT]: {
+    plan: 'MVP',
+    headline: 'Keep your app running',
+    subline: 'MVP raises your limits to 500K requests, 1 GB of database and 50 GB of files.',
+  },
   // Shown inside delete confirmations on Free, where nothing can be recovered.
   [UpgradeGate.BACKUP_DELETE_CLASS]: BACKUPS,
   [UpgradeGate.BACKUP_DELETE_ROWS]: BACKUPS,
