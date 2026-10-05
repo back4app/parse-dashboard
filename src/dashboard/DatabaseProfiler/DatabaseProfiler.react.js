@@ -17,12 +17,8 @@ import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer
 import Icon from 'components/Icon/Icon.react';
 import DatabaseProfilerDetail from './DatabaseProfilerDetail.react';
 import { prices } from 'dashboard/AppPlan/AppPlan.react';
-import Button from 'components/Button/Button.react';
-import B4aModal from 'components/B4aModal/B4aModal.react';
-import { initializePaddle } from '@paddle/paddle-js';
-import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
-import AccountManager from 'lib/AccountManager';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 
 @withRouter
 class DatabaseProfile extends DashboardView {
@@ -36,8 +32,6 @@ class DatabaseProfile extends DashboardView {
       databaseProfilerError: null,
       selectedRowId: null,
       showBackButton: false,
-      paddle: null,
-      openCheckout: false,
       applicationId: null,
     };
   }
@@ -47,8 +41,6 @@ class DatabaseProfile extends DashboardView {
       isLoadingDatabaseProfiler: true,
     });
     this.loadData();
-    this.loadPaddle();
-    this.getAppOwnerEmail();
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -95,98 +87,12 @@ class DatabaseProfile extends DashboardView {
     }
   }
 
-  async getAppOwnerEmail() {
-    let appOwnerEmail;
-    if (!this.context.custom.isOwner) {
-      const { ownerEmail } = await this.context.getAppOwnerEmail();
-      appOwnerEmail = ownerEmail;
-    } else {
-      appOwnerEmail = AccountManager.currentUser().email;
-    }
-    this.setState({ appOwnerEmail });
-  }
-
-  loadPaddle() {
-    const paddleOptions = {
-      token: b4aSettings.PADDLE_TOKEN || 'test_0270ab179b4f4abd7aa228c7014',
-      environment: process.env.SENTRY_ENV === 'production' ? 'production' : 'sandbox',
-      pwCustomer: {}
-    };
-
-    const paddleEventCallback = async (data) => {
-      if (data.name === 'checkout.completed') {
-        this.checkoutCompleted = true;
-        const paymentData = {
-          appId: data.data.custom_data.app_id,
-          customerId: data.data.customer.id,
-          planName: data.data.items[0].product.name,
-          transactionId: data.data.transaction_id,
-          checkoutId: data.data.id,
-          results: data.data,
-          planId: data.data.custom_data.plan_id,
-          email: data.data.customer.email,
-        };
-
-        try {
-          await fetch(`${b4aSettings.BACK4APP_CHECKOUT_URL}/save-subscription`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(paymentData),
-          });
-        } catch (e) { }
-
-        try {
-          const amplitudePayload = {
-            api_key: b4aSettings.BACK4APP_AMPLITUDE_KEY,
-            events: [
-              {
-                user_id: paymentData.email || 'unknown',
-                event_type: 'At Checkout - Subscription Successful',
-                time: Date.now(),
-                event_properties: {
-                  appId: paymentData.appId,
-                  planName: paymentData.planName,
-                  planType: data.data.items[0].billing_cycle.interval,
-                  subscriptionTotal: data.data.totals.total,
-                  source: 'gate',
-                  gate: UpgradeGate.DB_PROFILER,
-                }
-              }
-            ]
-          };
-          await fetch('https://api.amplitude.com/2/httpapi', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(amplitudePayload)
-          });
-        } catch (error) { }
-      }
-      if (data.name === 'checkout.closed') {
-        this.setState({ openCheckout: false });
-      }
-    };
-
-    initializePaddle({ ...paddleOptions, eventCallback: paddleEventCallback }).then(
-      (paddleInstance) => {
-        if (paddleInstance) {
-          this.setState({ paddle: paddleInstance });
-        }
-      },
-    );
-  }
-
   handleBackClick = () => {
     this.setState({
       selectedRowId: null,
       showBackButton: false
     });
   };
-
-  componentWillUnmount() {
-    this.setState({ openCheckout: false });
-  }
 
   renderToolbar() {
     const { showBackButton } = this.state;
@@ -234,44 +140,6 @@ class DatabaseProfile extends DashboardView {
     );
   }
 
-  handleUpgradeClick = () => {
-    // Find Dedicated plan
-    const dedicatedPlan = prices.find(plan => plan.name === 'Dedicated');
-    if (!dedicatedPlan) { return; }
-    logGateClicked(UpgradeGate.DB_PROFILER, this.context.applicationId);
-    this.checkoutContext = {
-      app_id: this.context.applicationId,
-      plan: dedicatedPlan.name,
-      cycle: 'monthly',
-      source: 'gate',
-      gate: UpgradeGate.DB_PROFILER,
-    };
-    this.checkoutCompleted = false;
-    amplitudeLogEvent(UpgradeEvent.CHECKOUT_OPENED, this.checkoutContext);
-    this.setState({ openCheckout: true }, () => {
-      const productId = dedicatedPlan.monthlyProductId;
-      const planId = dedicatedPlan.monthlyPlanId;
-      this.state.paddle?.Checkout.open({
-        items: [{ priceId: process.env.SENTRY_ENV === 'production' ? productId : 'pri_01jjykwj65y5de1vcv5xaryw8g', quantity: 1 }],
-        title: dedicatedPlan.name,
-        settings: {
-          displayMode: 'inline',
-          theme: 'light',
-          locale: 'en',
-          variant: 'one-page',
-          frameTarget: 'checkout-container',
-          frameInitialHeight: '450',
-          frameStyle: 'width: 100%; min-width: 312px; max-height: 80vh; background-color: #f9f9f9; border: none;'
-        },
-        customData: { appId: this.context.applicationId, planId },
-        allowLogout: false,
-        customer: {
-          email: this.state.appOwnerEmail,
-        }
-      });
-    });
-  };
-
   handleComparePlansClick = (applicationId) => {
     window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${applicationId}/plan-usage?gate=${UpgradeGate.DB_PROFILER}`;
   };
@@ -286,6 +154,7 @@ class DatabaseProfile extends DashboardView {
         />
       );
     } else if (databaseProfilerError?.message === 'PLAN_NOT_SUPPORTED') {
+      const dedicatedPlan = prices.find(plan => plan.name === 'Dedicated');
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' , marginBottom: '40px'}}>
           <B4aEmptyState
@@ -293,7 +162,6 @@ class DatabaseProfile extends DashboardView {
             title="Upgrade Required"
             description="Query Performance Monitor is available exclusively on Dedicated plans."
           />
-          <UpgradeGateView gate={UpgradeGate.DB_PROFILER} appId={this.context.applicationId} />
           {/* Dedicated plan highlight card */}
           <div style={{
             width: '100%',
@@ -321,9 +189,9 @@ class DatabaseProfile extends DashboardView {
 
             {/* Price block */}
             <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <div style={{ fontSize: 40, fontWeight: 700, lineHeight: 1, color: 'var(--text-primary, #fff)' }}>$500</div>
+              <div style={{ fontSize: 40, fontWeight: 700, lineHeight: 1, color: 'var(--text-primary, #fff)' }}>${dedicatedPlan.pricePerYear}</div>
               <div style={{ color: 'var(--text-secondary, #a0aec0)', marginTop: 4 }}>per App / Month</div>
-              <div style={{ color: 'var(--text-tertiary, #718096)', fontSize: 12 }}>Billed Monthly</div>
+              <div style={{ color: 'var(--text-tertiary, #718096)', fontSize: 12 }}>Billed yearly · ${dedicatedPlan.pricePerMonth} monthly</div>
             </div>
 
             {/* Features list */}
@@ -346,7 +214,7 @@ class DatabaseProfile extends DashboardView {
 
             {/* Choose plan to entire div with button */}
             <div style={{ display: 'flex', justifyContent: 'center' }} className={styles.upgradeCard}>
-              <Button primary value="Buy now" onClick={this.handleUpgradeClick}  />
+              <UpgradeGateButton gate={UpgradeGate.DB_PROFILER} value="Buy now" />
             </div>
           </div>
 
@@ -448,22 +316,6 @@ class DatabaseProfile extends DashboardView {
           </div>
         </B4aLoaderContainer>
         {toolbar}
-
-        {this.state.openCheckout ? (
-          <B4aModal
-            type={B4aModal.Types.DEFAULT}
-            width={'80vw'}
-            customFooter={<div></div>}
-            onCancel={() => {
-              if (!this.checkoutCompleted) {
-                amplitudeLogEvent(UpgradeEvent.CHECKOUT_CLOSED, this.checkoutContext);
-              }
-              this.setState({ openCheckout: false });
-            }}
-          >
-            <div className="checkout-container"></div>
-          </B4aModal>
-        ) : null}
       </div>
     );
   }

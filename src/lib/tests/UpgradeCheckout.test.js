@@ -203,6 +203,12 @@ describe('UpgradeCheckoutModal', () => {
     expect(textOf(tree)).toContain('Schedule more background jobs');
   });
 
+  it('sells Dedicated on yearly from the database profiler', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="db_profiler" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_y');
+    expect(textOf(tree)).toContain('See which queries slow your app down');
+  });
+
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');

@@ -65,6 +65,11 @@ const GATE_OFFERS = {
     subline: 'Your domain is on HTTP, so browsers mark it "Not secure".',
     nextStep: 'Next, open a support ticket and our team will enable HTTPS on your domain.',
   },
+  [UpgradeGate.DB_PROFILER]: {
+    plan: 'Dedicated',
+    headline: 'See which queries slow your app down',
+    subline: 'The Query Performance Monitor comes with Dedicated.',
+  },
   [UpgradeGate.COMPLIANCE_SOC2]: { plan: 'Pay As You Go', headline: 'Pass your customer\'s security review', subline: 'SOC 2 Type 2 certified infrastructure.' },
   [UpgradeGate.COMPLIANCE_ISO27001]: { plan: 'Pay As You Go', headline: 'Pass your customer\'s security review', subline: 'ISO 27001 certified infrastructure.' },
   [UpgradeGate.COMPLIANCE_HIPAA]: { plan: 'Dedicated', headline: 'Pass your customer\'s security review', subline: 'HIPAA-ready infrastructure, after a signed BAA.' },
