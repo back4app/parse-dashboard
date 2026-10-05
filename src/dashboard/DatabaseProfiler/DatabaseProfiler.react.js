@@ -20,6 +20,8 @@ import { prices } from 'dashboard/AppPlan/AppPlan.react';
 import Button from 'components/Button/Button.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import { initializePaddle } from '@paddle/paddle-js';
+import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
 import AccountManager from 'lib/AccountManager';
 
 @withRouter
@@ -113,6 +115,7 @@ class DatabaseProfile extends DashboardView {
 
     const paddleEventCallback = async (data) => {
       if (data.name === 'checkout.completed') {
+        this.checkoutCompleted = true;
         const paymentData = {
           appId: data.data.custom_data.app_id,
           customerId: data.data.customer.id,
@@ -147,6 +150,8 @@ class DatabaseProfile extends DashboardView {
                   planName: paymentData.planName,
                   planType: data.data.items[0].billing_cycle.interval,
                   subscriptionTotal: data.data.totals.total,
+                  source: 'gate',
+                  gate: UpgradeGate.DB_PROFILER,
                 }
               }
             ]
@@ -233,6 +238,16 @@ class DatabaseProfile extends DashboardView {
     // Find Dedicated plan
     const dedicatedPlan = prices.find(plan => plan.name === 'Dedicated');
     if (!dedicatedPlan) { return; }
+    logGateClicked(UpgradeGate.DB_PROFILER, this.context.applicationId);
+    this.checkoutContext = {
+      app_id: this.context.applicationId,
+      plan: dedicatedPlan.name,
+      cycle: 'monthly',
+      source: 'gate',
+      gate: UpgradeGate.DB_PROFILER,
+    };
+    this.checkoutCompleted = false;
+    amplitudeLogEvent(UpgradeEvent.CHECKOUT_OPENED, this.checkoutContext);
     this.setState({ openCheckout: true }, () => {
       const productId = dedicatedPlan.monthlyProductId;
       const planId = dedicatedPlan.monthlyPlanId;
@@ -258,7 +273,7 @@ class DatabaseProfile extends DashboardView {
   };
 
   handleComparePlansClick = (applicationId) => {
-    window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${applicationId}/plan-usage`;
+    window.location.href = `${b4aSettings.BACKEND_DASHBOARD_PATH}/apps/${applicationId}/plan-usage?gate=${UpgradeGate.DB_PROFILER}`;
   };
 
   renderError() {
@@ -278,6 +293,7 @@ class DatabaseProfile extends DashboardView {
             title="Upgrade Required"
             description="Query Performance Monitor is available exclusively on Dedicated plans."
           />
+          <UpgradeGateView gate={UpgradeGate.DB_PROFILER} appId={this.context.applicationId} />
           {/* Dedicated plan highlight card */}
           <div style={{
             width: '100%',
@@ -438,7 +454,12 @@ class DatabaseProfile extends DashboardView {
             type={B4aModal.Types.DEFAULT}
             width={'80vw'}
             customFooter={<div></div>}
-            onCancel={() => this.setState({ openCheckout: false })}
+            onCancel={() => {
+              if (!this.checkoutCompleted) {
+                amplitudeLogEvent(UpgradeEvent.CHECKOUT_CLOSED, this.checkoutContext);
+              }
+              this.setState({ openCheckout: false });
+            }}
           >
             <div className="checkout-container"></div>
           </B4aModal>

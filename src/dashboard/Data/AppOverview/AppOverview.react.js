@@ -20,6 +20,8 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
 import { Link } from 'react-router-dom';
@@ -49,6 +51,30 @@ const CopyValue = ({ value }) => {
 // One column of the facts row: small label, the value, and an optional action
 // or note under it.
 // A missing value shows as a dash rather than an empty column.
+// The app's plan next to its name. Free opens the MVP checkout; other plans open Plan Usage.
+const PlanBadge = ({ planData, slug }) => {
+  if (!planData || planData instanceof Error || !planData.planName) {
+    return null;
+  }
+  const name = planData.planName.replace(/ Plan$/, '');
+  if (/paused/i.test(name)) {
+    return <Link className={styles.appPlanBadge} to={`/apps/${slug}/plan-usage`}>Paused</Link>;
+  }
+  if (/^free/i.test(name)) {
+    return (
+      <UpgradeGateButton
+        gate={UpgradeGate.OVERVIEW_PLAN_BADGE}
+        renderTrigger={open => (
+          <a className={styles.appPlanBadge} href="#" onClick={open}>
+            Free · <span className={styles.appPlanBadgeAction}>Upgrade</span>
+          </a>
+        )}
+      />
+    );
+  }
+  return <Link className={`${styles.appPlanBadge} ${styles.appPlanBadgePaid}`} to={`/apps/${slug}/plan-usage`}>{name}</Link>;
+};
+
 const AppFact = ({ label, children, extra, copy }) => (
   <div className={styles.appFact}>
     <div className={styles.appFactLabel}>{label}</div>
@@ -242,6 +268,12 @@ class AppOverview extends DashboardView {
     const showDatabaseVersion = (!isLoadingAppPlanData && !(appPlanData instanceof Error) && /Free/i.test(appPlanData.planName))
       || this.context.databaseVersion === '8.0';
     const webhost = this.state.webhosting?.hostSettings?.webhost;
+    const customDomain = (this.state.webhosting?.domains || [])[0];
+    const webUrl = customDomain || webhost;
+    // Same rule as the Domains paywall: the plan cannot use web hosting and nothing is configured yet.
+    const webUrlLocked = !webUrl && this.state.webhosting?.canChangeSubdomain === false;
+    // MVP includes custom domains but not HTTPS on them; that starts on Pay As You Go.
+    const httpsLocked = !!customDomain && (this.state.appPlanData?.planName || '').indexOf('MVP') === 0;
     const database = [this.context.databaseType, showDatabaseVersion && this.context.databaseVersion].filter(Boolean).join(' ');
     return (
       <div className={styles.container}>
@@ -256,7 +288,10 @@ class AppOverview extends DashboardView {
           <div className={styles.appSummary}>
             <div className={styles.appSummaryHead}>
               <div className={styles.appSummaryTitle}>
-                <div className={styles.appSummaryName}>{this.context.name}</div>
+                <div className={styles.appSummaryNameRow}>
+                  <div className={styles.appSummaryName}>{this.context.name}</div>
+                  <PlanBadge planData={this.state.appPlanData} slug={this.context.slug} />
+                </div>
                 <div className={styles.appSummaryId}>
                   <span className={styles.greyText}>App ID</span>
                   <code>{this.context.applicationId}</code>
@@ -275,7 +310,12 @@ class AppOverview extends DashboardView {
                 extra={this.context.isMongoUpgradeAvailable && showDatabaseVersion ? (
                   // One button like the other facts' actions; the explanation
                   // moves to its tooltip so the column stays one line tall.
-                  <a className={styles.changeRegionLink} title="MongoDB 8.0 is available when you upgrade your plan" onClick={() => amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button')} href={`https://www.back4app.com/pricing/backend-as-a-service?appId=${this.context.applicationId}&type=parse`} target="_blank" rel="noopener noreferrer">Upgrade to 8.0</a>
+                  <UpgradeGateButton
+                    gate={UpgradeGate.MONGODB_8}
+                    renderTrigger={open => (
+                      <a className={styles.changeRegionLink} title="The latest MongoDB is available on paid plans" href="#" onClick={event => { amplitudeLogEvent('On Click - MongoDB 8.0 Upgrade Button'); open(event); }}>Upgrade database</a>
+                    )}
+                  />
                 ) : null}
               >
                 {database}
@@ -289,17 +329,27 @@ class AppOverview extends DashboardView {
               </AppFact>
               <AppFact
                 label="Web Hosting"
-                extra={this.state.isLoadingWebhosting ? null : (
+                extra={this.state.isLoadingWebhosting ? null : webUrlLocked ? (
+                  <UpgradeGateButton
+                    gate={UpgradeGate.OVERVIEW_WEB_HOSTING}
+                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable web hosting</a>}
+                  />
+                ) : httpsLocked ? (
+                  <UpgradeGateButton
+                    gate={UpgradeGate.HTTPS}
+                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable HTTPS</a>}
+                  />
+                ) : (
                   <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>
-                    {webhost ? (this.state.webhosting.domains.length > 0 ? 'Domain Settings' : 'Add custom domain') : 'Configure'}
+                    {!webUrl ? 'Enable web hosting' : customDomain ? 'Manage' : 'Use your domain'}
                   </Link>
                 )}
               >
                 {this.state.isLoadingWebhosting
                   ? <Icon name="status-spinner" width="16px" height="16px" fill="#1377B8" className={styles.spinnerStatus} />
-                  : webhost
-                    ? <a className={styles.webhostingLink} href={`https://${webhost}`} target="_blank" rel="noopener noreferrer">{webhost}</a>
-                    : <span className={styles.greyText}>Not configured</span>}
+                  : webUrl
+                    ? <a className={styles.webhostingLink} href={`${httpsLocked ? 'http' : 'https'}://${webUrl}`} target="_blank" rel="noopener noreferrer">{webUrl}</a>
+                    : <span className={styles.greyText}>Not set</span>}
               </AppFact>
             </div>
           </div>
@@ -325,7 +375,7 @@ class AppOverview extends DashboardView {
 
           <div className={styles.cardsContainer}>
             {/* App plan card */}
-            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appSlug={this.context.slug} />
+            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appSlug={this.context.slug} appId={this.context.applicationId} />
             {/* App Secutiry Card */}
             <AppSecurityCard appId={this.context.slug} loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
           </div>

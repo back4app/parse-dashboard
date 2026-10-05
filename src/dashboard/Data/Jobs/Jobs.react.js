@@ -18,6 +18,7 @@ import FormNote from 'components/FormNote/FormNote.react';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import React from 'react';
+import { UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
 import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
 import RunNowButton from 'dashboard/Data/Jobs/RunNowButton.react';
 import SidebarAction from 'components/Sidebar/SidebarAction';
@@ -434,9 +435,11 @@ class Jobs extends TableView {
           buttonsInCenter={false}
           onCancel={() => this.setState({ jobLimitReached: false })}
           onConfirm={() => {
-            this.props.navigate(generatePath(this.context, 'plan-usage'));
+            logGateClicked(UpgradeGate.JOBS, this.context.applicationId);
+            this.props.navigate(generatePath(this.context, `plan-usage?gate=${UpgradeGate.JOBS}`));
           }}
         >
+          <UpgradeGateView gate={UpgradeGate.JOBS} appId={this.context.applicationId} />
           <div style={{ padding: '0 1rem 0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '14px', lineHeight: '1.5' }}>
             Upgrade your plan to schedule additional background jobs.
           </div>

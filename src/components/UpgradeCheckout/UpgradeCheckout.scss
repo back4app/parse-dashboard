@@ -1,0 +1,214 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+// One surface for the summary and the Paddle frame, in the user's light or dark preference.
+.dark {
+  --uc-bg: #{$dark};
+  --uc-panel: #15233b;
+  --uc-text: #f9f9f9;
+  --uc-muted: #9aa5b8;
+  --uc-border: rgba(255, 255, 255, 0.1);
+  --uc-option: rgba(255, 255, 255, 0.03);
+  --uc-option-selected: rgba(39, 174, 96, 0.12);
+}
+
+.light {
+  --uc-bg: #ffffff;
+  --uc-panel: #f5f7fa;
+  --uc-text: #10203a;
+  --uc-muted: #5b6577;
+  --uc-border: #e2e6ec;
+  --uc-option: #ffffff;
+  --uc-option-selected: rgba(39, 174, 96, 0.08);
+}
+
+.checkout {
+  @include modalAnimation();
+  @include InterFont;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  width: min(1040px, 92vw);
+  max-height: 90vh;
+  overflow: auto;
+  border: 1px solid var(--uc-border);
+  border-radius: 12px;
+  background: var(--uc-bg);
+  color: var(--uc-text);
+  text-align: left;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  display: flex;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--uc-border);
+  }
+}
+
+.summary {
+  flex: 1 1 340px;
+  padding: 2.5rem 2.5rem 2rem;
+  background: var(--uc-panel);
+  border-right: 1px solid var(--uc-border);
+}
+
+.payment {
+  flex: 1 1 380px;
+  padding: 2.5rem 2rem 1.5rem;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $cta-green;
+}
+
+.headline {
+  margin-top: 0.75rem;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.subline {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--uc-muted);
+}
+
+.price {
+  margin-top: 1.5rem;
+}
+
+.priceValue {
+  font-size: 2.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.priceUnit {
+  margin-left: 0.25rem;
+  color: var(--uc-muted);
+}
+
+.priceNote {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--uc-muted);
+}
+
+.cycles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.cycle {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--uc-border);
+  border-radius: 8px;
+  background: var(--uc-option);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  input {
+    margin: 0;
+    accent-color: $cta-green;
+  }
+
+  &:has(input:checked) {
+    border-color: $cta-green;
+    background: var(--uc-option-selected);
+  }
+}
+
+.save {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(39, 174, 96, 0.15);
+  color: $cta-green;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--uc-border);
+  font-size: 0.9375rem;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--uc-border);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.comparePlans {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--uc-muted);
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--uc-text);
+  }
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.nextStep {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--uc-muted);
+
+  a {
+    color: $cta-green;
+  }
+}
+
+.error {
+  padding: 1rem 0;
+  color: var(--uc-text);
+}
