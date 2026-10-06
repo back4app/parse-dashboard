@@ -24,6 +24,22 @@ describe('getUsageAlert', () => {
     );
   });
 
+  it('at the same urgency, talks about API requests first, then database, then files', () => {
+    const alert = getUsageAlert(plan({ apiCallUsed: '18 K', fileStorageUsed: '799 MB', dataStorageUsed: '190 MB' }));
+    expect(alert.level).toBe('warning');
+    expect(alert.message).toContain('You\'ve used 72% of this month\'s API requests (18 K of 25 K).');
+    expect(alert.message).toContain('2 other limits are close too.');
+
+    const noApi = getUsageAlert(plan({ fileStorageUsed: '799 MB', dataStorageUsed: '190 MB' }));
+    expect(noApi.message).toContain('Your database storage is 74% full');
+  });
+
+  it('a more urgent limit beats the priority order', () => {
+    const alert = getUsageAlert(plan({ apiCallUsed: '18 K', fileStorageUsed: '990 MB' }));
+    expect(alert.level).toBe('danger');
+    expect(alert.message).toContain('Your file storage is 96% full');
+  });
+
   it('turns red above 90% and leads with the fullest resource, counting the others', () => {
     const alert = getUsageAlert(plan({ apiCallUsed: '21 K', fileStorageUsed: '820 MB', dataStorageUsed: '235 MB' }));
     expect(alert.level).toBe('danger');

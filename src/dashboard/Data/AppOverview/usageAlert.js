@@ -4,6 +4,8 @@ import { getUsagePercent } from '../../AppPlan/usageClassUtils';
 const WARNING_PERCENT = 70;
 const DANGER_PERCENT = 90;
 
+// Listed by priority when two limits are equally urgent: API requests run out first,
+// then the database, then file storage.
 const resourcesOf = planData => [
   {
     label: 'API requests',
@@ -12,14 +14,14 @@ const resourcesOf = planData => [
     limit: planData.apiCallLimit,
   },
   {
-    label: 'file storage',
-    used: planData.fileStorageUsed || planData.fileStorageUsedNormalized,
-    limit: planData.fileStorageLimit,
-  },
-  {
     label: 'database storage',
     used: planData.dataStorageUsed || planData.dataStorageUsedNormalized,
     limit: planData.dataStorageLimit,
+  },
+  {
+    label: 'file storage',
+    used: planData.fileStorageUsed || planData.fileStorageUsedNormalized,
+    limit: planData.fileStorageLimit,
   },
 ];
 
@@ -30,10 +32,14 @@ export const getUsageAlert = (planData, blocked = false) => {
   if (!planData || planData instanceof Error) {
     return blocked ? { level: 'blocked', message: blockedMessage(null) } : null;
   }
+  // Most urgent first (blocked, then red, then yellow); within the same level, list order wins.
   const resources = resourcesOf(planData)
-    .map(resource => ({ ...resource, percent: getUsagePercent(resource.used, resource.limit) }))
+    .map((resource, priority) => {
+      const percent = getUsagePercent(resource.used, resource.limit);
+      return { ...resource, priority, percent, severity: severityOf(percent) };
+    })
     .filter(resource => resource.percent !== null)
-    .sort((a, b) => b.percent - a.percent);
+    .sort((a, b) => b.severity - a.severity || a.priority - b.priority);
   const worst = resources[0];
 
   if (blocked || (worst && worst.percent >= 100)) {
@@ -57,6 +63,16 @@ export const getUsageAlert = (planData, blocked = false) => {
     level: worst.percent > DANGER_PERCENT ? 'danger' : 'warning',
     message: `${usage}${others} At 100%, your app stops responding and your users start getting errors.`,
   };
+};
+
+const severityOf = percent => {
+  if (percent >= 100) {
+    return 3;
+  }
+  if (percent > DANGER_PERCENT) {
+    return 2;
+  }
+  return percent > WARNING_PERCENT ? 1 : 0;
 };
 
 const blockedMessage = worst =>
