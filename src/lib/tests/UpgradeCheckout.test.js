@@ -12,7 +12,7 @@ jest.mock('../../components/Popover/Popover.react', () => {
 });
 jest.mock('context/currentApp', () => ({ CurrentApp: require('react').createContext(null) }), { virtual: true });
 jest.mock(
-  'dashboard/AppPlan/AppPlan.react',
+  'dashboard/AppPlan/prices',
   () => ({
     prices: [
       {

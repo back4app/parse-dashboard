@@ -1,0 +1,47 @@
+@import 'stylesheets/globals.scss';
+@import 'stylesheets/back4app.scss';
+
+// Yellow above 70%, red above 90% or when the app is blocked.
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px solid;
+  border-radius: 8px;
+  color: $white;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.warning {
+  border-color: rgba(251, 255, 59, 0.5);
+  background: rgba(251, 255, 59, 0.06);
+
+  svg {
+    color: #FBFF3B;
+  }
+}
+
+.danger,
+.blocked {
+  border-color: rgba(232, 92, 62, 0.6);
+  background: rgba(232, 92, 62, 0.1);
+
+  svg {
+    color: #E85C3E;
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.link {
+  flex-shrink: 0;
+  color: #27AE60;
+  font-weight: 600;
+  white-space: nowrap;
+}

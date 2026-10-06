@@ -8,7 +8,7 @@ import { CurrentApp } from 'context/currentApp';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
-import { prices } from 'dashboard/AppPlan/AppPlan.react';
+import { prices } from 'dashboard/AppPlan/prices';
 import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';

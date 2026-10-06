@@ -16,7 +16,7 @@ import stylesTable from 'dashboard/TableView.scss';
 import B4aLoaderContainer from 'components/B4aLoaderContainer/B4aLoaderContainer.react';
 import Icon from 'components/Icon/Icon.react';
 import DatabaseProfilerDetail from './DatabaseProfilerDetail.react';
-import { prices } from 'dashboard/AppPlan/AppPlan.react';
+import { prices } from 'dashboard/AppPlan/prices';
 import { UpgradeGate } from 'lib/upgradeEvents';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 

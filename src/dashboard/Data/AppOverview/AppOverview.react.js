@@ -20,8 +20,8 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate, planUsagePath } from 'lib/upgradeEvents';
-import { getUsageAlert } from './usageAlert';
+import { UpgradeGate } from 'lib/upgradeEvents';
+import UsageLimitBanner from 'components/UsageLimitBanner/UsageLimitBanner.react';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
@@ -52,27 +52,6 @@ const CopyValue = ({ value }) => {
 // One column of the facts row: small label, the value, and an optional action
 // or note under it.
 // A missing value shows as a dash rather than an empty column.
-// Near or over a plan limit. Free opens the MVP checkout; other plans open Plan Usage.
-const UsageLimitBanner = ({ planData, blocked, slug }) => {
-  const alert = getUsageAlert(planData, blocked);
-  if (!alert) {
-    return null;
-  }
-  const isFree = planData && !(planData instanceof Error) && /^free/i.test(planData.planName || '');
-  const cta = alert.level === 'blocked' ? 'Upgrade to bring it back' : 'Upgrade to MVP';
-  return (
-    <div className={`${styles.usageBanner} ${styles[`usageBanner_${alert.level}`]}`}>
-      <Icon name="warn-triangle-outline" width={18} height={18} fill="currentColor" />
-      <div className={styles.usageBannerText}>{alert.message}</div>
-      {isFree ? (
-        <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} value={cta} />
-      ) : (
-        <Link className={styles.usageBannerLink} to={planUsagePath(slug, UpgradeGate.USAGE_LIMIT)}>See plans</Link>
-      )}
-    </div>
-  );
-};
-
 // The app's plan next to its name. Free opens the MVP checkout; other plans open Plan Usage.
 const PlanBadge = ({ planData, slug }) => {
   if (!planData || planData instanceof Error || !planData.planName) {
