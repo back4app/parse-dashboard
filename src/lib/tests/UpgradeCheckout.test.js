@@ -269,11 +269,12 @@ describe('BackupUpsell', () => {
 
   it('warns Free apps that deleted data cannot be recovered and offers backups', async () => {
     const tree = await mountWithPlan('Free Plan');
-    expect(textOf(tree)).toContain('this can\'t be recovered');
+    expect(textOf(tree)).toContain('No backups on Free');
+    expect(textOf(tree)).toContain('Deleted data can\'t be recovered.');
     expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'backup_delete_class', app_id: 'app-1' }]);
 
     await renderer.act(async () => {
-      tree.root.findByType('a').props.onClick({ preventDefault: () => {} });
+      tree.root.findByType('button').props.onClick({ preventDefault: () => {} });
     });
     expect(textOf(tree)).toContain('Keep daily backups of your data');
   });

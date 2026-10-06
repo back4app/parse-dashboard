@@ -57,6 +57,7 @@ const GATE_OFFERS = {
   // Shown inside delete confirmations on Free, where nothing can be recovered.
   [UpgradeGate.BACKUP_DELETE_CLASS]: BACKUPS,
   [UpgradeGate.BACKUP_DELETE_ROWS]: BACKUPS,
+  [UpgradeGate.BACKUP_DELETE_COLUMN]: BACKUPS,
   // HTTPS on a custom domain is turned on by support after the upgrade.
   [UpgradeGate.HTTPS]: {
     plan: 'Pay As You Go',

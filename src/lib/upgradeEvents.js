@@ -29,6 +29,7 @@ export const UpgradeGate = {
   HTTPS: 'https',
   BACKUP_DELETE_CLASS: 'backup_delete_class',
   BACKUP_DELETE_ROWS: 'backup_delete_rows',
+  BACKUP_DELETE_COLUMN: 'backup_delete_column',
   USAGE_LIMIT: 'usage_limit',
   LOGS_RETENTION: 'logs_retention',
   COMPLIANCE_HIPAA: 'compliance_hipaa',
