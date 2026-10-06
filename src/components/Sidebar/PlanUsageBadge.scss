@@ -1,6 +1,13 @@
+// Same placement trick as the sidebar's Connect action: float for the plain row
+// (display: block), margin-left: auto for the active one (display: flex).
+// inline-block keeps the row's hover underline off the pill.
 .badge {
+  float: right;
+  display: inline-block;
   flex-shrink: 0;
   margin-left: auto;
+  margin-top: -1px;
+  text-decoration: none;
   padding: 1px 8px;
   border: 1px solid;
   border-radius: 999px;
