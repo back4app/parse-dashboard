@@ -87,7 +87,7 @@ describe('getUsageAlert', () => {
         'You\'ve used 98% of this month\'s API requests on MVP (490 K of 500 K). Above 100%, extra requests are billed at $5 per 100K.'
       );
       expect(alert.action).toBe('plans');
-      expect(alert.actionLabel).toBe('Upgrade plan');
+      expect(alert.actionLabel).toBe('Upgrade to Pay As You Go');
     });
 
     it('past 100% it keeps running and pays the overage, still yellow', () => {
@@ -126,8 +126,52 @@ describe('getUsageAlert', () => {
     });
   });
 
-  it('Dedicated gets no usage warnings', () => {
-    expect(getUsageAlert(plan({ planName: 'Dedicated Plan', dataStorageUsed: '7.9 GB', dataStorageLimit: '8 GB' }))).toBe(null);
+  describe('legacy plans', () => {
+    const legacy = (planName, overrides) => plan({ planName, apiCallLimit: '50 K', dataStorageLimit: '1 GB', fileStorageLimit: '10 GB', ...overrides });
+
+    it('Solo and Starter warn in yellow and offer MVP, without an overage price', () => {
+      ['Solo Plan', 'Starter Plan'].forEach(planName => {
+        const alert = getUsageAlert(legacy(planName, { apiCallUsed: '49 K' }));
+        expect(alert.level).toBe('warning');
+        expect(alert.action).toBe('plans');
+        expect(alert.actionLabel).toBe('Upgrade to MVP');
+        expect(alert.message).not.toMatch(/billed/);
+      });
+      expect(getUsageAlert(legacy('Starter Plan', { apiCallUsed: '49 K' })).message).toBe(
+        'You\'ve used 98% of this month\'s API requests on Starter (49 K of 50 K).'
+      );
+      expect(getUsageAlert(legacy('Starter Plan', { apiCallUsed: '52 K' })).message).toBe(
+        'This app used 104% of its Starter API requests (52 K of 50 K).'
+      );
+    });
+
+    it('Basic, Intermediate and Standard offer Pay As You Go', () => {
+      ['Basic Plan', 'Intermediate Plan', 'Standard Plan'].forEach(planName => {
+        const alert = getUsageAlert(legacy(planName, { apiCallUsed: '40 K' }));
+        expect(alert.level).toBe('warning');
+        expect(alert.actionLabel).toBe('Upgrade to Pay As You Go');
+        expect(alert.message).not.toMatch(/billed/);
+      });
+    });
+
+    it('Advanced follows Pay As You Go: quiet until over its limit, then offers Dedicated', () => {
+      expect(getUsageAlert(legacy('Advanced Plan', { apiCallUsed: '49 K' }))).toBe(null);
+      const alert = getUsageAlert(legacy('Advanced Plan', { apiCallUsed: '55 K' }));
+      expect(alert.level).toBe('info');
+      expect(alert.message).toBe('This app is above the API requests included in Advanced (55 K of 50 K).');
+      expect(alert.actionLabel).toBe('Upgrade to Dedicated');
+    });
+
+    it('a blocked legacy app is told which plan to move to', () => {
+      expect(getUsageAlert(legacy('Starter Plan'), true).actionLabel).toBe('Upgrade to MVP');
+      expect(getUsageAlert(legacy('Gold Plan'), true).actionLabel).toBe('Upgrade plan');
+    });
+  });
+
+  it('Dedicated, Silver, Gold, Platinum and custom plans get no usage warnings', () => {
+    ['Dedicated Plan', 'Silver Plan', 'Gold Plan', 'Platinum Plan', 'Custom Plan'].forEach(planName => {
+      expect(getUsageAlert(plan({ planName, dataStorageUsed: '8.5 GB', dataStorageLimit: '8 GB' }))).toBe(null);
+    });
   });
 
   it('shows nothing when plan data is missing and the app is not blocked', () => {

@@ -6,6 +6,7 @@ import styles from 'components/Sidebar/PlanUsageBadge.scss';
 
 // "84%" next to Plan Usage in the sidebar, following the banner's rules: Free yellow above 70%
 // and red above 90%; MVP yellow above 70%; Pay As You Go neutral once over its included usage.
+// Legacy plans follow the plan of their size.
 const PlanUsageBadge = () => {
   const context = useContext(CurrentApp);
   const [badge, setBadge] = useState(null);

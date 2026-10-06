@@ -67,6 +67,15 @@ describe('PlanUsageBadge on paid plans', () => {
     expect(badge.props.className).toBe('badge info');
   });
 
+  it('legacy plans follow the plan of their size', async () => {
+    const starter = await mount(plan({ planName: 'Starter Plan', apiCallUsed: '49 K', apiCallLimit: '50 K' }));
+    expect(starter.props.className).toBe('badge warning');
+    clearPlanDataCache();
+    expect(await mount(plan({ planName: 'Advanced Plan', apiCallUsed: '4.9 M', apiCallLimit: '5 M' }))).toBe(null);
+    clearPlanDataCache();
+    expect(await mount(plan({ planName: 'Gold Plan', apiCallUsed: '21 M', apiCallLimit: '20 M' }))).toBe(null);
+  });
+
   it('Dedicated shows nothing', async () => {
     expect(await mount(plan({ planName: 'Dedicated Plan', dataStorageUsed: '7.9 GB', dataStorageLimit: '8 GB' }))).toBe(null);
   });

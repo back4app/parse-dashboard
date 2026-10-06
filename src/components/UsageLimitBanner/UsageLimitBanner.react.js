@@ -7,8 +7,8 @@ import { getUsageAlert } from 'dashboard/Data/AppOverview/usageAlert';
 import styles from 'components/UsageLimitBanner/UsageLimitBanner.scss';
 
 // Near or over a plan limit (Overview and Plan Usage). The wording and the action come from
-// getUsageAlert: Free opens the MVP checkout; paid plans get a link to Plan Usage, unless they
-// are already on it (showPlansLink={false}).
+// getUsageAlert: Free opens the MVP checkout; paid plans get a link to Plan Usage naming the
+// next plan up, unless they are already on it (showPlansLink={false}).
 const UsageLimitBanner = ({ planData, blocked, slug, showPlansLink = true }) => {
   const alert = getUsageAlert(planData, blocked);
   if (!alert) {
