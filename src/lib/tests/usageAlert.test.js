@@ -53,12 +53,23 @@ describe('getUsageAlert', () => {
     expect(alert.message).not.toMatch(/until/i);
   });
 
-  it('reports a blocked app at 100%', () => {
+  it('at 100% on Free, warns that the app can stop at any moment (it still serves requests)', () => {
     const alert = getUsageAlert(plan({ apiCallUsed: '25 K' }));
+    expect(alert.level).toBe('danger');
+    expect(alert.message).toBe(
+      'Your app reached its API requests limit and can stop responding at any moment. Upgrade now to keep it running.'
+    );
+    expect(alert.actionLabel).toBe('Upgrade to keep it running');
+    expect(alert.message).not.toMatch(/stopped/);
+  });
+
+  it('reports a blocked app once the Free plan is paused', () => {
+    const alert = getUsageAlert(plan({ planName: 'Free Plan - Paused', apiCallUsed: '25 K' }));
     expect(alert.level).toBe('blocked');
     expect(alert.message).toBe(
       'Your app stopped responding: it reached its API requests limit. Your app\'s users are getting errors right now.'
     );
+    expect(alert.actionLabel).toBe('Upgrade to bring it back');
   });
 
   it('reports a blocked app when the server already answers 402, even with stale usage', () => {

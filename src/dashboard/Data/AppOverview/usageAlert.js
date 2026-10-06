@@ -66,13 +66,15 @@ export const getMostUrgentUsage = planData => {
 
 // Decides the usage banner (Overview and Plan Usage). Returns null when there is nothing to say,
 // or { level, message, action } where action is 'checkout' (MVP checkout) or 'plans' with a label.
-// A 402 from the server means the app is really blocked, on any plan.
+// The app is really blocked only when the server answers 402 or the plan is paused
+// ("Free Plan - Paused"); a Free app over its limit still serves requests until then.
 export const getUsageAlert = (planData, blocked = false) => {
   const kind = planKindOf(planData);
   const usage = getMostUrgentUsage(planData);
   const worst = usage && usage.worst;
+  const paused = /paused/i.test((planData && !(planData instanceof Error) && planData.planName) || '');
 
-  if (blocked || (kind === 'free' && worst && worst.percent >= 100)) {
+  if (blocked || paused) {
     return {
       level: 'blocked',
       message: blockedMessage(worst && worst.percent >= 100 ? worst : null),
@@ -90,6 +92,15 @@ export const getUsageAlert = (planData, blocked = false) => {
   if (kind === 'free') {
     if (worst.percent <= WARNING_PERCENT) {
       return null;
+    }
+    // Over the limit but not paused yet: urgent and honest, the app can stop at any moment.
+    if (worst.percent >= 100) {
+      return {
+        level: 'danger',
+        message: `Your app reached its ${worst.label} limit and can stop responding at any moment. Upgrade now to keep it running.`,
+        action: 'checkout',
+        actionLabel: 'Upgrade to keep it running',
+      };
     }
     return {
       level: worst.percent > DANGER_PERCENT ? 'danger' : 'warning',
