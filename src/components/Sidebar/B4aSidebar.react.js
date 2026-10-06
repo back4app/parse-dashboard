@@ -310,10 +310,11 @@ const B4aSidebar = ({
             link,
             subsections,
             badgeParams,
+            badge: sectionBadge,
             headerAction
           }) => {
             const active = name === section;
-            const badge = badgeParams && <B4aBadge {...badgeParams} /> || ''
+            const badge = sectionBadge || (badgeParams && <B4aBadge {...badgeParams} />) || ''
             // If link points to another component, adds the prefix
             link = link.startsWith('/') ? prefix + link : link;
             return (

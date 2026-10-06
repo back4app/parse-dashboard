@@ -25,14 +25,13 @@ const resourcesOf = planData => [
   },
 ];
 
-// Decides the Overview usage banner. Apps over a limit without payment are blocked (the
-// server answers 402), so the message is about the app stopping, never about waiting.
-// Returns null when nothing is close to a limit.
-export const getUsageAlert = (planData, blocked = false) => {
+// The limit to talk about: most urgent first (blocked, then red, then yellow) and, within
+// the same level, the list order above. Also returns the others, most urgent first.
+// Null when there is no usage data.
+export const getMostUrgentUsage = planData => {
   if (!planData || planData instanceof Error) {
-    return blocked ? { level: 'blocked', message: blockedMessage(null) } : null;
+    return null;
   }
-  // Most urgent first (blocked, then red, then yellow); within the same level, list order wins.
   const resources = resourcesOf(planData)
     .map((resource, priority) => {
       const percent = getUsagePercent(resource.used, resource.limit);
@@ -40,7 +39,18 @@ export const getUsageAlert = (planData, blocked = false) => {
     })
     .filter(resource => resource.percent !== null)
     .sort((a, b) => b.severity - a.severity || a.priority - b.priority);
-  const worst = resources[0];
+  return resources.length ? { worst: resources[0], others: resources.slice(1) } : null;
+};
+
+// Decides the Overview usage banner. Apps over a limit without payment are blocked (the
+// server answers 402), so the message is about the app stopping, never about waiting.
+// Returns null when nothing is close to a limit.
+export const getUsageAlert = (planData, blocked = false) => {
+  if (!planData || planData instanceof Error) {
+    return blocked ? { level: 'blocked', message: blockedMessage(null) } : null;
+  }
+  const usage = getMostUrgentUsage(planData);
+  const worst = usage && usage.worst;
 
   if (blocked || (worst && worst.percent >= 100)) {
     return { level: 'blocked', message: blockedMessage(worst && worst.percent >= 100 ? worst : null) };
@@ -51,17 +61,17 @@ export const getUsageAlert = (planData, blocked = false) => {
 
   const percent = Math.floor(worst.percent);
   const amount = `(${worst.used} of ${worst.limit})`;
-  const usage = worst.monthly
+  const summary = worst.monthly
     ? `You've used ${percent}% of this month's ${worst.label} ${amount}.`
     : `Your ${worst.label} is ${percent}% full ${amount}.`;
-  const othersClose = resources.slice(1).filter(resource => resource.percent > WARNING_PERCENT).length;
+  const othersClose = usage.others.filter(resource => resource.percent > WARNING_PERCENT).length;
   const others = othersClose
     ? ` ${othersClose} other ${othersClose === 1 ? 'limit is' : 'limits are'} close too.`
     : '';
 
   return {
     level: worst.percent > DANGER_PERCENT ? 'danger' : 'warning',
-    message: `${usage}${others} At 100%, your app stops responding and your users start getting errors.`,
+    message: `${summary}${others} At 100%, your app stops responding and your users start getting errors.`,
   };
 };
 

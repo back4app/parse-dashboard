@@ -1,0 +1,22 @@
+.badge {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 1px 8px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.warning {
+  border-color: rgba(251, 255, 59, 0.5);
+  background: rgba(251, 255, 59, 0.08);
+  color: #FBFF3B;
+}
+
+.danger {
+  border-color: rgba(232, 92, 62, 0.6);
+  background: rgba(232, 92, 62, 0.12);
+  color: #E85C3E;
+}
