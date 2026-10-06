@@ -1,7 +1,8 @@
 @import 'stylesheets/globals.scss';
 @import 'stylesheets/back4app.scss';
 
-// Yellow above 70%, red above 90% or when the app is blocked.
+// Yellow above 70% (always yellow on MVP), red above 90% on Free or when the app is blocked,
+// neutral for Pay As You Go over its included usage.
 .banner {
   display: flex;
   align-items: center;
@@ -31,6 +32,15 @@
 
   svg {
     color: #E85C3E;
+  }
+}
+
+.info {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+
+  svg {
+    color: #9aa5b8;
   }
 }
 

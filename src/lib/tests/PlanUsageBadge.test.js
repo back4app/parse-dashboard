@@ -10,6 +10,7 @@ const { getCachedPlanData, clearPlanDataCache } = require('../planDataCache');
 const PlanUsageBadge = require('../../components/Sidebar/PlanUsageBadge.react').default;
 
 const plan = overrides => ({
+  planName: 'Free Plan',
   apiCallUsed: '2', apiCallLimit: '25 K',
   fileStorageUsed: '0 KB', fileStorageLimit: '1 GB',
   dataStorageUsed: '400 KB', dataStorageLimit: '0.25 GB',
@@ -46,6 +47,28 @@ describe('PlanUsageBadge', () => {
     expect((await mount(plan({ dataStorageUsed: '240 MB' }))).props.className).toBe('badge danger');
     clearPlanDataCache();
     expect((await mount(plan({ apiCallUsed: '30 K' }))).children).toEqual(['100', '%']);
+  });
+});
+
+describe('PlanUsageBadge on paid plans', () => {
+  beforeEach(() => clearPlanDataCache());
+
+  it('MVP stays yellow, even past 100%, and shows the real percentage', async () => {
+    const badge = await mount(plan({ planName: 'MVP Plan', apiCallUsed: '520 K', apiCallLimit: '500 K' }));
+    expect(badge.children).toEqual(['104', '%']);
+    expect(badge.props.className).toBe('badge warning');
+  });
+
+  it('Pay As You Go shows nothing until it is over its included usage, then a neutral pill', async () => {
+    expect(await mount(plan({ planName: 'Pay as you go Plan', apiCallUsed: '4.9 M', apiCallLimit: '5 M' }))).toBe(null);
+    clearPlanDataCache();
+    const badge = await mount(plan({ planName: 'Pay as you go Plan', apiCallUsed: '5.5 M', apiCallLimit: '5 M' }));
+    expect(badge.children).toEqual(['110', '%']);
+    expect(badge.props.className).toBe('badge info');
+  });
+
+  it('Dedicated shows nothing', async () => {
+    expect(await mount(plan({ planName: 'Dedicated Plan', dataStorageUsed: '7.9 GB', dataStorageLimit: '8 GB' }))).toBe(null);
   });
 });
 

@@ -6,20 +6,19 @@ import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.re
 import { getUsageAlert } from 'dashboard/Data/AppOverview/usageAlert';
 import styles from 'components/UsageLimitBanner/UsageLimitBanner.scss';
 
-// Near or over a plan limit (Overview and Plan Usage). Free opens the MVP checkout; other
-// plans get a link to Plan Usage, unless they are already on it (showPlansLink={false}).
+// Near or over a plan limit (Overview and Plan Usage). The wording and the action come from
+// getUsageAlert: Free opens the MVP checkout; paid plans get a link to Plan Usage, unless they
+// are already on it (showPlansLink={false}).
 const UsageLimitBanner = ({ planData, blocked, slug, showPlansLink = true }) => {
   const alert = getUsageAlert(planData, blocked);
   if (!alert) {
     return null;
   }
-  const isFree = planData && !(planData instanceof Error) && /^free/i.test(planData.planName || '');
-  const cta = alert.level === 'blocked' ? 'Upgrade to bring it back' : 'Upgrade to MVP';
   let action = null;
-  if (isFree) {
-    action = <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} value={cta} />;
+  if (alert.action === 'checkout') {
+    action = <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} value={alert.actionLabel} />;
   } else if (showPlansLink) {
-    action = <Link className={styles.link} to={planUsagePath(slug, UpgradeGate.USAGE_LIMIT)}>See plans</Link>;
+    action = <Link className={styles.link} to={planUsagePath(slug, UpgradeGate.USAGE_LIMIT)}>{alert.actionLabel}</Link>;
   }
   return (
     <div className={`${styles.banner} ${styles[alert.level]}`}>
