@@ -9,10 +9,12 @@ export const getCachedPlanData = app => {
   if (hit && Date.now() - hit.at < TTL_MS) {
     return hit.promise;
   }
-  const promise = app.getAppPlanData().catch(error => {
-    cache.delete(key);
-    throw error;
-  });
+  const promise = Promise.resolve()
+    .then(() => app.getAppPlanData())
+    .catch(error => {
+      cache.delete(key);
+      throw error;
+    });
   cache.set(key, { promise, at: Date.now() });
   return promise;
 };

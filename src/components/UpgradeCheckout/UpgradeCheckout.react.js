@@ -9,6 +9,8 @@ import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath, regionChangeFormUrl } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
 import { prices } from 'dashboard/AppPlan/prices';
+import { getCachedPlanData } from 'lib/planDataCache';
+import { planKindOf } from 'dashboard/Data/AppOverview/usageAlert';
 import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';
@@ -267,7 +269,16 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
   );
 };
 
-// Paywall entry point: logs the gate view, and on click opens the direct checkout.
+// Plan Usage for this app, keeping the gate so its checkout events know where the user came from.
+const goToPlanUsage = (slug, gate) => {
+  /* global b4aSettings */
+  const base = (typeof b4aSettings !== 'undefined' && b4aSettings.BACKEND_DASHBOARD_PATH) || '';
+  window.location.assign(`${base}${planUsagePath(slug, gate)}`);
+};
+
+// Paywall entry point: logs the gate view and, on click, opens the direct checkout. The direct
+// checkout starts a new subscription, so it is only for Free apps; an app already on any paid
+// plan (MVP, Starter, Gold, ...) goes to Plan Usage instead of buying a second plan.
 // `renderTrigger(open)` lets anchors and custom buttons keep their look.
 export const UpgradeGateButton = ({ gate, renderTrigger, value = 'Upgrade Plan' }) => {
   const context = useContext(CurrentApp);
@@ -277,7 +288,10 @@ export const UpgradeGateButton = ({ gate, renderTrigger, value = 'Upgrade Plan' 
       event.preventDefault();
     }
     logGateClicked(gate, context.applicationId);
-    setOpen(true);
+    return getCachedPlanData(context)
+      .then(planData => planKindOf(planData) === 'free')
+      .catch(() => false)
+      .then(isFree => (isFree ? setOpen(true) : goToPlanUsage(context.slug, gate)));
   };
 
   return (

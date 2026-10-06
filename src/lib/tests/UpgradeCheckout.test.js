@@ -11,6 +11,7 @@ jest.mock('../../components/Popover/Popover.react', () => {
   return { __esModule: true, default: ({ children }) => <div>{children}</div> };
 });
 jest.mock('context/currentApp', () => ({ CurrentApp: require('react').createContext(null) }), { virtual: true });
+jest.mock('dashboard/Data/AppOverview/usageAlert', () => jest.requireActual('../../dashboard/Data/AppOverview/usageAlert'), { virtual: true });
 jest.mock(
   'dashboard/AppPlan/prices',
   () => ({
@@ -43,7 +44,15 @@ const { initPaddle, recordSubscription } = require('../paddleCheckout');
 const { UpgradeCheckoutModal, UpgradeGateButton } = require('../../components/UpgradeCheckout/UpgradeCheckout.react');
 const BackupUpsell = require('../../components/UpgradeCheckout/BackupUpsell.react').default;
 
-const app = { applicationId: 'app-1', slug: 'my-app', custom: { isOwner: true } };
+const { clearPlanDataCache } = require('../planDataCache');
+
+const appOnPlan = planName => ({
+  applicationId: 'app-1',
+  slug: 'my-app',
+  custom: { isOwner: true },
+  getAppPlanData: () => Promise.resolve({ planName }),
+});
+let app = appOnPlan('Free Plan');
 
 const fakePaddle = () => ({ Checkout: { open: jest.fn(), updateCheckout: jest.fn(), close: jest.fn() } });
 
@@ -238,6 +247,8 @@ describe('UpgradeCheckoutModal', () => {
 
 describe('UpgradeGateButton', () => {
   beforeEach(() => {
+    clearPlanDataCache();
+    app = appOnPlan('Free Plan');
     amplitudeLogEvent.mockClear();
     initPaddle.mockReset();
     initPaddle.mockImplementation(() => Promise.resolve(fakePaddle()));
@@ -252,7 +263,7 @@ describe('UpgradeGateButton', () => {
 
     const preventDefault = jest.fn();
     await renderer.act(async () => {
-      tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault });
+      await tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault });
     });
 
     expect(preventDefault).toHaveBeenCalled();
@@ -261,9 +272,28 @@ describe('UpgradeGateButton', () => {
     expect(textOf(tree)).toContain('Get the latest MongoDB');
     expect(textOf(tree)).toContain('Faster queries and the newest MongoDB features.');
   });
+
+  it('sends apps already on a paid plan to Plan Usage instead of a second subscription', async () => {
+    app = appOnPlan('Starter Plan');
+    const assign = jest.fn();
+    global.window = { location: { assign } };
+    const tree = await mount(
+      <UpgradeGateButton gate="collaborators" renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade Plan</a>} />
+    );
+    await renderer.act(async () => {
+      await tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault: () => {} });
+    });
+    delete global.window;
+
+    expect(assign).toHaveBeenCalledWith('/apps/my-app/plan-usage?gate=collaborators');
+    expect(initPaddle).not.toHaveBeenCalled();
+    expect(loggedEvents('baas_upgrade_gate_clicked')).toEqual([{ gate: 'collaborators', app_id: 'app-1' }]);
+  });
 });
 
 describe('BackupUpsell', () => {
+  beforeEach(() => clearPlanDataCache());
+
   const mountWithPlan = async planName => {
     let tree;
     const appWithPlan = { ...app, getAppPlanData: () => Promise.resolve({ planName }) };
@@ -291,7 +321,7 @@ describe('BackupUpsell', () => {
     expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'backup_delete_class', app_id: 'app-1' }]);
 
     await renderer.act(async () => {
-      tree.root.findByType('button').props.onClick({ preventDefault: () => {} });
+      await tree.root.findByType('button').props.onClick({ preventDefault: () => {} });
     });
     expect(textOf(tree)).toContain('Keep daily backups of your data');
   });
