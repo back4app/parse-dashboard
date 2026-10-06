@@ -13,6 +13,8 @@ import Label from 'components/Label/Label.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import Option from 'components/Dropdown/Option.react';
 import React from 'react';
+import BackupUpsell from 'components/UpgradeCheckout/BackupUpsell.react';
+import { UpgradeGate } from 'lib/upgradeEvents';
 
 export default class RemoveColumnDialog extends React.Component {
   constructor() {
@@ -26,8 +28,10 @@ export default class RemoveColumnDialog extends React.Component {
     let content = null;
     const hasColumns = this.props.currentColumns.length > 0;
     if (hasColumns) {
-      content = (
+      content = [
+        <BackupUpsell key="backup" gate={UpgradeGate.BACKUP_DELETE_COLUMN} />,
         <Field
+          key="column"
           label={<Label text="Which column?" />}
           input={
             <Dropdown
@@ -42,8 +46,8 @@ export default class RemoveColumnDialog extends React.Component {
               ))}
             </Dropdown>
           }
-        />
-      );
+        />,
+      ];
     }
     return (
       <B4aModal

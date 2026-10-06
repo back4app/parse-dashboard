@@ -1,0 +1,35 @@
+// Same placement trick as the sidebar's Connect action: float for the plain row
+// (display: block), margin-left: auto for the active one (display: flex).
+// inline-block keeps the row's hover underline off the pill.
+.badge {
+  float: right;
+  display: inline-block;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-top: -1px;
+  text-decoration: none;
+  padding: 1px 8px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.warning {
+  border-color: rgba(251, 255, 59, 0.5);
+  background: rgba(251, 255, 59, 0.08);
+  color: #FBFF3B;
+}
+
+.info {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  color: #c3cad6;
+}
+
+.danger {
+  border-color: rgba(232, 92, 62, 0.6);
+  background: rgba(232, 92, 62, 0.12);
+  color: #E85C3E;
+}

@@ -18,6 +18,7 @@ import ServerLogsView  from 'components/ServerLogsView/ServerLogsView.react';
 import { withRouter } from 'lib/withRouter';
 
 import styles from 'dashboard/Data/Logs/Logs.scss';
+import LogsFooter from 'dashboard/Data/Logs/LogsFooter.react';
 
 const alertWhatIsMessage = (
   <div>
@@ -171,6 +172,7 @@ export default class AccessLogs extends DashboardView {
             <div>
               {alertWhatIs}
               <ServerLogsView type="access" logs={this.state.logs} />
+              <LogsFooter showRetention={true} />
             </div>
           )}
         </div>

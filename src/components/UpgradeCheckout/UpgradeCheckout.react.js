@@ -6,14 +6,15 @@ import Icon from 'components/Icon/Icon.react';
 import AccountManager from 'lib/AccountManager';
 import { CurrentApp } from 'context/currentApp';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath, regionChangeFormUrl } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
-import { prices } from 'dashboard/AppPlan/AppPlan.react';
+import { prices } from 'dashboard/AppPlan/prices';
+import { getCachedPlanData } from 'lib/planDataCache';
+import { planKindOf } from 'dashboard/Data/AppOverview/usageAlert';
 import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';
 const ORIGIN = new Position(0, 0);
-const SUPPORT_TICKET_URL = 'https://help.back4app.com/hc/en-us/requests/new';
 
 // Follows the OS/browser light or dark preference. Read once: Paddle cannot switch theme after opening.
 const prefersDark = () =>
@@ -22,17 +23,30 @@ const prefersDark = () =>
 const MVP_AS_A_WHOLE = {
   plan: 'MVP',
   headline: 'Take this app to production',
-  subline: 'Web hosting and your own domain, daily backups, the latest MongoDB and your team in the app.',
+  subline: 'Web hosting, daily backups, the latest MongoDB and your team in the app.',
+};
+
+const BACKUPS = {
+  plan: 'MVP',
+  headline: 'Keep daily backups of your data',
+  subline: 'MVP keeps a daily backup of your app for 7 days.',
 };
 
 // What the user asked for when they hit the paywall, and the cheapest plan that unlocks it.
 const GATE_OFFERS = {
-  [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages and use your own domain' },
-  [UpgradeGate.OVERVIEW_WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages and use your own domain' },
-  [UpgradeGate.CUSTOM_DOMAIN]: { plan: 'MVP', headline: 'Put your API and pages on your own domain' },
+  [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages on a b4a.app subdomain' },
+  [UpgradeGate.OVERVIEW_WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages on a b4a.app subdomain' },
+  // Custom domains start on Pay As You Go (backend permission canChangeCustomDomain).
+  [UpgradeGate.CUSTOM_DOMAIN]: {
+    plan: 'Pay As You Go',
+    headline: 'Use your own domain',
+    subline: 'Pay As You Go includes custom domains with HTTPS.',
+  },
   [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Send emails with your brand and words' },
   [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Tune your Parse Server' },
   [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Bring your team into this app' },
+  // Only Free reaches this checkout from the job limit; paid plans go to Plan Usage.
+  [UpgradeGate.JOBS]: { plan: 'MVP', headline: 'Schedule more background jobs', subline: 'MVP lets you schedule up to 3 jobs.' },
   // The overview's generic upgrade entry points: no single feature asked for, so they sell MVP as a whole.
   [UpgradeGate.OVERVIEW_PLAN_CARD]: MVP_AS_A_WHOLE,
   [UpgradeGate.OVERVIEW_PLAN_BADGE]: MVP_AS_A_WHOLE,
@@ -41,12 +55,41 @@ const GATE_OFFERS = {
     headline: 'Get the latest MongoDB',
     subline: 'Faster queries and the newest MongoDB features.',
   },
+  // Overview usage banner: near or over a Free limit, where the app gets blocked.
+  [UpgradeGate.USAGE_LIMIT]: {
+    plan: 'MVP',
+    headline: 'Keep your app running',
+    subline: 'MVP raises your limits to 500K requests, 1 GB of database and 50 GB of files.',
+  },
+  // Shown inside delete confirmations on Free, where nothing can be recovered.
+  [UpgradeGate.BACKUP_DELETE_CLASS]: BACKUPS,
+  [UpgradeGate.BACKUP_DELETE_ROWS]: BACKUPS,
+  [UpgradeGate.BACKUP_DELETE_COLUMN]: BACKUPS,
+  // Paid regions: paying unlocks them, the migration itself is still requested through the form.
+  [UpgradeGate.REGION_CHANGE]: {
+    plan: 'MVP',
+    headline: 'Run your app closer to your users',
+    subline: 'South Korea, India, Australia and Singapore are available on paid plans.',
+    nextStep: 'Next, tell us which region to move your app to.',
+    nextStepLink: { label: 'Request the migration', href: context => regionChangeFormUrl(context.applicationId) },
+  },
   // HTTPS on a custom domain is turned on by support after the upgrade.
   [UpgradeGate.HTTPS]: {
     plan: 'Pay As You Go',
     headline: 'Serve your custom domain over HTTPS',
     subline: 'Your domain is on HTTP, so browsers mark it "Not secure".',
     nextStep: 'Next, open a support ticket and our team will enable HTTPS on your domain.',
+    nextStepLink: { label: 'Open a ticket', href: () => SUPPORT_TICKET_URL },
+  },
+  [UpgradeGate.LOGS_RETENTION]: {
+    plan: 'MVP',
+    headline: 'Debug with a week of access logs',
+    subline: 'Free keeps access logs for 1 day; MVP keeps 7 days.',
+  },
+  [UpgradeGate.DB_PROFILER]: {
+    plan: 'Dedicated',
+    headline: 'See which queries slow your app down',
+    subline: 'The Query Performance Monitor comes with Dedicated.',
   },
   [UpgradeGate.COMPLIANCE_SOC2]: { plan: 'Pay As You Go', headline: 'Pass your customer\'s security review', subline: 'SOC 2 Type 2 certified infrastructure.' },
   [UpgradeGate.COMPLIANCE_ISO27001]: { plan: 'Pay As You Go', headline: 'Pass your customer\'s security review', subline: 'ISO 27001 certified infrastructure.' },
@@ -203,7 +246,7 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
                 {offer.nextStep ? (
                   <div className={styles.nextStep}>
                     {offer.nextStep}{' '}
-                    <a href={SUPPORT_TICKET_URL} target="_blank" rel="noopener noreferrer">Open a ticket</a>
+                    <a href={offer.nextStepLink.href(context)} target="_blank" rel="noopener noreferrer">{offer.nextStepLink.label}</a>
                   </div>
                 ) : null}
               </div>
@@ -226,7 +269,16 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
   );
 };
 
-// Paywall entry point: logs the gate view, and on click opens the direct checkout.
+// Plan Usage for this app, keeping the gate so its checkout events know where the user came from.
+const goToPlanUsage = (slug, gate) => {
+  /* global b4aSettings */
+  const base = (typeof b4aSettings !== 'undefined' && b4aSettings.BACKEND_DASHBOARD_PATH) || '';
+  window.location.assign(`${base}${planUsagePath(slug, gate)}`);
+};
+
+// Paywall entry point: logs the gate view and, on click, opens the direct checkout. The direct
+// checkout starts a new subscription, so it is only for Free apps; an app already on any paid
+// plan (MVP, Starter, Gold, ...) goes to Plan Usage instead of buying a second plan.
 // `renderTrigger(open)` lets anchors and custom buttons keep their look.
 export const UpgradeGateButton = ({ gate, renderTrigger, value = 'Upgrade Plan' }) => {
   const context = useContext(CurrentApp);
@@ -236,7 +288,10 @@ export const UpgradeGateButton = ({ gate, renderTrigger, value = 'Upgrade Plan' 
       event.preventDefault();
     }
     logGateClicked(gate, context.applicationId);
-    setOpen(true);
+    return getCachedPlanData(context)
+      .then(planData => planKindOf(planData) === 'free')
+      .catch(() => false)
+      .then(isFree => (isFree ? setOpen(true) : goToPlanUsage(context.slug, gate)));
   };
 
   return (

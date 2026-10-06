@@ -11,14 +11,15 @@ jest.mock('../../components/Popover/Popover.react', () => {
   return { __esModule: true, default: ({ children }) => <div>{children}</div> };
 });
 jest.mock('context/currentApp', () => ({ CurrentApp: require('react').createContext(null) }), { virtual: true });
+jest.mock('dashboard/Data/AppOverview/usageAlert', () => jest.requireActual('../../dashboard/Data/AppOverview/usageAlert'), { virtual: true });
 jest.mock(
-  'dashboard/AppPlan/AppPlan.react',
+  'dashboard/AppPlan/prices',
   () => ({
     prices: [
       {
         name: 'MVP', pricePerMonth: '25', pricePerYear: '15', savePercent: '40%',
         monthlyPlanId: 'mvp-m', annuallyPlanId: 'mvp-y', monthlyProductId: 'pri_mvp_m', annuallyProductId: 'pri_mvp_y',
-        details: [{ text: 'Web hosting & custom domain' }, { number: '500 K', text: 'Requests' }],
+        details: [{ text: 'Web hosting on a b4a.app subdomain' }, { number: '500 K', text: 'Requests' }],
       },
       {
         name: 'Pay As You Go', pricePerMonth: '100', pricePerYear: '80', savePercent: '20%',
@@ -41,8 +42,17 @@ const { CurrentApp } = require('context/currentApp');
 const { amplitudeLogEvent } = require('../amplitudeEvents');
 const { initPaddle, recordSubscription } = require('../paddleCheckout');
 const { UpgradeCheckoutModal, UpgradeGateButton } = require('../../components/UpgradeCheckout/UpgradeCheckout.react');
+const BackupUpsell = require('../../components/UpgradeCheckout/BackupUpsell.react').default;
 
-const app = { applicationId: 'app-1', slug: 'my-app', custom: { isOwner: true } };
+const { clearPlanDataCache } = require('../planDataCache');
+
+const appOnPlan = planName => ({
+  applicationId: 'app-1',
+  slug: 'my-app',
+  custom: { isOwner: true },
+  getAppPlanData: () => Promise.resolve({ planName }),
+});
+let app = appOnPlan('Free Plan');
 
 const fakePaddle = () => ({ Checkout: { open: jest.fn(), updateCheckout: jest.fn(), close: jest.fn() } });
 
@@ -83,7 +93,7 @@ describe('UpgradeCheckoutModal', () => {
   });
 
   it('opens the MVP yearly checkout right away for a custom domain paywall', async () => {
-    const tree = await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    const tree = await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
 
     expect(paddle.Checkout.open).toHaveBeenCalledTimes(1);
     const options = paddle.Checkout.open.mock.calls[0][0];
@@ -93,16 +103,16 @@ describe('UpgradeCheckoutModal', () => {
     expect(options.settings.frameTarget).toBe('upgrade-checkout-frame');
 
     expect(loggedEvents('baas_checkout_opened')).toEqual([
-      { app_id: 'app-1', plan: 'MVP', cycle: 'yearly', source: 'gate', gate: 'custom_domain' },
+      { app_id: 'app-1', plan: 'MVP', cycle: 'yearly', source: 'gate', gate: 'web_hosting' },
     ]);
     const text = textOf(tree);
-    expect(text).toContain('Put your API and pages on your own domain');
+    expect(text).toContain('Host your pages on a b4a.app subdomain');
     expect(text).toContain('Upgrade to ');
-    expect(text).toContain('Web hosting & custom domain');
+    expect(text).toContain('Web hosting on a b4a.app subdomain');
   });
 
   it('starts on yearly and switches the open checkout to monthly without reopening it', async () => {
-    const tree = await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    const tree = await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
     // $15/month billed yearly is $180 today.
     expect(textOf(tree)).toContain('180');
     const radios = tree.root.findAll(node => node.type === 'input' && node.props.type === 'radio');
@@ -116,7 +126,7 @@ describe('UpgradeCheckoutModal', () => {
       customData: { appId: 'app-1', planId: 'mvp-m' },
     });
     expect(loggedEvents('baas_checkout_cycle_changed')).toEqual([
-      { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'custom_domain' },
+      { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'web_hosting' },
     ]);
     expect(textOf(tree)).toContain('Billed monthly');
   });
@@ -156,12 +166,12 @@ describe('UpgradeCheckoutModal', () => {
   });
 
   it('follows the light or dark preference, including the Paddle frame', async () => {
-    await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('light');
 
     paddle.Checkout.open.mockClear();
     global.window = { matchMedia: query => ({ matches: query === '(prefers-color-scheme: dark)' }) };
-    const tree = await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    const tree = await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
     delete global.window;
 
     expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('dark');
@@ -171,7 +181,7 @@ describe('UpgradeCheckoutModal', () => {
   it('sells web hosting on MVP from the Overview', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="overview_web_hosting" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
-    expect(textOf(tree)).toContain('Host your pages and use your own domain');
+    expect(textOf(tree)).toContain('Host your pages on a b4a.app subdomain');
   });
 
   it('sells HTTPS on Pay As You Go and tells the buyer support turns it on', async () => {
@@ -196,6 +206,35 @@ describe('UpgradeCheckoutModal', () => {
     }
   });
 
+  it('sells MVP from the job limit on Free', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="jobs" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+    expect(textOf(tree)).toContain('Schedule more background jobs');
+  });
+
+  it('sells Dedicated on yearly from the database profiler', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="db_profiler" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_y');
+    expect(textOf(tree)).toContain('See which queries slow your app down');
+  });
+
+  it('after paying for a region, points to the migration form for this app', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="region_change" onClose={() => {}} />);
+    expect(textOf(tree)).toContain('Run your app closer to your users');
+    await renderer.act(async () => {
+      await paddleCallback({ name: 'checkout.completed', data: {} });
+    });
+    expect(tree.root.findByProps({ href: 'https://back4app.typeform.com/to/kMjTovFj?appId=app-1' })).toBeTruthy();
+    expect(textOf(tree)).toContain('Request the migration');
+  });
+
+  it('sells custom domains on Pay As You Go, where the backend unlocks them', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
+    expect(textOf(tree)).toContain('Use your own domain');
+    expect(textOf(tree)).toContain('Pay As You Go includes custom domains with HTTPS.');
+  });
+
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
@@ -208,6 +247,8 @@ describe('UpgradeCheckoutModal', () => {
 
 describe('UpgradeGateButton', () => {
   beforeEach(() => {
+    clearPlanDataCache();
+    app = appOnPlan('Free Plan');
     amplitudeLogEvent.mockClear();
     initPaddle.mockReset();
     initPaddle.mockImplementation(() => Promise.resolve(fakePaddle()));
@@ -222,7 +263,7 @@ describe('UpgradeGateButton', () => {
 
     const preventDefault = jest.fn();
     await renderer.act(async () => {
-      tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault });
+      await tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault });
     });
 
     expect(preventDefault).toHaveBeenCalled();
@@ -230,5 +271,64 @@ describe('UpgradeGateButton', () => {
     expect(initPaddle).toHaveBeenCalledTimes(1);
     expect(textOf(tree)).toContain('Get the latest MongoDB');
     expect(textOf(tree)).toContain('Faster queries and the newest MongoDB features.');
+  });
+
+  it('sends apps already on a paid plan to Plan Usage instead of a second subscription', async () => {
+    app = appOnPlan('Starter Plan');
+    const assign = jest.fn();
+    global.window = { location: { assign } };
+    const tree = await mount(
+      <UpgradeGateButton gate="collaborators" renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade Plan</a>} />
+    );
+    await renderer.act(async () => {
+      await tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault: () => {} });
+    });
+    delete global.window;
+
+    expect(assign).toHaveBeenCalledWith('/apps/my-app/plan-usage?gate=collaborators');
+    expect(initPaddle).not.toHaveBeenCalled();
+    expect(loggedEvents('baas_upgrade_gate_clicked')).toEqual([{ gate: 'collaborators', app_id: 'app-1' }]);
+  });
+});
+
+describe('BackupUpsell', () => {
+  beforeEach(() => clearPlanDataCache());
+
+  const mountWithPlan = async planName => {
+    let tree;
+    const appWithPlan = { ...app, getAppPlanData: () => Promise.resolve({ planName }) };
+    await renderer.act(async () => {
+      tree = renderer.create(
+        <CurrentApp.Provider value={appWithPlan}>
+          <BackupUpsell gate="backup_delete_class" />
+        </CurrentApp.Provider>,
+        { createNodeMock: () => ({}) }
+      );
+    });
+    return tree;
+  };
+
+  beforeEach(() => {
+    amplitudeLogEvent.mockClear();
+    initPaddle.mockReset();
+    initPaddle.mockImplementation(() => Promise.resolve(fakePaddle()));
+  });
+
+  it('warns Free apps that deleted data cannot be recovered and offers backups', async () => {
+    const tree = await mountWithPlan('Free Plan');
+    expect(textOf(tree)).toContain('No backups on Free');
+    expect(textOf(tree)).toContain('Deleted data can\'t be recovered.');
+    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'backup_delete_class', app_id: 'app-1' }]);
+
+    await renderer.act(async () => {
+      await tree.root.findByType('button').props.onClick({ preventDefault: () => {} });
+    });
+    expect(textOf(tree)).toContain('Keep daily backups of your data');
+  });
+
+  it('stays out of the way on paid plans', async () => {
+    const tree = await mountWithPlan('MVP Plan');
+    expect(tree.toJSON()).toBe(null);
+    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([]);
   });
 });

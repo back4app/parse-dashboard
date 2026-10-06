@@ -22,7 +22,8 @@ import Field from 'components/Field/Field.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { Link } from 'react-router-dom';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
@@ -406,7 +407,7 @@ class DomainSettings extends DashboardView {
       !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentSubdomain.trim().length === 0 && this.state.customDomainArray.length === 0) {
       content = <Fieldset>
         <Field
-          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to enable web hosting for your pages and use your own domain." />}
+          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to enable web hosting on a b4a.app subdomain." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
             <UpgradeGateButton gate={UpgradeGate.WEB_HOSTING} />
           </div>}
@@ -558,7 +559,14 @@ class DomainSettings extends DashboardView {
                   />
                 </>
               ) : (
-                <UpgradeGateButton gate={UpgradeGate.CUSTOM_DOMAIN} />
+                // Whoever reaches this already pays for MVP: compare plans instead of opening a second subscription.
+                <Link
+                  to={planUsagePath(this.context.slug, UpgradeGate.CUSTOM_DOMAIN)}
+                  onClick={() => logGateClicked(UpgradeGate.CUSTOM_DOMAIN, this.context.applicationId)}
+                >
+                  <UpgradeGateView gate={UpgradeGate.CUSTOM_DOMAIN} appId={this.context.applicationId} />
+                  <Button value="Upgrade to Pay As You Go" primary={true} />
+                </Link>
               )}
               
             </div>}

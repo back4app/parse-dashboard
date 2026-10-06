@@ -21,144 +21,9 @@ import { initializePaddle } from '@paddle/paddle-js';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { UpgradeEvent, getGateFromSearch } from 'lib/upgradeEvents';
+import UsageLimitBanner from 'components/UsageLimitBanner/UsageLimitBanner.react';
+import { prices } from 'dashboard/AppPlan/prices';
 
-const prices = [
-  {
-    id: 0,
-    name: 'MVP',
-    desc: 'Validate Ideas Quickly — Launch Fast on Our Managed Serverless Backend',
-    pricePerMonth: '25',
-    monthlyPlanId: 'gXGhzlMHZ6',
-    monthlyProductId: 'pri_01jjyr3kxmsav875y1v2p8h68k',
-    pricePerYear: '15',
-    annuallyPlanId: 'nUAySI815X',
-    annuallyProductId: 'pri_01jjyr5r3ayqcs5cr58bm5b4rw',
-    priceTag: 'Per App / Month',
-    savePercent: '40%',
-    details: [
-      {
-        text: 'Web hosting & custom domain',
-      },
-      {
-        text: 'Daily Backups',
-      },
-      {
-        text: 'Latest MongoDB',
-      },
-      {
-        text: 'Custom email templates',
-      },
-      {
-        number: 'Up to 3',
-        text: 'collaborators',
-      },
-      {
-        number: '500 K',
-        text: 'Requests',
-      },
-      {
-        number: '1 GB',
-        text: 'Data Storage',
-      },
-      {
-        number: '250 GB',
-        text: 'Data Transfer',
-      },
-      {
-        number: '50 GB',
-        text: 'File Storage',
-      },
-    ],
-    icon: 'b4a-mvp-plan-icon',
-    greenText: 'Go live with your own domain'
-  },
-  {
-    id: 1,
-    name: 'Pay As You Go',
-    desc: 'Run & Scale Applications on a Serverless Infrastructure',
-    pricePerMonth: '100',
-    monthlyPlanId: '7xWmyzNUvZ',
-    monthlyProductId: 'pri_01jjyr4fs9j1926g5tv54jvs0h',
-    pricePerYear: '80',
-    annuallyPlanId: 'YfX9ryk4UH',
-    annuallyProductId: 'pri_01jjyr4zj8dzg88xf82mtrnk6k',
-    priceTag: 'Per App / Month',
-    savePercent: '20%',
-    details: [
-      {
-        number: '5 M',
-        text: 'Requests',
-      },
-      {
-        number: '3 GB',
-        text: 'Data Storage',
-      },
-      {
-        number: '1 TB',
-        text: 'Data Transfer',
-      },
-      {
-        number: '250 GB',
-        text: 'File Storage',
-      },
-      {
-        text: 'Daily Backups',
-      },
-      {
-        text: 'HTTPS on your custom domain',
-      },
-      {
-        text: 'SOC 2 and ISO 27001',
-      },
-    ],
-    icon: 'b4a-pay-as-you-go-plan-icon',
-    greenText: '200x more requests'
-  },
-  {
-    id: 2,
-    name: 'Dedicated',
-    desc: 'Production-Grade Speed, Isolation & Flexibility on Dedicated Resources',
-    pricePerMonth: '500',
-    monthlyPlanId: 'VGaDTCDNbi',
-    pricePerYear: '400',
-    monthlyProductId: 'pri_01jjyrqff5wb1pkcekge3ddrtz',
-    annuallyPlanId: 'U8nRA9rxdD',
-    annuallyProductId: 'pri_01jjyrsbcexqvqzsjvby0ykw2h',
-    priceTag: 'Per App / Month',
-    savePercent: '20%',
-    details: [
-      {
-        text: 'Unlimited Requests',
-      },
-      {
-        number: '10 CPUs / 14 GB',
-      },
-      {
-        number: '8 GB',
-        text: 'Data Storage',
-      },
-      {
-        number: '2 TB',
-        text: 'Data Transfer',
-      },
-      {
-        number: '1 TB',
-        text: 'File Storage',
-      },
-      {
-        text: 'Point-in-Time Backups',
-      },
-      {
-        text: 'SOC 2 and ISO 27001',
-      },
-      {
-        text: 'HIPAA After BAA Signed',
-      },
-    ],
-    icon: 'b4a-dedicated-plan-icon',
-    greenText: 'Unlimited requests'
-  },
-];
 
 @withRouter
 class AppPlan extends DashboardView {
@@ -214,7 +79,9 @@ class AppPlan extends DashboardView {
     this.context.getAppPlanData().then(res => this.setState({
       isLoadingAppPlanData: false,
       appPlanData: res,
-      appPlanName: res.planName
+      appPlanName: res.planName,
+      // MVP is the natural next step from Free, so it gets the highlight there.
+      ...(isFreePlan(res) ? { selectedPlan: prices[0] } : {}),
     })).catch(err => this.setState({
       isLoadingAppPlanData: false,
       appPlanData: new Error(err.message || err.msg || 'Something went wrong')
@@ -399,6 +266,14 @@ class AppPlan extends DashboardView {
       content = <div className={styles.mainContent}><div className={styles.wrapper}>
         <div className={styles.header}>Plan Usage</div>
         <div className={styles.headerSubText}>Track your resource utilization across all features to optimize your app and plan allocation.</div>
+        <div className={styles.usageBanner}>
+          <UsageLimitBanner
+            planData={planData}
+            blocked={this.context.serverInfo?.code === 402}
+            slug={this.context.slug}
+            showPlansLink={false}
+          />
+        </div>
         <div className={styles.planUsage}>
           <div className={styles.planUsageHeader}>
             <div className={styles.planNameChip}>{planData.planName}</div>
@@ -450,16 +325,16 @@ class AppPlan extends DashboardView {
               <div className={styles.upgradeCardHeader}>
                 <div className={styles.upgradeCardTitle}>Ready to Scale?</div>
               </div>
-              <div className={styles.upgradeCardSubText}>Go live with your own domain, backups and a modern database</div>
+              <div className={styles.upgradeCardSubText}>Go live with web hosting, backups and a modern database</div>
 
               <div className={styles.upgradeFeatures}>
                 <div className={styles.upgradeFeaturesTitle}>WHAT YOU GET:</div>
                 <div className={styles.upgradeFeaturesList}>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>MVP:</span> Web hosting & custom domain, daily backups, latest MongoDB, email templates and collaborators
+                    <span className={styles.planName}>MVP:</span> Web hosting, daily backups, latest MongoDB, email templates and collaborators
                   </div>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>Pay-as-you-Go:</span> SOC 2 and ISO 27001-certified infrastructure
+                    <span className={styles.planName}>Pay-as-you-Go:</span> Custom domain with HTTPS, SOC 2 and ISO 27001-certified infrastructure
                   </div>
                   <div className={styles.upgradeFeature}>
                     <span className={styles.planName}>Dedicated:</span> Point-in-time restore & HIPAA-ready
@@ -490,7 +365,7 @@ class AppPlan extends DashboardView {
           </div>
           <div className={styles.priceList}>
             {prices.map((plan, idx) => (
-              <PriceCard key={idx} plan={plan} active={selectedPlan.id === plan.id} cycle={billingCycle} onClick={this.handleOnClickPlan.bind(this)} />
+              <PriceCard key={idx} plan={plan} active={selectedPlan.id === plan.id} isFree={isFreePlan(planData)} cycle={billingCycle} onClick={this.handleOnClickPlan.bind(this)} />
             ))}
           </div>
         </div>
@@ -542,14 +417,23 @@ class AppPlan extends DashboardView {
 export default AppPlan;
 
 
-const PriceCard = ({ plan, active, cycle, onClick }) => {
+const isFreePlan = planData => !!planData && !(planData instanceof Error) && /^free/i.test(planData.planName || '');
+
+const PriceCard = ({ plan, active, isFree, cycle, onClick }) => {
   const { name, pricePerMonth, pricePerYear, details, greenText } = plan;
 
   const price = cycle === 0 ? pricePerMonth : pricePerYear;
+  // Free sees MVP as its recommendation; everyone else sees Pay As You Go as the most popular.
+  let ribbon = null;
+  if (isFree && plan.id === 0) {
+    ribbon = 'Recommended for you';
+  } else if (!isFree && plan.id === 1) {
+    ribbon = 'Most Popular';
+  }
 
   return (
     <div className={`${styles.priceCard} ${active ? styles.activePriceCard : ''}`}>
-      {plan.id === 1 ? <span className={styles.mostPopular}>Most Popular</span> : null}
+      {ribbon ? <span className={styles.mostPopular}>{ribbon}</span> : null}
       <div className={styles.priceName}>{name} <span className={styles.greenText}>{greenText}</span></div>
       <div className={styles.planPrice}>
         <span className={styles.planPriceValue}>${price}</span>

@@ -19,6 +19,7 @@ import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 import React from 'react';
 import { UpgradeGate, UpgradeGateView, logGateClicked } from 'lib/upgradeEvents';
+import { UpgradeCheckoutModal } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import ReleaseInfo from 'components/ReleaseInfo/ReleaseInfo';
 import RunNowButton from 'dashboard/Data/Jobs/RunNowButton.react';
 import SidebarAction from 'components/Sidebar/SidebarAction';
@@ -115,6 +116,9 @@ class Jobs extends TableView {
       // Job limit enforcement
       jobLimitReached: false,
       maxJobAmount: undefined,
+      // Free goes straight to the MVP checkout; paid plans still compare plans on Plan Usage.
+      isFreePlan: false,
+      jobsCheckoutOpen: false,
     };
     this.filterWrapRef = React.createRef();
     this.JOB_STATUS_PAGE_SIZE = 100;
@@ -198,7 +202,10 @@ class Jobs extends TableView {
     if (this.isScheduledSection(currentSection)) {
       this.context.getAppPlanData()
         .then(planData => {
-          this.setState({ maxJobAmount: (planData && planData.maxJobAmount) || null });
+          this.setState({
+            maxJobAmount: (planData && planData.maxJobAmount) || null,
+            isFreePlan: /^free/i.test((planData && planData.planName) || ''),
+          });
         })
         .catch(() => {
           this.setState({ maxJobAmount: null });
@@ -422,7 +429,11 @@ class Jobs extends TableView {
   }
 
   renderExtras() {
-    const { toDelete, deleteInProgress, deleteError, toEdit, toCreate, jobLimitReached } = this.state;
+    const { toDelete, deleteInProgress, deleteError, toEdit, toCreate, jobLimitReached, isFreePlan, jobsCheckoutOpen } = this.state;
+
+    if (jobsCheckoutOpen) {
+      return <UpgradeCheckoutModal gate={UpgradeGate.JOBS} onClose={() => this.setState({ jobsCheckoutOpen: false })} />;
+    }
 
     if (jobLimitReached) {
       return (
@@ -436,6 +447,10 @@ class Jobs extends TableView {
           onCancel={() => this.setState({ jobLimitReached: false })}
           onConfirm={() => {
             logGateClicked(UpgradeGate.JOBS, this.context.applicationId);
+            if (isFreePlan) {
+              this.setState({ jobLimitReached: false, jobsCheckoutOpen: true });
+              return;
+            }
             this.props.navigate(generatePath(this.context, `plan-usage?gate=${UpgradeGate.JOBS}`));
           }}
         >
