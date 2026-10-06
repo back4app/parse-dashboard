@@ -154,12 +154,16 @@ describe('getUsageAlert', () => {
       });
     });
 
-    it('Advanced follows Pay As You Go: quiet until over its limit, then offers Dedicated', () => {
-      expect(getUsageAlert(legacy('Advanced Plan', { apiCallUsed: '49 K' }))).toBe(null);
-      const alert = getUsageAlert(legacy('Advanced Plan', { apiCallUsed: '55 K' }));
+    it('Advanced follows Pay As You Go: quiet until over its limit, then the same overage message', () => {
+      const advanced = overrides => legacy('Advanced Plan', { apiCallLimit: '5 M', dataStorageLimit: '4 GB', fileStorageLimit: '250 GB', ...overrides });
+      expect(getUsageAlert(advanced({ apiCallUsed: '4.9 M' }))).toBe(null);
+      const alert = getUsageAlert(advanced({ apiCallUsed: '5.5 M' }));
       expect(alert.level).toBe('info');
-      expect(alert.message).toBe('This app is above the API requests included in Advanced (55 K of 50 K).');
+      expect(alert.message).toBe(
+        'This app is above the API requests included in Advanced (5.5 M of 5 M), so extra requests are billed at $2 per 100K.'
+      );
       expect(alert.actionLabel).toBe('Upgrade to Dedicated');
+      expect(getUsageAlert(advanced({ dataStorageUsed: '4.5 GB' })).message).toContain('so extra database storage is billed at $15 per GB');
     });
 
     it('a blocked legacy app is told which plan to move to', () => {

@@ -5,8 +5,9 @@ const WARNING_PERCENT = 70;
 const DANGER_PERCENT = 90;
 
 // Over-quota prices from the pricing page FAQ. Requests depend on the plan. Only the current
-// MVP and Pay As You Go publish them: legacy plans get the warning without a price.
-const EXTRA_REQUESTS_PRICE = { MVP: '$5', 'Pay As You Go': '$2' };
+// MVP and Pay As You Go publish them, and Advanced has the same limits and prices as
+// Pay As You Go: the other legacy plans get the warning without a price.
+const EXTRA_REQUESTS_PRICE = { MVP: '$5', 'Pay As You Go': '$2', Advanced: '$2' };
 
 // The next plan up, by kind. Legacy plans follow the current plan of their size.
 const UPGRADE_TARGET = { free: 'MVP', starter: 'MVP', mvp: 'Pay As You Go', payg: 'Dedicated' };
