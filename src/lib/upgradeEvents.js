@@ -32,12 +32,16 @@ export const UpgradeGate = {
   BACKUP_DELETE_COLUMN: 'backup_delete_column',
   USAGE_LIMIT: 'usage_limit',
   LOGS_RETENTION: 'logs_retention',
+  REGION_CHANGE: 'region_change',
   COMPLIANCE_HIPAA: 'compliance_hipaa',
   COMPLIANCE_SOC2: 'compliance_soc2',
   COMPLIANCE_ISO27001: 'compliance_iso27001',
 };
 
 export const SUPPORT_TICKET_URL = 'https://help.back4app.com/hc/en-us/requests/new';
+
+// Region migrations are requested through this form, on any plan.
+export const regionChangeFormUrl = appId => `https://back4app.typeform.com/to/kMjTovFj?appId=${appId}`;
 
 export const planUsagePath = (slug, gate) => `/apps/${slug}/plan-usage?gate=${gate}`;
 

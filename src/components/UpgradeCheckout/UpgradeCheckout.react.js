@@ -6,7 +6,7 @@ import Icon from 'components/Icon/Icon.react';
 import AccountManager from 'lib/AccountManager';
 import { CurrentApp } from 'context/currentApp';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath, regionChangeFormUrl } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
 import { prices } from 'dashboard/AppPlan/prices';
 import styles from './UpgradeCheckout.scss';
@@ -58,12 +58,21 @@ const GATE_OFFERS = {
   [UpgradeGate.BACKUP_DELETE_CLASS]: BACKUPS,
   [UpgradeGate.BACKUP_DELETE_ROWS]: BACKUPS,
   [UpgradeGate.BACKUP_DELETE_COLUMN]: BACKUPS,
+  // Paid regions: paying unlocks them, the migration itself is still requested through the form.
+  [UpgradeGate.REGION_CHANGE]: {
+    plan: 'MVP',
+    headline: 'Run your app closer to your users',
+    subline: 'South Korea, India, Australia and Singapore are available on paid plans.',
+    nextStep: 'Next, tell us which region to move your app to.',
+    nextStepLink: { label: 'Request the migration', href: context => regionChangeFormUrl(context.applicationId) },
+  },
   // HTTPS on a custom domain is turned on by support after the upgrade.
   [UpgradeGate.HTTPS]: {
     plan: 'Pay As You Go',
     headline: 'Serve your custom domain over HTTPS',
     subline: 'Your domain is on HTTP, so browsers mark it "Not secure".',
     nextStep: 'Next, open a support ticket and our team will enable HTTPS on your domain.',
+    nextStepLink: { label: 'Open a ticket', href: () => SUPPORT_TICKET_URL },
   },
   [UpgradeGate.LOGS_RETENTION]: {
     plan: 'MVP',
@@ -230,7 +239,7 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
                 {offer.nextStep ? (
                   <div className={styles.nextStep}>
                     {offer.nextStep}{' '}
-                    <a href={SUPPORT_TICKET_URL} target="_blank" rel="noopener noreferrer">Open a ticket</a>
+                    <a href={offer.nextStepLink.href(context)} target="_blank" rel="noopener noreferrer">{offer.nextStepLink.label}</a>
                   </div>
                 ) : null}
               </div>

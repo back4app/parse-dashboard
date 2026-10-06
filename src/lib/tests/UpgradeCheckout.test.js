@@ -209,6 +209,16 @@ describe('UpgradeCheckoutModal', () => {
     expect(textOf(tree)).toContain('See which queries slow your app down');
   });
 
+  it('after paying for a region, points to the migration form for this app', async () => {
+    const tree = await mount(<UpgradeCheckoutModal gate="region_change" onClose={() => {}} />);
+    expect(textOf(tree)).toContain('Run your app closer to your users');
+    await renderer.act(async () => {
+      await paddleCallback({ name: 'checkout.completed', data: {} });
+    });
+    expect(tree.root.findByProps({ href: 'https://back4app.typeform.com/to/kMjTovFj?appId=app-1' })).toBeTruthy();
+    expect(textOf(tree)).toContain('Request the migration');
+  });
+
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');

@@ -22,6 +22,7 @@ import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { UpgradeGate } from 'lib/upgradeEvents';
 import UsageLimitBanner from 'components/UsageLimitBanner/UsageLimitBanner.react';
+import RegionChange from './RegionChange.react';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
@@ -266,6 +267,7 @@ class AppOverview extends DashboardView {
   renderContent() {
     const { isLoadingAppPlanData, appPlanData } = this.state;
     // Same rule as before: the version shows on Free plans or once on MongoDB 8.0.
+    const isFreeApp = !isLoadingAppPlanData && !(appPlanData instanceof Error) && /^free/i.test(appPlanData?.planName || '');
     const showDatabaseVersion = (!isLoadingAppPlanData && !(appPlanData instanceof Error) && /Free/i.test(appPlanData.planName))
       || this.context.databaseVersion === '8.0';
     const webhost = this.state.webhosting?.hostSettings?.webhost;
@@ -330,7 +332,7 @@ class AppOverview extends DashboardView {
               <AppFact label="API URL" copy={this.context.serverURL}>{this.context.serverURL}</AppFact>
               <AppFact
                 label="Hosting Region"
-                extra={<a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - Change Hosting Region Button')} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a>}
+                extra={<RegionChange className={styles.changeRegionLink} isFree={isFreeApp} />}
               >
                 {this.context.region}
               </AppFact>
