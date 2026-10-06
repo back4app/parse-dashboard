@@ -20,7 +20,7 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate } from 'lib/upgradeEvents';
+import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
 import UsageLimitBanner from 'components/UsageLimitBanner/UsageLimitBanner.react';
 import RegionChange from './RegionChange.react';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
@@ -275,7 +275,7 @@ class AppOverview extends DashboardView {
     const webUrl = customDomain || webhost;
     // Same rule as the Domains paywall: the plan cannot use web hosting and nothing is configured yet.
     const webUrlLocked = !webUrl && this.state.webhosting?.canChangeSubdomain === false;
-    // MVP includes custom domains but not HTTPS on them; that starts on Pay As You Go.
+    // Custom domains and HTTPS start on Pay As You Go; an MVP app can still have a legacy custom domain.
     const httpsLocked = !!customDomain && (this.state.appPlanData?.planName || '').indexOf('MVP') === 0;
     const database = [this.context.databaseType, showDatabaseVersion && this.context.databaseVersion].filter(Boolean).join(' ');
     return (
@@ -344,10 +344,15 @@ class AppOverview extends DashboardView {
                     renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable web hosting</a>}
                   />
                 ) : httpsLocked ? (
-                  <UpgradeGateButton
-                    gate={UpgradeGate.HTTPS}
-                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable HTTPS</a>}
-                  />
+                  // Already paying for MVP: compare plans instead of opening a second subscription.
+                  <Link
+                    className={styles.changeRegionLink}
+                    to={planUsagePath(this.context.slug, UpgradeGate.HTTPS)}
+                    onClick={() => logGateClicked(UpgradeGate.HTTPS, this.context.applicationId)}
+                  >
+                    <UpgradeGateView gate={UpgradeGate.HTTPS} appId={this.context.applicationId} />
+                    Enable HTTPS
+                  </Link>
                 ) : (
                   <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>
                     {!webUrl ? 'Enable web hosting' : customDomain ? 'Manage' : 'Use your domain'}

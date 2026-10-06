@@ -325,16 +325,16 @@ class AppPlan extends DashboardView {
               <div className={styles.upgradeCardHeader}>
                 <div className={styles.upgradeCardTitle}>Ready to Scale?</div>
               </div>
-              <div className={styles.upgradeCardSubText}>Go live with your own domain, backups and a modern database</div>
+              <div className={styles.upgradeCardSubText}>Go live with web hosting, backups and a modern database</div>
 
               <div className={styles.upgradeFeatures}>
                 <div className={styles.upgradeFeaturesTitle}>WHAT YOU GET:</div>
                 <div className={styles.upgradeFeaturesList}>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>MVP:</span> Web hosting & custom domain, daily backups, latest MongoDB, email templates and collaborators
+                    <span className={styles.planName}>MVP:</span> Web hosting, daily backups, latest MongoDB, email templates and collaborators
                   </div>
                   <div className={styles.upgradeFeature}>
-                    <span className={styles.planName}>Pay-as-you-Go:</span> SOC 2 and ISO 27001-certified infrastructure
+                    <span className={styles.planName}>Pay-as-you-Go:</span> Custom domain with HTTPS, SOC 2 and ISO 27001-certified infrastructure
                   </div>
                   <div className={styles.upgradeFeature}>
                     <span className={styles.planName}>Dedicated:</span> Point-in-time restore & HIPAA-ready

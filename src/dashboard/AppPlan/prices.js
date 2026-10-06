@@ -14,7 +14,7 @@ export const prices = [
     savePercent: '40%',
     details: [
       {
-        text: 'Web hosting & custom domain',
+        text: 'Web hosting on a b4a.app subdomain',
       },
       {
         text: 'Daily Backups',
@@ -47,7 +47,7 @@ export const prices = [
       },
     ],
     icon: 'b4a-mvp-plan-icon',
-    greenText: 'Go live with your own domain'
+    greenText: 'Go live with web hosting'
   },
   {
     id: 1,
@@ -80,6 +80,9 @@ export const prices = [
       },
       {
         text: 'Daily Backups',
+      },
+      {
+        text: 'Custom domain',
       },
       {
         text: 'HTTPS on your custom domain',

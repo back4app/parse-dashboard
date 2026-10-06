@@ -21,7 +21,7 @@ const prefersDark = () =>
 const MVP_AS_A_WHOLE = {
   plan: 'MVP',
   headline: 'Take this app to production',
-  subline: 'Web hosting and your own domain, daily backups, the latest MongoDB and your team in the app.',
+  subline: 'Web hosting, daily backups, the latest MongoDB and your team in the app.',
 };
 
 const BACKUPS = {
@@ -32,9 +32,14 @@ const BACKUPS = {
 
 // What the user asked for when they hit the paywall, and the cheapest plan that unlocks it.
 const GATE_OFFERS = {
-  [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages and use your own domain' },
-  [UpgradeGate.OVERVIEW_WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages and use your own domain' },
-  [UpgradeGate.CUSTOM_DOMAIN]: { plan: 'MVP', headline: 'Put your API and pages on your own domain' },
+  [UpgradeGate.WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages on a b4a.app subdomain' },
+  [UpgradeGate.OVERVIEW_WEB_HOSTING]: { plan: 'MVP', headline: 'Host your pages on a b4a.app subdomain' },
+  // Custom domains start on Pay As You Go (backend permission canChangeCustomDomain).
+  [UpgradeGate.CUSTOM_DOMAIN]: {
+    plan: 'Pay As You Go',
+    headline: 'Use your own domain',
+    subline: 'Pay As You Go includes custom domains with HTTPS.',
+  },
   [UpgradeGate.EMAIL_TEMPLATES]: { plan: 'MVP', headline: 'Send emails with your brand and words' },
   [UpgradeGate.PARSE_OPTIONS]: { plan: 'MVP', headline: 'Tune your Parse Server' },
   [UpgradeGate.COLLABORATORS]: { plan: 'MVP', headline: 'Bring your team into this app' },
