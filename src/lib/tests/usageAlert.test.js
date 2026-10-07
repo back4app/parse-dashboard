@@ -60,6 +60,8 @@ describe('getUsageAlert', () => {
       'Your app reached its API requests limit and can stop responding at any moment. Upgrade now to keep it running.'
     );
     expect(alert.actionLabel).toBe('Upgrade to keep it running');
+    expect(alert.action).toBe('checkout');
+    expect(alert.plan).toBe('MVP');
     expect(alert.message).not.toMatch(/stopped/);
   });
 
@@ -80,19 +82,25 @@ describe('getUsageAlert', () => {
   describe('MVP', () => {
     const mvp = overrides => plan({ planName: 'MVP Plan', apiCallLimit: '500 K', dataStorageLimit: '1 GB', fileStorageLimit: '50 GB', ...overrides });
 
-    it('warns in yellow, never red, and names the overage price', () => {
+    it('follows the Free thresholds: quiet up to 70%, yellow above it, red above 90%', () => {
+      expect(getUsageAlert(mvp({ apiCallUsed: '350 K' }))).toBe(null);
+      expect(getUsageAlert(mvp({ apiCallUsed: '400 K' })).level).toBe('warning');
+      expect(getUsageAlert(mvp({ apiCallUsed: '490 K' })).level).toBe('danger');
+    });
+
+    it('names the overage price and opens the Pay As You Go checkout', () => {
       const alert = getUsageAlert(mvp({ apiCallUsed: '490 K' }));
-      expect(alert.level).toBe('warning');
       expect(alert.message).toBe(
         'You\'ve used 98% of this month\'s API requests on MVP (490 K of 500 K). Above 100%, extra requests are billed at $5 per 100K.'
       );
-      expect(alert.action).toBe('plans');
+      expect(alert.action).toBe('checkout');
+      expect(alert.plan).toBe('Pay As You Go');
       expect(alert.actionLabel).toBe('Upgrade to Pay As You Go');
     });
 
-    it('past 100% it keeps running and pays the overage, still yellow', () => {
+    it('past 100% it keeps running and pays the overage', () => {
       const alert = getUsageAlert(mvp({ apiCallUsed: '520 K' }));
-      expect(alert.level).toBe('warning');
+      expect(alert.level).toBe('danger');
       expect(alert.message).toBe(
         'This app used 104% of its MVP API requests (520 K of 500 K). It keeps running, and extra requests are billed at $5 per 100K.'
       );
@@ -104,24 +112,35 @@ describe('getUsageAlert', () => {
       expect(getUsageAlert(mvp({ fileStorageUsed: '55 GB' })).message).toContain('extra file storage is billed at $1 per 10 GB');
     });
 
-    it('is red only when the server really blocks it', () => {
-      expect(getUsageAlert(mvp({ apiCallUsed: '520 K' }), true).level).toBe('blocked');
+    it('a blocked app is offered the Pay As You Go checkout', () => {
+      const alert = getUsageAlert(mvp({ apiCallUsed: '520 K' }), true);
+      expect(alert.level).toBe('blocked');
+      expect(alert.action).toBe('checkout');
+      expect(alert.plan).toBe('Pay As You Go');
     });
   });
 
   describe('Pay As You Go', () => {
     const payg = overrides => plan({ planName: 'Pay as you go Plan', apiCallLimit: '5 M', dataStorageLimit: '3 GB', fileStorageLimit: '250 GB', ...overrides });
 
-    it('says nothing while under its included usage', () => {
-      expect(getUsageAlert(payg({ apiCallUsed: '4.9 M' }))).toBe(null);
+    it('follows the Free thresholds and names its overage price', () => {
+      expect(getUsageAlert(payg({ apiCallUsed: '3.5 M' }))).toBe(null);
+      const alert = getUsageAlert(payg({ apiCallUsed: '4 M' }));
+      expect(alert.level).toBe('warning');
+      expect(alert.message).toBe(
+        'You\'ve used 80% of this month\'s API requests on Pay As You Go (4 M of 5 M). Above 100%, extra requests are billed at $2 per 100K.'
+      );
+      expect(getUsageAlert(payg({ apiCallUsed: '4.9 M' })).level).toBe('danger');
     });
 
-    it('over its included usage, explains the overage and offers Dedicated', () => {
+    it('over its included usage, explains the overage and opens the Dedicated checkout', () => {
       const alert = getUsageAlert(payg({ apiCallUsed: '5.5 M' }));
-      expect(alert.level).toBe('info');
+      expect(alert.level).toBe('danger');
       expect(alert.message).toBe(
-        'This app is above the API requests included in Pay As You Go (5.5 M of 5 M), so extra requests are billed at $2 per 100K.'
+        'This app used 110% of its Pay As You Go API requests (5.5 M of 5 M). It keeps running, and extra requests are billed at $2 per 100K.'
       );
+      expect(alert.action).toBe('checkout');
+      expect(alert.plan).toBe('Dedicated');
       expect(alert.actionLabel).toBe('Upgrade to Dedicated');
     });
   });
@@ -129,11 +148,12 @@ describe('getUsageAlert', () => {
   describe('legacy plans', () => {
     const legacy = (planName, overrides) => plan({ planName, apiCallLimit: '50 K', dataStorageLimit: '1 GB', fileStorageLimit: '10 GB', ...overrides });
 
-    it('Solo and Starter warn in yellow and offer MVP, without an overage price', () => {
+    it('Solo and Starter open the MVP checkout, without an overage price', () => {
       ['Solo Plan', 'Starter Plan'].forEach(planName => {
         const alert = getUsageAlert(legacy(planName, { apiCallUsed: '49 K' }));
-        expect(alert.level).toBe('warning');
-        expect(alert.action).toBe('plans');
+        expect(alert.level).toBe('danger');
+        expect(alert.action).toBe('checkout');
+        expect(alert.plan).toBe('MVP');
         expect(alert.actionLabel).toBe('Upgrade to MVP');
         expect(alert.message).not.toMatch(/billed/);
       });
@@ -149,26 +169,31 @@ describe('getUsageAlert', () => {
       ['Basic Plan', 'Intermediate Plan', 'Standard Plan'].forEach(planName => {
         const alert = getUsageAlert(legacy(planName, { apiCallUsed: '40 K' }));
         expect(alert.level).toBe('warning');
+        expect(alert.plan).toBe('Pay As You Go');
         expect(alert.actionLabel).toBe('Upgrade to Pay As You Go');
         expect(alert.message).not.toMatch(/billed/);
       });
     });
 
-    it('Advanced follows Pay As You Go: quiet until over its limit, then the same overage message', () => {
+    it('Advanced follows Pay As You Go: same thresholds, overage price and next plan', () => {
       const advanced = overrides => legacy('Advanced Plan', { apiCallLimit: '5 M', dataStorageLimit: '4 GB', fileStorageLimit: '250 GB', ...overrides });
-      expect(getUsageAlert(advanced({ apiCallUsed: '4.9 M' }))).toBe(null);
+      expect(getUsageAlert(advanced({ apiCallUsed: '3.5 M' }))).toBe(null);
+      expect(getUsageAlert(advanced({ apiCallUsed: '4 M' })).level).toBe('warning');
       const alert = getUsageAlert(advanced({ apiCallUsed: '5.5 M' }));
-      expect(alert.level).toBe('info');
+      expect(alert.level).toBe('danger');
       expect(alert.message).toBe(
-        'This app is above the API requests included in Advanced (5.5 M of 5 M), so extra requests are billed at $2 per 100K.'
+        'This app used 110% of its Advanced API requests (5.5 M of 5 M). It keeps running, and extra requests are billed at $2 per 100K.'
       );
-      expect(alert.actionLabel).toBe('Upgrade to Dedicated');
-      expect(getUsageAlert(advanced({ dataStorageUsed: '4.5 GB' })).message).toContain('so extra database storage is billed at $15 per GB');
+      expect(alert.plan).toBe('Dedicated');
+      expect(getUsageAlert(advanced({ dataStorageUsed: '4.5 GB' })).message).toContain('and extra database storage is billed at $15 per GB');
     });
 
     it('a blocked legacy app is told which plan to move to', () => {
       expect(getUsageAlert(legacy('Starter Plan'), true).actionLabel).toBe('Upgrade to MVP');
-      expect(getUsageAlert(legacy('Gold Plan'), true).actionLabel).toBe('Upgrade plan');
+      // No next plan to name: Plan Usage instead of a checkout.
+      const gold = getUsageAlert(legacy('Gold Plan'), true);
+      expect(gold.action).toBe('plans');
+      expect(gold.actionLabel).toBe('Upgrade plan');
     });
   });
 

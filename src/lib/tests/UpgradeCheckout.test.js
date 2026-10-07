@@ -235,6 +235,22 @@ describe('UpgradeCheckoutModal', () => {
     expect(textOf(tree)).toContain('Pay As You Go includes custom domains with HTTPS.');
   });
 
+  it('sells the plan the usage banner names, MVP when it names none', async () => {
+    const free = await mount(<UpgradeCheckoutModal gate="usage_limit" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+    expect(textOf(free)).toContain('Keep your app running');
+
+    paddle.Checkout.open.mockClear();
+    const mvp = await mount(<UpgradeCheckoutModal gate="usage_limit" plan="Pay As You Go" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
+    expect(textOf(mvp)).toContain('Pay As You Go raises your limits');
+
+    paddle.Checkout.open.mockClear();
+    const payg = await mount(<UpgradeCheckoutModal gate="usage_limit" plan="Dedicated" onClose={() => {}} />);
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_y');
+    expect(textOf(payg)).toContain('Dedicated has unlimited requests');
+  });
+
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
@@ -273,21 +289,67 @@ describe('UpgradeGateButton', () => {
     expect(textOf(tree)).toContain('Faster queries and the newest MongoDB features.');
   });
 
-  it('sends apps already on a paid plan to Plan Usage instead of a second subscription', async () => {
-    app = appOnPlan('Starter Plan');
+  // Clicks the trigger on an app of the given plan; returns where it went.
+  const clickOn = async (planName, props) => {
+    app = appOnPlan(planName);
     const assign = jest.fn();
     global.window = { location: { assign } };
     const tree = await mount(
-      <UpgradeGateButton gate="collaborators" renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade Plan</a>} />
+      <UpgradeGateButton {...props} renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade Plan</a>} />
     );
     await renderer.act(async () => {
       await tree.root.findByProps({ id: 'trigger' }).props.onClick({ preventDefault: () => {} });
     });
     delete global.window;
+    return { assign, text: textOf(tree) };
+  };
 
-    expect(assign).toHaveBeenCalledWith('/apps/my-app/plan-usage?gate=collaborators');
-    expect(initPaddle).not.toHaveBeenCalled();
-    expect(loggedEvents('baas_upgrade_gate_clicked')).toEqual([{ gate: 'collaborators', app_id: 'app-1' }]);
+  it('sends apps at or above the plan it sells to Plan Usage instead of a lower plan', async () => {
+    for (const planName of ['MVP Plan', 'Pay as you go Plan', 'Gold Plan']) {
+      clearPlanDataCache();
+      initPaddle.mockClear();
+      const { assign } = await clickOn(planName, { gate: 'collaborators' });
+      expect(assign).toHaveBeenCalledWith('/apps/my-app/plan-usage?gate=collaborators');
+      expect(initPaddle).not.toHaveBeenCalled();
+    }
+    expect(loggedEvents('baas_upgrade_gate_clicked')).toContainEqual({ gate: 'collaborators', app_id: 'app-1' });
+  });
+
+  it('opens the checkout on paid plans below the plan it sells', async () => {
+    const starter = await clickOn('Starter Plan', { gate: 'collaborators' });
+    expect(starter.assign).not.toHaveBeenCalled();
+    expect(starter.text).toContain('Bring your team into this app');
+
+    clearPlanDataCache();
+    const mvp = await clickOn('MVP Plan', { gate: 'https' });
+    expect(mvp.assign).not.toHaveBeenCalled();
+    expect(mvp.text).toContain('Serve your custom domain over HTTPS');
+  });
+
+  it('opens the checkout of the next plan up from the Overview plan card', async () => {
+    const mvp = await clickOn('MVP Plan', { gate: 'overview_plan_card', plan: 'Pay As You Go' });
+    expect(mvp.assign).not.toHaveBeenCalled();
+    expect(mvp.text).toContain('Give this app room to scale');
+
+    clearPlanDataCache();
+    const payg = await clickOn('Pay as you go Plan', { gate: 'overview_plan_card', plan: 'Dedicated' });
+    expect(payg.text).toContain('Run this app on dedicated resources');
+
+    // No next plan up: nothing to sell directly.
+    clearPlanDataCache();
+    const dedicated = await clickOn('Dedicated Plan', { gate: 'overview_plan_card', plan: undefined });
+    expect(dedicated.assign).toHaveBeenCalledWith('/apps/my-app/plan-usage?gate=overview_plan_card');
+  });
+
+  it('opens the checkout of the next plan up from the usage banner', async () => {
+    const mvp = await clickOn('MVP Plan', { gate: 'usage_limit', plan: 'Pay As You Go' });
+    expect(mvp.assign).not.toHaveBeenCalled();
+    expect(mvp.text).toContain('Pay As You Go raises your limits');
+
+    clearPlanDataCache();
+    const payg = await clickOn('Pay as you go Plan', { gate: 'usage_limit', plan: 'Dedicated' });
+    expect(payg.assign).not.toHaveBeenCalled();
+    expect(payg.text).toContain('Dedicated has unlimited requests');
   });
 });
 

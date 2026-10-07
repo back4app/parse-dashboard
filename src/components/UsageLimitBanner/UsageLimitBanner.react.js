@@ -7,8 +7,9 @@ import { getUsageAlert } from 'dashboard/Data/AppOverview/usageAlert';
 import styles from 'components/UsageLimitBanner/UsageLimitBanner.scss';
 
 // Near or over a plan limit (Overview and Plan Usage). The wording and the action come from
-// getUsageAlert: Free opens the MVP checkout; paid plans get a link to Plan Usage naming the
-// next plan up, unless they are already on it (showPlansLink={false}).
+// getUsageAlert: the button opens the checkout of the next plan up (MVP on Free, Pay As You Go
+// on MVP, ...). Plans with no next plan to name get a link to Plan Usage, unless they are
+// already on it (showPlansLink={false}).
 const UsageLimitBanner = ({ planData, blocked, slug, showPlansLink = true }) => {
   const alert = getUsageAlert(planData, blocked);
   if (!alert) {
@@ -16,7 +17,7 @@ const UsageLimitBanner = ({ planData, blocked, slug, showPlansLink = true }) => 
   }
   let action = null;
   if (alert.action === 'checkout') {
-    action = <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} value={alert.actionLabel} />;
+    action = <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} plan={alert.plan} value={alert.actionLabel} />;
   } else if (showPlansLink) {
     action = <Link className={styles.link} to={planUsagePath(slug, UpgradeGate.USAGE_LIMIT)}>{alert.actionLabel}</Link>;
   }

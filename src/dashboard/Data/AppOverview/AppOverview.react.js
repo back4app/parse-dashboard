@@ -20,7 +20,7 @@ import B4aTooltip from 'components/Tooltip/B4aTooltip.react';
 import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { UpgradeGate } from 'lib/upgradeEvents';
 import UsageLimitBanner from 'components/UsageLimitBanner/UsageLimitBanner.react';
 import RegionChange from './RegionChange.react';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
@@ -344,15 +344,10 @@ class AppOverview extends DashboardView {
                     renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable web hosting</a>}
                   />
                 ) : httpsLocked ? (
-                  // Already paying for MVP: compare plans instead of opening a second subscription.
-                  <Link
-                    className={styles.changeRegionLink}
-                    to={planUsagePath(this.context.slug, UpgradeGate.HTTPS)}
-                    onClick={() => logGateClicked(UpgradeGate.HTTPS, this.context.applicationId)}
-                  >
-                    <UpgradeGateView gate={UpgradeGate.HTTPS} appId={this.context.applicationId} />
-                    Enable HTTPS
-                  </Link>
+                  <UpgradeGateButton
+                    gate={UpgradeGate.HTTPS}
+                    renderTrigger={open => <a className={styles.changeRegionLink} href="#" onClick={open}>Enable HTTPS</a>}
+                  />
                 ) : (
                   <Link className={styles.changeRegionLink} to={`/apps/${this.context.slug}/domain-settings`}>
                     {!webUrl ? 'Enable web hosting' : customDomain ? 'Manage' : 'Use your domain'}
@@ -389,7 +384,7 @@ class AppOverview extends DashboardView {
 
           <div className={styles.cardsContainer}>
             {/* App plan card */}
-            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appSlug={this.context.slug} appId={this.context.applicationId} />
+            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} />
             {/* App Secutiry Card */}
             <AppSecurityCard appId={this.context.slug} loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
           </div>

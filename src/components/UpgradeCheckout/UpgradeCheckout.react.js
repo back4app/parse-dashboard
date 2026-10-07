@@ -10,7 +10,7 @@ import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGate
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
 import { prices } from 'dashboard/AppPlan/prices';
 import { getCachedPlanData } from 'lib/planDataCache';
-import { planKindOf } from 'dashboard/Data/AppOverview/usageAlert';
+import { upgradeTargetOf } from 'dashboard/Data/AppOverview/usageAlert';
 import styles from './UpgradeCheckout.scss';
 
 const CHECKOUT_FRAME_CLASS = 'upgrade-checkout-frame';
@@ -55,7 +55,7 @@ const GATE_OFFERS = {
     headline: 'Get the latest MongoDB',
     subline: 'Faster queries and the newest MongoDB features.',
   },
-  // Overview usage banner: near or over a Free limit, where the app gets blocked.
+  // Usage banner on Free, where the app gets blocked. Paid plans: USAGE_LIMIT_OFFERS below.
   [UpgradeGate.USAGE_LIMIT]: {
     plan: 'MVP',
     headline: 'Keep your app running',
@@ -96,6 +96,45 @@ const GATE_OFFERS = {
   [UpgradeGate.COMPLIANCE_HIPAA]: { plan: 'Dedicated', headline: 'Pass your customer\'s security review', subline: 'HIPAA-ready infrastructure, after a signed BAA.' },
 };
 
+// Usage banner on paid plans: the caller names the next plan up, which raises the limits again.
+const USAGE_LIMIT_OFFERS = {
+  'Pay As You Go': {
+    plan: 'Pay As You Go',
+    headline: 'Get more room to grow',
+    subline: 'Pay As You Go raises your limits to 5M requests, 3 GB of database and 250 GB of files.',
+  },
+  Dedicated: {
+    plan: 'Dedicated',
+    headline: 'Stop counting requests',
+    subline: 'Dedicated has unlimited requests, 8 GB of database and 1 TB of files.',
+  },
+};
+
+// The overview's Plan Usage card on paid plans: the next plan up as a whole.
+const NEXT_PLAN_AS_A_WHOLE = {
+  'Pay As You Go': {
+    plan: 'Pay As You Go',
+    headline: 'Give this app room to scale',
+    subline: 'Custom domain with HTTPS, SOC 2 and ISO 27001, and 10x the requests.',
+  },
+  Dedicated: {
+    plan: 'Dedicated',
+    headline: 'Run this app on dedicated resources',
+    subline: 'Unlimited requests, point-in-time backups and HIPAA-ready infrastructure.',
+  },
+};
+
+// Gates that sell more than one plan: the caller names the plan, GATE_OFFERS is the default.
+const OFFERS_BY_PLAN = {
+  [UpgradeGate.USAGE_LIMIT]: USAGE_LIMIT_OFFERS,
+  [UpgradeGate.OVERVIEW_PLAN_CARD]: NEXT_PLAN_AS_A_WHOLE,
+};
+
+// The offer for a paywall. `plan` picks the plan when the same gate sells more than one.
+const offerFor = (gate, plan) => (OFFERS_BY_PLAN[gate] && OFFERS_BY_PLAN[gate][plan]) || GATE_OFFERS[gate];
+
+const planIndex = name => prices.findIndex(p => p.name === name);
+
 const detailText = detail => [detail.number, detail.text].filter(Boolean).join(' ');
 
 const priceSummary = (plan, cycle) => {
@@ -115,9 +154,9 @@ const getOwnerEmail = async context => {
 };
 
 // Opens the Paddle checkout for the plan that unlocks `gate`, skipping the plan comparison page.
-export const UpgradeCheckoutModal = ({ gate, onClose }) => {
+export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
   const context = useContext(CurrentApp);
-  const offer = GATE_OFFERS[gate];
+  const offer = offerFor(gate, planName);
   const plan = prices.find(p => p.name === offer.plan);
 
   const [dark] = useState(prefersDark);
@@ -276,11 +315,13 @@ const goToPlanUsage = (slug, gate) => {
   window.location.assign(`${base}${planUsagePath(slug, gate)}`);
 };
 
-// Paywall entry point: logs the gate view and, on click, opens the direct checkout. The direct
-// checkout starts a new subscription, so it is only for Free apps; an app already on any paid
-// plan (MVP, Starter, Gold, ...) goes to Plan Usage instead of buying a second plan.
+// Paywall entry point: logs the gate view and, on click, opens the direct checkout when the
+// plan it sells is above the app's plan (MVP on Free, Pay As You Go on MVP, ...). Paywalls
+// follow the backend permissions, so they also show on plans at or above the one they sell,
+// and on plans with no next plan up (Gold, custom, ...): those go to Plan Usage instead of
+// buying a plan below their own. `plan` picks the plan when the gate sells more than one.
 // `renderTrigger(open)` lets anchors and custom buttons keep their look.
-export const UpgradeGateButton = ({ gate, renderTrigger, value = 'Upgrade Plan' }) => {
+export const UpgradeGateButton = ({ gate, plan, renderTrigger, value = 'Upgrade Plan' }) => {
   const context = useContext(CurrentApp);
   const [open, setOpen] = useState(false);
   const openCheckout = event => {
@@ -289,16 +330,19 @@ export const UpgradeGateButton = ({ gate, renderTrigger, value = 'Upgrade Plan' 
     }
     logGateClicked(gate, context.applicationId);
     return getCachedPlanData(context)
-      .then(planData => planKindOf(planData) === 'free')
+      .then(planData => {
+        const target = upgradeTargetOf(planData);
+        return !!target && planIndex(offerFor(gate, plan).plan) >= planIndex(target);
+      })
       .catch(() => false)
-      .then(isFree => (isFree ? setOpen(true) : goToPlanUsage(context.slug, gate)));
+      .then(isUpgrade => (isUpgrade ? setOpen(true) : goToPlanUsage(context.slug, gate)));
   };
 
   return (
     <>
       <UpgradeGateView gate={gate} appId={context.applicationId} />
       {renderTrigger ? renderTrigger(openCheckout) : <Button value={value} primary={true} onClick={openCheckout} trackClick={false} />}
-      {open ? <UpgradeCheckoutModal gate={gate} onClose={() => setOpen(false)} /> : null}
+      {open ? <UpgradeCheckoutModal gate={gate} plan={plan} onClose={() => setOpen(false)} /> : null}
     </>
   );
 };
