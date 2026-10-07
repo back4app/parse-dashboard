@@ -22,8 +22,7 @@ import Field from 'components/Field/Field.react';
 import TextInput from 'components/TextInput/TextInput.react';
 import Fieldset from 'components/Fieldset/Fieldset.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
-import { Link } from 'react-router-dom';
+import { UpgradeGate } from 'lib/upgradeEvents';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import B4aNotification from 'dashboard/Data/Browser/B4aNotification.react';
 import browserStyles from 'dashboard/Data/Browser/Browser.scss';
@@ -559,14 +558,7 @@ class DomainSettings extends DashboardView {
                   />
                 </>
               ) : (
-                // Whoever reaches this already pays for MVP: compare plans instead of opening a second subscription.
-                <Link
-                  to={planUsagePath(this.context.slug, UpgradeGate.CUSTOM_DOMAIN)}
-                  onClick={() => logGateClicked(UpgradeGate.CUSTOM_DOMAIN, this.context.applicationId)}
-                >
-                  <UpgradeGateView gate={UpgradeGate.CUSTOM_DOMAIN} appId={this.context.applicationId} />
-                  <Button value="Upgrade to Pay As You Go" primary={true} />
-                </Link>
+                <UpgradeGateButton gate={UpgradeGate.CUSTOM_DOMAIN} value="Upgrade to Pay As You Go" />
               )}
               
             </div>}

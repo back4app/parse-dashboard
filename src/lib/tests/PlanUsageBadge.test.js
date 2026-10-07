@@ -53,25 +53,32 @@ describe('PlanUsageBadge', () => {
 describe('PlanUsageBadge on paid plans', () => {
   beforeEach(() => clearPlanDataCache());
 
-  it('MVP stays yellow, even past 100%, and shows the real percentage', async () => {
+  it('MVP follows the Free colors and shows the real percentage past 100%', async () => {
+    const yellow = await mount(plan({ planName: 'MVP Plan', apiCallUsed: '400 K', apiCallLimit: '500 K' }));
+    expect(yellow.props.className).toBe('badge warning');
+    clearPlanDataCache();
     const badge = await mount(plan({ planName: 'MVP Plan', apiCallUsed: '520 K', apiCallLimit: '500 K' }));
     expect(badge.children).toEqual(['104', '%']);
-    expect(badge.props.className).toBe('badge warning');
+    expect(badge.props.className).toBe('badge danger');
   });
 
-  it('Pay As You Go shows nothing until it is over its included usage, then a neutral pill', async () => {
-    expect(await mount(plan({ planName: 'Pay as you go Plan', apiCallUsed: '4.9 M', apiCallLimit: '5 M' }))).toBe(null);
+  it('Pay As You Go follows the same thresholds', async () => {
+    expect(await mount(plan({ planName: 'Pay as you go Plan', apiCallUsed: '3.5 M', apiCallLimit: '5 M' }))).toBe(null);
+    clearPlanDataCache();
+    const yellow = await mount(plan({ planName: 'Pay as you go Plan', apiCallUsed: '4 M', apiCallLimit: '5 M' }));
+    expect(yellow.props.className).toBe('badge warning');
     clearPlanDataCache();
     const badge = await mount(plan({ planName: 'Pay as you go Plan', apiCallUsed: '5.5 M', apiCallLimit: '5 M' }));
     expect(badge.children).toEqual(['110', '%']);
-    expect(badge.props.className).toBe('badge info');
+    expect(badge.props.className).toBe('badge danger');
   });
 
   it('legacy plans follow the plan of their size', async () => {
     const starter = await mount(plan({ planName: 'Starter Plan', apiCallUsed: '49 K', apiCallLimit: '50 K' }));
-    expect(starter.props.className).toBe('badge warning');
+    expect(starter.props.className).toBe('badge danger');
     clearPlanDataCache();
-    expect(await mount(plan({ planName: 'Advanced Plan', apiCallUsed: '4.9 M', apiCallLimit: '5 M' }))).toBe(null);
+    const advanced = await mount(plan({ planName: 'Advanced Plan', apiCallUsed: '4 M', apiCallLimit: '5 M' }));
+    expect(advanced.props.className).toBe('badge warning');
     clearPlanDataCache();
     expect(await mount(plan({ planName: 'Gold Plan', apiCallUsed: '21 M', apiCallLimit: '20 M' }))).toBe(null);
   });

@@ -38,7 +38,7 @@ const resourcesOf = planData => [
 
 const planNameOf = planData => (planData && !(planData instanceof Error) && planData.planName) || '';
 
-// Free is blocked over a limit; MVP and Pay As You Go keep running and pay the overage.
+// Free is blocked over a limit; paid plans keep running and pay the overage.
 // Legacy plans are grouped with the current plan of their size: Solo and Starter upgrade to
 // MVP ('starter'), Basic, Intermediate and Standard follow MVP, Advanced follows Pay As You Go.
 // Dedicated, Silver, Gold, Platinum and custom plans get no usage warnings.
@@ -85,8 +85,14 @@ export const getMostUrgentUsage = planData => {
   return resources.length ? { worst: resources[0], others: resources.slice(1) } : null;
 };
 
+// The plan the direct checkout sells from this one, or undefined when there is no next plan up.
+export const upgradeTargetOf = planData => UPGRADE_TARGET[planKindOf(planData)];
+
 // Decides the usage banner (Overview and Plan Usage). Returns null when there is nothing to say,
-// or { level, message, action } where action is 'checkout' (MVP checkout) or 'plans' with a label.
+// or { level, message, action, actionLabel }. The action is 'checkout' with the `plan` to sell
+// (the next one up) or, when there is no next plan to name, 'plans' for the Plan Usage page.
+// Every plan follows the Free thresholds: yellow above 70%, red above 90%. Only the consequence
+// changes: Free stops responding at 100%, paid plans keep running and pay the overage.
 // The app is really blocked only when the server answers 402 or the plan is paused
 // ("Free Plan - Paused"); a Free app over its limit still serves requests until then.
 export const getUsageAlert = (planData, blocked = false) => {
@@ -94,90 +100,68 @@ export const getUsageAlert = (planData, blocked = false) => {
   const usage = getMostUrgentUsage(planData);
   const worst = usage && usage.worst;
   const paused = /paused/i.test(planNameOf(planData));
-  const upgradeLabel = UPGRADE_TARGET[kind] ? `Upgrade to ${UPGRADE_TARGET[kind]}` : 'Upgrade plan';
+  const target = UPGRADE_TARGET[kind];
+  const upgrade = target
+    ? { action: 'checkout', plan: target, actionLabel: `Upgrade to ${target}` }
+    : { action: 'plans', actionLabel: 'Upgrade plan' };
 
   if (blocked || paused) {
     return {
       level: 'blocked',
       message: blockedMessage(worst && worst.percent >= 100 ? worst : null),
-      action: kind === 'free' ? 'checkout' : 'plans',
-      actionLabel: kind === 'free' ? 'Upgrade to bring it back' : upgradeLabel,
+      ...upgrade,
+      ...(kind === 'free' ? { actionLabel: 'Upgrade to bring it back' } : {}),
     };
   }
-  if (!worst) {
+  if (!worst || !target || worst.percent <= WARNING_PERCENT) {
     return null;
   }
 
+  const level = worst.percent > DANGER_PERCENT ? 'danger' : 'warning';
   const percent = Math.floor(worst.percent);
   const amount = `(${worst.used} of ${worst.limit})`;
 
   if (kind === 'free') {
-    if (worst.percent <= WARNING_PERCENT) {
-      return null;
-    }
     // Over the limit but not paused yet: urgent and honest, the app can stop at any moment.
     if (worst.percent >= 100) {
       return {
-        level: 'danger',
+        level,
         message: `Your app reached its ${worst.label} limit and can stop responding at any moment. Upgrade now to keep it running.`,
-        action: 'checkout',
+        ...upgrade,
         actionLabel: 'Upgrade to keep it running',
       };
     }
     return {
-      level: worst.percent > DANGER_PERCENT ? 'danger' : 'warning',
+      level,
       message: `${usageSummary(worst, percent, amount, '')}${othersClose(usage)} At 100%, your app stops responding and your users start getting errors.`,
-      action: 'checkout',
-      actionLabel: 'Upgrade to MVP',
+      ...upgrade,
     };
   }
 
+  // Paid plans keep running over their limits and pay the overage, so the message names the
+  // price instead of an outage. Legacy plans have no published price and point at the next plan up.
   const plan = planLabelOf(planData);
-
-  // MVP keeps running over its limits and pays the overage: a yellow heads-up, never red.
-  // Same for the legacy plans below Pay As You Go, which point at the next plan up.
-  if (kind === 'starter' || kind === 'mvp') {
-    if (worst.percent <= WARNING_PERCENT) {
-      return null;
-    }
-    const message = worst.percent >= 100
-      ? `This app used ${percent}% of its ${plan} ${worst.label} ${amount}.${overageOf(worst, plan, 'It keeps running, and ')}`
-      : `${usageSummary(worst, percent, amount, ` on ${plan}`)}${othersClose(usage)}${overageOf(worst, plan, 'Above 100%, ')}`;
-    return { level: 'warning', message, action: 'plans', actionLabel: upgradeLabel };
-  }
-
-  // Pay As You Go already expects overage billing: say nothing until it is over a limit.
-  if (kind === 'payg' && worst.percent >= 100) {
-    return {
-      level: 'info',
-      message: `This app is above the ${worst.label} included in ${plan} ${amount}${plan in EXTRA_REQUESTS_PRICE ? `, so ${worst.overage(plan)}` : ''}.`,
-      action: 'plans',
-      actionLabel: upgradeLabel,
-    };
-  }
-  return null;
+  const message = worst.percent >= 100
+    ? `This app used ${percent}% of its ${plan} ${worst.label} ${amount}.${overageOf(worst, plan, 'It keeps running, and ')}`
+    : `${usageSummary(worst, percent, amount, ` on ${plan}`)}${othersClose(usage)}${overageOf(worst, plan, 'Above 100%, ')}`;
+  return { level, message, ...upgrade };
 };
 
 // The sidebar pill next to Plan Usage, following the same rules as the banner.
-// Null when the banner would say nothing (blocked apps aside).
+// Null when the banner would say nothing (blocked apps aside). Free stops at its limit, so its
+// pill caps at 100%; paid plans show how far over they are.
 export const getUsageBadge = planData => {
   const kind = planKindOf(planData);
   const usage = getMostUrgentUsage(planData);
   const worst = usage && usage.worst;
-  if (!worst) {
+  if (!worst || !UPGRADE_TARGET[kind] || worst.percent <= WARNING_PERCENT) {
     return null;
   }
   const percent = Math.floor(worst.percent);
-  if (kind === 'free' && worst.percent > WARNING_PERCENT) {
-    return { percent: Math.min(100, percent), level: worst.percent > DANGER_PERCENT ? 'danger' : 'warning' };
-  }
-  if ((kind === 'starter' || kind === 'mvp') && worst.percent > WARNING_PERCENT) {
-    return { percent, level: 'warning' };
-  }
-  if (kind === 'payg' && worst.percent >= 100) {
-    return { percent, level: 'info' };
-  }
-  return null;
+  return {
+    percent: kind === 'free' ? Math.min(100, percent) : percent,
+    level: worst.percent > DANGER_PERCENT ? 'danger' : 'warning',
+  };
 };
 
 const usageSummary = (worst, percent, amount, onPlan) =>
