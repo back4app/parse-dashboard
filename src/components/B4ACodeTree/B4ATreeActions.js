@@ -135,7 +135,7 @@ const decodeFile = (code) => {
   return Base64.decode(code.split(',')[1]);
 }
 
-const encodeFile = async (code, extension) => {
+const encodeFile = (code, extension) => {
   return extension + ',' + Base64.encode(code);
 }
 
