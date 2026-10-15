@@ -144,6 +144,32 @@ describe('UpgradeCheckoutModal', () => {
     expect(loggedEvents('baas_checkout_closed')).toEqual([]);
   });
 
+  it('logs what Paddle reports from inside the checkout, with the gate', async () => {
+    await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
+    const funnel = { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'custom_domain' };
+
+    await renderer.act(async () => {
+      await paddleCallback({ name: 'checkout.loaded', data: { id: 'che_1' } });
+      await paddleCallback({
+        name: 'checkout.warning',
+        data: { id: 'che_1' },
+        error: { type: 'validation_error', code: 'postcode_required', detail: 'Postcode is required' },
+      });
+    });
+
+    expect(loggedEvents('baas_checkout_loaded')).toEqual([{ ...funnel, checkout_id: 'che_1' }]);
+    expect(loggedEvents('baas_checkout_event')).toEqual([
+      {
+        ...funnel,
+        name: 'checkout.warning',
+        checkout_id: 'che_1',
+        error_type: 'validation_error',
+        error_code: 'postcode_required',
+        error_detail: 'Postcode is required',
+      },
+    ]);
+  });
+
   it('follows the light or dark preference, including the Paddle frame', async () => {
     await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('light');

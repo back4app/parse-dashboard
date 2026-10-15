@@ -20,7 +20,7 @@ import Icon from 'components/Icon/Icon.react';
 import { initializePaddle } from '@paddle/paddle-js';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeEvent, getGateFromSearch } from 'lib/upgradeEvents';
+import { UpgradeEvent, getGateFromSearch, trackPaddleEvent } from 'lib/upgradeEvents';
 
 const prices = [
   {
@@ -231,6 +231,8 @@ class AppPlan extends DashboardView {
     // Paddle calls this as a plain function, so keep a handle on the component for the funnel context.
     const component = this;
     const paddleEventCallback = async function (data) {
+      // Only for a checkout opened by handleOnClickPlan, which sets the context.
+      trackPaddleEvent(data, component.checkoutContext, component.paddleSeen);
       if (data.name === 'checkout.completed') {
         component.checkoutCompleted = true;
         window.dataLayer = window.dataLayer || [];
@@ -352,6 +354,7 @@ class AppPlan extends DashboardView {
       gate,
     };
     this.checkoutCompleted = false;
+    this.paddleSeen = new Set();
     amplitudeLogEvent(UpgradeEvent.CHECKOUT_OPENED, this.checkoutContext);
     this.setState({ selectedPlan: plan, openCheckout: true }, () => {
       const priceId = this.state.billingCycle === 0 ? plan.monthlyPlanId : plan.annuallyPlanId;

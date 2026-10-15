@@ -6,7 +6,7 @@ import Icon from 'components/Icon/Icon.react';
 import AccountManager from 'lib/AccountManager';
 import { CurrentApp } from 'context/currentApp';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath } from 'lib/upgradeEvents';
+import { UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath, trackPaddleEvent } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
 import { prices } from 'dashboard/AppPlan/AppPlan.react';
 import styles from './UpgradeCheckout.scss';
@@ -79,10 +79,13 @@ export const UpgradeCheckoutModal = ({ gate, onClose }) => {
   const [error, setError] = useState(null);
   const funnel = useRef({ app_id: context.applicationId, plan: plan.name, cycle, source: 'gate', gate });
   const opened = useRef(false);
+  // The Paddle events already logged for this checkout (the modal opens one).
+  const paddleSeen = useRef(new Set());
 
   useEffect(() => {
     let active = true;
     initPaddle(async data => {
+      trackPaddleEvent(data, funnel.current, paddleSeen.current);
       if (data.name === 'checkout.completed') {
         setCompleted(true);
         await recordSubscription(data, { source: 'gate', gate });
