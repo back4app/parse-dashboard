@@ -92,18 +92,18 @@ describe('UpgradeCheckoutModal', () => {
     process.env.SENTRY_ENV = prevEnv;
   });
 
-  it('opens the MVP yearly checkout right away for a custom domain paywall', async () => {
+  it('opens the MVP monthly checkout right away for a web hosting paywall', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
 
     expect(paddle.Checkout.open).toHaveBeenCalledTimes(1);
     const options = paddle.Checkout.open.mock.calls[0][0];
-    expect(options.items).toEqual([{ priceId: 'pri_mvp_y', quantity: 1 }]);
-    expect(options.customData).toEqual({ appId: 'app-1', planId: 'mvp-y' });
+    expect(options.items).toEqual([{ priceId: 'pri_mvp_m', quantity: 1 }]);
+    expect(options.customData).toEqual({ appId: 'app-1', planId: 'mvp-m' });
     expect(options.customer).toEqual({ email: 'owner@example.com' });
     expect(options.settings.frameTarget).toBe('upgrade-checkout-frame');
 
     expect(loggedEvents('baas_checkout_opened')).toEqual([
-      { app_id: 'app-1', plan: 'MVP', cycle: 'yearly', source: 'gate', gate: 'web_hosting' },
+      { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'web_hosting' },
     ]);
     const text = textOf(tree);
     expect(text).toContain('Host your pages on a b4a.app subdomain');
@@ -111,24 +111,13 @@ describe('UpgradeCheckoutModal', () => {
     expect(text).toContain('Web hosting on a b4a.app subdomain');
   });
 
-  it('starts on yearly and switches the open checkout to monthly without reopening it', async () => {
+  it('sells the monthly price only, with no yearly option', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
-    // $15/month billed yearly is $180 today.
-    expect(textOf(tree)).toContain('180');
-    const radios = tree.root.findAll(node => node.type === 'input' && node.props.type === 'radio');
+    const text = textOf(tree);
 
-    // Yearly is listed first, monthly second.
-    renderer.act(() => radios[1].props.onChange());
-
-    expect(paddle.Checkout.open).toHaveBeenCalledTimes(1);
-    expect(paddle.Checkout.updateCheckout).toHaveBeenCalledWith({
-      items: [{ priceId: 'pri_mvp_m', quantity: 1 }],
-      customData: { appId: 'app-1', planId: 'mvp-m' },
-    });
-    expect(loggedEvents('baas_checkout_cycle_changed')).toEqual([
-      { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'web_hosting' },
-    ]);
-    expect(textOf(tree)).toContain('Billed monthly');
+    expect(text).toContain('Billed monthly');
+    expect(text).not.toMatch(/yearly|\/year|180/i);
+    expect(tree.root.findAll(node => node.type === 'input' && node.props.type === 'radio')).toHaveLength(0);
   });
 
   it('logs the abandonment and closes when the user leaves without paying', async () => {
@@ -138,7 +127,7 @@ describe('UpgradeCheckoutModal', () => {
     renderer.act(() => tree.root.findByProps({ 'aria-label': 'Close' }).props.onClick());
 
     expect(loggedEvents('baas_checkout_closed')).toEqual([
-      { app_id: 'app-1', plan: 'MVP', cycle: 'yearly', source: 'gate', gate: 'email_templates' },
+      { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'email_templates' },
     ]);
     expect(paddle.Checkout.close).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
@@ -165,6 +154,32 @@ describe('UpgradeCheckoutModal', () => {
     expect(loggedEvents('baas_checkout_closed')).toEqual([]);
   });
 
+  it('logs what Paddle reports from inside the checkout, with the gate', async () => {
+    await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
+    const funnel = { app_id: 'app-1', plan: 'MVP', cycle: 'monthly', source: 'gate', gate: 'web_hosting' };
+
+    await renderer.act(async () => {
+      await paddleCallback({ name: 'checkout.loaded', data: { id: 'che_1' } });
+      await paddleCallback({
+        name: 'checkout.warning',
+        data: { id: 'che_1' },
+        error: { type: 'validation_error', code: 'postcode_required', detail: 'Postcode is required' },
+      });
+    });
+
+    expect(loggedEvents('baas_checkout_loaded')).toEqual([{ ...funnel, checkout_id: 'che_1' }]);
+    expect(loggedEvents('baas_checkout_event')).toEqual([
+      {
+        ...funnel,
+        name: 'checkout.warning',
+        checkout_id: 'che_1',
+        error_type: 'validation_error',
+        error_code: 'postcode_required',
+        error_detail: 'Postcode is required',
+      },
+    ]);
+  });
+
   it('follows the light or dark preference, including the Paddle frame', async () => {
     await mount(<UpgradeCheckoutModal gate="web_hosting" onClose={() => {}} />);
     expect(paddle.Checkout.open.mock.calls[0][0].settings.theme).toBe('light');
@@ -180,13 +195,13 @@ describe('UpgradeCheckoutModal', () => {
 
   it('sells web hosting on MVP from the Overview', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="overview_web_hosting" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
     expect(textOf(tree)).toContain('Host your pages on a b4a.app subdomain');
   });
 
   it('sells HTTPS on Pay As You Go and tells the buyer support turns it on', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="https" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_m');
     expect(textOf(tree)).not.toContain('open a support ticket');
 
     await renderer.act(async () => {
@@ -201,20 +216,20 @@ describe('UpgradeCheckoutModal', () => {
     for (const gate of ['overview_plan_card', 'overview_plan_badge']) {
       paddle.Checkout.open.mockClear();
       const tree = await mount(<UpgradeCheckoutModal gate={gate} onClose={() => {}} />);
-      expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+      expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
       expect(textOf(tree)).toContain('Take this app to production');
     }
   });
 
   it('sells MVP from the job limit on Free', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="jobs" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
     expect(textOf(tree)).toContain('Schedule more background jobs');
   });
 
-  it('sells Dedicated on yearly from the database profiler', async () => {
+  it('sells Dedicated from the database profiler', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="db_profiler" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_m');
     expect(textOf(tree)).toContain('See which queries slow your app down');
   });
 
@@ -230,34 +245,34 @@ describe('UpgradeCheckoutModal', () => {
 
   it('sells custom domains on Pay As You Go, where the backend unlocks them', async () => {
     const tree = await mount(<UpgradeCheckoutModal gate="custom_domain" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_m');
     expect(textOf(tree)).toContain('Use your own domain');
     expect(textOf(tree)).toContain('Pay As You Go includes custom domains with HTTPS.');
   });
 
   it('sells the plan the usage banner names, MVP when it names none', async () => {
     const free = await mount(<UpgradeCheckoutModal gate="usage_limit" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_mvp_m');
     expect(textOf(free)).toContain('Keep your app running');
 
     paddle.Checkout.open.mockClear();
     const mvp = await mount(<UpgradeCheckoutModal gate="usage_limit" plan="Pay As You Go" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_m');
     expect(textOf(mvp)).toContain('Pay As You Go raises your limits');
 
     paddle.Checkout.open.mockClear();
     const payg = await mount(<UpgradeCheckoutModal gate="usage_limit" plan="Dedicated" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_m');
     expect(textOf(payg)).toContain('Dedicated has unlimited requests');
   });
 
   it('offers the plan that actually unlocks each compliance badge', async () => {
     await mount(<UpgradeCheckoutModal gate="compliance_soc2" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_payg_m');
 
     paddle.Checkout.open.mockClear();
     await mount(<UpgradeCheckoutModal gate="compliance_hipaa" onClose={() => {}} />);
-    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_y');
+    expect(paddle.Checkout.open.mock.calls[0][0].items[0].priceId).toBe('pri_ded_m');
   });
 });
 
@@ -270,11 +285,16 @@ describe('UpgradeGateButton', () => {
     initPaddle.mockImplementation(() => Promise.resolve(fakePaddle()));
   });
 
-  it('logs the paywall view, then the click, and opens the checkout in place', async () => {
+  it('logs the view only for paywalls reached by trying the feature', async () => {
+    await mount(<UpgradeGateButton gate="email_templates" logView />);
+    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'email_templates', app_id: 'app-1' }]);
+  });
+
+  it('a button always on screen logs only the click, and opens the checkout in place', async () => {
     const tree = await mount(
       <UpgradeGateButton gate="mongodb_8" renderTrigger={open => <a id="trigger" href="#" onClick={open}>Upgrade database</a>} />
     );
-    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([{ gate: 'mongodb_8', app_id: 'app-1' }]);
+    expect(loggedEvents('baas_upgrade_gate_viewed')).toEqual([]);
     expect(initPaddle).not.toHaveBeenCalled();
 
     const preventDefault = jest.fn();

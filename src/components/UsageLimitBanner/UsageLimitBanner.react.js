@@ -17,7 +17,7 @@ const UsageLimitBanner = ({ planData, blocked, slug, showPlansLink = true }) => 
   }
   let action = null;
   if (alert.action === 'checkout') {
-    action = <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} plan={alert.plan} value={alert.actionLabel} />;
+    action = <UpgradeGateButton gate={UpgradeGate.USAGE_LIMIT} plan={alert.plan} value={alert.actionLabel} logView />;
   } else if (showPlansLink) {
     action = <Link className={styles.link} to={planUsagePath(slug, UpgradeGate.USAGE_LIMIT)}>{alert.actionLabel}</Link>;
   }

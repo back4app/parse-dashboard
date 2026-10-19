@@ -6,7 +6,7 @@ import Icon from 'components/Icon/Icon.react';
 import AccountManager from 'lib/AccountManager';
 import { CurrentApp } from 'context/currentApp';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
-import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath, regionChangeFormUrl } from 'lib/upgradeEvents';
+import { SUPPORT_TICKET_URL, UpgradeEvent, UpgradeGate, UpgradeGateView, logGateClicked, planUsagePath, regionChangeFormUrl, trackPaddleEvent } from 'lib/upgradeEvents';
 import { Cycle, initPaddle, paddlePlanId, paddlePriceId, recordSubscription } from 'lib/paddleCheckout';
 import { prices } from 'dashboard/AppPlan/prices';
 import { getCachedPlanData } from 'lib/planDataCache';
@@ -137,14 +137,6 @@ const planIndex = name => prices.findIndex(p => p.name === name);
 
 const detailText = detail => [detail.number, detail.text].filter(Boolean).join(' ');
 
-const priceSummary = (plan, cycle) => {
-  if (cycle === Cycle.YEARLY) {
-    const yearly = Number(plan.pricePerYear) * 12;
-    return { perMonth: plan.pricePerYear, note: `Billed $${yearly}/year · save ${plan.savePercent}`, today: yearly };
-  }
-  return { perMonth: plan.pricePerMonth, note: 'Billed monthly · cancel anytime', today: Number(plan.pricePerMonth) };
-};
-
 const getOwnerEmail = async context => {
   if (context.custom && context.custom.isOwner) {
     return AccountManager.currentUser().email;
@@ -160,8 +152,8 @@ export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
   const plan = prices.find(p => p.name === offer.plan);
 
   const [dark] = useState(prefersDark);
-  // Yearly first, like the pricing page; monthly stays one click away.
-  const [cycle, setCycle] = useState(Cycle.YEARLY);
+  // Monthly only: a paywall sells the plan at its monthly price. Yearly stays on Plan Usage.
+  const cycle = Cycle.MONTHLY;
   const [paddle, setPaddle] = useState(null);
   const [ownerEmail, setOwnerEmail] = useState(null);
   const [frame, setFrame] = useState(null);
@@ -169,10 +161,13 @@ export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
   const [error, setError] = useState(null);
   const funnel = useRef({ app_id: context.applicationId, plan: plan.name, cycle, source: 'gate', gate });
   const opened = useRef(false);
+  // The Paddle events already logged for this checkout (the modal opens one).
+  const paddleSeen = useRef(new Set());
 
   useEffect(() => {
     let active = true;
     initPaddle(async data => {
+      trackPaddleEvent(data, funnel.current, paddleSeen.current);
       if (data.name === 'checkout.completed') {
         setCompleted(true);
         await recordSubscription(data, { source: 'gate', gate });
@@ -207,21 +202,6 @@ export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
     });
   }, [paddle, ownerEmail, frame]);
 
-  const changeCycle = next => {
-    if (next === cycle || completed) {
-      return;
-    }
-    setCycle(next);
-    funnel.current = { ...funnel.current, cycle: next };
-    amplitudeLogEvent(UpgradeEvent.CHECKOUT_CYCLE_CHANGED, funnel.current);
-    if (opened.current) {
-      paddle.Checkout.updateCheckout({
-        items: [{ priceId: paddlePriceId(plan, next), quantity: 1 }],
-        customData: { appId: context.applicationId, planId: paddlePlanId(plan, next) },
-      });
-    }
-  };
-
   const close = () => {
     if (completed) {
       // Reload so the paywall that brought the user here reflects the new plan.
@@ -235,8 +215,6 @@ export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
     onClose();
   };
 
-  const price = priceSummary(plan, cycle);
-
   return (
     <Popover fadeIn={true} fixed={true} position={ORIGIN} modal={true} color="rgba(17,13,17,0.8)">
       <div className={[styles.checkout, dark ? styles.dark : styles.light].join(' ')}>
@@ -248,21 +226,10 @@ export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
           <div className={styles.headline}>{offer.headline}</div>
           {offer.subline ? <div className={styles.subline}>{offer.subline}</div> : null}
           <div className={styles.price}>
-            <span className={styles.priceValue}>${price.perMonth}</span>
+            <span className={styles.priceValue}>${plan.pricePerMonth}</span>
             <span className={styles.priceUnit}>/month</span>
           </div>
-          <div className={styles.priceNote}>{price.note}</div>
-
-          <div className={styles.cycles}>
-            <label className={styles.cycle}>
-              <input type="radio" checked={cycle === Cycle.YEARLY} onChange={() => changeCycle(Cycle.YEARLY)} disabled={completed} />
-              Yearly · ${plan.pricePerYear}/month <span className={styles.save}>Save {plan.savePercent}</span>
-            </label>
-            <label className={styles.cycle}>
-              <input type="radio" checked={cycle === Cycle.MONTHLY} onChange={() => changeCycle(Cycle.MONTHLY)} disabled={completed} />
-              Monthly · ${plan.pricePerMonth}/month
-            </label>
-          </div>
+          <div className={styles.priceNote}>Billed monthly · cancel anytime</div>
 
           <div className={styles.benefits}>
             {plan.details.map((detail, idx) => (
@@ -275,7 +242,7 @@ export const UpgradeCheckoutModal = ({ gate, plan: planName, onClose }) => {
 
           <div className={styles.total}>
             <span>Total today</span>
-            <span>${price.today} + tax</span>
+            <span>${plan.pricePerMonth} + tax</span>
           </div>
 
           {completed ? (
@@ -315,13 +282,16 @@ const goToPlanUsage = (slug, gate) => {
   window.location.assign(`${base}${planUsagePath(slug, gate)}`);
 };
 
-// Paywall entry point: logs the gate view and, on click, opens the direct checkout when the
+// Paywall entry point: on click, logs the gate click and opens the direct checkout when the
 // plan it sells is above the app's plan (MVP on Free, Pay As You Go on MVP, ...). Paywalls
 // follow the backend permissions, so they also show on plans at or above the one they sell,
 // and on plans with no next plan up (Gold, custom, ...): those go to Plan Usage instead of
 // buying a plan below their own. `plan` picks the plan when the gate sells more than one.
 // `renderTrigger(open)` lets anchors and custom buttons keep their look.
-export const UpgradeGateButton = ({ gate, plan, renderTrigger, value = 'Upgrade Plan' }) => {
+// `logView` also logs the gate view when the paywall shows. Only for paywalls the user reaches by
+// trying to use the feature (opening its page); buttons that are always on screen, like the
+// Overview ones, count only the click.
+export const UpgradeGateButton = ({ gate, plan, renderTrigger, value = 'Upgrade Plan', logView = false }) => {
   const context = useContext(CurrentApp);
   const [open, setOpen] = useState(false);
   const openCheckout = event => {
@@ -340,7 +310,7 @@ export const UpgradeGateButton = ({ gate, plan, renderTrigger, value = 'Upgrade 
 
   return (
     <>
-      <UpgradeGateView gate={gate} appId={context.applicationId} />
+      {logView ? <UpgradeGateView gate={gate} appId={context.applicationId} /> : null}
       {renderTrigger ? renderTrigger(openCheckout) : <Button value={value} primary={true} onClick={openCheckout} trackClick={false} />}
       {open ? <UpgradeCheckoutModal gate={gate} plan={plan} onClose={() => setOpen(false)} /> : null}
     </>

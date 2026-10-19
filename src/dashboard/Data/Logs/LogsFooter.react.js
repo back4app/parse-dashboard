@@ -35,6 +35,7 @@ const LogsFooter = ({ showRetention = false }) => {
           Free keeps access logs for 1 day; MVP keeps 7 days.{' '}
           <UpgradeGateButton
             gate={UpgradeGate.LOGS_RETENTION}
+            logView
             renderTrigger={open => (
               <a href="#" onClick={open}>Upgrade to MVP</a>
             )}

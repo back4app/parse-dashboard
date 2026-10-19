@@ -214,7 +214,7 @@ class DatabaseProfile extends DashboardView {
 
             {/* Choose plan to entire div with button */}
             <div style={{ display: 'flex', justifyContent: 'center' }} className={styles.upgradeCard}>
-              <UpgradeGateButton gate={UpgradeGate.DB_PROFILER} value="Buy now" />
+              <UpgradeGateButton gate={UpgradeGate.DB_PROFILER} value="Buy now" logView />
             </div>
           </div>
 

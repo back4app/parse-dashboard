@@ -38,7 +38,7 @@ const BackupUpsell = ({ gate }) => {
       }
       input={
         <div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
-          <UpgradeGateButton gate={gate} value="Get daily backups" />
+          <UpgradeGateButton gate={gate} value="Get daily backups" logView />
         </div>
       }
     />

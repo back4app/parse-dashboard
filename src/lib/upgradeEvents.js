@@ -2,14 +2,79 @@ import { useEffect } from 'react';
 import { amplitudeLogEvent } from './amplitudeEvents';
 
 // Free -> paid funnel for the Backend product:
-// gate viewed -> gate clicked -> checkout opened -> (closed | At Checkout - Subscription Successful).
+// gate viewed -> gate clicked -> checkout opened -> loaded -> payment initiated
+// -> (failed | closed | At Checkout - Subscription Successful).
 // Prefixed with baas_ so the Agent's upgrade_* charts keep counting only the Agent.
 export const UpgradeEvent = {
   GATE_VIEWED: 'baas_upgrade_gate_viewed',
   GATE_CLICKED: 'baas_upgrade_gate_clicked',
   CHECKOUT_OPENED: 'baas_checkout_opened',
   CHECKOUT_CLOSED: 'baas_checkout_closed',
-  CHECKOUT_CYCLE_CHANGED: 'baas_checkout_cycle_changed',
+  // What happens INSIDE the Paddle frame: without these the funnel can't tell
+  // "never saw the form" from "saw it and left" from "tried to pay and was declined".
+  CHECKOUT_LOADED: 'baas_checkout_loaded',
+  PAYMENT_INITIATED: 'baas_payment_initiated',
+  PAYMENT_FAILED: 'baas_payment_failed',
+  // Everything else Paddle reports from the frame, under Paddle's own `name`: an error
+  // or warning shown to the buyer, a checkout that failed to load, the method picked.
+  CHECKOUT_EVENT: 'baas_checkout_event',
+};
+
+const PADDLE_FUNNEL_EVENTS = {
+  'checkout.loaded': UpgradeEvent.CHECKOUT_LOADED,
+  'checkout.payment.initiated': UpgradeEvent.PAYMENT_INITIATED,
+  'checkout.payment.failed': UpgradeEvent.PAYMENT_FAILED,
+};
+
+// Not sent as baas_checkout_event: the funnel steps above, completion and close (the
+// callbacks handle them), and frame plumbing that says nothing about the buyer
+// (`checkout.ping.size` fires on every resize).
+const PADDLE_NOT_FORWARDED = new Set([
+  ...Object.keys(PADDLE_FUNNEL_EVENTS),
+  'checkout.completed',
+  'checkout.closed',
+  'checkout.ping.size',
+  'checkout.removespinner',
+  'checkout.frame.revealed',
+]);
+
+// What one Paddle.js event sends to Amplitude, or null. The che_ id rides along (it is
+// what Paddle support asks for), and so does Paddle's error message, cut short. `seen`
+// belongs to the checkout open now: each name and error code goes out once.
+// No card or email data is read.
+export const paddleEventToTrack = (event, seen) => {
+  const name = event && (event.name || event.type);
+  if (!name) {
+    return null;
+  }
+  const checkoutId = event.data && event.data.id;
+  const errorFields = event.error
+    ? {
+      error_type: event.error.type,
+      error_code: event.error.code,
+      error_detail: event.error.detail ? event.error.detail.slice(0, 200) : event.error.detail,
+    }
+    : {};
+  if (PADDLE_FUNNEL_EVENTS[name]) {
+    return { eventType: PADDLE_FUNNEL_EVENTS[name], properties: { checkout_id: checkoutId, ...errorFields } };
+  }
+  const seenKey = `${name}|${(event.error && event.error.code) || ''}`;
+  if (PADDLE_NOT_FORWARDED.has(name) || seen.has(seenKey)) {
+    return null;
+  }
+  seen.add(seenKey);
+  return { eventType: UpgradeEvent.CHECKOUT_EVENT, properties: { name, checkout_id: checkoutId, ...errorFields } };
+};
+
+// Logs a Paddle.js event with the funnel context of the checkout it belongs to.
+export const trackPaddleEvent = (event, context, seen) => {
+  if (!context) {
+    return;
+  }
+  const tracked = paddleEventToTrack(event, seen);
+  if (tracked) {
+    amplitudeLogEvent(tracked.eventType, { ...context, ...tracked.properties });
+  }
 };
 
 // The paid feature that made the user hit the paywall. Also sent as ?gate= to plan-usage
