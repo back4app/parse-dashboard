@@ -18,6 +18,7 @@ import { post } from 'lib/AJAX';
 import B4aLoader from 'components/B4aLoader/B4aLoader.react';
 import { canAccess } from 'lib/serverInfo';
 import { openConnect } from 'dashboard/Data/AppOverview/connectEvents';
+import PlanUsageBadge from 'components/Sidebar/PlanUsageBadge.react';
 import { PlugIcon } from 'dashboard/Data/AppOverview/connectIcons.react';
 
 // Alert parameters
@@ -426,6 +427,7 @@ export default class DashboardView extends React.Component {
       name: 'Plan Usage',
       icon: 'b4a-plan-usage-icon',
       link: '/plan-usage',
+      badge: <PlanUsageBadge />,
     })
 
     appSidebarSections.push({

@@ -406,7 +406,7 @@ class DomainSettings extends DashboardView {
       !this.state.canChangeSubdomain && !this.state.isActivated && this.state.currentSubdomain.trim().length === 0 && this.state.customDomainArray.length === 0) {
       content = <Fieldset>
         <Field
-          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to enable web hosting for your pages and use your own domain." />}
+          label={<Label text="Upgrade your plan" dark={true} description="Upgrade your plan to enable web hosting on a b4a.app subdomain." />}
           input={<div style={{ width: '100%', padding: '0 1rem', textAlign: 'right' }}>
             <UpgradeGateButton gate={UpgradeGate.WEB_HOSTING} logView />
           </div>}
@@ -558,7 +558,7 @@ class DomainSettings extends DashboardView {
                   />
                 </>
               ) : (
-                <UpgradeGateButton gate={UpgradeGate.CUSTOM_DOMAIN} logView />
+                <UpgradeGateButton gate={UpgradeGate.CUSTOM_DOMAIN} value="Upgrade to Pay As You Go" logView />
               )}
               
             </div>}

@@ -1,9 +1,10 @@
 // Utility to determine usage className based on usage and limit
 // Returns 'usageDanger', 'usageWarning', or ''
 
-export function getUsageClassName(usage, limit) {
+// Percentage of `limit` used, understanding values like "21 K", "820 MB" or "0.25 GB". null if unknown.
+export function getUsagePercent(usage, limit) {
   if (!usage || !limit) {
-    return '';
+    return null;
   }
 
   const convertToNumber = (value) => {
@@ -34,9 +35,16 @@ export function getUsageClassName(usage, limit) {
   const usageNum = convertToNumber(usage);
   const limitNum = convertToNumber(limit);
   if (!limitNum || isNaN(usageNum) || isNaN(limitNum)) {
+    return null;
+  }
+  return (usageNum / limitNum) * 100;
+}
+
+export function getUsageClassName(usage, limit) {
+  const percentage = getUsagePercent(usage, limit);
+  if (percentage === null) {
     return '';
   }
-  const percentage = (usageNum / limitNum) * 100;
   if (percentage > 90) {
     return 'usageDanger';
   }

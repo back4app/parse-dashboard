@@ -10,6 +10,8 @@ import Label from 'components/Label/Label.react';
 import B4aModal from 'components/B4aModal/B4aModal.react';
 import React from 'react';
 import TextInput from 'components/TextInput/TextInput.react';
+import BackupUpsell from 'components/UpgradeCheckout/BackupUpsell.react';
+import { UpgradeGate } from 'lib/upgradeEvents';
 
 export default class DropClassDialog extends React.Component {
   constructor() {
@@ -46,6 +48,7 @@ export default class DropClassDialog extends React.Component {
         onClose={this.props.onCancel}
         onConfirm={this.props.onConfirm}
       >
+        <BackupUpsell gate={UpgradeGate.BACKUP_DELETE_CLASS} />
         <Field
           label={
             <Label

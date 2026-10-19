@@ -29,6 +29,10 @@ const getCloudFolderPlaceholder = () =>
 
 const publicFolderPlaceholder = 'Public folder can be used to deploy public static content as html, images, css, etc.\n'
 
+const modifiedFileIcon = require('./icons/file.png');
+
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '');
+
 let cloudFolderPlaceholder;
 
 const swalWithBootstrapButtons = Swal.mixin({
@@ -120,6 +124,9 @@ export default class B4ACodeTree extends React.Component {
       // jstree's `changed.jstree` event in selectNode().
       selectedTreePath: '',
       showUploadMenu: false,
+      // Bumped every time the user opens a file, so the editor takes focus and
+      // typing/pasting right after picking a file lands in it.
+      editorFocusToken: 0,
     }
 
     // Used to track the latest file load request
@@ -128,6 +135,8 @@ export default class B4ACodeTree extends React.Component {
     this.fileInputRef = React.createRef();
     this.folderInputRef = React.createRef();
     this.uploadMenuRef = React.createRef();
+    this.containerRef = React.createRef();
+    this.codeViewRef = React.createRef();
   }
 
   // Read the current tree state from jstree and mirror it into React state so
@@ -194,8 +203,52 @@ export default class B4ACodeTree extends React.Component {
     if (!nodeId) {
       return;
     }
-    B4ATreeActions.selectFileOnTree(nodeId);
+    if (node.type === 'folder' || node.type === 'new-folder') {
+      B4ATreeActions.selectFileOnTree(nodeId);
+    } else {
+      this.openFileInEditor(nodeId);
+    }
   }
+
+  openFileInEditor(nodeId) {
+    B4ATreeActions.selectFileOnTree(nodeId);
+    this.focusEditor();
+  }
+
+  focusEditor() {
+    this.setState(state => ({ editorFocusToken: state.editorFocusToken + 1 }));
+  }
+
+  // SweetAlert hands focus back to whatever had it before the dialog, and it
+  // does so after its promise has resolved. The editor can only take focus
+  // once that is done.
+  focusEditorAfterDialog = () => {
+    if (this.focusEditorOnDialogClose) {
+      this.focusEditorOnDialogClose = false;
+      this.focusEditor();
+    }
+  };
+
+  // Outside a text field, Cmd/Ctrl+A selects the whole page. The editor only
+  // renders the lines on screen, so copying that selection grabs a fragment
+  // of the file. Send the shortcut to the editor instead.
+  handleSelectAllShortcut = e => {
+    const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
+    if (!modifier || e.altKey || e.shiftKey || (e.key || '').toLowerCase() !== 'a') {
+      return;
+    }
+    const target = e.target;
+    const container = this.containerRef.current;
+    if (!container || !target || (target !== document.body && !container.contains(target))) {
+      return;
+    }
+    if (target.closest && target.closest('input, textarea, select, [contenteditable], .monaco-editor')) {
+      return;
+    }
+    if (this.codeViewRef.current && this.codeViewRef.current.selectAll()) {
+      e.preventDefault();
+    }
+  };
 
   handleContextAction(action, node, path, newName) {
     if (this.props.hideControls) {
@@ -256,13 +309,15 @@ export default class B4ACodeTree extends React.Component {
         confirmButtonText: 'Create file',
         buttonsStyling: false,
         showCloseButton: true,
-        allowOutsideClick: () => !Swal.isLoading()
+        allowOutsideClick: () => !Swal.isLoading(),
+        didClose: this.focusEditorAfterDialog
       }).then(({ value }) => {
         if (value) {
           value = B4ATreeActions.sanitizeHTML(value);
           const parent = parentNodeId ? [parentNodeId] : B4ATreeActions.getSelectedParent();
           const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
           B4ATreeActions.selectFileOnTree(newNodeId);
+          this.focusEditorOnDialogClose = true;
           this.setState({ files: $('#tree').jstree(true).get_json() });
         }
       });
@@ -594,20 +649,31 @@ export default class B4ACodeTree extends React.Component {
     return this.props.parentState({ unsavedChanges: true })
   }
 
-  async updateSelectedFileContent(value) {
+  // Runs on every keystroke and paste, so it stays synchronous (the node and
+  // `source` are never behind the editor) and only touches the tree the first
+  // time a file is modified.
+  updateSelectedFileContent(value) {
     if (this.props.hideControls) { return; }
-    const ecodedValue = await B4ATreeActions.encodeFile(value, 'data:plain/text;base64');
+    const tree = $('#tree').jstree(true);
+    const selectedNode = tree && tree.get_selected(true).pop();
+    if (!selectedNode) { return; }
+
+    selectedNode.data.code = B4ATreeActions.encodeFile(value, 'data:plain/text;base64');
     this.setState({ source: value });
 
-    this.state.selectedNodeData?.instance.set_icon(this.state.selectedNodeData.node, require('./icons/file.png'));
-
-    $('#tree').jstree('get_selected', true).pop().data.code = ecodedValue;
-    $('#tree').jstree().redraw(true);
+    if (selectedNode.icon !== modifiedFileIcon) {
+      tree.set_icon(selectedNode, modifiedFileIcon);
+      tree.redraw(true);
+    }
 
     // set updated files.
-    let cloneUpdatedFiles = [...this.props.updatedFiles];
-    if(!cloneUpdatedFiles.includes('j1_mainJS') && !cloneUpdatedFiles.includes('j1_indexHTML')){
-      this.props.cloudCodeChanges.addFile($('#tree').jstree('get_selected', true).pop().id);
+    const updatedFiles = this.props.updatedFiles;
+    if (
+      !updatedFiles.includes('j1_mainJS') &&
+      !updatedFiles.includes('j1_indexHTML') &&
+      !this.props.cloudCodeChanges.getFiles().includes(selectedNode.id)
+    ) {
+      this.props.cloudCodeChanges.addFile(selectedNode.id);
       this.props.setUpdatedFile(this.props.cloudCodeChanges.getFiles());
     }
   }
@@ -705,6 +771,7 @@ export default class B4ACodeTree extends React.Component {
     }
     $('#tree').jstree(config);
     this.watchSelectedNode();
+    document.addEventListener('keydown', this.handleSelectAllShortcut);
 
     // Mirror jstree's data into React state on every mutation so
     // <B4aFileTree> stays in sync with the source of truth.
@@ -750,6 +817,7 @@ export default class B4ACodeTree extends React.Component {
   }
 
   componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleSelectAllShortcut);
     $('#tree').off(
       'changed.jstree create_node.jstree delete_node.jstree rename_node.jstree move_node.jstree set_text.jstree refresh.jstree ready.jstree'
     );
@@ -806,11 +874,14 @@ export default class B4ACodeTree extends React.Component {
           )}
         </div>
         <B4ACloudCodeView
+          ref={this.codeViewRef}
           isFolderSelected={this.state.isFolderSelected}
           onCodeChange={value => this.updateSelectedFileContent(value)}
           source={this.state.source}
           extension={this.state.extension}
           fileName={this.state.selectedFile}
+          fileId={this.state.nodeId}
+          focusToken={this.state.editorFocusToken}
           readOnly={!!this.props.hideControls}
         />
       </div>;
@@ -838,20 +909,22 @@ export default class B4ACodeTree extends React.Component {
         confirmButtonText: 'Create file',
         buttonsStyling: false,
         showCloseButton: true,
-        allowOutsideClick: () => !Swal.isLoading()
+        allowOutsideClick: () => !Swal.isLoading(),
+        didClose: this.focusEditorAfterDialog
       }).then(({ value }) => {
         if (value) {
           value = B4ATreeActions.sanitizeHTML(value);
           const parent = B4ATreeActions.getSelectedParent();
           const newNodeId = B4ATreeActions.addFileOnSelectedNode(value, parent[0]);
           B4ATreeActions.selectFileOnTree(newNodeId);
+          this.focusEditorOnDialogClose = true;
           this.setState({ files: $('#tree').jstree(true).get_json() });
         }
       });
     };
 
     return (
-      <div className={styles.codeContainer} style={this.props.style ? this.props.style : {}} id="codeContainer">
+      <div ref={this.containerRef} className={styles.codeContainer} style={this.props.style ? this.props.style : {}} id="codeContainer">
         <div className={styles.fileSelector}>
           <div className={styles.vscodeSidebar}>
             <div className={styles.vscodeHeader}>

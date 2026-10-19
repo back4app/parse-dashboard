@@ -7,11 +7,13 @@
  */
 import Modal     from 'components/Modal/Modal.react';
 import React     from 'react';
+import BackupUpsell from 'components/UpgradeCheckout/BackupUpsell.react';
+import { UpgradeGate } from 'lib/upgradeEvents';
 
 export default class ConfirmDeleteColumnDialog extends React.Component {
 
   render() {
-    let content = null;
+    const content = <BackupUpsell gate={UpgradeGate.BACKUP_DELETE_COLUMN} />;
 
     return (
       <Modal

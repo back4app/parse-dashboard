@@ -21,6 +21,8 @@ import OnboardingBoxes from './OnboardingBoxes.react';
 import AccountManager from 'lib/AccountManager';
 import { amplitudeLogEvent } from 'lib/amplitudeEvents';
 import { UpgradeGate } from 'lib/upgradeEvents';
+import UsageLimitBanner from 'components/UsageLimitBanner/UsageLimitBanner.react';
+import RegionChange from './RegionChange.react';
 import { UpgradeGateButton } from 'components/UpgradeCheckout/UpgradeCheckout.react';
 import AppOverviewActions from './AppOverviewActions.react';
 import ComplianceCard from './ComplianceCard.react';
@@ -265,6 +267,7 @@ class AppOverview extends DashboardView {
   renderContent() {
     const { isLoadingAppPlanData, appPlanData } = this.state;
     // Same rule as before: the version shows on Free plans or once on MongoDB 8.0.
+    const isFreeApp = !isLoadingAppPlanData && !(appPlanData instanceof Error) && /^free/i.test(appPlanData?.planName || '');
     const showDatabaseVersion = (!isLoadingAppPlanData && !(appPlanData instanceof Error) && /Free/i.test(appPlanData.planName))
       || this.context.databaseVersion === '8.0';
     const webhost = this.state.webhosting?.hostSettings?.webhost;
@@ -272,7 +275,7 @@ class AppOverview extends DashboardView {
     const webUrl = customDomain || webhost;
     // Same rule as the Domains paywall: the plan cannot use web hosting and nothing is configured yet.
     const webUrlLocked = !webUrl && this.state.webhosting?.canChangeSubdomain === false;
-    // MVP includes custom domains but not HTTPS on them; that starts on Pay As You Go.
+    // Custom domains and HTTPS start on Pay As You Go; an MVP app can still have a legacy custom domain.
     const httpsLocked = !!customDomain && (this.state.appPlanData?.planName || '').indexOf('MVP') === 0;
     const database = [this.context.databaseType, showDatabaseVersion && this.context.databaseVersion].filter(Boolean).join(' ');
     return (
@@ -282,6 +285,12 @@ class AppOverview extends DashboardView {
         </div>
         <div className={styles.content}>
           <AppLoadingText appName={this.context.name} appId={this.context.applicationId} pollSchemas={this.pollSchemas} />
+
+          <UsageLimitBanner
+            planData={this.state.appPlanData}
+            blocked={this.context.serverInfo?.code === 402}
+            slug={this.context.slug}
+          />
 
           {/* The app at a glance: name + App ID + Actions on top, then one row
               of facts. The keys live in Get connected → Keys. */}
@@ -323,7 +332,7 @@ class AppOverview extends DashboardView {
               <AppFact label="API URL" copy={this.context.serverURL}>{this.context.serverURL}</AppFact>
               <AppFact
                 label="Hosting Region"
-                extra={<a className={styles.changeRegionLink} onClick={() => amplitudeLogEvent('On Click - Change Hosting Region Button')} href={`https://back4app.typeform.com/to/kMjTovFj?appId=${this.context.applicationId}`} target="_blank" rel="noopener noreferrer">Change</a>}
+                extra={<RegionChange className={styles.changeRegionLink} isFree={isFreeApp} />}
               >
                 {this.context.region}
               </AppFact>
@@ -375,7 +384,7 @@ class AppOverview extends DashboardView {
 
           <div className={styles.cardsContainer}>
             {/* App plan card */}
-            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} appSlug={this.context.slug} appId={this.context.applicationId} />
+            <AppPlanCard loading={this.state.isLoadingAppPlanData} planData={this.state.appPlanData} />
             {/* App Secutiry Card */}
             <AppSecurityCard appId={this.context.slug} loading={this.state.isLoadingSecurityReport} securityReport={this.state.securityReport} />
           </div>

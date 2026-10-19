@@ -19,6 +19,7 @@ import Icon from 'components/Icon/Icon.react';
 import { withRouter } from 'lib/withRouter';
 
 import styles from 'dashboard/Data/Logs/Logs.scss';
+import LogsFooter from 'dashboard/Data/Logs/LogsFooter.react';
 
 const subsections = {
   access: 'Access',
@@ -185,6 +186,7 @@ export default class InfoLogs extends DashboardView {
                   text={message}
                   timestamp={timestamp} />)}
               </LogView>
+              <LogsFooter />
             </div>
           )}
         </div>
