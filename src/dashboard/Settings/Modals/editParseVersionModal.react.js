@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button/Button.react';
 import Icon from 'components/Icon/Icon.react';
-import FormNote from 'components/FormNote/FormNote.react';
 import styles from 'dashboard/Settings/Modals/editParseVersionModal.scss';
 import modalStyles from 'components/B4aModal/B4aModal.scss';
 import Popover from 'components/Popover/Popover.react';
@@ -11,6 +10,22 @@ const origin = new Position(0, 0);
 const MIGRATION_POLL_INTERVAL = 5000;
 const MIGRATION_MAX_WAIT = 30 * 60 * 1000;
 const MIGRATION_REQUEST_TIMEOUT = 15000;
+
+const NOTICE_TYPES = {
+  warning: { className: styles.noticeWarning, icon: 'b4a-warn-fill-icon', fill: '#F78400' },
+  blue: { className: styles.noticeInfo, icon: 'b4a-info-circle', fill: '#15A9FF' },
+  red: { className: styles.noticeError, icon: 'b4a-error-cross', fill: '#E85C3E' },
+};
+
+const Notice = ({ type, children }) => {
+  const { className, icon, fill } = NOTICE_TYPES[type] || NOTICE_TYPES.red;
+  return (
+    <div className={[styles.notice, className].join(' ')}>
+      <Icon name={icon} width={16} height={16} fill={fill} />
+      <div>{children}</div>
+    </div>
+  );
+};
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
@@ -278,20 +293,16 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
             </div>
           </div>
 
-          {requiresDatabaseMigration && (
-            <div style={{ marginBottom: '10px' }}>
-              <FormNote show={true} color='orange'>
-                This version requires MongoDB 8. Your database will be migrated automatically when you save, which can take a while. A short downtime may happen during the process.
-              </FormNote>
-            </div>
+          {requiresDatabaseMigration && !processing && (
+            <Notice type='warning'>
+              This version requires MongoDB 8. Your database will be migrated automatically when you save, which can take a while. A short downtime may happen during the process.
+            </Notice>
           )}
 
           {note !== '' && (
-            <div style={{ marginBottom: '10px' }}>
-              <FormNote show={note !== ''} color={noteColor}>
-                {note}
-              </FormNote>
-            </div>
+            <Notice type={noteColor}>
+              {note}
+            </Notice>
           )}
         </div>
 
