@@ -97,6 +97,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   const npmModules = parseDependencies(selectedVersion?.dependencies ?? selectedVersion?.npmModules);
   const hasSelectedVersion = !!selectedVersion?.version;
+  const requiresDatabaseMigration = !!selectedVersion?.requiresDatabaseMigration && selectedVersion.version !== currentParseVersion;
 
   const visibleMigrations = isGDPR
     ? []
@@ -212,6 +213,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
                           }
                         }}
                         disabled={v.disabled}
+                        title={v.disabled ? v.disabledReason : undefined}
                       >
                         {v.version === currentParseVersion
                           ? `${v.version} - ${v.description || ''} (current)`
@@ -242,6 +244,14 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
             </div>
           </div>
 
+          {requiresDatabaseMigration && (
+            <div style={{ marginBottom: '10px' }}>
+              <FormNote show={true} color='orange'>
+                This version requires MongoDB 8. Your database will be migrated automatically when you save, which can take a few minutes. Data written to the app during the migration may not be copied, so avoid writes until it finishes.
+              </FormNote>
+            </div>
+          )}
+
           {note !== '' && (
             <div style={{ marginBottom: '10px' }}>
               <FormNote show={note !== ''} color={noteColor}>
@@ -262,7 +272,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
           />
           <Button
             primary={true}
-            value={processing ? 'Saving...' : 'Save Changes'}
+            value={processing ? (requiresDatabaseMigration ? 'Migrating...' : 'Saving...') : (requiresDatabaseMigration ? 'Migrate & Save' : 'Save Changes')}
             color="green"
             disabled={!hasSelectedVersion || processing}
             onClick={save}
