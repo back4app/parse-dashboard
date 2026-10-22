@@ -8,6 +8,7 @@ import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 
 const origin = new Position(0, 0);
+const MIGRATION_POLL_INTERVAL = 5000;
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
@@ -105,6 +106,26 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   const close = () => setParentState({ showEditParseVersionModal: false });
 
+  // The database migration runs in background on the server, so poll until it finishes
+  const waitForMigration = async (migrationId) => {
+    for (;;) {
+      await new Promise((resolve) => setTimeout(resolve, MIGRATION_POLL_INTERVAL));
+      let migration;
+      try {
+        migration = await context.parseServerVersionMigrationStatus(migrationId);
+      } catch (e) {
+        // Keep polling on transient errors (e.g. gateway timeouts)
+        continue;
+      }
+      if (migration?.status === 'Completed') {
+        return;
+      }
+      if (migration?.status === 'Failed') {
+        throw { error: migration.error || 'Failed to migrate the database' };
+      }
+    }
+  };
+
   const save = async () => {
     if (!selectedVersion?.version) {
       return;
@@ -113,7 +134,12 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
     try {
       setProcessing(true);
       setNote('');
-      await context.changeParseServerVersion(selectedVersion.version);
+      const result = await context.changeParseServerVersion(selectedVersion.version);
+      if (result?.migrationId) {
+        setNote('Migrating your database to MongoDB 8 and rebuilding your app. Please keep this window open, it can take a few minutes.');
+        setNoteColor('blue');
+        await waitForMigration(result.migrationId);
+      }
       // Force UI refresh so the new parseVersion shows everywhere.
       window.location.reload();
     } catch (e) {
