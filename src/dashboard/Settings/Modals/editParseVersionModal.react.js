@@ -144,7 +144,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
       setNote('');
       const result = await context.changeParseServerVersion(selectedVersion.version);
       if (result?.migrationId) {
-        setNote('Upgrading your Parse Server and MongoDB versions. Please keep this window open, it can take a few minutes.');
+        setNote('Upgrading your Parse Server and MongoDB versions. Please keep this window open, it can take a while.');
         setNoteColor('blue');
         await waitForMigration(result.migrationId);
       }
@@ -281,7 +281,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
           {requiresDatabaseMigration && (
             <div style={{ marginBottom: '10px' }}>
               <FormNote show={true} color='orange'>
-                This version requires MongoDB 8. Your database will be migrated automatically when you save, which can take a few minutes. A short downtime may happen during the process.
+                This version requires MongoDB 8. Your database will be migrated automatically when you save, which can take a while. A short downtime may happen during the process.
               </FormNote>
             </div>
           )}
