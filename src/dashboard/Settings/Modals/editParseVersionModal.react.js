@@ -10,6 +10,7 @@ import Position from 'lib/Position';
 const origin = new Position(0, 0);
 const MIGRATION_POLL_INTERVAL = 5000;
 const MIGRATION_MAX_WAIT = 30 * 60 * 1000;
+const MIGRATION_REQUEST_TIMEOUT = 15000;
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
@@ -114,7 +115,11 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
       await new Promise((resolve) => setTimeout(resolve, MIGRATION_POLL_INTERVAL));
       let migration;
       try {
-        migration = await context.parseServerVersionMigrationStatus(migrationId);
+        // AJAX has no timeout, so a request that never answers would stop the polling
+        migration = await Promise.race([
+          context.parseServerVersionMigrationStatus(migrationId),
+          new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), MIGRATION_REQUEST_TIMEOUT)),
+        ]);
       } catch (e) {
         // Keep polling on transient errors (e.g. gateway timeouts)
         continue;
