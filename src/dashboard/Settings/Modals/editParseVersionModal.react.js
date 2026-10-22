@@ -9,6 +9,7 @@ import Position from 'lib/Position';
 
 const origin = new Position(0, 0);
 const MIGRATION_POLL_INTERVAL = 5000;
+const MIGRATION_MAX_WAIT = 30 * 60 * 1000;
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
@@ -108,7 +109,8 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   // The database migration runs in background on the server, so poll until it finishes
   const waitForMigration = async (migrationId) => {
-    for (;;) {
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < MIGRATION_MAX_WAIT) {
       await new Promise((resolve) => setTimeout(resolve, MIGRATION_POLL_INTERVAL));
       let migration;
       try {
@@ -124,6 +126,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         throw { error: migration.error || 'Failed to migrate the database' };
       }
     }
+    throw { error: 'The database migration is taking longer than expected. Please, reach us on chat.' };
   };
 
   const save = async () => {
