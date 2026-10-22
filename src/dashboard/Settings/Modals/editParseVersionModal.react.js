@@ -1,13 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button/Button.react';
 import Icon from 'components/Icon/Icon.react';
-import FormNote from 'components/FormNote/FormNote.react';
 import styles from 'dashboard/Settings/Modals/editParseVersionModal.scss';
 import modalStyles from 'components/B4aModal/B4aModal.scss';
 import Popover from 'components/Popover/Popover.react';
 import Position from 'lib/Position';
 
 const origin = new Position(0, 0);
+const MIGRATION_POLL_INTERVAL = 5000;
+const MIGRATION_MAX_WAIT = 30 * 60 * 1000;
+const MIGRATION_REQUEST_TIMEOUT = 15000;
+
+const NOTICE_TYPES = {
+  warning: { className: styles.noticeWarning, icon: 'b4a-warn-fill-icon', fill: '#F78400' },
+  blue: { className: styles.noticeInfo, icon: 'b4a-info-circle', fill: '#15A9FF' },
+  red: { className: styles.noticeError, icon: 'b4a-error-cross', fill: '#E85C3E' },
+};
+
+const Notice = ({ type, children }) => {
+  const { className, icon, fill } = NOTICE_TYPES[type] || NOTICE_TYPES.red;
+  return (
+    <div className={[styles.notice, className].join(' ')}>
+      <Icon name={icon} width={16} height={16} fill={fill} />
+      <div>{children}</div>
+    </div>
+  );
+};
 
 export const EditParseVersionModal = ({ context, setParentState, currentParseVersion }) => {
   const [processing, setProcessing] = useState(false);
@@ -97,12 +115,39 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
 
   const npmModules = parseDependencies(selectedVersion?.dependencies ?? selectedVersion?.npmModules);
   const hasSelectedVersion = !!selectedVersion?.version;
+  const requiresDatabaseMigration = !!selectedVersion?.requiresDatabaseMigration && selectedVersion.version !== currentParseVersion;
 
   const visibleMigrations = isGDPR
     ? []
     : (migrationLinks || []).filter((m) => m && m.link && m.version !== selectedVersion?.version);
 
   const close = () => setParentState({ showEditParseVersionModal: false });
+
+  // The database migration runs in background on the server, so poll until it finishes
+  const waitForMigration = async (migrationId) => {
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < MIGRATION_MAX_WAIT) {
+      await new Promise((resolve) => setTimeout(resolve, MIGRATION_POLL_INTERVAL));
+      let migration;
+      try {
+        // AJAX has no timeout, so a request that never answers would stop the polling
+        migration = await Promise.race([
+          context.parseServerVersionMigrationStatus(migrationId),
+          new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), MIGRATION_REQUEST_TIMEOUT)),
+        ]);
+      } catch (e) {
+        // Keep polling on transient errors (e.g. gateway timeouts)
+        continue;
+      }
+      if (migration?.status === 'Completed') {
+        return;
+      }
+      if (migration?.status === 'Failed') {
+        throw { error: migration.error || 'Failed to migrate the database' };
+      }
+    }
+    throw { error: 'The database migration is taking longer than expected. Please, reach us on chat.' };
+  };
 
   const save = async () => {
     if (!selectedVersion?.version) {
@@ -112,13 +157,18 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
     try {
       setProcessing(true);
       setNote('');
-      await context.changeParseServerVersion(selectedVersion.version);
+      const result = await context.changeParseServerVersion(selectedVersion.version);
+      if (result?.migrationId) {
+        setNote('Upgrading your Parse Server and MongoDB versions. Please keep this window open, it can take a while.');
+        setNoteColor('blue');
+        await waitForMigration(result.migrationId);
+      }
       // Force UI refresh so the new parseVersion shows everywhere.
+      // Keeps processing until the page reloads, so the modal does not go back to its initial state.
       window.location.reload();
     } catch (e) {
       setNote(e?.error || e?.message || 'Failed to save version');
       setNoteColor('red');
-    } finally {
       setProcessing(false);
     }
   };
@@ -212,6 +262,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
                           }
                         }}
                         disabled={v.disabled}
+                        title={v.disabled ? v.disabledReason : undefined}
                       >
                         {v.version === currentParseVersion
                           ? `${v.version} - ${v.description || ''} (current)`
@@ -242,12 +293,16 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
             </div>
           </div>
 
+          {requiresDatabaseMigration && !processing && (
+            <Notice type='warning'>
+              This version requires MongoDB 8. Your database will be migrated automatically when you save, which can take a while. A short downtime may happen during the process.
+            </Notice>
+          )}
+
           {note !== '' && (
-            <div style={{ marginBottom: '10px' }}>
-              <FormNote show={note !== ''} color={noteColor}>
-                {note}
-              </FormNote>
-            </div>
+            <Notice type={noteColor}>
+              {note}
+            </Notice>
           )}
         </div>
 
@@ -262,7 +317,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
           />
           <Button
             primary={true}
-            value={processing ? 'Saving...' : 'Save Changes'}
+            value={processing ? (requiresDatabaseMigration ? 'Migrating...' : 'Saving...') : (requiresDatabaseMigration ? 'Migrate & Save' : 'Save Changes')}
             color="green"
             disabled={!hasSelectedVersion || processing}
             onClick={save}

@@ -461,6 +461,11 @@ export default class ParseApp {
     return AJAX.post(path, { parseVersion });
   }
 
+  parseServerVersionMigrationStatus(migrationId) {
+    const path = `/parse-version/${this.slug}/migration/${migrationId}`;
+    return AJAX.get(path);
+  }
+
   checkStorage() {
     const path = `/parse-app/${this.slug}/check-storage`;
     return AJAX.post(path);
