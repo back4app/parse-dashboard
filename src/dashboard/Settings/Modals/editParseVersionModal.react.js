@@ -164,11 +164,11 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         await waitForMigration(result.migrationId);
       }
       // Force UI refresh so the new parseVersion shows everywhere.
+      // Keeps processing until the page reloads, so the modal does not go back to its initial state.
       window.location.reload();
     } catch (e) {
       setNote(e?.error || e?.message || 'Failed to save version');
       setNoteColor('red');
-    } finally {
       setProcessing(false);
     }
   };
