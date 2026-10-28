@@ -283,3 +283,54 @@
   line-height: 1.45;
 }
 
+/* Notices (migration warning, progress and errors) */
+.notice {
+  @include InterFont;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 12px 16px;
+  border: 1px solid rgba($dark, 0.15);
+  border-radius: 8px;
+  color: $dark;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+.noticeWarning {
+  background: rgba($darkYellow, 0.06);
+  border-color: rgba($darkYellow, 0.4);
+}
+
+.noticeInfo {
+  background: rgba($old-blue, 0.06);
+  border-color: rgba($old-blue, 0.4);
+}
+
+.noticeError {
+  background: rgba($error-red, 0.06);
+  border-color: rgba($error-red, 0.4);
+}
+
+.noticeAction {
+  display: block;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1px solid $error-red;
+  border-radius: 6px;
+  color: $error-red;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba($error-red, 0.08);
+  }
+}
