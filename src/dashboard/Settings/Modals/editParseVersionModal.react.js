@@ -10,12 +10,24 @@ const origin = new Position(0, 0);
 const MIGRATION_POLL_INTERVAL = 5000;
 const MIGRATION_MAX_WAIT = 30 * 60 * 1000;
 const MIGRATION_REQUEST_TIMEOUT = 15000;
+const migrationFormUrl = appId => `https://back4app.typeform.com/to/LjfLd9yI#appid=${appId}`;
 
 const NOTICE_TYPES = {
   warning: { className: styles.noticeWarning, icon: 'b4a-warn-fill-icon', fill: '#F78400' },
   blue: { className: styles.noticeInfo, icon: 'b4a-info-circle', fill: '#15A9FF' },
   red: { className: styles.noticeError, icon: 'b4a-error-cross', fill: '#E85C3E' },
 };
+
+const MigrationFormButton = ({ appId }) => (
+  <a
+    className={styles.noticeAction}
+    href={migrationFormUrl(appId)}
+    target='_blank'
+    rel='noopener noreferrer'
+  >
+    Fill out the form
+  </a>
+);
 
 const Notice = ({ type, children }) => {
   const { className, icon, fill } = NOTICE_TYPES[type] || NOTICE_TYPES.red;
@@ -35,6 +47,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
   const [note, setNote] = useState('');
   const [noteColor, setNoteColor] = useState('red');
   const [migrationLinks, setMigrationLinks] = useState([]);
+  const [migrationFailed, setMigrationFailed] = useState(false);
 
   const isGDPR = !!(context && context.custom && context.custom.isGDPR);
 
@@ -116,6 +129,8 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
   const npmModules = parseDependencies(selectedVersion?.dependencies ?? selectedVersion?.npmModules);
   const hasSelectedVersion = !!selectedVersion?.version;
   const requiresDatabaseMigration = !!selectedVersion?.requiresDatabaseMigration && selectedVersion.version !== currentParseVersion;
+  // The database is too large to migrate automatically, so the user is sent to the support form instead
+  const migrationBlocked = !!selectedVersion?.migrationBlocked && selectedVersion.version !== currentParseVersion;
 
   const visibleMigrations = isGDPR
     ? []
@@ -143,20 +158,21 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
         return;
       }
       if (migration?.status === 'Failed') {
-        throw { error: migration.error || 'Failed to migrate the database' };
+        throw { error: migration.error || 'Failed to migrate the database', migrationFailed: true };
       }
     }
-    throw { error: 'The database migration is taking longer than expected. Please, reach us on chat.' };
+    throw { error: 'The database migration is taking longer than expected. Please, fill out the form below so we can help you.', migrationFailed: true };
   };
 
   const save = async () => {
-    if (!selectedVersion?.version) {
+    if (!selectedVersion?.version || migrationBlocked) {
       return;
     }
 
     try {
       setProcessing(true);
       setNote('');
+      setMigrationFailed(false);
       const result = await context.changeParseServerVersion(selectedVersion.version);
       if (result?.migrationId) {
         setNote('Upgrading your Parse Server and MongoDB versions. Please keep this window open, it can take a while.');
@@ -169,6 +185,8 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
     } catch (e) {
       setNote(e?.error || e?.message || 'Failed to save version');
       setNoteColor('red');
+      // A 400 before the migration starts means the database can not be migrated (e.g. storage limit)
+      setMigrationFailed(!!e?.migrationFailed || (requiresDatabaseMigration && e?.status === 400));
       setProcessing(false);
     }
   };
@@ -254,14 +272,14 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
                       <button
                         key={v.version}
                         type='button'
-                        className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.version === currentParseVersion ? styles.selectOptionCurrent : ''} ${v.disabled ? styles.selectOptionDisabled : ''}`}
+                        className={`${styles.selectOption} ${selectedVersion?.version === v.version ? styles.selectOptionActive : ''} ${v.version === currentParseVersion ? styles.selectOptionCurrent : ''} ${v.disabled && !v.migrationBlocked ? styles.selectOptionDisabled : ''}`}
                         onClick={() => {
-                          if (!v.disabled) {
+                          if (!v.disabled || v.migrationBlocked) {
                             setSelectedVersion(v);
                             setDropdownOpen(false);
                           }
                         }}
-                        disabled={v.disabled}
+                        disabled={v.disabled && !v.migrationBlocked}
                         title={v.disabled ? v.disabledReason : undefined}
                       >
                         {v.version === currentParseVersion
@@ -299,9 +317,17 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
             </Notice>
           )}
 
+          {migrationBlocked && (
+            <Notice type='red'>
+              {selectedVersion.disabledReason || 'Your database exceeds the maximum storage to migrate automatically to MongoDB 8. Please, fill out the form so our team can help you.'}
+              <MigrationFormButton appId={context.applicationId} />
+            </Notice>
+          )}
+
           {note !== '' && (
             <Notice type={noteColor}>
               {note}
+              {migrationFailed && <MigrationFormButton appId={context.applicationId} />}
             </Notice>
           )}
         </div>
@@ -319,7 +345,7 @@ export const EditParseVersionModal = ({ context, setParentState, currentParseVer
             primary={true}
             value={processing ? (requiresDatabaseMigration ? 'Migrating...' : 'Saving...') : (requiresDatabaseMigration ? 'Migrate & Save' : 'Save Changes')}
             color="green"
-            disabled={!hasSelectedVersion || processing}
+            disabled={!hasSelectedVersion || migrationBlocked || processing}
             onClick={save}
             progress={processing}
           />

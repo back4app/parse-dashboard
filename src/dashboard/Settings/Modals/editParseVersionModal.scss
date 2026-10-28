@@ -318,3 +318,19 @@
   background: rgba($error-red, 0.06);
   border-color: rgba($error-red, 0.4);
 }
+
+.noticeAction {
+  display: block;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1px solid $error-red;
+  border-radius: 6px;
+  color: $error-red;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba($error-red, 0.08);
+  }
+}
