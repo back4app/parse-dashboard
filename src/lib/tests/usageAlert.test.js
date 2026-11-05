@@ -88,28 +88,28 @@ describe('getUsageAlert', () => {
       expect(getUsageAlert(mvp({ apiCallUsed: '490 K' })).level).toBe('danger');
     });
 
-    it('names the overage price and opens the Pay As You Go checkout', () => {
+    it('says an upgrade is required at 100% and opens the Pay As You Go checkout', () => {
       const alert = getUsageAlert(mvp({ apiCallUsed: '490 K' }));
       expect(alert.message).toBe(
-        'You\'ve used 98% of this month\'s API requests on MVP (490 K of 500 K). Above 100%, extra requests are billed at $5 per 100K.'
+        'You\'ve used 98% of this month\'s API requests on MVP (490 K of 500 K). At 100%, an upgrade is required.'
       );
       expect(alert.action).toBe('checkout');
       expect(alert.plan).toBe('Pay As You Go');
       expect(alert.actionLabel).toBe('Upgrade to Pay As You Go');
     });
 
-    it('past 100% it keeps running and pays the overage', () => {
+    it('past 100% says an upgrade is required, without an overage price', () => {
       const alert = getUsageAlert(mvp({ apiCallUsed: '520 K' }));
       expect(alert.level).toBe('danger');
       expect(alert.message).toBe(
-        'This app used 104% of its MVP API requests (520 K of 500 K). It keeps running, and extra requests are billed at $5 per 100K.'
+        'This app used 104% of its MVP API requests (520 K of 500 K). An upgrade is required.'
       );
       expect(alert.message).not.toMatch(/stop/i);
     });
 
-    it('uses the storage overage prices', () => {
-      expect(getUsageAlert(mvp({ dataStorageUsed: '1.1 GB' })).message).toContain('extra database storage is billed at $15 per GB');
-      expect(getUsageAlert(mvp({ fileStorageUsed: '55 GB' })).message).toContain('extra file storage is billed at $1 per 10 GB');
+    it('never names a storage overage price', () => {
+      expect(getUsageAlert(mvp({ dataStorageUsed: '1.1 GB' })).message).not.toMatch(/billed/);
+      expect(getUsageAlert(mvp({ fileStorageUsed: '55 GB' })).message).not.toMatch(/billed/);
     });
 
     it('a blocked app is offered the Pay As You Go checkout', () => {
@@ -158,10 +158,10 @@ describe('getUsageAlert', () => {
         expect(alert.message).not.toMatch(/billed/);
       });
       expect(getUsageAlert(legacy('Starter Plan', { apiCallUsed: '49 K' })).message).toBe(
-        'You\'ve used 98% of this month\'s API requests on Starter (49 K of 50 K).'
+        'You\'ve used 98% of this month\'s API requests on Starter (49 K of 50 K). At 100%, an upgrade is required.'
       );
       expect(getUsageAlert(legacy('Starter Plan', { apiCallUsed: '52 K' })).message).toBe(
-        'This app used 104% of its Starter API requests (52 K of 50 K).'
+        'This app used 104% of its Starter API requests (52 K of 50 K). An upgrade is required.'
       );
     });
 
@@ -175,17 +175,17 @@ describe('getUsageAlert', () => {
       });
     });
 
-    it('Advanced follows Pay As You Go: same thresholds, overage price and next plan', () => {
+    it('Advanced follows Pay As You Go thresholds and next plan, but is told to upgrade instead of billed', () => {
       const advanced = overrides => legacy('Advanced Plan', { apiCallLimit: '5 M', dataStorageLimit: '4 GB', fileStorageLimit: '250 GB', ...overrides });
       expect(getUsageAlert(advanced({ apiCallUsed: '3.5 M' }))).toBe(null);
       expect(getUsageAlert(advanced({ apiCallUsed: '4 M' })).level).toBe('warning');
       const alert = getUsageAlert(advanced({ apiCallUsed: '5.5 M' }));
       expect(alert.level).toBe('danger');
       expect(alert.message).toBe(
-        'This app used 110% of its Advanced API requests (5.5 M of 5 M). It keeps running, and extra requests are billed at $2 per 100K.'
+        'This app used 110% of its Advanced API requests (5.5 M of 5 M). An upgrade is required.'
       );
       expect(alert.plan).toBe('Dedicated');
-      expect(getUsageAlert(advanced({ dataStorageUsed: '4.5 GB' })).message).toContain('and extra database storage is billed at $15 per GB');
+      expect(getUsageAlert(advanced({ dataStorageUsed: '4.5 GB' })).message).not.toMatch(/billed/);
     });
 
     it('a blocked legacy app is told which plan to move to', () => {
