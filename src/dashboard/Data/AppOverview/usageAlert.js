@@ -4,10 +4,9 @@ import { getUsagePercent } from '../../AppPlan/usageClassUtils';
 const WARNING_PERCENT = 70;
 const DANGER_PERCENT = 90;
 
-// Over-quota prices from the pricing page FAQ. Requests depend on the plan. Only the current
-// MVP and Pay As You Go publish them, and Advanced has the same limits and prices as
-// Pay As You Go: the other legacy plans get the warning without a price.
-const EXTRA_REQUESTS_PRICE = { MVP: '$5', 'Pay As You Go': '$2', Advanced: '$2' };
+// Over-quota prices from the pricing page FAQ. Only Pay As You Go is billed for the overage:
+// every other paid plan is told an upgrade is required instead.
+const EXTRA_REQUESTS_PRICE = { 'Pay As You Go': '$2' };
 
 // The next plan up, by kind. Legacy plans follow the current plan of their size.
 const UPGRADE_TARGET = { free: 'MVP', starter: 'MVP', mvp: 'Pay As You Go', payg: 'Dedicated' };
@@ -65,8 +64,9 @@ const planLabelOf = planData => {
   return /pay\s*as\s*you\s*go/i.test(name) ? 'Pay As You Go' : name;
 };
 
-// " Above 100%, extra requests are billed at ..." when the plan publishes its overage price.
-const overageOf = (worst, plan, lead) => (plan in EXTRA_REQUESTS_PRICE ? ` ${lead}${worst.overage(plan)}.` : '');
+// " Above 100%, extra requests are billed at ..." on Pay As You Go, the upgrade notice on the other plans.
+const overageOf = (worst, plan, lead, upgradeRequired) =>
+  plan in EXTRA_REQUESTS_PRICE ? ` ${lead}${worst.overage(plan)}.` : ` ${upgradeRequired}`;
 
 // The limit to talk about: most urgent first (over 100%, then red, then yellow) and, within
 // the same level, the list order above. Also returns the others, most urgent first.
@@ -92,7 +92,7 @@ export const upgradeTargetOf = planData => UPGRADE_TARGET[planKindOf(planData)];
 // or { level, message, action, actionLabel }. The action is 'checkout' with the `plan` to sell
 // (the next one up) or, when there is no next plan to name, 'plans' for the Plan Usage page.
 // Every plan follows the Free thresholds: yellow above 70%, red above 90%. Only the consequence
-// changes: Free stops responding at 100%, paid plans keep running and pay the overage.
+// changes: Free stops responding at 100%, Pay As You Go pays the overage, other paid plans must upgrade.
 // The app is really blocked only when the server answers 402 or the plan is paused
 // ("Free Plan - Paused"); a Free app over its limit still serves requests until then.
 export const getUsageAlert = (planData, blocked = false) => {
@@ -138,12 +138,12 @@ export const getUsageAlert = (planData, blocked = false) => {
     };
   }
 
-  // Paid plans keep running over their limits and pay the overage, so the message names the
-  // price instead of an outage. Legacy plans have no published price and point at the next plan up.
+  // Pay As You Go keeps running over its limits and pays the overage, so the message names the
+  // price. The other paid plans are told an upgrade is required.
   const plan = planLabelOf(planData);
   const message = worst.percent >= 100
-    ? `This app used ${percent}% of its ${plan} ${worst.label} ${amount}.${overageOf(worst, plan, 'It keeps running, and ')}`
-    : `${usageSummary(worst, percent, amount, ` on ${plan}`)}${othersClose(usage)}${overageOf(worst, plan, 'Above 100%, ')}`;
+    ? `This app used ${percent}% of its ${plan} ${worst.label} ${amount}.${overageOf(worst, plan, 'It keeps running, and ', 'An upgrade is required.')}`
+    : `${usageSummary(worst, percent, amount, ` on ${plan}`)}${othersClose(usage)}${overageOf(worst, plan, 'Above 100%, ', 'At 100%, an upgrade is required.')}`;
   return { level, message, ...upgrade };
 };
 
