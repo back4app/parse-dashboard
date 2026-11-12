@@ -20,6 +20,8 @@ import { canAccess } from 'lib/serverInfo';
 import { openConnect } from 'dashboard/Data/AppOverview/connectEvents';
 import PlanUsageBadge from 'components/Sidebar/PlanUsageBadge.react';
 import { PlugIcon } from 'dashboard/Data/AppOverview/connectIcons.react';
+import B4AAlert from 'components/B4AAlert/B4AAlert.react';
+import { Link } from 'react-router-dom';
 
 // Alert parameters
 const MySwal = withReactContent(Swal);
@@ -488,10 +490,31 @@ export default class DashboardView extends React.Component {
     //   );
     // }
 
+    let masterKeyRotatedAlert = null;
+    if (this.context.showMasterKeyRotatedAlert) {
+      masterKeyRotatedAlert = (
+        <div className={styles.masterKeyRotatedAlert}>
+          <B4AAlert
+            title="Your Master Key was rotated"
+            description={
+              <>
+                As a security precaution, we rotated this app&apos;s Master Key. The new key is already available in{' '}
+                <Link to={`/apps/${appSlug}/settings/keys`}>App Settings &gt; Security &amp; Keys</Link>.
+              </>
+            }
+            handlerCloseEvent={() => {
+              this.context.dismissMasterKeyRotatedAlert().catch(() => {});
+            }}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className={styles.dashboard}>
         {content}
         {sidebar}
+        {masterKeyRotatedAlert}
       </div>
     );
   }
