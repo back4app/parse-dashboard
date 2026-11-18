@@ -153,11 +153,6 @@ class CreateClassDialog extends React.Component {
           )
           : null
         }
-        <div style={{ padding: '1em', borderBottom: '1px solid #e3e3e3', color: '#10203A', fontSize: '12px', opacity: '0.7' }}>
-          <div style={{ fontWeight: '600' }} >Or find a public dataset to connect</div >
-          <div style={{ marginBottom: '6px' }}>e.g. jobs, countries, industries, colors, zip codes and more...</div>
-          <a style={{ color: '#15A9FF', textDecoration: 'underline' }} href={b4aSettings.HUB_URL} target="_blank">back4app.com/database</a>
-        </div>
       </B4aModal>
     );
   }

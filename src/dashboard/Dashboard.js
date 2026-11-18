@@ -475,7 +475,6 @@ class Dashboard extends React.Component {
         <Route path="analytics">{AnalyticsRoute}</Route>
         <Route path="settings">{SettingsRoute}</Route>
         <Route path="web-deployment" element={<B4aWebDeployment />} />
-        {/* {user.allowHubPublish && <Route path="hub-publish" element={<B4aHubPublishPage />} />} */}
       </Route>
     );
 
