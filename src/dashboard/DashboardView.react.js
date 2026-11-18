@@ -225,10 +225,15 @@ export default class DashboardView extends React.Component {
     //   link: '/analytics'
     // })
 
-    moreSubSection.push({
-      name: 'Database HUB',
-      link: '/connections'
-    })
+    // The Hub is discontinued. Apps connected before the shutdown can still
+    // remove their connections; for everyone else the page does not exist.
+    const hubConnections = (this.context.custom && this.context.custom.hubConnections) || [];
+    if (hubConnections.length > 0) {
+      moreSubSection.push({
+        name: 'Database HUB',
+        link: '/connections'
+      })
+    }
 
     // moreSubSection.push({
     //   name: 'App Templates',
@@ -430,12 +435,14 @@ export default class DashboardView extends React.Component {
       badge: <PlanUsageBadge />,
     })
 
-    appSidebarSections.push({
-      name: 'More',
-      icon: 'b4a-more-icon',
-      link: '/connections',
-      subsections: moreSubSection
-    })
+    if (moreSubSection.length > 0) {
+      appSidebarSections.push({
+        name: 'More',
+        icon: 'b4a-more-icon',
+        link: moreSubSection[0].link,
+        subsections: moreSubSection
+      })
+    }
 
     const sidebar = (
       <B4aSidebar

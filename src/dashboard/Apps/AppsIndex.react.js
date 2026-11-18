@@ -186,13 +186,10 @@ class AppsIndex extends React.Component {
         <div className={styles.empty}>
           <EmptyGhostState
             title="You don't have any apps"
-            description='Create a new app or clone a database from database hub'
+            description='Create a new app to get started'
             cta="Create a new app"
             // eslint-disable-next-line no-undef
-            action={() => window.location = `${b4aSettings.DASHBOARD_PATH}/apps/new`}
-            secondaryCta="Go to database hub"
-            // eslint-disable-next-line no-undef
-            secondaryAction={() => window.location = b4aSettings.HUB_URL} />
+            action={() => window.location = `${b4aSettings.DASHBOARD_PATH}/apps/new`} />
         </div>
       );
     }
