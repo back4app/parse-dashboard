@@ -63,6 +63,7 @@ export default class ParseApp {
     databaseType,
     databaseVersion,
     isMongoUpgradeAvailable,
+    showMasterKeyRotatedAlert,
     region
   }) {
     this.name = appName;
@@ -104,6 +105,7 @@ export default class ParseApp {
     this.region = region;
     this.databaseVersion = databaseVersion;
     this.isMongoUpgradeAvailable = isMongoUpgradeAvailable;
+    this.showMasterKeyRotatedAlert = showMasterKeyRotatedAlert === true;
     if (!supportedPushLocales) {
       console.warn('Missing push locales for \'' + appName + '\', see this link for details on setting localizations up. https://github.com/parse-community/parse-dashboard#configuring-localized-push-notifications');
     }
@@ -433,6 +435,14 @@ export default class ParseApp {
 
   restartApp() {
     const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/restart`;
+    return AJAX.post(path);
+  }
+
+  // Cleared in memory first so the alert doesn't come back when DashboardView remounts on route change.
+  dismissMasterKeyRotatedAlert() {
+    this.showMasterKeyRotatedAlert = false;
+    // eslint-disable-next-line no-undef
+    const path = `${b4aSettings.BACK4APP_API_PATH}/parse-app/${this.slug}/master-key-rotated-alert/dismiss`;
     return AJAX.post(path);
   }
 
