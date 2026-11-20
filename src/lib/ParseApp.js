@@ -471,9 +471,10 @@ export default class ParseApp {
     return AJAX.post(path);
   }
 
-  createApp(appName, parseVersion, originalAppId = null) {
+  // captchaToken: a one-use Cloudflare Turnstile token (lib/turnstile.js); the API creates no app without one.
+  createApp(appName, parseVersion, originalAppId = null, captchaToken = null) {
     const path = '/create-parse-app';
-    return AJAX.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false })
+    return AJAX.post(path, { appDescription: '', parseVersion, originalAppId: originalAppId, appId: null, appName, isPublic: false, 'cf-turnstile-response': captchaToken || '' })
   }
 
   initializeDb(appId, parseVersion) {

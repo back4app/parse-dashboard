@@ -7,6 +7,7 @@ import FormNote from 'components/FormNote/FormNote.react';
 import Dropdown from 'components/Dropdown/Dropdown.react';
 import Option from 'components/Dropdown/Option.react';
 import PropTypes from 'prop-types';
+import { getCaptchaToken, CREATE_APP_CAPTCHA_ACTION, CAPTCHA_FAILED_ERROR } from 'lib/turnstile';
 
 export const CloneAppModal = ({ context, setParentState }) => {
 
@@ -53,10 +54,21 @@ export const CloneAppModal = ({ context, setParentState }) => {
         await context.checkStorage();
       }
 
+      // A token is good once: ask for a new one on every try.
+      setNote('Checking you are not a robot...');
+      setNoteColor('blue');
+
+      const captchaToken = await getCaptchaToken(CREATE_APP_CAPTCHA_ACTION);
+      if (!captchaToken) {
+        setNote('The captcha could not be completed. Please try again.');
+        setNoteColor('red');
+        return;
+      }
+
       setNote('Creating a new parse app...');
       setNoteColor('blue');
 
-      newApp = await context.createApp(cloneAppName, cloneParseVersion?.version, context.applicationId);
+      newApp = await context.createApp(cloneAppName, cloneParseVersion?.version, context.applicationId, captchaToken);
 
       if (!newApp || Object.keys(newApp).length <= 0) {
         throw new Error();
@@ -84,6 +96,9 @@ export const CloneAppModal = ({ context, setParentState }) => {
       let error = 'An error occurred.';
       if (e.message) {
         error = e.message;
+      }
+      if (e.message === CAPTCHA_FAILED_ERROR || e.error === CAPTCHA_FAILED_ERROR) {
+        error = 'The captcha failed. Please try again.';
       }
       setNote(error);
       setNoteColor('red');
