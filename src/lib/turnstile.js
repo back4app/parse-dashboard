@@ -1,17 +1,13 @@
 /* global b4aSettings */
 /**
- * Cloudflare Turnstile, the captcha in front of app creation. The API creates an app
- * (POST /create-parse-app) only with a Turnstile answer solved on one of our dashboards for the
- * action `create-backend-app`, sent as `cf-turnstile-response`.
+ * Cloudflare Turnstile token for app creation (action `create-backend-app`), sent as
+ * `cf-turnstile-response`.
  *
  * A token is good once, so each call renders a new widget and removes it when it answers. The
  * widget shows nothing unless Cloudflare needs the person to do something; then it appears at the
- * bottom of the page until it is solved. Same as the site's signup captcha
- * (back4app-site2 lib/signupCaptcha.js) and the back4app2 dashboards' Turnstile component.
+ * bottom of the page until it is solved.
  *
- * The site key comes from @back4app/back4app-settings (TURNSTILE_SITE_KEY in production.json and
- * homolog.json, the same widget as the site and the back4app2 dashboards). dev.json has none, so a
- * local build uses Cloudflare's always-pass test key.
+ * The site key comes from b4aSettings.TURNSTILE_SITE_KEY; without one, Cloudflare's test key.
  */
 
 const SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
