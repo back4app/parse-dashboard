@@ -21,10 +21,6 @@ COPY . /src
 # Install remaining dev dependencies
 RUN npm ci
 
-# Cloudflare Turnstile site key of the app creation captcha (webpack/base.config.js):
-# docker build --build-arg TURNSTILE_SITE_KEY=...
-ARG TURNSTILE_SITE_KEY
-
 # Run all webpack build steps
 RUN npm run build
 

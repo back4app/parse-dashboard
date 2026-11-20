@@ -17,15 +17,6 @@ const json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const version = json.version;
 const settings = require('@back4app/back4app-settings');
 const BACK4APP_API_PATH = process.env.ENVIRONMENT == 'local' ? settings.BACK4APP_API_PATH : undefined
-// Cloudflare Turnstile site key for the app creation captcha (src/lib/turnstile.js). The same widget
-// as the back4app2 dashboards (their REACT_APP_BACK4APP2_DASHBOARD_TURNSTILE_SITE_KEY): its hostnames
-// must include this dashboard's. Set TURNSTILE_SITE_KEY when building (deploy*.sh pass it); a local
-// or dev build falls back to Cloudflare's always-pass test key.
-const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY
-  || (['production', 'homolog'].includes(process.env.NODE_ENV) ? '' : '1x00000000000000000000AA');
-if (!TURNSTILE_SITE_KEY) {
-  console.warn('TURNSTILE_SITE_KEY is not set: the dashboard will not be able to create or clone apps.');
-}
 
 module.exports = {
   context: path.join(__dirname, '../src'),
@@ -113,7 +104,6 @@ module.exports = {
         'version' : JSON.stringify(version),
         'BACKEND_URL':  JSON.stringify(BACK4APP_API_PATH),
         'BUILD_TIMESTAMP': JSON.stringify(new Date().toISOString()),
-        'TURNSTILE_SITE_KEY': JSON.stringify(TURNSTILE_SITE_KEY),
       },
       b4aSettings: JSON.stringify(settings)
     }),

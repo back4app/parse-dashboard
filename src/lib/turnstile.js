@@ -1,3 +1,4 @@
+/* global b4aSettings */
 /**
  * Cloudflare Turnstile, the captcha in front of app creation. The API creates an app
  * (POST /create-parse-app) only with a Turnstile answer solved on one of our dashboards for the
@@ -8,11 +9,14 @@
  * bottom of the page until it is solved. Same as the site's signup captcha
  * (back4app-site2 lib/signupCaptcha.js) and the back4app2 dashboards' Turnstile component.
  *
- * The site key is set at build time (TURNSTILE_SITE_KEY, see webpack/base.config.js).
+ * The site key comes from @back4app/back4app-settings (TURNSTILE_SITE_KEY in production.json and
+ * homolog.json, the same widget as the site and the back4app2 dashboards). dev.json has none, so a
+ * local build uses Cloudflare's always-pass test key.
  */
 
 const SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-const SITE_KEY = process.env.TURNSTILE_SITE_KEY || '';
+const TEST_SITE_KEY = '1x00000000000000000000AA';
+const SITE_KEY = b4aSettings.TURNSTILE_SITE_KEY || TEST_SITE_KEY;
 export const CREATE_APP_CAPTCHA_ACTION = 'create-backend-app';
 // What the API answers for a missing or bad token.
 export const CAPTCHA_FAILED_ERROR = 'Please fill the captcha correctly';
