@@ -1102,7 +1102,9 @@ class Browser extends DashboardView {
   saveNewRow() {
     const { useMasterKey } = this.state;
     const obj = this.state.newObject;
-    if (!obj) {
+    // Ignore repeated clicks (e.g. double click on "Add") while a save is in flight,
+    // otherwise the same object gets saved and prepended to the table twice.
+    if (!obj || this.savingNewRow) {
       return;
     }
 
@@ -1145,6 +1147,7 @@ class Browser extends DashboardView {
         markRequiredFieldRow: 0,
       });
     }
+    this.savingNewRow = true;
     obj.save(null, { useMasterKey }).then(
       objectSaved => {
         const msg = objectSaved.className + ' with id \'' + objectSaved.id + '\' created';
@@ -1160,7 +1163,7 @@ class Browser extends DashboardView {
           const parentRelation = parent.relation(relation.key);
           parentRelation.add(obj);
           const targetClassName = relation.targetClassName;
-          parent.save(null, { useMasterKey }).then(
+          return parent.save(null, { useMasterKey }).then(
             () => {
               this.setState({
                 newObject: null,
@@ -1199,7 +1202,9 @@ class Browser extends DashboardView {
         }
         this.showNote(msg, true);
       }
-    );
+    ).finally(() => {
+      this.savingNewRow = false;
+    });
   }
 
   saveEditCloneRow(rowIndex) {
